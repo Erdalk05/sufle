@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Sufle</title>
+<style>
+  :root{ --accent:#00C853; --txt:#fff; --eyeY:24%; --fs:46px; --lh:1.45; --mg:7vw; --pcolor:#fff; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  html,body{height:100%;background:#000;color:var(--txt);overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif}
+  body{position:fixed;inset:0}
+
+  /* ===== SAHNE ===== */
+  #stage{position:absolute;inset:0;overflow:hidden;background:#000}
+  #cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000}
+  body.cam #cam{display:block}
+  body.mirrorCam #cam{transform:scaleX(-1)}
+  #prompt{position:absolute;inset:0;overflow:hidden;z-index:2}
+  #scroller{
+    padding:64% var(--mg) 70%;
+    font-size:var(--fs);line-height:var(--lh);font-weight:700;color:var(--pcolor);
+    text-align:center;white-space:pre-wrap;word-wrap:break-word;will-change:transform;
+    text-shadow:0 2px 16px rgba(0,0,0,.7);
+  }
+  body.mirrorText #scroller{transform:scaleX(-1)}
+  #scroller .w.active{color:var(--accent);text-shadow:0 0 24px rgba(0,200,83,.55)}
+
+  /* okuma çizgisi + kamera hedefi */
+  #eyeline{position:absolute;left:0;right:0;top:var(--eyeY);height:0;
+    border-top:2px solid rgba(0,200,83,.45);z-index:3;pointer-events:none;display:none}
+  body.eye #eyeline{display:block}
+  #eyeline::before,#eyeline::after{content:"";position:absolute;top:-7px;border:7px solid transparent}
+  #eyeline::before{left:0;border-left-color:var(--accent)}
+  #eyeline::after{right:0;border-right-color:var(--accent)}
+  #camMark{position:absolute;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+    z-index:3;background:rgba(0,200,83,.16);border:1px solid rgba(0,200,83,.5);color:#bfffd6;
+    font-size:12px;font-weight:700;padding:5px 13px;border-radius:0 0 14px 14px;display:none}
+  body.eye #camMark{display:block}
+
+  /* odak karartma */
+  body.dim #prompt{
+    -webkit-mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - 30%),#000 calc(var(--eyeY) - 4%),#000 calc(var(--eyeY) + 4%),transparent calc(var(--eyeY) + 36%));
+            mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - 30%),#000 calc(var(--eyeY) - 4%),#000 calc(var(--eyeY) + 4%),transparent calc(var(--eyeY) + 36%));
+  }
+
+  #progress{position:absolute;left:0;top:0;height:3px;width:0;background:var(--accent);z-index:4}
+  #recDot{position:absolute;top:max(12px,env(safe-area-inset-top));right:14px;z-index:5;display:none;
+    align-items:center;gap:7px;background:rgba(0,0,0,.5);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
+  #recDot.on{display:flex}
+  #recDot i{width:10px;height:10px;border-radius:50%;background:#ff3b30;animation:bl 1s infinite}
+  @keyframes bl{50%{opacity:.25}}
+  #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.55);font-size:42vw;font-weight:800;color:var(--accent);z-index:6}
+
+  /* ===== ALT KONTROL ===== */
+  #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 26px calc(18px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top,rgba(0,0,0,.6),transparent)}
+  .cbtn{width:62px;height:62px;border-radius:50%;border:none;background:rgba(40,40,46,.85);
+    color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+  .cbtn:active{filter:brightness(1.4)}
+  #recBtn{width:78px;height:78px;background:#fff;border:5px solid rgba(255,255,255,.45);position:relative}
+  #recBtn::after{content:"";width:54px;height:54px;border-radius:50%;background:#ff3b30;transition:.18s}
+  #recBtn.rec::after{width:30px;height:30px;border-radius:8px}
+  #recBtn:disabled{opacity:.4}
+  #playBtn.playing{background:var(--accent);color:#04210f}
+
+  /* ===== BAŞLANGIÇ EKRANI ===== */
+  #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+    background:radial-gradient(circle at 50% 35%,#10231a,#000);padding:30px;text-align:center}
+  #intro h1{font-size:30px;font-weight:800}#intro h1 b{color:var(--accent)}
+  #intro p{color:#9aa;font-size:14px;line-height:1.6;max-width:300px}
+  .big{background:var(--accent);color:#04210f;border:none;border-radius:18px;font-size:19px;font-weight:800;
+    padding:20px 30px;display:flex;align-items:center;gap:10px}
+  .ghostbig{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
+    border-radius:14px;font-size:15px;font-weight:600;padding:14px 22px}
+
+  /* ===== AYAR SAYFASI (bottom sheet) ===== */
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:#16161a;
+    border-radius:24px 24px 0 0;padding:8px 20px calc(26px + env(safe-area-inset-bottom));
+    transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.8,.2,1);max-height:86%;overflow-y:auto}
+  .sheet.open{transform:translateY(0)}
+  .grab{width:42px;height:5px;border-radius:3px;background:#444;margin:8px auto 14px}
+  .sheet h2{font-size:17px;margin-bottom:6px}
+  .row{display:flex;align-items:center;justify-content:space-between;margin:18px 0 7px}
+  .row label{font-size:15px;color:#ddd}.row .v{color:var(--accent);font-weight:700;font-size:14px}
+  input[type=range]{width:100%;accent-color:var(--accent);height:34px}
+  .seg{display:flex;gap:8px;margin-top:8px}
+  .seg button{flex:1;background:#26262c;border:1px solid #33333a;color:#fff;border-radius:11px;padding:13px 0;font-size:14px;font-weight:600}
+  .seg button.on{background:var(--accent);color:#04210f;border-color:transparent}
+  .tog{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid #25252b}
+  .tog span{font-size:15px}
+  .sw{width:50px;height:30px;border-radius:20px;background:#33333a;position:relative;transition:.15s;flex:none}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#888;transition:.15s}
+  .sw.on{background:var(--accent)}.sw.on::after{left:23px;background:#fff}
+  textarea{width:100%;min-height:160px;background:#0e0e12;border:1px solid #2a2a32;border-radius:14px;
+    color:#eee;padding:14px;font-size:16px;line-height:1.6;font-family:inherit;-webkit-user-select:text;user-select:text;resize:none;margin-top:8px}
+  .sheetbtns{display:flex;gap:12px;margin-top:18px}
+  .sheetbtns button{flex:1;border:none;border-radius:14px;padding:16px 0;font-size:16px;font-weight:700}
+  .save{background:var(--accent);color:#04210f}.cancel{background:#26262c;color:#fff}
+
+  /* ===== SONUÇ (kayıt önizleme) ===== */
+  #result{position:absolute;inset:0;z-index:40;background:#000;display:none;flex-direction:column;padding:max(20px,env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom))}
+  #result.open{display:flex}
+  #result h2{font-size:18px;text-align:center;margin-bottom:12px}
+  #resultVid{flex:1;width:100%;border-radius:16px;background:#111;object-fit:contain}
+  #result .sheetbtns{margin-top:16px}
+  .hidden{display:none!important}
+  .tapnote{position:absolute;top:38%;left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
+    font-size:13px;pointer-events:none;transition:opacity .4s}
+</style>
+</head>
+<body class="eye dim">
+
+<div id="stage">
+  <video id="cam" autoplay muted playsinline></video>
+  <div id="prompt"><div id="scroller"></div></div>
+  <div id="camMark">📷 buraya bak</div>
+  <div id="eyeline"></div>
+  <div id="progress"></div>
+  <div id="recDot"><i></i><span id="recTime">00:00</span></div>
+  <div id="count">3</div>
+  <div class="tapnote" id="tapnote">▶︎ başlatmak için ekrana dokun</div>
+</div>
+
+<!-- ALT KONTROL -->
+<div id="bar" class="hidden">
+  <button class="cbtn" id="settingsBtn">⚙︎</button>
+  <button id="recBtn" disabled></button>
+  <button class="cbtn" id="playBtn">▶︎</button>
+</div>
+
+<!-- BAŞLANGIÇ -->
+<div id="intro">
+  <h1>Sufle <b>·</b> iPhone</h1>
+  <p>Telefonun önünde okurken doğrudan kaydet. Kamera açılınca yazı kameranın önünde akar.</p>
+  <button class="big" id="startCam">📷 Kamerayı Aç & Başla</button>
+  <button class="ghostbig" id="startNoCam">Kamerasız sadece sufle</button>
+</div>
+
+<!-- AYARLAR -->
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <h2>Ayarlar</h2>
+
+  <div class="row"><label>Hız</label><span class="v" id="vSpeed">7</span></div>
+  <input type="range" id="speed" min="1" max="30" value="7">
+
+  <div class="row"><label>Yazı Boyutu</label><span class="v" id="vFs">46</span></div>
+  <input type="range" id="fs" min="24" max="90" value="46">
+
+  <div class="row"><label>👁 Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="vEye">24</span></div>
+  <input type="range" id="eye" min="6" max="50" value="24">
+
+  <div class="row"><label>Yazı Rengi</label></div>
+  <div class="seg" id="colorSeg">
+    <button data-c="#ffffff" class="on">Beyaz</button>
+    <button data-c="#ffe14d">Sarı</button>
+    <button data-c="#00E676">Yeşil</button>
+    <button data-c="#000000">Siyah</button>
+  </div>
+
+  <div class="tog"><span>🎯 Okuma çizgisi</span><div class="sw on" data-t="eye"></div></div>
+  <div class="tog"><span>🌗 Odak karartma</span><div class="sw on" data-t="dim"></div></div>
+  <div class="tog"><span>🪞 Yazıyı aynala (cam rig)</span><div class="sw" data-t="mirrorText"></div></div>
+  <div class="tog"><span>🔄 Arka kamera</span><div class="sw" data-t="backCam"></div></div>
+  <div class="tog"><span>⏱ 3-2-1 sayaç</span><div class="sw on" data-t="count"></div></div>
+
+  <div class="row" style="margin-top:20px"><label>📝 Metin</label></div>
+  <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır..."></textarea>
+
+  <div class="sheetbtns">
+    <button class="cancel" id="sheetClose">Kapat</button>
+    <button class="save" id="sheetSave">✓ Uygula</button>
+  </div>
+</div>
+
+<!-- SONUÇ -->
+<div id="result">
+  <h2>🎬 Çekim hazır</h2>
+  <video id="resultVid" controls playsinline></video>
+  <div class="sheetbtns">
+    <button class="cancel" id="redoBtn">↺ Yeniden</button>
+    <button class="save" id="saveBtn">⬇︎ Kaydet / Paylaş</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const root=document.documentElement, body=document.body;
+  const cam=$('#cam'), scroller=$('#scroller');
+  const LS='iphone_sufle_v1';
+  let st, running=false, raf=null, pos=0, words=[], wordTops=[], activeIdx=-1;
+
+  const DEF={ text:"Merhaba! Bu iPhone sufle uygulaması.\n\nKamerayı açtın, yazı şimdi kameranın önünde akıyor. Telefonu yüzüne yakın tut, üstteki yeşil çizgiden — yani kameranın hemen altından — oku.\n\nKayıt için alttaki kırmızı düğmeye bas. Bitince videoyu Fotoğraflar'a kaydedebilirsin.\n\nBaşarılar!",
+    speed:7, fs:46, eyePos:24, color:'#ffffff',
+    eye:true, dim:true, mirrorText:false, backCam:false, count:true };
+
+  function load(){ try{ st=Object.assign({},DEF,JSON.parse(localStorage.getItem(LS)||'{}')); }catch(e){ st=Object.assign({},DEF); } }
+  function save(){ localStorage.setItem(LS,JSON.stringify(st)); }
+
+  function apply(){
+    root.style.setProperty('--fs',st.fs+'px');
+    root.style.setProperty('--eyeY',st.eyePos+'%');
+    root.style.setProperty('--pcolor',st.color);
+    body.classList.toggle('eye',st.eye);
+    body.classList.toggle('dim',st.dim);
+    body.classList.toggle('mirrorText',st.mirrorText);
+    $('#vSpeed').textContent=st.speed; $('#vFs').textContent=st.fs; $('#vEye').textContent=st.eyePos;
+    $('#speed').value=st.speed; $('#fs').value=st.fs; $('#eye').value=st.eyePos;
+    $$('#colorSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c===st.color));
+    $$('.sw').forEach(s=>s.classList.toggle('on',st[s.dataset.t]));
+    requestAnimationFrame(measure);
+  }
+  function buildWords(){
+    const esc=st.text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    scroller.innerHTML=esc.replace(/[^\s]+/g,m=>'<span class="w">'+m+'</span>');
+    words=[...scroller.querySelectorAll('.w')]; activeIdx=-1;
+    requestAnimationFrame(measure);
+  }
+  function measure(){ wordTops=words.map(w=>w.offsetTop+w.offsetHeight/2); }
+  function H(){ return window.innerHeight; }
+  function eyeOff(){ return H()*(st.eyePos/100); }
+
+  function tick(){
+    if(!running) return;
+    pos += st.speed*0.5;
+    scroller.style.transform='translateY('+(-pos)+'px)';
+    const total=Math.max(1,scroller.scrollHeight-H()*0.5);
+    $('#progress').style.width=Math.min(100,pos/total*100)+'%';
+    if(recT) $('#recTime').textContent=clock((performance.now()-recT)/1000);
+    highlight(pos+eyeOff());
+    if(pos>scroller.scrollHeight) stop(); else raf=requestAnimationFrame(tick);
+  }
+  function highlight(y){
+    if(!wordTops.length) return;
+    let lo=0,hi=wordTops.length-1,idx=0;
+    while(lo<=hi){const m=(lo+hi)>>1; if(wordTops[m]<=y){idx=m;lo=m+1;}else hi=m-1;}
+    if(idx!==activeIdx){ if(words[activeIdx])words[activeIdx].classList.remove('active');
+      if(words[idx])words[idx].classList.add('active'); activeIdx=idx; }
+  }
+  function start(){ if(running)return; running=true; $('#playBtn').textContent='⏸'; $('#playBtn').classList.add('playing'); $('#tapnote').style.opacity='0'; raf=requestAnimationFrame(tick); }
+  function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf); }
+  function reset(){ stop(); pos=0; scroller.style.transform='translateY(0)'; $('#progress').style.width='0';
+    if(words[activeIdx])words[activeIdx].classList.remove('active'); activeIdx=-1; }
+  function toggle(){ if(running){stop();return;} if(st.count&&pos===0) countdown(start); else start(); }
+  function countdown(cb){ const el=$('#count'); let n=3; el.style.display='flex'; el.textContent=n;
+    const iv=setInterval(()=>{ n--; if(n<=0){clearInterval(iv);el.style.display='none';cb();}else el.textContent=n; },800); }
+
+  /* ---- KAMERA ---- */
+  let stream=null;
+  async function openCam(){
+    try{
+      if(stream) stream.getTracks().forEach(t=>t.stop());
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode: st.backCam?'environment':'user'}, audio:true });
+      cam.srcObject=stream; body.classList.add('cam');
+      body.classList.toggle('mirrorCam', !st.backCam); // ön kamera ayna önizleme
+      $('#recBtn').disabled=false;
+      return true;
+    }catch(e){ alert('Kameraya erişilemedi: '+(e.message||e.name)+'\n\nAyarlardan izin verin veya kamerasız modu deneyin.'); return false; }
+  }
+
+  /* ---- KAYIT ---- */
+  let rec=null, chunks=[], recT=0, lastBlob=null;
+  function pickMime(){ for(const m of ['video/mp4','video/webm;codecs=vp9,opus','video/webm']) if(window.MediaRecorder&&MediaRecorder.isTypeSupported(m)) return m; return ''; }
+  function startRec(){
+    if(!stream){ alert('Önce kamerayı aç.'); return; }
+    chunks=[]; const mime=pickMime();
+    try{ rec=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream); }
+    catch(e){ alert('Kayıt başlatılamadı: '+e.message); return; }
+    rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
+    rec.onstop=()=>{ lastBlob=new Blob(chunks,{type:rec.mimeType||'video/mp4'}); showResult(lastBlob); };
+    rec.start(); recT=performance.now();
+    $('#recBtn').classList.add('rec'); $('#recDot').classList.add('on');
+    if(!running) toggle();
+  }
+  function stopRec(){ if(rec&&rec.state!=='inactive') rec.stop(); recT=0;
+    $('#recBtn').classList.remove('rec'); $('#recDot').classList.remove('on'); if(running) stop(); }
+  function toggleRec(){ if(rec&&rec.state==='recording') stopRec(); else startRec(); }
+
+  function showResult(blob){
+    const url=URL.createObjectURL(blob);
+    $('#resultVid').src=url; $('#result').classList.add('open');
+  }
+  async function saveRec(){
+    if(!lastBlob) return;
+    const ext=(lastBlob.type.indexOf('mp4')>=0)?'mp4':'webm';
+    const file=new File([lastBlob],'sufle_cekim.'+ext,{type:lastBlob.type});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'Çekim'}); return; }catch(e){ if(e.name==='AbortError')return; }
+    }
+    const a=document.createElement('a'); a.href=URL.createObjectURL(lastBlob); a.download=file.name; a.click();
+  }
+
+  function clock(s){ s=Math.max(0,Math.floor(s)); return String((s/60)|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+  /* ---- OLAYLAR ---- */
+  $('#startCam').onclick=async()=>{ if(await openCam()){ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); } };
+  $('#startNoCam').onclick=()=>{ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); };
+  $('#stage').addEventListener('click',e=>{ if($('#sheet').classList.contains('open')) return; toggle(); });
+  $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
+  $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
+
+  // ayar sayfası
+  $('#settingsBtn').onclick=e=>{ e.stopPropagation(); $('#text').value=st.text; $('#sheet').classList.add('open'); };
+  $('#sheetClose').onclick=()=>$('#sheet').classList.remove('open');
+  $('#sheetSave').onclick=async()=>{ st.text=$('#text').value; save(); buildWords(); reset();
+    if(body.classList.contains('cam')) await openCam(); $('#sheet').classList.remove('open'); };
+  $('#speed').oninput=e=>{ st.speed=+e.target.value; apply(); save(); };
+  $('#fs').oninput=e=>{ st.fs=+e.target.value; apply(); save(); };
+  $('#eye').oninput=e=>{ st.eyePos=+e.target.value; apply(); save(); };
+  $$('#colorSeg button').forEach(b=>b.onclick=()=>{ st.color=b.dataset.c; apply(); save(); });
+  $$('.sw').forEach(s=>s.onclick=()=>{ st[s.dataset.t]=!st[s.dataset.t]; apply(); save(); });
+
+  // sonuç
+  $('#saveBtn').onclick=saveRec;
+  $('#redoBtn').onclick=()=>{ $('#result').classList.remove('open'); reset(); };
+
+  window.addEventListener('resize',()=>requestAnimationFrame(measure));
+
+  load(); apply(); $('#text').value=st.text; buildWords();
+
+  // PWA: çevrimdışı çalışsın diye service worker kaydı
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>
