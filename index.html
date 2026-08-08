@@ -83,6 +83,12 @@
   #aspectBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;
     box-shadow:0 0 0 9999px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.28);border-radius:2px}
   body.aspectOn #aspectBox{display:block}
+  /* platform arayüzünün kapattığı alanlar (yaklaşık) */
+  #safeWrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;pointer-events:none}
+  body.safeOn #safeWrap{display:block}
+  #safeWrap div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.16) 0 8px,transparent 8px 16px);
+    border:1px dashed rgba(255,59,48,.5)}
+  #safeWrap div b{position:absolute;left:6px;top:4px;font-size:9px;font-weight:800;color:rgba(255,180,175,.95);letter-spacing:.03em}
   #grid{position:absolute;inset:0;display:none;
     background-image:linear-gradient(to right,rgba(255,255,255,.16) 1px,transparent 1px),
                      linear-gradient(to right,rgba(255,255,255,.16) 1px,transparent 1px),
@@ -247,6 +253,7 @@
     <div id="grid"></div>
     <div id="headroom"></div>
     <div id="aspectBox"></div>
+    <div id="safeWrap"></div>
   </div>
   <div id="camMark">📷 <span data-i18n="lookHere">buraya bak</span></div>
   <div id="noAudioBadge" data-i18n="noMicShort">🔇 mikrofon yok — ses kaydedilmiyor</div>
@@ -294,6 +301,18 @@
 
   <!-- OKUMA -->
   <div class="tab on" id="tab-read">
+    <div class="row"><label data-i18n="mode">🎯 Çekim modu</label><span class="v" id="vMode">—</span></div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="free" class="on" data-i18n="mFree">Serbest</button>
+      <button data-mode="reels">Reels</button>
+      <button data-mode="story" data-i18n="mStory">Story</button>
+      <button data-mode="post" data-i18n="mPost">IG Gönderi</button>
+      <button data-mode="shorts">Shorts</button>
+      <button data-mode="video" data-i18n="mVideo">YouTube</button>
+    </div>
+    <div class="hint" id="modeHint"></div>
+    <div class="tog"><span data-i18n="tgSafe">🚫 Platform arayüz alanlarını göster</span><div class="sw" data-t="safe"></div></div>
+
     <div class="row"><label data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="vWpm">140</span></div>
     <input type="range" id="wpm" min="40" max="320" step="5" value="140">
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
@@ -518,7 +537,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -537,6 +556,8 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
+  tgSafe:'🚫 Platform arayüz alanlarını göster',
   micLevel:'🎙 Mikrofon seviyesi',
   micHint:'Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.',
   noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
@@ -568,6 +589,8 @@ const I18N={
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'🎚 Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
+  tgSafe:'🚫 Show platform UI zones',
   micLevel:'🎙 Microphone level',
   micHint:'Talk — if the bar does not move, no audio is recorded. Check iOS Settings → Safari → Microphone, or close another app holding the mic.',
   noMicShort:'🔇 no microphone — audio is not recorded',
@@ -644,6 +667,7 @@ const DEF={
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
+  mode:'free', safe:false,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -726,7 +750,7 @@ function measure(){
   });
   maxPos = wordTops.length ? Math.max(1, wordTops[wordTops.length-1]-eyeOff()) : 1;
   pxPerWord = wordTops.length>1 ? Math.max(6,(wordTops[wordTops.length-1]-wordTops[0])/(wordTops.length-1)) : 40;
-  drawAspect(); updateHud();
+  drawAspect(); drawSafe(); updateHud();
 }
 /* okunacak gerçek kelime sayısı: # başlıklar ve [notlar] hariç */
 function countWords(txt){
@@ -765,7 +789,7 @@ function tick(now){
     setPos(next);
   }
   if(now-lastHud>200){ lastHud=now;
-    if(recT) $('#recTime').textContent=clock((performance.now()-recT)/1000);
+    if(recT) showRecTime();
     updateHud();
   }
   if(pos>=maxPos+H()*0.15){ stop(); toast(m('end')); return; }
@@ -809,6 +833,20 @@ function countdown(cb){
 }
 function cancelCountdown(){ clearInterval(countIv); countIv=null; counting=false; $('#count').classList.remove('on'); }
 function clock(s){ s=Math.max(0,Math.floor(s)); return String((s/60)|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+/* kayıt süresi + platform sınırı: sınıra yaklaşınca sarı, aşınca kırmızı */
+let overWarned=false;
+function showRecTime(){
+  const t=(performance.now()-recT)/1000, lim=curMode().limit;
+  const el=$('#recTime'), dot=$('#recDot');
+  if(!lim){ el.textContent=clock(t); dot.style.background='rgba(0,0,0,.55)'; return; }
+  const left=lim-t;
+  el.textContent=clock(t)+' / '+clock(lim);
+  if(left<0){
+    dot.style.background='rgba(255,59,48,.85)';
+    if(!overWarned){ overWarned=true; toast('⚠️ '+(curMode().n[L]||curMode().n.tr)+(L==='tr'?' süre sınırı aşıldı':' time limit exceeded')); }
+  } else if(left<8){ dot.style.background='rgba(255,179,0,.85)'; }
+  else dot.style.background='rgba(0,0,0,.55)';
+}
 function updateHud(){
   const doneW=Math.max(0,activeIdx+1), left=Math.max(0,words.length-doneW);
   $('#hEl').textContent=clock(elapsed);
@@ -927,6 +965,66 @@ function applyZoom(){
 }
 function applyTorch(){ if(!vTrack) return; try{ vTrack.applyConstraints({advanced:[{torch:!!st.torch}]}); }catch(e){} }
 
+/* ============ ÇEKİM MODLARI ============
+   Her mod: çerçeve oranı + önerilen tempo + süre sınırı + platformun arayüzüyle
+   kapanan alanlar. Alan yüzdeleri yaklaşıktır (uygulamalar sürümle değişiyor). */
+const MODES={
+  free:  {n:{tr:'Serbest',en:'Free'}, asp:'none', wpm:null, fs:null, limit:0, safe:null},
+  reels: {n:{tr:'Instagram Reels',en:'Instagram Reels'}, asp:'9:16', wpm:165, fs:44, limit:90,
+          safe:{top:6,bottom:22,right:16}},
+  story: {n:{tr:'Instagram Story',en:'Instagram Story'}, asp:'9:16', wpm:160, fs:44, limit:60,
+          safe:{top:12,bottom:14,right:0}},
+  post:  {n:{tr:'Instagram Gönderi',en:'Instagram Post'}, asp:'4:5', wpm:150, fs:46, limit:0, safe:null},
+  shorts:{n:{tr:'YouTube Shorts',en:'YouTube Shorts'}, asp:'9:16', wpm:170, fs:44, limit:180,
+          safe:{top:8,bottom:18,right:15}},
+  video: {n:{tr:'YouTube Video',en:'YouTube Video'}, asp:'16:9', wpm:145, fs:40, limit:0, safe:null}
+};
+function curMode(){ return MODES[st.mode]||MODES.free; }
+function applyMode(key,fromUser){
+  st.mode=key; const M=curMode();
+  if(fromUser){
+    if(M.asp) st.asp=M.asp;
+    if(M.wpm) st.wpm=M.wpm;
+    if(M.fs)  st.fs=M.fs;
+    st.target = M.limit || 0;
+    st.safe = !!M.safe;
+    if(M.limit) st.quality='1080';
+  }
+  apply(); drawAspect(); drawSafe(); save();
+}
+function modeLine(){
+  const M=curMode();
+  if(st.mode==='free') return L==='tr'
+    ? 'Kendi ayarların. Bir platform seçersen çerçeve, tempo ve süre sınırı birlikte ayarlanır.'
+    : 'Your own settings. Pick a platform to set frame, pace and time limit together.';
+  const secs=countWords($('#text').value||active().text||'')/st.wpm*60;
+  const fit = M.limit ? (secs<=M.limit
+      ? (L==='tr'?' · metnin ~'+clock(secs)+' → sınıra uygun ✓':' · script ~'+clock(secs)+' → fits ✓')
+      : (L==='tr'?' · metnin ~'+clock(secs)+' → '+Math.ceil(secs-M.limit)+' sn FAZLA ✗':' · script ~'+clock(secs)+' → '+Math.ceil(secs-M.limit)+'s OVER ✗'))
+    : (L==='tr'?' · metnin ~'+clock(secs):' · script ~'+clock(secs));
+  return M.asp+' · '+st.wpm+' wpm'+(M.limit?(L==='tr'?' · sınır '+clock(M.limit):' · limit '+clock(M.limit)):'')+fit;
+}
+function drawSafe(){
+  body.classList.toggle('safeOn', !!st.safe && !!curMode().safe);
+  const S=curMode().safe; const wrap=$('#safeWrap');
+  if(!S || !st.safe){ wrap.innerHTML=''; return; }
+  // güvenli alan kutusu, çerçeve kılavuzuyla aynı boyutta olmalı
+  let w=window.innerWidth, h=window.innerHeight;
+  const asp=curMode().asp;
+  if(asp && asp!=='none'){
+    const [aw,ah]=asp.split(':').map(Number), t=aw/ah;
+    w=window.innerWidth; h=w/t;
+    if(h>window.innerHeight){ h=window.innerHeight; w=h*t; }
+  }
+  wrap.style.width=Math.round(w)+'px'; wrap.style.height=Math.round(h)+'px';
+  const lab=L==='tr'?'uygulama arayüzü':'app UI';
+  let html='';
+  if(S.top)    html+='<div style="left:0;right:0;top:0;height:'+S.top+'%"><b>'+lab+'</b></div>';
+  if(S.bottom) html+='<div style="left:0;right:0;bottom:0;height:'+S.bottom+'%"><b>'+lab+'</b></div>';
+  if(S.right)  html+='<div style="right:0;width:'+S.right+'%;top:'+(S.top+20)+'%;bottom:'+(S.bottom+4)+'%"></div>';
+  wrap.innerHTML=html;
+}
+
 /* ============ ÇERÇEVE KILAVUZU ============ */
 function drawAspect(){
   const on=st.asp&&st.asp!=='none';
@@ -976,7 +1074,7 @@ function doStartRec(){
     lastBlob=new Blob(chunks,{type:(rec.mimeType||'video/mp4').split(';')[0]});
     autoSaveTake().then(()=>showResult(lastBlob));
   };
-  rec.start(1000); recT=performance.now();
+  rec.start(1000); recT=performance.now(); overWarned=false; showRecTime();
   $('#recBtn').classList.add('rec'); $('#recDot').classList.add('on');
   if(st.hideUI) body.classList.add('hideUI');
   if(!running) start();
@@ -1317,7 +1415,10 @@ function apply(){
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
+  $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===st.mode));
   $$('.sw').forEach(s=>s.classList.toggle('on',!!st[s.dataset.t]));
+  $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
+  $('#modeHint').textContent=modeLine();
   updateHud();
   requestAnimationFrame(()=>{ measure(); if(!running) setPos(pos); });
 }
@@ -1469,7 +1570,9 @@ $$('#bgSeg button').forEach(b=>b.onclick=()=>{ st.bg=b.dataset.b; apply(); save(
 $$('#fontSeg button').forEach(b=>b.onclick=()=>{ st.font=b.dataset.f; apply(); save(); requestAnimationFrame(measure); });
 $$('#alignSeg button').forEach(b=>b.onclick=()=>{ st.align=b.dataset.a; apply(); save(); });
 $$('#qSeg button').forEach(b=>b.onclick=async()=>{ st.quality=b.dataset.q; apply(); save(); if(stream) await openCam(); });
-$$('#aspSeg button').forEach(b=>b.onclick=()=>{ st.asp=b.dataset.asp; apply(); save(); drawAspect(); });
+$$('#aspSeg button').forEach(b=>b.onclick=()=>{ st.asp=b.dataset.asp; apply(); save(); drawAspect(); drawSafe(); });
+$$('#modeSeg button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true);
+  toast('🎯 '+(curMode().n[L]||curMode().n.tr)); });
 $$('#vlSeg button').forEach(b=>b.onclick=()=>{ st.voiceLang=b.dataset.vl; apply(); save(); });
 $('#reopenCam').onclick=()=>openCam();
 
@@ -1524,8 +1627,8 @@ $('#keepBtn').onclick=()=>{ toast(m('takeKept')); closeResult(); };
 $('#redoBtn').onclick=async()=>{ if(curTakeId){ await dbDel(curTakeId); curTakeId=null; }
   lastBlob=null; toast(m('deleted')); closeResult(); };
 
-window.addEventListener('resize',()=>requestAnimationFrame(()=>{ measure(); drawAspect(); setPos(pos); }));
-window.addEventListener('orientationchange',()=>setTimeout(()=>{ measure(); drawAspect(); setPos(pos); },320));
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{ measure(); drawAspect(); drawSafe(); setPos(pos); }));
+window.addEventListener('orientationchange',()=>setTimeout(()=>{ measure(); drawAspect(); drawSafe(); setPos(pos); },320));
 
 /* paylaşımdan gelen metin (PWA share target) */
 function fromShare(){
@@ -1547,7 +1650,7 @@ function fromShortcut(){
 }
 
 /* ============ BAŞLAT ============ */
-load(); fromShare(); applyLang(); apply(); fillEditor(); renderScripts(); buildContent(); fromShortcut();
+load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
 
 /* PWA */
