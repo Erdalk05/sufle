@@ -1,5 +1,5 @@
 /* Sufle — çevrimdışı çalışması için service worker */
-const CACHE = 'sufle-v2';
+const CACHE = 'sufle-v3';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './icon-180.png', './icon-192.png', './icon-512.png'
@@ -16,10 +16,17 @@ self.addEventListener('activate', e => {
   );
 });
 
+self.addEventListener('message', e => {
+  if (e.data === 'skipWaiting') self.skipWaiting();
+});
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  // gezinme istekleri: önce ağ, olmazsa önbellekten index
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+
+  // gezinme (ve paylaşımdan gelen ?text=... istekleri): önce ağ, olmazsa önbellekten index
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).catch(() => caches.match('./index.html')));
     return;
