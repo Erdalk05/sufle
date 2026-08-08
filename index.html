@@ -537,8 +537,12 @@
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
   <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
   <div class="hint" data-i18n="markHint"># başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) iki saniye bekle</div>
-  <div class="sheetbtns"><button class="cancel" id="checkBtn" data-i18n="checkBtn">🔍 Konuşulabilirlik denetimi</button></div>
+  <div class="sheetbtns">
+    <button class="cancel" id="checkBtn" data-i18n="checkBtn">🔍 Konuşulabilirlik denetimi</button>
+    <button class="cancel" id="diffBtn" data-i18n="diffBtn">🗺 Zorlanma haritası</button>
+  </div>
   <div id="checkOut"></div>
+  <div id="diffOut"></div>
   <div class="sheetbtns">
     <button class="danger" id="delScript" data-i18n="delete">🗑 Sil</button>
     <button class="save" id="saveScript" data-i18n="apply">✓ Uygula</button>
@@ -616,7 +620,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -647,7 +651,7 @@ const I18N={
   capHint:'Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.',
   tgBionic:'⚡ Biyonik okuma (kelime başları kalın)',
   tgSection:'🎬 Bölüm sonunda dur (bölüm bölüm çek)',
-  secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'🔍 Konuşulabilirlik denetimi',
+  secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'🔍 Konuşulabilirlik denetimi',diffBtn:'🗺 Zorlanma haritası',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
@@ -696,7 +700,7 @@ const I18N={
   capHint:'Captions come from the script, not speech recognition — spelling is always right. Timing is when each word crossed the reading line; shift it here if they appear early or late.',
   tgBionic:'⚡ Bionic reading (bold word starts)',
   tgSection:'🎬 Stop at section end (shoot section by section)',
-  secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'🔍 Speakability check',
+  secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'🔍 Speakability check',diffBtn:'🗺 Struggle map',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
@@ -999,7 +1003,8 @@ function start(){
   requestWake();
   raf=requestAnimationFrame(tick);
 }
-function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf);
+function stop(why){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf);
+  if(why==='user') markDiff('pause',activeIdx);      // elle duraklattığın yer = zorlanma sinyali
   measureTempo(); rememberPos(); }
 /* kaldığın yeri senaryoya yaz */
 function rememberPos(){ const s=active(); if(s){ s.pos=Math.round(pos); save(); } }
@@ -1010,7 +1015,7 @@ function reset(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn
   if(voiceOn) syncVoicePtr(); }
 function toggle(){
   if(counting){ cancelCountdown(); return; }   // sayarken ikinci basış = iptal
-  if(running){ stop(); return; }
+  if(running){ stop('user'); return; }
   if(st.count && pos<=0) countdown(start); else start();
 }
 let counting=false, countIv=null;
@@ -1645,6 +1650,60 @@ async function renderTakes(){
   });
 }
 
+/* ============ ZORLANMA HARİTASI ============
+   Sabit hızda akan sufleden "zorlandı" çıkarmak sahte olur: geçiş anları kaydırmanın
+   özelliği, okuyanın değil. Gerçek sinyaller şunlar:
+   · sesle takipte kendi temponun düştüğü yerler (konum sesi izlediği için gerçek)
+   · geri sardığın yerler (tekledin)
+   · duraklattığın yerler
+   Hepsi senaryoya birikiyor, provalar üst üste toplanıyor. */
+function diffMap(){ const s=active(); if(!s.diff) s.diff={}; return s.diff; }
+function markDiff(kind,idx){
+  if(idx==null||idx<0||idx>=words.length) return;
+  const d=diffMap(), k=String(idx);
+  if(!d[k]) d[k]={s:0,b:0,p:0};
+  if(kind==='slow') d[k].s++; else if(kind==='back') d[k].b++; else d[k].p++;
+  save();
+}
+function diffReport(){
+  const d=diffMap(), byLine={};
+  Object.keys(d).forEach(k=>{
+    const i=+k, ln=wordLine[i]; if(ln==null||ln<0) return;
+    if(!byLine[ln]) byLine[ln]={ln,s:0,b:0,p:0,idx:i};
+    byLine[ln].s+=d[k].s; byLine[ln].b+=d[k].b; byLine[ln].p+=d[k].p;
+  });
+  const lns=[...scroller.querySelectorAll('.ln')];
+  return Object.values(byLine).map(r=>{
+    r.total=r.s*2+r.b*2+r.p;
+    r.text=(lns[r.ln]?lns[r.ln].textContent:'').trim().slice(0,64);
+    return r;
+  }).filter(r=>r.total>0).sort((a,b)=>b.total-a.total);
+}
+function renderDiff(){
+  const box=$('#diffOut'); if(!box) return;
+  const rows=diffReport();
+  if(!rows.length){
+    box.innerHTML='<div class="empty">'+(L==='tr'
+      ? 'Henüz veri yok. Bir-iki prova yap: geri sardığın, duraklattığın yerler ve 🎤 sesle takipte yavaşladığın kelimeler buraya birikir.'
+      : 'No data yet. Do a couple of rehearsals: rewinds, pauses and words you slow down on in 🎤 voice mode collect here.')+'</div>';
+    return;
+  }
+  let html='';
+  rows.slice(0,6).forEach((r,n)=>{
+    const parts=[];
+    if(r.s) parts.push((L==='tr'?'yavaşladın ×':'slowed ×')+r.s);
+    if(r.b) parts.push((L==='tr'?'geri sardın ×':'rewound ×')+r.b);
+    if(r.p) parts.push((L==='tr'?'duraklattın ×':'paused ×')+r.p);
+    const tip = r.s>=2 ? (L==='tr'?' → cümleyi kısalt ya da zor kelimeyi değiştir':' → shorten it or swap the hard word')
+              : (r.b>=2 ? (L==='tr'?' → burada tekliyorsun, yeniden yaz':' → you keep stumbling here, rewrite it') : '');
+    html+='<div class="listitem"><div class="meta"><div class="t">'+(n+1)+'. “'+esc(r.text)+'…”</div>'+
+          '<div class="s">'+esc(parts.join(' · ')+tip)+'</div></div></div>';
+  });
+  html+='<div class="sheetbtns"><button class="cancel" id="diffClear">'+(L==='tr'?'↺ haritayı sıfırla':'↺ clear map')+'</button></div>';
+  box.innerHTML=html;
+  $('#diffClear').onclick=()=>{ active().diff={}; save(); renderDiff(); };
+}
+
 /* ============ KONUŞULABİLİRLİK DENETİMİ ============
    Yapay zekâ yok, tamamen yerel ve belirlenimci. Amaç: metni okumadan önce
    "prompter sesi" üreten yapıları göstermek. */
@@ -1796,7 +1855,7 @@ function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').valu
 
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
-let srIdx=-1, srSeen='';
+let srIdx=-1, srSeen='', vPrev={i:-1,t:0};
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
   .replace(/[^\p{L}\p{N}]/gu,'')
@@ -1806,7 +1865,7 @@ function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ toast(m('voiceNo')); return; }
   if(running) stop();
-  measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0; vLast=performance.now();
+  measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0; vLast=performance.now(); vPrev={i:-1,t:0};
   vptr=0; syncVoicePtr();
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
   srIdx=-1; srSeen='';
@@ -1904,7 +1963,13 @@ function matchVoice(spoken){
   if(bestK<0 || best<2.6) return;                 // en az iki kelime tutsun
   if(bestK-vptr>MAX_JUMP) return;                 // makul olmayan sıçramayı yut
   vptr=bestK+1;
-  vTarget=Math.max(0,wordTops[normWords[bestK].i]-eyeOff());
+  const wi=normWords[bestK].i, tnow=performance.now();
+  if(vPrev.i>=0 && wi>vPrev.i){
+    const dts=(tnow-vPrev.t)/1000, dw=wi-vPrev.i;
+    if(dts>0.35 && dw<=6 && (dw/dts*60) < st.wpm*0.6) markDiff('slow',wi);
+  }
+  vPrev={i:wi,t:tnow};
+  vTarget=Math.max(0,wordTops[wi]-eyeOff());
 }
 /* Yumuşatma: kare hızından bağımsız + hız tavanı → ani ışınlanma yerine kayarak gider */
 let vLast=0;
@@ -2087,7 +2152,10 @@ stage.addEventListener('pointermove',e=>{
 function endDrag(){
   if(!dragging) return; dragging=false;
   $('#speedRail').classList.remove('on');
-  if(moved && dragMode==='scrub' && voiceOn) syncVoicePtr();   // takip yeni konumdan devam etsin
+  if(moved && dragMode==='scrub'){
+    if(pos < startPos - st.fs*(st.lh/100)) markDiff('back',activeIdx);   // bir satırdan fazla geri sardın
+    if(voiceOn) syncVoicePtr();                                          // takip yeni konumdan devam etsin
+  }
   if(!moved){
     const now=Date.now();
     if(now-lastTap<320){ lastTap=0; setLock(!body.classList.contains('locked')); return; }
@@ -2278,7 +2346,8 @@ $('#delScript').onclick=()=>{
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
   toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
-$('#checkBtn').onclick=renderCheck;
+$('#checkBtn').onclick=()=>{ $('#diffOut').innerHTML=''; renderCheck(); };
+$('#diffBtn').onclick=()=>{ $('#checkOut').innerHTML=''; renderDiff(); };
 $('#fileScript').onclick=()=>$('#txtFile').click();
 $('#txtFile').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
