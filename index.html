@@ -458,7 +458,7 @@
     </div>
 
     <div class="row"><label data-i18n="scrim">Kamera üstü karartma (okunurluk)</label><span class="v" id="vScrim">35</span></div>
-    <input type="range" id="scrim" min="0" max="85" value="35">
+    <input type="range" id="scrimSl" min="0" max="85" value="35">
 
     <div class="tog"><span data-i18n="tgMirror">🪞 Yazıyı aynala (cam rig / beam splitter)</span><div class="sw" data-t="mirrorText"></div></div>
     <div class="tog"><span data-i18n="tgFlip">🔃 Yazıyı dikey çevir</span><div class="sw" data-t="flipText"></div></div>
@@ -713,13 +713,13 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.1';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.2';
 
 /* ============ i18n ============ */
 const I18N={
  tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'🔒 kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',settings:'Ayarlar',
+  startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'📲 Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   speedHint:'Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.',eyeLine:'👁 Okuma çizgisi konumu (kameraya yaklaştır)',
   fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'🎯 Okuma çizgisi',tgDim:'🌗 Odak karartma',
@@ -775,7 +775,7 @@ const I18N={
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',settings:'Settings',
+  startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   speedHint:'Natural speech is 120–160 WPM. Estimated duration below.',eyeLine:'👁 Reading line position (closer to lens)',
   fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'🎯 Reading line',tgDim:'🌗 Focus dimming',
@@ -844,6 +844,11 @@ const MSG={
   recResumed:'⏺ Kayıt devam ediyor',pauseNo:'Bu cihazda kayıt duraklatılamıyor',
   resetSure:'Emin misin? Tekrar bas',resetDone:'Ayarlar varsayılana döndü',
   trimNo:'Bu cihaz uygulama içinde kesmeyi desteklemiyor — videoyu Fotoğraflar\'a kaydedip oradan kırp (kalite kaybı da olmaz)',
+  notMp4:'Video MP4 değil — Fotoğraflar kabul etmeyebilir',
+  shareFail:'Paylaşım açılamadı',
+  noFileShare:'Bu tarayıcı dosya paylaşamıyor — Safari\'de aç',
+  noShare:'Bu tarayıcıda paylaşım yok — Safari\'de aç',
+  savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',
   trimInPhotos:'✂️ Kırpma → Fotoğraflar',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
@@ -862,6 +867,11 @@ const MSG={
   recResumed:'⏺ Recording again',pauseNo:'This device cannot pause recording',
   resetSure:'Sure? Press again',resetDone:'Settings reset to defaults',
   trimNo:'This device cannot trim in-app — save to Photos and trim there (lossless too)',
+  notMp4:'Not MP4 — Photos may refuse it',
+  shareFail:'Could not open the share sheet',
+  noFileShare:'This browser cannot share files — open in Safari',
+  noShare:'No sharing in this browser — open in Safari',
+  savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',
   trimInPhotos:'✂️ Trim → Photos',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -2488,7 +2498,7 @@ function apply(){
   $('#dist').value=st.dist; $('#vDist').textContent=st.dist;
   $('#weight').value=st.weight; $('#vW').textContent=st.weight;
   $('#ls').value=st.ls; $('#vLs').textContent=st.ls;
-  $('#scrim').value=st.scrim; $('#vScrim').textContent=st.scrim;
+  $('#scrimSl').value=st.scrim; $('#vScrim').textContent=st.scrim;
   $('#target').value=st.target; $('#vTarget').textContent=st.target?clock(st.target):(L==='tr'?'kapalı':'off');
   $('#capOffset').value=Math.round((st.capOffset||0)*10); $('#vCapOff').textContent=(st.capOffset||0).toFixed(1);
   $('#keySim').value=st.keySim; $('#vKeySim').textContent=st.keySim;
@@ -2712,7 +2722,7 @@ bind('#eye','eyePos',()=>requestAnimationFrame(measure));
 bind('#dist','dist');
 $$('#bandSeg button').forEach(b=>b.onclick=()=>{ st.band=+b.dataset.band; apply(); save(); requestAnimationFrame(measure); });
 $('#eyeRecipe').onclick=applyEyeRecipe;
-bind('#weight','weight'); bind('#ls','ls'); bind('#scrim','scrim'); bind('#target','target');
+bind('#weight','weight'); bind('#ls','ls'); bind('#scrimSl','scrim'); bind('#target','target');
 $('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
 $('#capBtn').onclick=()=>shareCaptions('srt');
 $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
