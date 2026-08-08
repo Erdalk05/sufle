@@ -105,8 +105,9 @@
   #count.on{display:flex}
 
   /* HUD */
-  #hud{position:absolute;left:12px;top:max(10px,env(safe-area-inset-top));z-index:7;display:flex;gap:6px;
-    font-size:11px;font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:60%}
+  /* rozetler altta — üstte "📷 buraya bak" ve kayıt noktasıyla çakışıyordu */
+  #hud{position:absolute;left:12px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:7;display:flex;gap:6px;
+    font-size:11px;font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
   #hud span{background:rgba(0,0,0,.45);padding:4px 9px;border-radius:20px;backdrop-filter:blur(6px)}
   #hud .warn{color:#ffb300}
   body.hideUI #hud,body.hideUI #bar,body.hideUI #progress{opacity:0;pointer-events:none}
@@ -157,6 +158,9 @@
   #langSwitch button.on{background:var(--accent);color:var(--accent-d);border-color:transparent}
 
   /* ===== SHEET ===== */
+  #backdrop{position:absolute;inset:0;z-index:29;background:rgba(0,0,0,.45);
+    opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+  body.sheeting #backdrop{opacity:1;pointer-events:auto}
   .sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--sheetbg);
     border-radius:22px 22px 0 0;padding:6px 18px calc(20px + env(safe-area-inset-bottom));
     transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
@@ -247,6 +251,7 @@
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · sağ kenar = hız</div>
 </div>
 
+<div id="backdrop"></div>
 <div id="lockOverlay"><div id="lockPill" data-i18n="lockedPill">🔒 kilitli — iki kez dokun</div></div>
 
 <!-- ALT KONTROL -->
@@ -501,7 +506,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.2';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.3';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1101,9 +1106,35 @@ function renderMap(){
 
 /* ============ SHEET YÖNETİMİ ============ */
 const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet'];
-function openSheet(id){ closeSheets(); $(id).classList.add('open'); }
-function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); }
+function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
+function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
+/* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */
+function dismissSheets(){
+  if($('#scriptsSheet').classList.contains('open')){ pullEditor(); buildContent(); }
+  closeSheets();
+}
+$('#backdrop').addEventListener('pointerdown',e=>{ e.preventDefault(); dismissSheets(); });
+/* tutamaktan/başlıktan aşağı sürükleyerek kapat (içerik kaydırmasıyla karışmasın diye
+   yalnız bu iki alan ve yalnız sayfa en tepedeyken) */
+SHEETS.forEach(sel=>{
+  const sh=$(sel);
+  [sh.querySelector('.grab'), sh.querySelector('h2')].forEach(zone=>{
+    if(!zone) return;
+    let y0=null;
+    zone.addEventListener('pointerdown',e=>{
+      if(e.target.closest('button,input,textarea')) return;
+      y0 = (sh.scrollTop<=2) ? e.clientY : null;
+    },{passive:true});
+    zone.addEventListener('pointermove',e=>{
+      if(y0===null) return;
+      if(e.clientY-y0>60){ y0=null; dismissSheets(); }
+    },{passive:true});
+    const clear=()=>{ y0=null; };
+    zone.addEventListener('pointerup',clear,{passive:true});
+    zone.addEventListener('pointercancel',clear,{passive:true});
+  });
+});
 
 /* ============ AYARLARI UYGULA ============ */
 function apply(){
