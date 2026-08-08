@@ -202,6 +202,8 @@
   #intro.hidden{display:none}
   #intro h1{font-size:30px;font-weight:800;letter-spacing:-.5px}#intro h1 b{color:var(--accent)}
   #intro p{color:var(--muted);font-size:14px;line-height:1.6;max-width:320px}
+  #verChip{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.08em;
+    background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);padding:4px 12px;border-radius:20px;margin-top:-12px}
   .big{background:var(--accent);color:var(--accent-d);border:none;border-radius:18px;font-size:18px;font-weight:800;
     padding:18px 28px;display:flex;align-items:center;gap:10px}
   .ghostbig{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);
@@ -343,6 +345,7 @@
 <div id="intro">
   <div id="langSwitch"><button data-lang="tr">TR</button><button data-lang="en">EN</button></div>
   <h1>Sufle <b>·</b> Pro</h1>
+  <div id="verChip">v3.9</div>
   <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
   <button class="big" id="startCam">📷 <span data-i18n="startCam">Kamerayı Aç &amp; Başla</span></button>
   <button class="ghostbig" id="startNoCam" data-i18n="startNoCam">Kamerasız sadece sufle</button>
@@ -352,7 +355,7 @@
 <!-- AYARLAR -->
 <div class="sheet" id="sheet">
   <div class="grab"></div>
-  <h2><span data-i18n="settings">Ayarlar</span><button class="iconbtn" id="sheetX">✕</button></h2>
+  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:11px;color:#6b7075;font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX">✕</button></h2>
   <div class="tabs">
     <button data-tab="read" class="on" data-i18n="tabRead">Okuma</button>
     <button data-tab="look" data-i18n="tabLook">Görünüm</button>
@@ -665,13 +668,28 @@
 <div id="result">
   <h2>🎬 <span data-i18n="takeReady">Çekim hazır</span> <span id="rSize"></span></h2>
   <video id="resultVid" controls playsinline></video>
+  <div id="trimBox" class="hidden">
+    <div class="row"><label data-i18n="trimStart">✂️ Baştan kes</label><span class="v" id="vTrimA">0.0 sn</span></div>
+    <input type="range" id="trimA" min="0" max="1000" value="0">
+    <div class="row"><label data-i18n="trimEnd">✂️ Sondan kes</label><span class="v" id="vTrimB">—</span></div>
+    <input type="range" id="trimB" min="0" max="1000" value="1000">
+    <div class="hint" id="trimInfo"></div>
+    <div class="sheetbtns">
+      <button class="cancel" id="trimPrev" data-i18n="trimPrev">▶︎ Seçimi oynat</button>
+      <button class="save" id="trimGo" data-i18n="trimGo">✂️ Kes ve uygula</button>
+    </div>
+  </div>
   <div class="sheetbtns">
     <button class="danger" id="redoBtn" data-i18n="deleteRedo">🗑 Sil</button>
+    <button class="cancel" id="editBtn" data-i18n="editBtn">✂️ Düzenle</button>
     <button class="cancel" id="capBtn">💬 .srt</button>
-    <button class="cancel" id="keepBtn" data-i18n="keep">Sakla</button>
-    <button class="save" id="saveBtn" data-i18n="saveShare">⬇︎ Kaydet / Paylaş</button>
+  </div>
+  <div class="sheetbtns">
+    <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
+    <button class="save" id="saveBtn" data-i18n="saveShare">📥 Fotoğraflara Kaydet</button>
   </div>
   <div class="hint" id="capInfo" style="text-align:center"></div>
+  <div class="hint" style="text-align:center" data-i18n="saveHint">Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.</div>
   <div class="hint" style="text-align:center" data-i18n="resultHint">Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar'a ekleyebilirsin.</div>
 </div>
 
@@ -691,7 +709,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -741,7 +759,10 @@ const I18N={
   title:'Başlık',text:'📝 Metin',
   markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) iki saniye bekle',delete:'🗑 Sil',apply:'✓ Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
-  takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Sakla',saveShare:'⬇︎ Kaydet / Paylaş',
+  takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Kapat',saveShare:'📥 Fotoğraflara Kaydet',
+  editBtn:'✂️ Düzenle',trimStart:'✂️ Baştan kes',trimEnd:'✂️ Sondan kes',
+  trimPrev:'▶︎ Seçimi oynat',trimGo:'✂️ Kes ve uygula',
+  saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
   resultHint:'Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar\'a ekleyebilirsin.',
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
@@ -794,7 +815,10 @@ const I18N={
   title:'Title',text:'📝 Script',
   markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait 2s',delete:'🗑 Delete',apply:'✓ Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
-  takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Keep',saveShare:'⬇︎ Save / Share',
+  takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Close',saveShare:'📥 Save to Photos',
+  editBtn:'✂️ Edit',trimStart:'✂️ Trim start',trimEnd:'✂️ Trim end',
+  trimPrev:'▶︎ Play selection',trimGo:'✂️ Cut and apply',
+  saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
   resultHint:'Stored on device — use "Save / Share" to add it to Photos.',
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
@@ -815,6 +839,8 @@ const MSG={
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
   recResumed:'⏺ Kayıt devam ediyor',pauseNo:'Bu cihazda kayıt duraklatılamıyor',
   resetSure:'Emin misin? Tekrar bas',resetDone:'Ayarlar varsayılana döndü',
+  trimNo:'Bu cihaz uygulama içinde kesmeyi desteklemiyor — videoyu Fotoğraflar\'a kaydedip oradan kırp (kalite kaybı da olmaz)',
+  trimInPhotos:'✂️ Kırpma → Fotoğraflar',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
@@ -831,6 +857,8 @@ const MSG={
   recOn:'RECORDING',recPaused:'PAUSED',recPausedInfo:'⏸ Paused — press ⏺ to continue the same video',
   recResumed:'⏺ Recording again',pauseNo:'This device cannot pause recording',
   resetSure:'Sure? Press again',resetDone:'Settings reset to defaults',
+  trimNo:'This device cannot trim in-app — save to Photos and trim there (lossless too)',
+  trimInPhotos:'✂️ Trim → Photos',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
@@ -863,6 +891,8 @@ function applyLang(){
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
   $('#verLine').textContent='Sufle v'+VER;
+  if($('#verChip')) $('#verChip').textContent='v'+VER;
+  if($('#verTop')) $('#verTop').textContent='v'+VER;
   renderScripts(); updateStats(); updateHud(); renderMap();
 }
 
@@ -1681,6 +1711,9 @@ function showResult(blob){
                : n+' caption lines ready — generated from the script, no typos')
     : (L==='tr'? 'Altyazı yok (sufle akmadan çekilmiş)':'No captions (prompter did not run)');
   $('#capBtn').style.display = n?'':'none';
+  $('#trimBox').classList.add('hidden');
+  // iOS Safari video akışı vermiyor: kesme orada çalışmaz. Yanlış beklenti kurma, doğru yolu göster.
+  $('#editBtn').textContent = canTrim() ? t('editBtn') : m('trimInPhotos');
   $('#result').classList.add('open');
   try{ v.play().catch(()=>{}); }catch(e){}
 }
@@ -1693,6 +1726,67 @@ function fileName(){
   const d=new Date(), p=n=>String(n).padStart(2,'0');
   return 'sufle_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
 }
+/* ---- KIRPMA ----
+   Tarayıcıda kesme, videoyu seçilen aralıkta oynatıp yeniden kaydetmekle olur
+   (WebCodecs'siz başka yolu yok). Bu yüzden kırpma, klip süresi kadar sürer ve
+   yeniden sıkıştırma yapar. Cihaz video akışı vermiyorsa dürüstçe söylüyoruz. */
+let trimA=0, trimB=0, trimming=false;
+function canTrim(){ const v=$('#resultVid'); return !!(v && (v.captureStream||v.mozCaptureStream)); }
+function trimDur(){ const v=$('#resultVid'); return (v.duration&&isFinite(v.duration))?v.duration:(lastDur||0); }
+function trimUpdate(){
+  const d=trimDur();
+  trimA=Math.min(+$('#trimA').value/1000*d, d);
+  trimB=Math.max(+$('#trimB').value/1000*d, trimA+0.3);
+  $('#vTrimA').textContent=trimA.toFixed(1)+' sn';
+  $('#vTrimB').textContent=trimB.toFixed(1)+' sn';
+  const sel=Math.max(0,trimB-trimA);
+  $('#trimInfo').textContent = (L==='tr'
+    ? 'Seçilen: '+sel.toFixed(1)+' sn (toplam '+d.toFixed(1)+' sn) · kesme işlemi yaklaşık '+Math.ceil(sel)+' sn sürer'
+    : 'Selected: '+sel.toFixed(1)+'s of '+d.toFixed(1)+'s · cutting takes about '+Math.ceil(sel)+'s');
+}
+function openTrim(){
+  if(!canTrim()){ toast(m('trimNo')); return; }
+  const d=trimDur();
+  if(!d){ toast(m('trimNo')); return; }
+  $('#trimA').value=0; $('#trimB').value=1000; trimUpdate();
+  $('#trimBox').classList.toggle('hidden');
+}
+async function doTrim(){
+  if(trimming) return;
+  const v=$('#resultVid'), d=trimDur();
+  if(!canTrim()||!d) { toast(m('trimNo')); return; }
+  const sel=trimB-trimA;
+  if(sel<0.3){ toast(m('trimShort')); return; }
+  trimming=true; $('#trimGo').textContent=m('trimming');
+  try{
+    const src=(v.captureStream?v.captureStream():v.mozCaptureStream());
+    if(!src||!src.getVideoTracks().length) throw new Error('stream');
+    const mime=pickMime();
+    let r2; try{ r2=new MediaRecorder(src,mime?{mimeType:mime}:{}); }catch(e){ r2=new MediaRecorder(src); }
+    const parts=[]; r2.ondataavailable=e=>{ if(e.data.size) parts.push(e.data); };
+    const done=new Promise(res=>{ r2.onstop=res; });
+    v.pause(); v.currentTime=trimA; v.muted=false;
+    await new Promise(res=>{ const h=()=>{ v.removeEventListener('seeked',h); res(); }; v.addEventListener('seeked',h); setTimeout(res,600); });
+    await v.play().catch(()=>{});
+    r2.start(500);
+    await new Promise(res=>{
+      const iv=setInterval(()=>{ if(v.currentTime>=trimB || v.ended){ clearInterval(iv); res(); } }, 80);
+      setTimeout(()=>{ clearInterval(iv); res(); }, (sel+4)*1000);
+    });
+    v.pause(); try{ r2.stop(); }catch(e){}
+    await done;
+    const nb=new Blob(parts,{type:(r2.mimeType||lastBlob.type||'video/mp4').split(';')[0]});
+    if(nb.size<1000) throw new Error('empty');
+    lastBlob=nb; lastDur=sel;
+    if(curTakeId) await dbDel(curTakeId);
+    await autoSaveTake();
+    $('#trimBox').classList.add('hidden');
+    showResult(lastBlob);
+    toast(m('trimDone'));
+  }catch(e){ toast(m('trimFail')); }
+  trimming=false; $('#trimGo').textContent=t('trimGo');
+}
+
 async function saveRec(){
   if(!lastBlob) return;
   const ext=(lastBlob.type.indexOf('mp4')>=0)?'mp4':'webm';
@@ -2657,6 +2751,12 @@ $('#impFile').onchange=e=>{
 
 // sonuç ekranı
 $('#saveBtn').onclick=()=>saveRec();
+$('#editBtn').onclick=openTrim;
+$('#trimA').oninput=trimUpdate;
+$('#trimB').oninput=trimUpdate;
+$('#trimPrev').onclick=async()=>{ const v=$('#resultVid'); v.currentTime=trimA; await v.play().catch(()=>{});
+  const iv=setInterval(()=>{ if(v.currentTime>=trimB){ clearInterval(iv); v.pause(); } },80); };
+$('#trimGo').onclick=doTrim;
 $('#keepBtn').onclick=()=>{ toast(m('takeKept')); closeResult(); };
 $('#redoBtn').onclick=async()=>{ if(curTakeId){ await dbDel(curTakeId); curTakeId=null; }
   lastBlob=null; toast(m('deleted')); closeResult(); };
