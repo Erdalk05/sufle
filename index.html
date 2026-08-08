@@ -349,6 +349,7 @@
   <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
   <button class="big" id="startCam">📷 <span data-i18n="startCam">Kamerayı Aç &amp; Başla</span></button>
   <button class="ghostbig" id="startNoCam" data-i18n="startNoCam">Kamerasız sadece sufle</button>
+  <button class="ghostbig hidden" id="installBtn" data-i18n="install">📲 Ana ekrana ekle</button>
   <button class="ghostbig" id="helpBtn" data-i18n="help">Nasıl kullanılır?</button>
 </div>
 
@@ -575,6 +576,8 @@
     <input type="file" id="impFile" accept="application/json,.json" class="hidden">
     <div class="sheetbtns"><button class="cancel" id="takesBtn" data-i18n="takes">🎞 Çekimlerim</button></div>
     <div class="sheetbtns"><button class="cancel" id="remoteBtn" data-i18n="remote">🎛 Uzaktan kumanda</button></div>
+    <div class="sheetbtns"><button class="cancel" id="devBtn" data-i18n="devBtn">📱 Cihaz uyumluluğu</button></div>
+    <div id="devOut"></div>
     <div class="sheetbtns"><button class="cancel" id="helpBtn2" data-i18n="help">Nasıl kullanılır?</button></div>
     <div class="sheetbtns"><button class="danger" id="resetAll" data-i18n="resetAll">↺ Ayarları varsayılana döndür</button></div>
     <div class="hint" data-i18n="resetHint">Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.</div>
@@ -710,7 +713,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -755,7 +758,7 @@ const I18N={
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
   voiceLang:'Sesle takip dili',tgLock:'🔒 Kayıtta ekranı kilitle',tgKeepAwake:'☀️ Ekranı uyanık tut',tgHideUI:'🫧 Kayıtta düğmeleri gizle',
   resetAll:'↺ Ayarları varsayılana döndür',resetHint:'Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.',
-  backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
+  devBtn:'📱 Cihaz uyumluluğu',backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
   newScript:'＋ Yeni',paste:'📋 Yapıştır',fromFile:'📄 Dosya',sections:'🔖 Bölümler — dokun, oraya atla',
   title:'Başlık',text:'📝 Metin',
   markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) iki saniye bekle',delete:'🗑 Sil',apply:'✓ Uygula',
@@ -811,7 +814,7 @@ const I18N={
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
   voiceLang:'Voice-follow language',tgLock:'🔒 Lock screen while recording',tgKeepAwake:'☀️ Keep screen awake',tgHideUI:'🫧 Hide buttons while recording',
   resetAll:'↺ Reset settings to defaults',resetHint:'Only settings are reset — your scripts and takes stay.',
-  backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
+  devBtn:'📱 Device compatibility',backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
   newScript:'＋ New',paste:'📋 Paste',fromFile:'📄 File',sections:'🔖 Sections — tap to jump',
   title:'Title',text:'📝 Script',
   markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait 2s',delete:'🗑 Delete',apply:'✓ Apply',
@@ -1623,9 +1626,12 @@ function recElapsed(){ if(!recT) return 0;
 const IS_WK = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
               (/safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent));
 function pickMime(){
+  // MP4 her platformda öncelikli: galeriler, Instagram ve iOS yalnız onu sorunsuz kabul ediyor.
+  // (Eskiden masaüstü/Android'de webm seçiliyordu ve paylaşınca galeri kabul etmiyordu.)
   const list = IS_WK
     ? ['video/mp4','video/webm']
-    : ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/mp4','video/webm'];
+    : ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4',
+       'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
   for(const x of list) if(window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x)) return x;
   return '';
 }
@@ -1661,7 +1667,7 @@ function doStartRec(){
   };
   recSection=(curSec>=0?curSec:sectionAt(pos));
   rec.start(1000); recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
-  body.classList.add('rec'); body.classList.remove('recpaused');
+  body.classList.add('rec'); body.classList.remove('recpaused'); buzz(60);
   $('#recLbl').textContent=m('recOn');
   if(canPauseRec()) $('#pauseBtn').classList.remove('hidden');
   $('#recBtn').classList.add('rec'); $('#recDot').classList.add('on');
@@ -1674,7 +1680,7 @@ function stopRec(){
   recSection=-1;
   if(recPaused){ recPausedMs+=performance.now()-pauseStart; recPaused=false; }
   if(rec&&rec.state!=='inactive') rec.stop();
-  recT=0; body.classList.remove('rec','recpaused');
+  recT=0; buzz([40,60,40]); body.classList.remove('rec','recpaused');
   $('#pauseBtn').classList.add('hidden'); $('#pauseBtn').textContent='⏸';
   $('#recBtn').classList.remove('rec'); $('#recDot').classList.remove('on');
   body.classList.remove('hideUI'); setLock(false,true);
@@ -1933,6 +1939,54 @@ async function renderTakes(){
     d.querySelector('[data-a="del"]').onclick=async()=>{ await dbDel(it.id); renderTakes(); toast(m('deleted')); };
     box.appendChild(d);
   });
+}
+
+/* ============ CİHAZ UYUMLULUĞU ============
+   Dört platformda (iPhone/Android/Mac/Windows) neyin çalıştığı cihazdan cihaza değişiyor.
+   Tahmin yerine ölçüp gösteriyoruz. */
+function platformName(){
+  const u=navigator.userAgent;
+  if(/iphone|ipad|ipod/i.test(u)) return 'iOS · '+(/crios/i.test(u)?'Chrome':(/fxios/i.test(u)?'Firefox':'Safari'));
+  if(/android/i.test(u)) return 'Android · '+(/chrome/i.test(u)?'Chrome':'tarayıcı');
+  if(/mac/i.test(u)) return 'macOS · '+(/chrome/i.test(u)?'Chrome':(/safari/i.test(u)?'Safari':'tarayıcı'));
+  if(/win/i.test(u)) return 'Windows · '+(/edg/i.test(u)?'Edge':(/chrome/i.test(u)?'Chrome':'tarayıcı'));
+  return navigator.platform||'?';
+}
+function canShareFiles(){
+  try{ const f=new File([new Blob(['x'])],'x.mp4',{type:'video/mp4'});
+    return !!(navigator.canShare&&navigator.canShare({files:[f]})); }catch(e){ return false; }
+}
+function canComposite(){
+  try{ const c=document.createElement('canvas');
+    return typeof c.captureStream==='function' && !!c.getContext('webgl'); }catch(e){ return false; }
+}
+function deviceReport(){
+  const MR=window.MediaRecorder, sup=x=>!!(MR&&MR.isTypeSupported&&MR.isTypeSupported(x));
+  return [
+    ['Kamera','Camera', !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia), 'Kamerasız mod kullan'],
+    ['Video kaydı','Video recording', !!MR, 'Bu tarayıcı kayıt yapamaz — Chrome/Safari dene'],
+    ['MP4 kaydı','MP4 recording', sup('video/mp4')||sup('video/mp4;codecs=avc1.42E01E,mp4a.40.2'), 'WebM kaydedilir; galeriye eklemek için dönüştürmen gerekebilir'],
+    ['Dosya paylaşma','File sharing', canShareFiles(), 'Video Dosyalar/İndirilenler klasörüne iner'],
+    ['Kompozit + yeşil ekran','Composite + green screen', canComposite(), 'Kayıt kameranın kendi oranında olur'],
+    ['Uygulama içi kesme','In-app trimming', !!document.createElement('video').captureStream, 'Galeri/Fotoğraflar uygulamasında kırp (kayıpsız)'],
+    ['Sesle takip','Voice follow', !!(window.SpeechRecognition||window.webkitSpeechRecognition), 'Elle ya da kumandayla ilerlet'],
+    ['Ekranı uyanık tutma','Keep screen awake', ('wakeLock' in navigator), 'Ekran kararmasını cihaz ayarından uzat'],
+    ['Eğim ölçümü','Tilt sensor', !!window.DeviceOrientationEvent, 'Eğimi gözle kontrol et'],
+    ['Kayıt duraklatma','Pause recording', canPauseRec(), 'Duraklatma yerine bölüm bölüm çek'],
+    ['Titreşim','Haptics', !!navigator.vibrate, '']
+  ];
+}
+function renderDevice(){
+  const box=$('#devOut'); if(!box) return;
+  const rows=deviceReport();
+  let html='<div class="kv"><span>'+(L==='tr'?'Cihaz':'Device')+'</span><b>'+esc(platformName())+'</b></div>'+
+           '<div class="kv"><span>'+(L==='tr'?'Sürüm':'Version')+'</span><b>v'+VER+'</b></div>';
+  rows.forEach(r=>{
+    const name=(L==='tr'?r[0]:r[1]), ok=r[2];
+    html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+(ok?'var(--accent)':'#ffb300')+'">'+
+      (ok?'✓ ':'✕ ')+esc(name)+'</div>'+(!ok&&r[3]?'<div class="s">'+esc(r[3])+'</div>':'')+'</div></div>';
+  });
+  box.innerHTML=html;
 }
 
 /* ============ ÇEKİME HAZIRLIK KONTROLÜ ============
@@ -2627,6 +2681,7 @@ $('#readyBtn').onclick=e=>{ e.stopPropagation(); openSheet('#ready'); renderRead
 $('#readyX').onclick=closeSheets;
 $('#readyAgain').onclick=renderReady;
 $('#readyGo').onclick=()=>{ closeSheets(); setTimeout(()=>toggleRec(),260); };
+$('#devBtn').onclick=renderDevice;
 $('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); };
 $('#remoteX').onclick=()=>{ learning=false; closeSheets(); };
 $('#learnBtn').onclick=()=>{ learning=!learning; learnKey=null;
@@ -2812,6 +2867,18 @@ function fromShortcut(){
 /* ============ BAŞLAT ============ */
 load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
+
+/* Android/Chrome: uygulamayı ana ekrana kurma istemi (iOS'ta bu API yok, düğme gizli kalır) */
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredInstall=e;
+  $('#installBtn').classList.remove('hidden'); });
+$('#installBtn').onclick=async()=>{
+  if(!deferredInstall) return;
+  deferredInstall.prompt();
+  try{ await deferredInstall.userChoice; }catch(e){}
+  deferredInstall=null; $('#installBtn').classList.add('hidden');
+};
+function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){} }
 
 /* PWA */
 if('serviceWorker' in navigator){
