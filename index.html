@@ -432,6 +432,10 @@
 
   <!-- DİĞER -->
   <div class="tab" id="tab-more">
+    <div class="row"><label data-i18n="capOffset">💬 Altyazı kayması (sn)</label><span class="v" id="vCapOff">0.0</span></div>
+    <input type="range" id="capOffset" min="-20" max="20" value="0">
+    <div class="hint" data-i18n="capHint">Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.</div>
+
     <div class="row"><label data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
     <input type="range" id="target" min="0" max="600" step="15" value="0">
     <div class="hint" data-i18n="targetHint">Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.</div>
@@ -537,9 +541,11 @@
   <video id="resultVid" controls playsinline></video>
   <div class="sheetbtns">
     <button class="danger" id="redoBtn" data-i18n="deleteRedo">🗑 Sil</button>
+    <button class="cancel" id="capBtn">💬 .srt</button>
     <button class="cancel" id="keepBtn" data-i18n="keep">Sakla</button>
     <button class="save" id="saveBtn" data-i18n="saveShare">⬇︎ Kaydet / Paylaş</button>
   </div>
+  <div class="hint" id="capInfo" style="text-align:center"></div>
   <div class="hint" style="text-align:center" data-i18n="resultHint">Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar'a ekleyebilirsin.</div>
 </div>
 
@@ -550,7 +556,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.8';
 
 /* ============ i18n ============ */
 const I18N={
@@ -569,6 +575,8 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  capOffset:'💬 Altyazı kayması (sn)',
+  capHint:'Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
@@ -604,6 +612,8 @@ const I18N={
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'🎚 Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  capOffset:'💬 Caption offset (s)',
+  capHint:'Captions come from the script, not speech recognition — spelling is always right. Timing is when each word crossed the reading line; shift it here if they appear early or late.',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
@@ -635,7 +645,8 @@ const MSG={
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
-  audioFallback:'Ham ses açılamadı, normal sese geçildi'},
+  audioFallback:'Ham ses açılamadı, normal sese geçildi',
+  noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
@@ -645,7 +656,8 @@ const MSG={
   emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
-  audioFallback:'Raw audio unavailable, switched to normal audio'}
+  audioFallback:'Raw audio unavailable, switched to normal audio',
+  noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
@@ -684,7 +696,7 @@ const DEF={
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
-  mode:'free', safe:false, band:0, dist:60,
+  mode:'free', safe:false, band:0, dist:60, capOffset:0,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -731,7 +743,11 @@ function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add(
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),2200); }
 
 /* ============ METİN KURULUMU ============ */
-let words=[], wordTops=[], paraEnds=[], maxPos=0, pxPerWord=40;
+let words=[], wordTops=[], paraEnds=[], maxPos=0, pxPerWord=40, wordLine=[];
+/* ---- ALTYAZI: her kelimenin okuma çizgisini geçtiği an (kayıt saniyesi) ----
+   Konuşma tanımaya gerek yok; kelime zaten okunduğu anda çizgiden geçiyor.
+   Sesle takipte de doğru, çünkü konum sesi izliyor. */
+let capTimes=[];
 function esc(s){ return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 function buildContent(){
   const lines=(active().text||'').split(/\r?\n/);
@@ -746,6 +762,9 @@ function buildContent(){
   html+='<span class="pad" id="padBot"></span>';
   scroller.innerHTML=html;
   words=[...scroller.querySelectorAll('.w')];
+  const lns=[...scroller.querySelectorAll('.ln')];
+  wordLine=words.map(w=>lns.indexOf(w.parentElement));
+  capTimes=new Array(words.length).fill(null);
   activeIdx=-1;
   requestAnimationFrame(()=>{ measure(); updateStats(); });
 }
@@ -822,6 +841,11 @@ function highlight(y){
     // okunanı soluklaştır (yalnız değişen aralık)
     if(idx>activeIdx){ for(let i=Math.max(0,activeIdx);i<=idx;i++) if(words[i]) words[i].classList.add('done'); }
     else { for(let i=idx+1;i<=activeIdx;i++) if(words[i]) words[i].classList.remove('done'); }
+    // kayıt sürerken kelimenin çizgiden geçtiği anı damgala (altyazı için)
+    if(recT && idx>=0){
+      const t=(performance.now()-recT)/1000;
+      for(let i=Math.max(0,activeIdx<0?0:activeIdx);i<=idx;i++) if(capTimes[i]==null) capTimes[i]=t;
+    }
     activeIdx=idx;
   }
 }
@@ -1100,7 +1124,7 @@ function startRec(){
   doStartRec();
 }
 function doStartRec(){
-  chunks=[];
+  chunks=[]; capTimes=new Array(words.length).fill(null);
   if(!stream.getAudioTracks().length) toast(m('noMic'));
   const mime=pickMime();
   const base = mime?{mimeType:mime}:{};
@@ -1136,6 +1160,12 @@ function showResult(blob){
   resultUrl=URL.createObjectURL(blob);
   const v=$('#resultVid'); v.src=resultUrl; v.load();
   $('#rSize').textContent='· '+(blob.size/1048576).toFixed(1)+' MB · '+clock(lastDur);
+  const n=buildCues().length;
+  $('#capInfo').textContent = n
+    ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
+               : n+' caption lines ready — generated from the script, no typos')
+    : (L==='tr'? 'Altyazı yok (sufle akmadan çekilmiş)':'No captions (prompter did not run)');
+  $('#capBtn').style.display = n?'':'none';
   $('#result').classList.add('open');
   try{ v.play().catch(()=>{}); }catch(e){}
 }
@@ -1160,6 +1190,68 @@ async function saveRec(){
   setTimeout(()=>URL.revokeObjectURL(u),4000);
 }
 
+/* ============ ALTYAZI ÜRETİMİ (.srt / .vtt) ============
+   Kaynak: kelimelerin okuma çizgisinden geçme anları. Konuşma tanıma yok →
+   kelime yazımı %100 doğru (senaryonun kendisi), senkron da okuma anından geliyor. */
+const CAP_MAXW=7, CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+function sentenceEnd(s){ return /[.!?…:;]["')\]]?$/.test(s); }
+function buildCues(){
+  const off=(st.capOffset||0);
+  const list=[];
+  for(let i=0;i<words.length;i++){
+    if(capTimes[i]==null) continue;
+    list.push({t:Math.max(0,capTimes[i]+off), s:words[i].textContent, ln:wordLine[i], i});
+  }
+  if(!list.length) return [];
+  const cues=[]; let cur=null;
+  for(let k=0;k<list.length;k++){
+    const w=list[k];
+    if(!cur){ cur={start:w.t, words:[w.s], ln:w.ln, chars:w.s.length}; continue; }
+    const dur=w.t-cur.start;
+    const brk = cur.words.length>=CAP_MAXW || cur.chars+1+w.s.length>CAP_MAXCH ||
+                dur>=CAP_MAXSEC || w.ln!==cur.ln || sentenceEnd(cur.words[cur.words.length-1]);
+    if(brk){ cues.push(cur); cur={start:w.t, words:[w.s], ln:w.ln, chars:w.s.length}; }
+    else { cur.words.push(w.s); cur.chars+=1+w.s.length; }
+  }
+  if(cur) cues.push(cur);
+  // bitişler: bir sonraki kuyruğun başlangıcı (küçük boşlukla), sonuncusu +1.4 sn
+  cues.forEach((c,n)=>{
+    const nxt=cues[n+1];
+    c.end = nxt ? Math.max(c.start+0.4, nxt.start-CAP_GAP) : c.start+1.4;
+    if(c.end-c.start>6) c.end=c.start+6;
+    c.text=c.words.join(' ');
+  });
+  return cues;
+}
+function tc(s,sep){ s=Math.max(0,s);
+  const h=Math.floor(s/3600), m=Math.floor(s%3600/60), sec=Math.floor(s%60), ms=Math.round((s-Math.floor(s))*1000);
+  const p=(n,l)=>String(n).padStart(l,'0');
+  return p(h,2)+':'+p(m,2)+':'+p(sec,2)+sep+p(ms,3);
+}
+function srtText(){
+  const cues=buildCues();
+  return cues.map((c,n)=>(n+1)+'\n'+tc(c.start,',')+' --> '+tc(c.end,',')+'\n'+c.text+'\n').join('\n');
+}
+function vttText(){
+  const cues=buildCues();
+  return 'WEBVTT\n\n'+cues.map(c=>tc(c.start,'.')+' --> '+tc(c.end,'.')+'\n'+c.text+'\n').join('\n');
+}
+async function shareCaptions(fmt){
+  const txt = fmt==='vtt' ? vttText() : srtText();
+  const cues=buildCues();
+  if(!cues.length){ toast(m('noCaps')); return; }
+  const name=fileName()+'.'+fmt;
+  const file=new File([txt],name,{type:'text/plain'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title:name}); toast(cues.length+' '+m('capsMade')); return; }catch(e){ if(e.name==='AbortError') return; }
+  }
+  const b=new Blob([txt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
+  const a=document.createElement('a'); a.href=u; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+  toast(cues.length+' '+m('capsMade'));
+}
+
 /* ============ ÇEKİM DEPOSU (IndexedDB) ============ */
 let db=null;
 function openDB(){
@@ -1181,7 +1273,8 @@ async function dbDel(id){ const d=await openDB(); if(!d) return; try{ d.transact
 async function autoSaveTake(){
   if(!lastBlob) return;
   curTakeId=uid();
-  await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,created:Date.now(),title:active().title||''});
+  await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
+    created:Date.now(),title:active().title||'',srt:srtText()});
 }
 async function renderTakes(){
   const list=await dbAll(), box=$('#takeList');
@@ -1191,8 +1284,14 @@ async function renderTakes(){
     const d=document.createElement('div'); d.className='listitem';
     d.innerHTML='<div class="meta"><div class="t">'+esc(it.title||'—')+'</div><div class="s">'+
       new Date(it.created).toLocaleString()+' · '+clock(it.dur||0)+' · '+((it.size||0)/1048576).toFixed(1)+' MB</div></div>'+
-      '<button class="iconbtn" data-a="play">▶︎</button><button class="iconbtn" data-a="share">⬇︎</button><button class="iconbtn" data-a="del">🗑</button>';
+      '<button class="iconbtn" data-a="play">▶︎</button>'+(it.srt?'<button class="iconbtn" data-a="srt">💬</button>':'')+
+      '<button class="iconbtn" data-a="share">⬇︎</button><button class="iconbtn" data-a="del">🗑</button>';
     d.querySelector('[data-a="play"]').onclick=()=>{ lastBlob=it.blob; lastDur=it.dur||0; curTakeId=it.id; closeSheets(); showResult(it.blob); };
+    if(it.srt) d.querySelector('[data-a="srt"]').onclick=()=>{
+      const b=new Blob([it.srt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
+      const a=document.createElement('a'); a.href=u; a.download='altyazi_'+it.id+'.srt';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+    };
     d.querySelector('[data-a="share"]').onclick=()=>{ lastBlob=it.blob; lastDur=it.dur||0; saveRec(); };
     d.querySelector('[data-a="del"]').onclick=async()=>{ await dbDel(it.id); renderTakes(); toast(m('deleted')); };
     box.appendChild(d);
@@ -1462,6 +1561,7 @@ function apply(){
   $('#ls').value=st.ls; $('#vLs').textContent=st.ls;
   $('#scrim').value=st.scrim; $('#vScrim').textContent=st.scrim;
   $('#target').value=st.target; $('#vTarget').textContent=st.target?clock(st.target):(L==='tr'?'kapalı':'off');
+  $('#capOffset').value=Math.round((st.capOffset||0)*10); $('#vCapOff').textContent=(st.capOffset||0).toFixed(1);
   $$('#colorSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c===st.color));
   $$('#bgSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bg));
   $$('#fontSeg button').forEach(b=>b.classList.toggle('on',b.dataset.f===st.font));
@@ -1622,6 +1722,8 @@ bind('#dist','dist');
 $$('#bandSeg button').forEach(b=>b.onclick=()=>{ st.band=+b.dataset.band; apply(); save(); requestAnimationFrame(measure); });
 $('#eyeRecipe').onclick=applyEyeRecipe;
 bind('#weight','weight'); bind('#ls','ls'); bind('#scrim','scrim'); bind('#target','target');
+$('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
+$('#capBtn').onclick=()=>shareCaptions('srt');
 $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
 
 $$('#colorSeg button').forEach(b=>b.onclick=()=>{ st.color=b.dataset.c; apply(); save(); });
