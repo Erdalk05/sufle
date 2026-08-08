@@ -31,6 +31,11 @@
   #cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000}
   body.cam #cam{display:block}
   body.mirrorCam #cam{transform:scaleX(-1)}
+  /* kompozit kayıt tuvali — kaydedilen kare birebir bu */
+  #compCv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    max-width:100%;max-height:100%;display:none;background:#000}
+  body.comp #compCv{display:block}
+  body.comp #cam{display:none}
   #scrim{position:absolute;inset:0;background:#000;opacity:0;z-index:1;pointer-events:none;transition:opacity .2s}
   body.cam #scrim{opacity:var(--scrim)}
 
@@ -247,6 +252,7 @@
 
 <div id="stage">
   <video id="cam" autoplay muted playsinline webkit-playsinline></video>
+  <canvas id="compCv"></canvas>
   <div id="scrim"></div>
   <div id="prompt"><div id="scroller"></div></div>
   <div id="guides">
@@ -421,6 +427,36 @@
     <div class="tog"><span data-i18n="tgBack">🔄 Arka kamera</span><div class="sw" data-t="backCam"></div></div>
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">🔦 Işık (fener)</span><div class="sw" data-t="torch"></div></div>
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
+
+    <div class="row" style="margin-top:20px"><label data-i18n="compTitle">🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)</label></div>
+    <div class="tog"><span data-i18n="tgComp">Kompoziti aç</span><div class="sw" data-t="comp"></div></div>
+    <div class="hint" data-i18n="compHint">Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.</div>
+    <div id="compBox" class="hidden">
+      <div class="tog"><span data-i18n="tgChroma">🟩 Yeşil ekran (chroma key)</span><div class="sw" data-t="chroma"></div></div>
+      <div class="row"><label data-i18n="keyColor">Perde rengi</label></div>
+      <div class="seg" id="keySeg">
+        <button data-k="#00b140" class="on" data-i18n="kGreen">Yeşil</button>
+        <button data-k="#0047bb" data-i18n="kBlue">Mavi</button>
+        <button data-k="#ffffff" data-i18n="cWhite">Beyaz</button>
+      </div>
+      <div class="row"><label data-i18n="keySim">Eşik (ne kadarı silinsin)</label><span class="v" id="vKeySim">30</span></div>
+      <input type="range" id="keySim" min="5" max="80" value="30">
+      <div class="row"><label data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="vKeySmooth">10</span></div>
+      <input type="range" id="keySmooth" min="1" max="40" value="10">
+      <div class="row"><label data-i18n="newBg">Yeni arka plan</label></div>
+      <div class="seg" id="bgcSeg">
+        <button data-b="#101820" class="on" data-i18n="cNavy">Lacivert</button>
+        <button data-b="#000000" data-i18n="cBlack">Siyah</button>
+        <button data-b="#f2efe6" data-i18n="kCream">Krem</button>
+        <button data-b="#0F3D2E" data-i18n="cGreen">Koyu yeşil</button>
+      </div>
+      <div class="sheetbtns">
+        <button class="cancel" id="bgPick" data-i18n="bgPick">🖼 Görsel seç</button>
+        <button class="cancel" id="bgClear" data-i18n="bgClear">✕ Görseli kaldır</button>
+      </div>
+      <input type="file" id="bgFile" accept="image/*" class="hidden">
+      <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
+    </div>
     <div class="row" style="margin-top:18px"><label data-i18n="micLevel">🎙 Mikrofon seviyesi</label><span class="v" id="micTxt">—</span></div>
     <div id="micWrap"><div id="micBar"></div></div>
     <div class="hint" data-i18n="micHint">Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.</div>
@@ -556,7 +592,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -575,6 +611,12 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  compTitle:'🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
+  compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
+  tgChroma:'🟩 Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
+  keySim:'Eşik (ne kadarı silinsin)',keySmooth:'Kenar yumuşaklığı',newBg:'Yeni arka plan',
+  bgPick:'🖼 Görsel seç',bgClear:'✕ Görseli kaldır',
+  chromaHint:'Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).',
   capOffset:'💬 Altyazı kayması (sn)',
   capHint:'Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
@@ -612,6 +654,12 @@ const I18N={
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'🎚 Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  compTitle:'🎛 Composite recording (real crop + green screen)',tgComp:'Enable composite',
+  compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
+  tgChroma:'🟩 Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
+  keySim:'Threshold (how much is removed)',keySmooth:'Edge softness',newBg:'New background',
+  bgPick:'🖼 Pick image',bgClear:'✕ Remove image',
+  chromaHint:'Without a green screen the background cannot be replaced — separating a person from the background needs an AI model, which is far too heavy on a phone. A plain, evenly lit sheet or wall is enough.',
   capOffset:'💬 Caption offset (s)',
   capHint:'Captions come from the script, not speech recognition — spelling is always right. Timing is when each word crossed the reading line; shift it here if they appear early or late.',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
@@ -646,7 +694,10 @@ const MSG={
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
-  noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı'},
+  noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
+  compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
+  bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
+  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
@@ -657,7 +708,10 @@ const MSG={
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   audioFallback:'Raw audio unavailable, switched to normal audio',
-  noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines'}
+  noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
+  compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
+  bgSet:'Background image loaded',bgCleared:'Background image removed',
+  bgTooBig:'Image too large — pick a smaller one'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
@@ -697,6 +751,7 @@ const DEF={
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   mode:'free', safe:false, band:0, dist:60, capOffset:0,
+  comp:false, chroma:false, keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -1092,8 +1147,123 @@ function drawSafe(){
   wrap.innerHTML=html;
 }
 
+/* ============ KOMPOZİT KAYIT (yeşil ekran + gerçek kırpma) ============
+   Ham kamera akışı yerine WebGL tuvalinden kaydediyoruz. Bu bir kerede şunları açar:
+   yeşil ekran (chroma key), arka planı renk/görsel ile değiştirme, seçilen orana
+   GERÇEK kırpma. Varsayılan KAPALI — pil/ısı maliyeti var ve her cihazda desteklenmiyor. */
+const VS_SRC='attribute vec2 p;varying vec2 uv;void main(){uv=vec2((p.x+1.0)/2.0,(1.0-p.y)/2.0);gl_Position=vec4(p,0.0,1.0);}';
+const FS_SRC=
+'precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform sampler2D bg;'+
+'uniform vec2 sc;uniform vec2 of;uniform vec3 key;uniform float sim;uniform float smo;'+
+'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
+'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+
+'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
+'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
+'vec3 b=useBg>0.5?texture2D(bg,uv).rgb:bgc;'+
+'gl_FragColor=vec4(mix(b,c,a),1.0);}';
+let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false};
+function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]; }
+function compSize(){
+  const asp=(curMode().asp&&curMode().asp!=='none')?curMode().asp:(st.asp!=='none'?st.asp:null);
+  if(asp==='9:16') return [1080,1920];
+  if(asp==='16:9') return [1920,1080];
+  if(asp==='4:5')  return [1080,1350];
+  if(asp==='1:1')  return [1080,1080];
+  const vs=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};
+  return [vs.width||1280, vs.height||720];
+}
+function glTex(gl){
+  const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  return t;
+}
+function startComp(){
+  if(comp.on) return true;
+  const cv=$('#compCv'); const [W,H]=compSize(); cv.width=W; cv.height=H;
+  if(typeof cv.captureStream!=='function'){ toast(m('compNo')); return false; }
+  const gl=cv.getContext('webgl',{preserveDrawingBuffer:false,alpha:false});
+  if(!gl){ toast(m('compNo')); return false; }
+  const sh=(t,s)=>{ const o=gl.createShader(t); gl.shaderSource(o,s); gl.compileShader(o); return o; };
+  const pr=gl.createProgram();
+  gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS_SRC));
+  gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS_SRC));
+  gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){ toast(m('compNo')); return false; }
+  gl.useProgram(pr);
+  const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const p=gl.getAttribLocation(pr,'p'); gl.enableVertexAttribArray(p); gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+  comp.cv=cv; comp.gl=gl; comp.pr=pr; comp.tex=glTex(gl); comp.bgTex=glTex(gl);
+  gl.viewport(0,0,W,H);
+  loadCompBg();
+  comp.on=true; body.classList.add('comp');
+  drawComp();
+  return true;
+}
+function stopComp(){
+  comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
+  body.classList.remove('comp');
+  if(comp.stream){ comp.stream.getTracks().forEach(t=>t.stop()); comp.stream=null; }
+}
+function loadCompBg(){
+  comp.bgReady=false;
+  if(!st.bgImg||!comp.gl) return;
+  const img=new Image();
+  img.onload=()=>{ const gl=comp.gl; gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
+    try{ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){} };
+  img.src=st.bgImg;
+}
+function drawComp(){
+  if(!comp.on) return;
+  const gl=comp.gl, cv=comp.cv;
+  if(cam.readyState>=2 && cam.videoWidth){
+    // "cover": kaynağı hedef orana kırp
+    const sw=cam.videoWidth, sh=cam.videoHeight, tA=cv.width/cv.height, sA=sw/sh;
+    let scx=1, scy=1, ofx=0, ofy=0;
+    if(sA>tA){ scx=tA/sA; ofx=(1-scx)/2; } else { scy=sA/tA; ofy=(1-scy)/2; }
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,comp.tex);
+    try{ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,cam); }catch(e){}
+    gl.uniform1i(gl.getUniformLocation(comp.pr,'tex'),0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
+    gl.uniform1i(gl.getUniformLocation(comp.pr,'bg'),1);
+    gl.uniform2f(gl.getUniformLocation(comp.pr,'sc'),scx,scy);
+    gl.uniform2f(gl.getUniformLocation(comp.pr,'of'),ofx,ofy);
+    const k=hex2rgb(st.keyColor||'#00b140');
+    gl.uniform3f(gl.getUniformLocation(comp.pr,'key'),k[0],k[1],k[2]);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'sim'),(st.keySim||30)/100);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'smo'),Math.max(0.01,(st.keySmooth||10)/100));
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'useKey'),st.chroma?1:0);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'useBg'),(st.chroma&&comp.bgReady)?1:0);
+    const b=hex2rgb(st.bgColor||'#101820');
+    gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  }
+  comp.raf=requestAnimationFrame(drawComp);
+}
+/* oran/kalite değişince tuval boyutu da değişmeli (yoksa eski oranda kaydeder) */
+function resizeComp(){
+  if(!comp.on||!comp.gl) return;
+  const [W,H]=compSize();
+  if(comp.cv.width===W && comp.cv.height===H) return;
+  comp.cv.width=W; comp.cv.height=H; comp.gl.viewport(0,0,W,H);
+}
+/* kayıt için kompozit akış (video tuvalden, ses kameradan) */
+function compRecStream(){
+  if(!comp.on) return null;
+  try{
+    const cs=comp.cv.captureStream(30);
+    if(!cs.getVideoTracks().length) return null;
+    comp.stream=new MediaStream([...cs.getVideoTracks(), ...stream.getAudioTracks()]);
+    return comp.stream;
+  }catch(e){ return null; }
+}
+
 /* ============ ÇERÇEVE KILAVUZU ============ */
 function drawAspect(){
+  resizeComp();
   const on=st.asp&&st.asp!=='none';
   body.classList.toggle('aspectOn',!!on);
   if(!on) return;
@@ -1130,10 +1300,16 @@ function doStartRec(){
   const base = mime?{mimeType:mime}:{};
   const opts = IS_WK ? base : Object.assign({},base,
     {videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
-  try{ rec=new MediaRecorder(stream,opts); }
+  // kompozit açıksa tuvalden kaydet; desteklenmiyorsa sessizce ham akışa dön
+  let src=stream;
+  if(st.comp && comp.on){
+    const cs=compRecStream();
+    if(cs) src=cs; else toast(m('compFallback'));
+  }
+  try{ rec=new MediaRecorder(src,opts); }
   catch(e){
-    try{ rec=new MediaRecorder(stream,base); }
-    catch(e2){ try{ rec=new MediaRecorder(stream); }catch(e3){ toast(m('recErr')+': '+e3.message); return; } }
+    try{ rec=new MediaRecorder(src,base); }
+    catch(e2){ try{ rec=new MediaRecorder(src); }catch(e3){ toast(m('recErr')+': '+e3.message); return; } }
   }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   rec.onstop=()=>{
@@ -1562,6 +1738,11 @@ function apply(){
   $('#scrim').value=st.scrim; $('#vScrim').textContent=st.scrim;
   $('#target').value=st.target; $('#vTarget').textContent=st.target?clock(st.target):(L==='tr'?'kapalı':'off');
   $('#capOffset').value=Math.round((st.capOffset||0)*10); $('#vCapOff').textContent=(st.capOffset||0).toFixed(1);
+  $('#keySim').value=st.keySim; $('#vKeySim').textContent=st.keySim;
+  $('#keySmooth').value=st.keySmooth; $('#vKeySmooth').textContent=st.keySmooth;
+  $$('#keySeg button').forEach(b=>b.classList.toggle('on',b.dataset.k===st.keyColor));
+  $$('#bgcSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bgColor));
+  $('#compBox').classList.toggle('hidden',!st.comp);
   $$('#colorSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c===st.color));
   $$('#bgSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bg));
   $$('#fontSeg button').forEach(b=>b.classList.toggle('on',b.dataset.f===st.font));
@@ -1742,7 +1923,39 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
   if(k==='backCam'||k==='rawAudio'){ if(stream) await openCam(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
+  if(k==='comp'){
+    if(st.comp){ if(!stream){ toast(m('needCam')); st.comp=false; apply(); save(); }
+                 else if(!startComp()){ st.comp=false; apply(); save(); } }
+    else stopComp();
+  }
 });
+$$('#keySeg button').forEach(b=>b.onclick=()=>{ st.keyColor=b.dataset.k; apply(); save(); });
+$$('#bgcSeg button').forEach(b=>b.onclick=()=>{ st.bgColor=b.dataset.b; apply(); save(); });
+$('#keySim').oninput=e=>{ st.keySim=+e.target.value; $('#vKeySim').textContent=st.keySim; save(); };
+$('#keySmooth').oninput=e=>{ st.keySmooth=+e.target.value; $('#vKeySmooth').textContent=st.keySmooth; save(); };
+$('#bgPick').onclick=()=>$('#bgFile').click();
+$('#bgFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    // localStorage ~5 MB: ham dataURL'i saklamak TÜM ayarların kaydını bozabilir.
+    // 1280 px'e küçültüp JPEG'e çeviriyoruz; hâlâ büyükse reddediyoruz.
+    const img=new Image();
+    img.onload=()=>{
+      const mx=1280, sc=Math.min(1,mx/Math.max(img.width,img.height));
+      const c=document.createElement('canvas');
+      c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc));
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      let url; try{ url=c.toDataURL('image/jpeg',0.82); }catch(err){ toast(m('bgTooBig')); return; }
+      if(url.length>1400000){ toast(m('bgTooBig')); return; }
+      st.bgImg=url; save(); loadCompBg(); toast(m('bgSet'));
+    };
+    img.onerror=()=>toast(m('bgTooBig'));
+    img.src=r.result;
+  };
+  r.readAsDataURL(f); e.target.value='';
+};
+$('#bgClear').onclick=()=>{ st.bgImg=null; comp.bgReady=false; save(); toast(m('bgCleared')); };
 
 // senaryo düzenleyici
 $('#title').oninput=()=>{ pullEditor(); renderScripts(); };
