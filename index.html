@@ -345,6 +345,7 @@
       <button data-band="2" data-i18n="b2">2 satır</button>
       <button data-band="3" data-i18n="b3">3 satır</button>
     </div>
+    <div class="sheetbtns"><button class="cancel hidden" id="tempoBtn"></button></div>
     <div class="sheetbtns"><button class="cancel" id="eyeRecipe" data-i18n="eyeRecipe">👁 Göz teması ayarını uygula</button></div>
     <div class="hint" id="gazeHint"></div>
 
@@ -505,11 +506,17 @@
 <div class="sheet" id="scriptsSheet">
   <div class="grab"></div>
   <h2><span data-i18n="scripts">Senaryolar</span><button class="iconbtn" id="scriptsX">✕</button></h2>
+  <div id="secWrap" class="hidden">
+    <div class="row" style="margin:6px 0"><label data-i18n="sections">🔖 Bölümler — dokun, oraya atla</label></div>
+    <div class="seg" id="secList"></div>
+  </div>
   <div id="scriptList"></div>
   <div class="sheetbtns">
     <button class="cancel" id="newScript" data-i18n="newScript">＋ Yeni</button>
     <button class="cancel" id="pasteScript" data-i18n="paste">📋 Yapıştır</button>
+    <button class="cancel" id="fileScript" data-i18n="fromFile">📄 Dosya</button>
   </div>
+  <input type="file" id="txtFile" accept=".txt,.md,text/plain,text/markdown" class="hidden">
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" placeholder="Senaryo başlığı">
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
@@ -592,7 +599,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -629,7 +636,8 @@ const I18N={
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
   voiceLang:'Sesle takip dili',tgLock:'🔒 Kayıtta ekranı kilitle',tgKeepAwake:'☀️ Ekranı uyanık tut',tgHideUI:'🫧 Kayıtta düğmeleri gizle',
   backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
-  newScript:'＋ Yeni',paste:'📋 Yapıştır',title:'Başlık',text:'📝 Metin',
+  newScript:'＋ Yeni',paste:'📋 Yapıştır',fromFile:'📄 Dosya',sections:'🔖 Bölümler — dokun, oraya atla',
+  title:'Başlık',text:'📝 Metin',
   markHint:'# ile başlayan satır = bölüm başlığı · [köşeli parantez] = yönerge notu (okunmaz)',delete:'🗑 Sil',apply:'✓ Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
   takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Sakla',saveShare:'⬇︎ Kaydet / Paylaş',
@@ -672,7 +680,8 @@ const I18N={
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
   voiceLang:'Voice-follow language',tgLock:'🔒 Lock screen while recording',tgKeepAwake:'☀️ Keep screen awake',tgHideUI:'🫧 Hide buttons while recording',
   backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
-  newScript:'＋ New',paste:'📋 Paste',title:'Title',text:'📝 Script',
+  newScript:'＋ New',paste:'📋 Paste',fromFile:'📄 File',sections:'🔖 Sections — tap to jump',
+  title:'Title',text:'📝 Script',
   markHint:'# line = section heading · [brackets] = direction note (not read)',delete:'🗑 Delete',apply:'✓ Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
   takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Keep',saveShare:'⬇︎ Save / Share',
@@ -697,7 +706,7 @@ const MSG={
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
-  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç'},
+  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',resumed:'↩︎ Kaldığın yerden'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
@@ -711,7 +720,7 @@ const MSG={
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
-  bgTooBig:'Image too large — pick a smaller one'}
+  bgTooBig:'Image too large — pick a smaller one',resumed:'↩︎ Resumed where you left off'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
@@ -821,7 +830,10 @@ function buildContent(){
   wordLine=words.map(w=>lns.indexOf(w.parentElement));
   capTimes=new Array(words.length).fill(null);
   activeIdx=-1;
-  requestAnimationFrame(()=>{ measure(); updateStats(); });
+  // offsetTop düzeni zorluyor, yani hemen ölçebiliriz. rAF'a bağlı bırakmak arka planda
+  // açılan sekmede (rAF hiç koşmaz) ölçümün hiç yapılmaması demekti.
+  measure(); updateStats(); renderSections();
+  requestAnimationFrame(()=>{ measure(); renderSections(); });
 }
 function H(){ return window.innerHeight; }
 function eyeOff(){ return H()*(st.eyePos/100); }
@@ -913,9 +925,14 @@ function start(){
   requestWake();
   raf=requestAnimationFrame(tick);
 }
-function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf); }
-function reset(){ stop(); elapsed=0; startedAt=0; lastParaIdx=-1;
+function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf);
+  measureTempo(); rememberPos(); }
+/* kaldığın yeri senaryoya yaz */
+function rememberPos(){ const s=active(); if(s){ s.pos=Math.round(pos); save(); } }
+function reset(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing');
+  cancelAnimationFrame(raf); elapsed=0; startedAt=0; lastParaIdx=-1;
   words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0);
+  const s=active(); if(s){ s.pos=0; save(); }
   if(voiceOn) syncVoicePtr(); }
 function toggle(){
   if(counting){ cancelCountdown(); return; }   // sayarken ikinci basış = iptal
@@ -1444,7 +1461,7 @@ function openDB(){
 async function dbPut(rec){ const d=await openDB(); if(!d) return; try{ d.transaction('takes','readwrite').objectStore('takes').put(rec); }catch(e){} }
 async function dbAll(){ const d=await openDB(); if(!d) return [];
   return new Promise(res=>{ try{ const q=d.transaction('takes').objectStore('takes').getAll();
-    q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.created-a.created)); q.onerror=()=>res([]); }catch(e){res([]);} }); }
+    q.onsuccess=()=>res((q.result||[]).sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.created-a.created)); q.onerror=()=>res([]); }catch(e){res([]);} }); }
 async function dbDel(id){ const d=await openDB(); if(!d) return; try{ d.transaction('takes','readwrite').objectStore('takes').delete(id); }catch(e){} }
 async function autoSaveTake(){
   if(!lastBlob) return;
@@ -1458,10 +1475,12 @@ async function renderTakes(){
   box.innerHTML='';
   list.forEach(it=>{
     const d=document.createElement('div'); d.className='listitem';
-    d.innerHTML='<div class="meta"><div class="t">'+esc(it.title||'—')+'</div><div class="s">'+
+    d.innerHTML='<div class="meta"><div class="t">'+(it.fav?'⭐ ':'')+esc(it.title||'—')+'</div><div class="s">'+
       new Date(it.created).toLocaleString()+' · '+clock(it.dur||0)+' · '+((it.size||0)/1048576).toFixed(1)+' MB</div></div>'+
+      '<button class="iconbtn" data-a="fav">'+(it.fav?'⭐':'☆')+'</button>'+
       '<button class="iconbtn" data-a="play">▶︎</button>'+(it.srt?'<button class="iconbtn" data-a="srt">💬</button>':'')+
       '<button class="iconbtn" data-a="share">⬇︎</button><button class="iconbtn" data-a="del">🗑</button>';
+    d.querySelector('[data-a="fav"]').onclick=async()=>{ it.fav=!it.fav; await dbPut(it); renderTakes(); };
     d.querySelector('[data-a="play"]').onclick=()=>{ lastBlob=it.blob; lastDur=it.dur||0; curTakeId=it.id; closeSheets(); showResult(it.blob); };
     if(it.srt) d.querySelector('[data-a="srt"]').onclick=()=>{
       const b=new Blob([it.srt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
@@ -1472,6 +1491,39 @@ async function renderTakes(){
     d.querySelector('[data-a="del"]').onclick=async()=>{ await dbDel(it.id); renderTakes(); toast(m('deleted')); };
     box.appendChild(d);
   });
+}
+
+/* ============ BÖLÜMLER (# başlıkları) ============ */
+function renderSections(){
+  const hs=[...scroller.querySelectorAll('.ln.h')];
+  const wrap=$('#secWrap'), box=$('#secList');
+  wrap.classList.toggle('hidden',!hs.length);
+  if(!hs.length){ box.innerHTML=''; return; }
+  box.innerHTML='';
+  hs.forEach(h=>{
+    const b=document.createElement('button');
+    b.textContent=h.textContent;
+    b.onclick=()=>{ setPos(Math.max(0,h.offsetTop-eyeOff()+h.offsetHeight/2));
+      if(voiceOn) syncVoicePtr(); closeSheets(); toast('🔖 '+h.textContent); };
+    box.appendChild(b);
+  });
+}
+
+/* ============ ÖLÇÜLEN TEMPO (prova) ============ */
+let measuredWpm=0;
+function measureTempo(){
+  const done=activeIdx+1;
+  if(elapsed>12 && done>15){
+    measuredWpm=Math.round(done/elapsed*60);
+    if(measuredWpm<40||measuredWpm>320) measuredWpm=0;
+  }
+  renderTempo();
+}
+function renderTempo(){
+  const b=$('#tempoBtn'); if(!b) return;
+  b.classList.toggle('hidden',!measuredWpm);
+  if(measuredWpm) b.textContent=(L==='tr'?'⏱ Ölçülen tempon: ':'⏱ Your measured pace: ')+measuredWpm+' wpm — '+
+    (L==='tr'?'uygula':'apply');
 }
 
 /* ============ SENARYOLAR ============ */
@@ -1489,7 +1541,16 @@ function renderScripts(){
     box.appendChild(d);
   });
 }
-function selectScript(id){ pullEditor(); st.activeId=id; save(); fillEditor(); renderScripts(); buildContent(); reset(); }
+function selectScript(id){
+  rememberPos(); pullEditor(); st.activeId=id; save();
+  // hedefin kayıtlı konumunu reset() sıfırlamadan ÖNCE al
+  const want=(active().pos||0);
+  fillEditor(); renderScripts(); buildContent(); reset();
+  if(want>0){
+    setPos(Math.min(want,maxPos));          // measure() buildContent'te senkron koştu, maxPos geçerli
+    rememberPos(); if(voiceOn) syncVoicePtr(); toast(m('resumed'));
+  }
+}
 function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||''; updateStats(); }
 function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').value.trim()||(L==='tr'?'Başlıksız':'Untitled'); s.text=$('#text').value; s.up=Date.now(); save(); }
 
@@ -1867,7 +1928,10 @@ $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
 $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); };
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')) startMeter(); };
-$('#scriptsBtn').onclick=e=>{ e.stopPropagation(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
+$('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
+/* uygulama arka plana atılırsa/kapatılırsa da konumu yaz */
+window.addEventListener('pagehide',rememberPos);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rememberPos(); });
 $('#sheetX').onclick=closeSheets;
 $('#scriptsX').onclick=()=>{ pullEditor(); buildContent(); closeSheets(); };
 $('#takesX').onclick=closeSheets;
@@ -1961,12 +2025,29 @@ $('#bgClear').onclick=()=>{ st.bgImg=null; comp.bgReady=false; save(); toast(m('
 $('#title').oninput=()=>{ pullEditor(); renderScripts(); };
 $('#text').oninput=()=>{ pullEditor(); updateStats(); };
 $('#saveScript').onclick=()=>{ pullEditor(); buildContent(); reset(); renderScripts(); closeSheets(); };
-$('#newScript').onclick=()=>{ pullEditor(); const s={id:uid(),title:L==='tr'?'Yeni senaryo':'New script',text:'',up:Date.now()};
+$('#newScript').onclick=()=>{ rememberPos(); pullEditor(); const s={id:uid(),title:L==='tr'?'Yeni senaryo':'New script',text:'',up:Date.now()};
   st.scripts.unshift(s); st.activeId=s.id; save(); fillEditor(); renderScripts(); buildContent(); $('#text').focus(); };
 $('#delScript').onclick=()=>{
   if(st.scripts.length<2){ $('#text').value=''; pullEditor(); buildContent(); toast(m('deleted')); return; }
   st.scripts=st.scripts.filter(x=>x.id!==st.activeId); st.activeId=st.scripts[0].id;
   save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('deleted'));
+};
+$('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
+  st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
+  toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
+$('#fileScript').onclick=()=>$('#txtFile').click();
+$('#txtFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const txt=String(r.result||'').replace(/\r\n/g,'\n');
+    if(!txt.trim()){ toast(m('emptyText')); return; }
+    const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
+    st.scripts.unshift(s); st.activeId=s.id; save();
+    fillEditor(); renderScripts(); buildContent(); reset(); toast(m('imported'));
+  };
+  r.onerror=()=>toast(m('impErr'));
+  r.readAsText(f,'utf-8'); e.target.value='';
 };
 $('#pasteScript').onclick=async()=>{
   try{ const txt=await navigator.clipboard.readText(); if(!txt) return toast(m('clipNo'));
