@@ -98,6 +98,13 @@
   #recDot{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:7;display:none;
     align-items:center;gap:7px;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
   #recDot.on{display:flex}
+  #micWrap{height:12px;border-radius:8px;background:#26262c;overflow:hidden;margin-top:8px}
+  #micBar{height:100%;width:0;background:#3a3a44;border-radius:8px;transition:width .06s linear}
+  #noAudioBadge{position:absolute;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+    z-index:7;background:rgba(255,59,48,.9);color:#fff;font-size:11px;font-weight:800;
+    padding:5px 12px;border-radius:0 0 12px 12px;display:none}
+  body.cam.noaudio #noAudioBadge{display:block}
+  body.cam.noaudio #camMark{display:none}
   #recDot i{width:10px;height:10px;border-radius:50%;background:#ff3b30;animation:bl 1s infinite}
   @keyframes bl{50%{opacity:.25}}
   #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
@@ -242,6 +249,7 @@
     <div id="aspectBox"></div>
   </div>
   <div id="camMark">📷 <span data-i18n="lookHere">buraya bak</span></div>
+  <div id="noAudioBadge" data-i18n="noMicShort">🔇 mikrofon yok — ses kaydedilmiyor</div>
   <div id="eyeline"></div>
   <div id="progress"></div>
   <div id="hud"><span id="hEl">00:00</span><span id="hRem">–</span><span id="hWpm">140</span></div>
@@ -381,8 +389,12 @@
     <div class="tog"><span data-i18n="tgBack">🔄 Arka kamera</span><div class="sw" data-t="backCam"></div></div>
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">🔦 Işık (fener)</span><div class="sw" data-t="torch"></div></div>
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
-    <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (gürültü temizlemesi kapalı)</span><div class="sw on" data-t="rawAudio"></div></div>
-    <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar. Yankılı odada kapatın.</div>
+    <div class="row" style="margin-top:18px"><label data-i18n="micLevel">🎙 Mikrofon seviyesi</label><span class="v" id="micTxt">—</span></div>
+    <div id="micWrap"><div id="micBar"></div></div>
+    <div class="hint" data-i18n="micHint">Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.</div>
+
+    <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (gürültü temizlemesi kapalı)</span><div class="sw" data-t="rawAudio"></div></div>
+    <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar ama bazı iPhone'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.</div>
     <div class="sheetbtns"><button class="cancel" id="reopenCam" data-i18n="reopenCam">🔁 Kamerayı yeniden başlat</button></div>
   </div>
 
@@ -506,7 +518,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -523,7 +535,11 @@ const I18N={
   tgMirror:'🪞 Yazıyı aynala (cam rig / beam splitter)',tgFlip:'🔃 Yazıyı dikey çevir',tgShadow:'🌑 Yazı gölgesi',
   quality:'Kayıt kalitesi',qHint:'Cihaz desteklemezse en yakın çözünürlüğe düşer.',frameGuide:'Çerçeve kılavuzu',aspNone:'Kapalı',
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
-  tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',rawHint:'Ham ses daha doğal tınlar. Yankılı odada kapatın.',
+  tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
+  rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  micLevel:'🎙 Mikrofon seviyesi',
+  micHint:'Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.',
+  noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
   voiceLang:'Sesle takip dili',tgLock:'🔒 Kayıtta ekranı kilitle',tgKeepAwake:'☀️ Ekranı uyanık tut',tgHideUI:'🫧 Kayıtta düğmeleri gizle',
   backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
@@ -550,7 +566,11 @@ const I18N={
   tgMirror:'🪞 Mirror text (beam splitter rig)',tgFlip:'🔃 Flip text vertically',tgShadow:'🌑 Text shadow',
   quality:'Recording quality',qHint:'Falls back to the closest resolution the device supports.',frameGuide:'Frame guide',aspNone:'Off',
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
-  tgRaw:'🎚 Raw audio (no noise suppression)',rawHint:'Raw sounds more natural. Turn off in echoey rooms.',
+  tgRaw:'🎚 Raw audio (no noise suppression)',
+  rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  micLevel:'🎙 Microphone level',
+  micHint:'Talk — if the bar does not move, no audio is recorded. Check iOS Settings → Safari → Microphone, or close another app holding the mic.',
+  noMicShort:'🔇 no microphone — audio is not recorded',
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
   voiceLang:'Voice-follow language',tgLock:'🔒 Lock screen while recording',tgKeepAwake:'☀️ Keep screen awake',tgHideUI:'🫧 Hide buttons while recording',
   backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
@@ -572,14 +592,20 @@ const MSG={
   saved:'Kaydedildi',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
   exported:'Yedek indirildi',imported:'Geri yüklendi',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
-  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi'},
+  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
+  noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
+  noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
+  audioFallback:'Ham ses açılamadı, normal sese geçildi'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
   saved:'Saved',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
   exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
-  emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored'}
+  emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored',
+  noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
+  noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
+  audioFallback:'Raw audio unavailable, switched to normal audio'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
@@ -616,7 +642,7 @@ const DEF={
   eyePos:24, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', rawAudio:true, autoLock:false, wake:true, hideUI:false,
+  quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   scripts:null, activeId:null
 };
@@ -804,7 +830,43 @@ async function requestWake(){
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&running) requestWake(); });
 
 /* ============ KAMERA ============ */
-let stream=null, vTrack=null;
+let stream=null, vTrack=null, aTrack=null;
+
+/* ---- MİKROFON SEVİYE ÖLÇER ---- */
+let actx=null, meterRaf=null, analyser=null, meterData=null;
+function startMeter(){
+  stopMeter();
+  if(!aTrack) { setMeter(0); return; }
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    actx=new AC();
+    if(actx.state==='suspended') actx.resume().catch(()=>{});
+    const src=actx.createMediaStreamSource(new MediaStream([aTrack]));
+    analyser=actx.createAnalyser(); analyser.fftSize=512;
+    meterData=new Uint8Array(analyser.frequencyBinCount);
+    src.connect(analyser);
+    const loop=()=>{
+      if(!analyser) return;
+      analyser.getByteTimeDomainData(meterData);
+      let peak=0; for(let i=0;i<meterData.length;i++){ const v=Math.abs(meterData[i]-128); if(v>peak) peak=v; }
+      setMeter(Math.min(100, Math.round(peak/128*100*2.2)));
+      meterRaf=requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){}
+}
+function stopMeter(){
+  cancelAnimationFrame(meterRaf); meterRaf=null; analyser=null;
+  if(actx){ try{ actx.close(); }catch(e){} actx=null; }
+  setMeter(0);
+}
+function setMeter(pct){
+  const b=$('#micBar'); if(!b) return;
+  b.style.width=pct+'%';
+  b.style.background = pct>82 ? '#ff3b30' : (pct>4 ? 'var(--accent)' : '#3a3a44');
+  const t=$('#micTxt');
+  if(t) t.textContent = !aTrack ? m('noMicShort') : (pct>4 ? m('micOk') : m('micQuiet'));
+}
 function qConstraint(){
   const q=st.quality;
   if(q==='4k') return {width:{ideal:3840},height:{ideal:2160}};
@@ -814,15 +876,27 @@ function qConstraint(){
 async function openCam(){
   try{
     if(stream) stream.getTracks().forEach(x=>x.stop());
+    stopMeter();
     const audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
-    stream=await navigator.mediaDevices.getUserMedia({
-      video:Object.assign({facingMode:st.backCam?'environment':'user',frameRate:{ideal:30}},qConstraint()),
-      audio});
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:Object.assign({facingMode:st.backCam?'environment':'user',frameRate:{ideal:30}},qConstraint()),
+        audio});
+    }catch(e1){
+      // ses kısıtları bazı cihazlarda tüm isteği düşürüyor — sade sesle bir daha dene
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:st.backCam?'environment':'user'}, audio:true});
+      toast(m('audioFallback'));
+    }
     cam.srcObject=stream; body.classList.add('cam');
     body.classList.toggle('mirrorCam', !st.backCam);
     vTrack=stream.getVideoTracks()[0]||null;
+    aTrack=stream.getAudioTracks()[0]||null;
+    body.classList.toggle('noaudio', !aTrack);
+    if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
     $('#recBtn').disabled=false;
     setupCaps();
+    if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')) startMeter();
     return true;
   }catch(e){
     toast(m('noCam')+': '+(e.name||e.message));
@@ -866,8 +940,14 @@ function drawAspect(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
+/* Safari/iOS: sade 'video/mp4' + seçenek geçmemek en güvenlisi. Kodek dizisi veya
+   bit hızı seçenekleri verildiğinde Safari ses izini sessizce düşürebiliyor. */
+const IS_WK = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+              (/safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent));
 function pickMime(){
-  const list=['video/mp4;codecs=h264,aac','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  const list = IS_WK
+    ? ['video/mp4','video/webm']
+    : ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/mp4','video/webm'];
   for(const x of list) if(window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x)) return x;
   return '';
 }
@@ -878,10 +958,17 @@ function startRec(){
   doStartRec();
 }
 function doStartRec(){
-  chunks=[]; const mime=pickMime();
-  const opts=Object.assign(mime?{mimeType:mime}:{},{videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
+  chunks=[];
+  if(!stream.getAudioTracks().length) toast(m('noMic'));
+  const mime=pickMime();
+  const base = mime?{mimeType:mime}:{};
+  const opts = IS_WK ? base : Object.assign({},base,
+    {videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
   try{ rec=new MediaRecorder(stream,opts); }
-  catch(e){ try{ rec=new MediaRecorder(stream); }catch(e2){ toast(m('recErr')+': '+e2.message); return; } }
+  catch(e){
+    try{ rec=new MediaRecorder(stream,base); }
+    catch(e2){ try{ rec=new MediaRecorder(stream); }catch(e3){ toast(m('recErr')+': '+e3.message); return; } }
+  }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   rec.onstop=()=>{
     lastDur=(performance.now()-recT)/1000;
@@ -1107,7 +1194,7 @@ function renderMap(){
 /* ============ SHEET YÖNETİMİ ============ */
 const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
-function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; }
+function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; stopMeter(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
 /* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */
 function dismissSheets(){
@@ -1283,7 +1370,8 @@ $$('#langSwitch button').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L;
 $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
 $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
 $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); };
-$('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet'); };
+$('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
+  if($('#tab-cam').classList.contains('on')) startMeter(); };
 $('#scriptsBtn').onclick=e=>{ e.stopPropagation(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
 $('#sheetX').onclick=closeSheets;
 $('#scriptsX').onclick=()=>{ pullEditor(); buildContent(); closeSheets(); };
@@ -1306,6 +1394,8 @@ $$('#actSeg button').forEach(b=>b.onclick=()=>{
 $$('.tabs button').forEach(b=>b.onclick=()=>{
   $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   $$('.tab').forEach(x=>x.classList.remove('on')); $('#tab-'+b.dataset.tab).classList.add('on');
+  // seviye ölçer yalnız Kamera sekmesi görünürken çalışsın (pil)
+  if(b.dataset.tab==='cam') startMeter(); else stopMeter();
 });
 
 const bind=(sel,key,after)=>{ $(sel).oninput=e=>{ st[key]=+e.target.value; apply(); save(); if(after) after(); }; };
