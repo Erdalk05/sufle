@@ -95,8 +95,8 @@
   /* platform arayüzünün kapattığı alanlar (yaklaşık) */
   #safeWrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;pointer-events:none}
   body.safeOn #safeWrap{display:block}
-  #safeWrap div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.16) 0 8px,transparent 8px 16px);
-    border:1px dashed rgba(255,59,48,.5)}
+  #safeWrap div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.10) 0 10px,transparent 10px 20px);
+    border:1px dashed rgba(255,59,48,.35)}
   #safeWrap div b{position:absolute;left:6px;top:4px;font-size:9px;font-weight:800;color:rgba(255,180,175,.95);letter-spacing:.03em}
   #grid{position:absolute;inset:0;display:none;
     background-image:linear-gradient(to right,rgba(255,255,255,.16) 1px,transparent 1px),
@@ -110,8 +110,15 @@
   body.gridOn #headroom{display:block}
 
   #progress{position:absolute;left:0;top:0;height:3px;width:0;background:var(--accent);z-index:6;transition:width .1s linear}
-  #recDot{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:7;display:none;
-    align-items:center;gap:7px;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
+  /* kayıt sırasında her yerden görünen kırmızı çerçeve */
+  #recFrame{position:absolute;inset:0;z-index:6;pointer-events:none;display:none;
+    border:5px solid #ff3b30;border-radius:2px;box-shadow:inset 0 0 40px rgba(255,59,48,.35)}
+  body.rec #recFrame{display:block;animation:recpulse 1.6s ease-in-out infinite}
+  body.recpaused #recFrame{display:block;animation:none;border-color:#ffb300;box-shadow:inset 0 0 40px rgba(255,179,0,.3)}
+  @keyframes recpulse{50%{border-color:rgba(255,59,48,.45)}}
+  #recDot{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:8;display:none;
+    align-items:center;gap:8px;background:rgba(0,0,0,.72);padding:9px 16px;border-radius:22px;
+    font-size:15px;font-weight:800;letter-spacing:.02em;backdrop-filter:blur(6px)}
   #recDot.on{display:flex}
   #micWrap{height:12px;border-radius:8px;background:#26262c;overflow:hidden;margin-top:8px}
   #micBar{height:100%;width:0;background:#3a3a44;border-radius:8px;transition:width .06s linear}
@@ -120,7 +127,8 @@
     padding:5px 12px;border-radius:0 0 12px 12px;display:none}
   body.cam.noaudio #noAudioBadge{display:block}
   body.cam.noaudio #camMark{display:none}
-  #recDot i{width:10px;height:10px;border-radius:50%;background:#ff3b30;animation:bl 1s infinite}
+  #recDot i{width:13px;height:13px;border-radius:50%;background:#ff3b30;animation:bl 1s infinite;flex:none}
+  body.recpaused #recDot i{background:#ffb300;animation:none}
   @keyframes bl{50%{opacity:.25}}
   #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.5);font-size:38vw;font-weight:800;color:var(--accent);z-index:9}
@@ -133,6 +141,7 @@
   #hud span{background:rgba(0,0,0,.45);padding:4px 9px;border-radius:20px;backdrop-filter:blur(6px)}
   #hud .warn{color:#ffb300}
   body.hideUI #hud,body.hideUI #bar,body.hideUI #progress{opacity:0;pointer-events:none}
+  body.hideUI #recDot,body.hideUI #recFrame{opacity:1}
   #bar,#hud,#progress{transition:opacity .25s}
 
   /* hız şeridi (sağ kenar) */
@@ -189,6 +198,14 @@
     max-height:90%;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;
     box-shadow:0 -12px 40px rgba(0,0,0,.6)}
   .sheet.open{transform:translateY(0)}
+  /* sürgü çekilirken sayfa saydamlaşır: yazı boyutu/aralık gibi ayarların etkisi görünür */
+  body.peek .sheet.open{opacity:.12;transition:opacity .12s}
+  body.peek #backdrop{opacity:0}
+  .sheet{opacity:1;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s}
+  #peekTip{position:absolute;left:50%;top:14%;transform:translateX(-50%);z-index:33;display:none;
+    background:rgba(0,0,0,.75);color:#fff;font-size:13px;font-weight:800;padding:8px 16px;border-radius:20px;
+    backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
+  body.peek #peekTip{display:block}
   .grab{width:40px;height:5px;border-radius:3px;background:#3a3a44;margin:8px auto 12px}
   .sheet h2{font-size:17px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
   .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;background:var(--sheetbg);padding:6px 0;z-index:2}
@@ -268,21 +285,24 @@
   <div id="camMark">📷 <span data-i18n="lookHere">buraya bak</span></div>
   <div id="noAudioBadge" data-i18n="noMicShort">🔇 mikrofon yok — ses kaydedilmiyor</div>
   <div id="eyeline"></div>
+  <div id="recFrame"></div>
   <div id="progress"></div>
   <div id="hud"><span id="hEl">00:00</span><span id="hRem">–</span><span id="hWpm">140</span></div>
-  <div id="recDot"><i></i><span id="recTime">00:00</span></div>
+  <div id="recDot"><i></i><span id="recLbl">KAYITTA</span><span id="recTime">00:00</span></div>
   <div id="speedRail"><div id="railV">140</div></div>
   <div id="count">3</div>
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · sağ kenar = hız</div>
 </div>
 
 <div id="backdrop"></div>
+<div id="peekTip"></div>
 <div id="lockOverlay"><div id="lockPill" data-i18n="lockedPill">🔒 kilitli — iki kez dokun</div></div>
 
 <!-- ALT KONTROL -->
 <div id="bar" class="hidden">
   <button class="cbtn" id="settingsBtn" title="Ayarlar">⚙︎</button>
   <button class="cbtn" id="scriptsBtn" title="Senaryolar">📝</button>
+  <button class="cbtn hidden" id="pauseBtn">⏸</button>
   <button id="recBtn" disabled></button>
   <button class="cbtn" id="voiceBtn" title="Sesle takip">🎤</button>
   <button class="cbtn" id="playBtn" title="Başlat">▶︎</button>
@@ -513,6 +533,8 @@
     <div class="sheetbtns"><button class="cancel" id="takesBtn" data-i18n="takes">🎞 Çekimlerim</button></div>
     <div class="sheetbtns"><button class="cancel" id="remoteBtn" data-i18n="remote">🎛 Uzaktan kumanda</button></div>
     <div class="sheetbtns"><button class="cancel" id="helpBtn2" data-i18n="help">Nasıl kullanılır?</button></div>
+    <div class="sheetbtns"><button class="danger" id="resetAll" data-i18n="resetAll">↺ Ayarları varsayılana döndür</button></div>
+    <div class="hint" data-i18n="resetHint">Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.</div>
     <div class="hint" id="verLine" style="text-align:center;margin-top:14px">Sufle v2.0</div>
   </div>
 </div>
@@ -620,7 +642,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -661,6 +683,7 @@ const I18N={
   noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
   voiceLang:'Sesle takip dili',tgLock:'🔒 Kayıtta ekranı kilitle',tgKeepAwake:'☀️ Ekranı uyanık tut',tgHideUI:'🫧 Kayıtta düğmeleri gizle',
+  resetAll:'↺ Ayarları varsayılana döndür',resetHint:'Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.',
   backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
   newScript:'＋ Yeni',paste:'📋 Yapıştır',fromFile:'📄 Dosya',sections:'🔖 Bölümler — dokun, oraya atla',
   title:'Başlık',text:'📝 Metin',
@@ -710,6 +733,7 @@ const I18N={
   noMicShort:'🔇 no microphone — audio is not recorded',
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
   voiceLang:'Voice-follow language',tgLock:'🔒 Lock screen while recording',tgKeepAwake:'☀️ Keep screen awake',tgHideUI:'🫧 Hide buttons while recording',
+  resetAll:'↺ Reset settings to defaults',resetHint:'Only settings are reset — your scripts and takes stay.',
   backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
   newScript:'＋ New',paste:'📋 Paste',fromFile:'📄 File',sections:'🔖 Sections — tap to jump',
   title:'Title',text:'📝 Script',
@@ -733,6 +757,9 @@ const MSG={
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
+  recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
+  recResumed:'⏺ Kayıt devam ediyor',pauseNo:'Bu cihazda kayıt duraklatılamıyor',
+  resetSure:'Emin misin? Tekrar bas',resetDone:'Ayarlar varsayılana döndü',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
@@ -746,6 +773,9 @@ const MSG={
   exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
   emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
+  recOn:'RECORDING',recPaused:'PAUSED',recPausedInfo:'⏸ Paused — press ⏺ to continue the same video',
+  recResumed:'⏺ Recording again',pauseNo:'This device cannot pause recording',
+  resetSure:'Sure? Press again',resetDone:'Settings reset to defaults',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
@@ -988,7 +1018,7 @@ function highlight(y){
     else { for(let i=idx+1;i<=activeIdx;i++) if(words[i]) words[i].classList.remove('done'); }
     // kayıt sürerken kelimenin çizgiden geçtiği anı damgala (altyazı için)
     if(recT && idx>=0){
-      const t=(performance.now()-recT)/1000;
+      const t=recElapsed();
       for(let i=Math.max(0,activeIdx<0?0:activeIdx);i<=idx;i++) if(capTimes[i]==null) capTimes[i]=t;
     }
     activeIdx=idx;
@@ -1028,7 +1058,7 @@ function clock(s){ s=Math.max(0,Math.floor(s)); return String((s/60)|0).padStart
 /* kayıt süresi + platform sınırı: sınıra yaklaşınca sarı, aşınca kırmızı */
 let overWarned=false;
 function showRecTime(){
-  const t=(performance.now()-recT)/1000, lim=curMode().limit;
+  const t=recElapsed(), lim=curMode().limit;
   const el=$('#recTime'), dot=$('#recDot');
   if(!lim){ el.textContent=clock(t); dot.style.background='rgba(0,0,0,.55)'; return; }
   const left=lim-t;
@@ -1447,6 +1477,11 @@ function drawAspect(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
+let recPausedMs=0, pauseStart=0, recPaused=false;
+/* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
+function recElapsed(){ if(!recT) return 0;
+  const extra = recPaused ? (performance.now()-pauseStart) : 0;
+  return (performance.now()-recT-recPausedMs-extra)/1000; }
 /* Safari/iOS: sade 'video/mp4' + seçenek geçmemek en güvenlisi. Kodek dizisi veya
    bit hızı seçenekleri verildiğinde Safari ses izini sessizce düşürebiliyor. */
 const IS_WK = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
@@ -1484,12 +1519,15 @@ function doStartRec(){
   }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   rec.onstop=()=>{
-    lastDur=(performance.now()-recT)/1000;
+    lastDur=recElapsed();
     lastBlob=new Blob(chunks,{type:(rec.mimeType||'video/mp4').split(';')[0]});
     autoSaveTake().then(()=>showResult(lastBlob));
   };
   recSection=(curSec>=0?curSec:sectionAt(pos));
-  rec.start(1000); recT=performance.now(); overWarned=false; showRecTime();
+  rec.start(1000); recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
+  body.classList.add('rec'); body.classList.remove('recpaused');
+  $('#recLbl').textContent=m('recOn');
+  if(canPauseRec()) $('#pauseBtn').classList.remove('hidden');
   $('#recBtn').classList.add('rec'); $('#recDot').classList.add('on');
   if(st.hideUI) body.classList.add('hideUI');
   if(!running) start();
@@ -1498,12 +1536,34 @@ function doStartRec(){
 function stopRec(){
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
+  if(recPaused){ recPausedMs+=performance.now()-pauseStart; recPaused=false; }
   if(rec&&rec.state!=='inactive') rec.stop();
-  recT=0; $('#recBtn').classList.remove('rec'); $('#recDot').classList.remove('on');
+  recT=0; body.classList.remove('rec','recpaused');
+  $('#pauseBtn').classList.add('hidden'); $('#pauseBtn').textContent='⏸';
+  $('#recBtn').classList.remove('rec'); $('#recDot').classList.remove('on');
   body.classList.remove('hideUI'); setLock(false,true);
   if(running) stop();
 }
-function toggleRec(){ if(rec&&rec.state==='recording') stopRec(); else startRec(); }
+function toggleRec(){ if(rec&&(rec.state==='recording'||rec.state==='paused')) stopRec(); else startRec(); }
+function canPauseRec(){ return !!(window.MediaRecorder && MediaRecorder.prototype && MediaRecorder.prototype.pause); }
+function togglePauseRec(){
+  if(!rec) return;
+  if(rec.state==='recording'){
+    try{ rec.pause(); }catch(e){ toast(m('pauseNo')); return; }
+    recPaused=true; pauseStart=performance.now();
+    if(running) stop();
+    body.classList.add('recpaused');
+    $('#pauseBtn').textContent='⏺'; $('#recLbl').textContent=m('recPaused');
+    toast(m('recPausedInfo'));
+  } else if(rec.state==='paused'){
+    try{ rec.resume(); }catch(e){ toast(m('pauseNo')); return; }
+    recPausedMs+=performance.now()-pauseStart; recPaused=false;
+    body.classList.remove('recpaused');
+    $('#pauseBtn').textContent='⏸'; $('#recLbl').textContent=m('recOn');
+    if(!running) start();
+    toast(m('recResumed'));
+  }
+}
 
 function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
@@ -2228,11 +2288,40 @@ $('#startCam').onclick=async()=>{ if(await openCam()){ $('#intro').classList.add
 $('#startNoCam').onclick=()=>{ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); requestWake(); };
 $('#helpBtn').onclick=()=>openSheet('#helpSheet');
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
+/* ayarları sıfırla — senaryolara ve çekimlere dokunmaz, iki basış ister */
+let resetArm=0;
+$('#resetAll').onclick=()=>{
+  const b=$('#resetAll');
+  if(Date.now()-resetArm>4000){ resetArm=Date.now(); b.textContent=m('resetSure'); setTimeout(()=>{
+    if(Date.now()-resetArm>=3900) b.textContent=t('resetAll'); },4000); return; }
+  resetArm=0;
+  const keepScripts=st.scripts, keepActive=st.activeId, keepLang=st.lang;
+  st=Object.assign({},DEF,{scripts:keepScripts,activeId:keepActive,lang:keepLang});
+  save(); applyLang(); apply(); applyMode('free',false); buildContent(); reset();
+  b.textContent=t('resetAll'); toast(m('resetDone'));
+};
+
+/* sürgü çekilirken ayar sayfasını saydamlaştır */
+let peekT=null;
+function peek(label){
+  body.classList.add('peek');
+  if(label) $('#peekTip').textContent=label;
+  clearTimeout(peekT); peekT=setTimeout(()=>body.classList.remove('peek'),700);
+}
+$$('.sheet input[type=range]').forEach(r=>{
+  const lab=()=>{ const row=r.previousElementSibling;
+    const l=row&&row.querySelector?row.querySelector('label'):null;
+    const v=row&&row.querySelector?row.querySelector('.v'):null;
+    return (l?l.textContent.replace(/^[^\p{L}]+/u,''):'')+(v?': '+v.textContent:''); };
+  r.addEventListener('input',()=>peek(lab()),{passive:true});
+  r.addEventListener('pointerdown',()=>peek(lab()),{passive:true});
+});
 $('#helpX').onclick=closeSheets;
 $$('#langSwitch button').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });
 
 $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
 $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
+$('#pauseBtn').onclick=e=>{ e.stopPropagation(); togglePauseRec(); };
 $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); };
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
