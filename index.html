@@ -434,6 +434,14 @@
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">🔦 Işık (fener)</span><div class="sw" data-t="torch"></div></div>
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
 
+    <div class="row" style="margin-top:20px"><label data-i18n="lightTitle">💡 Işık ve çerçeve denetçisi</label></div>
+    <div class="sheetbtns">
+      <button class="cancel" id="lightBtn" data-i18n="lightBtn">🔎 Şimdi denetle</button>
+      <button class="cancel" id="tiltBtn" data-i18n="tiltBtn">📐 Eğim ölç</button>
+    </div>
+    <div id="lightOut"></div>
+    <div class="hint" data-i18n="lightHint">Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.</div>
+
     <div class="row" style="margin-top:20px"><label data-i18n="compTitle">🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)</label></div>
     <div class="tog"><span data-i18n="tgComp">Kompoziti aç</span><div class="sw" data-t="comp"></div></div>
     <div class="hint" data-i18n="compHint">Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.</div>
@@ -606,7 +614,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.1';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.2';
 
 /* ============ i18n ============ */
 const I18N={
@@ -625,6 +633,8 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  lightTitle:'💡 Işık ve çerçeve denetçisi',lightBtn:'🔎 Şimdi denetle',tiltBtn:'📐 Eğim ölç',
+  lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
   compTitle:'🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
   compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
   tgChroma:'🟩 Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
@@ -670,6 +680,8 @@ const I18N={
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'🎚 Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  lightTitle:'💡 Light & framing inspector',lightBtn:'🔎 Check now',tiltBtn:'📐 Measure tilt',
+  lightHint:'Samples once per second while this tab is open. Compares face-area brightness with the edges to catch backlight, blown highlights and low contrast.',
   compTitle:'🎛 Composite recording (real crop + green screen)',tgComp:'Enable composite',
   compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
   tgChroma:'🟩 Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
@@ -715,7 +727,7 @@ const MSG={
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
-  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',resumed:'↩︎ Kaldığın yerden'},
+  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
@@ -729,7 +741,7 @@ const MSG={
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
-  bgTooBig:'Image too large — pick a smaller one',resumed:'↩︎ Resumed where you left off'}
+  bgTooBig:'Image too large — pick a smaller one',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
@@ -1091,7 +1103,8 @@ async function openCam(){
     if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
     $('#recBtn').disabled=false;
     setupCaps();
-    if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')) startMeter();
+    if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')){ startMeter(); startLight(); }
+    autoLightCheck();
     return true;
   }catch(e){
     toast(m('noCam')+': '+(e.name||e.message));
@@ -1145,6 +1158,80 @@ function applyEyeRecipe(){
   st.fs=Math.max(st.fs,52); st.eye=true;
   apply(); save(); requestAnimationFrame(measure);
   toast(L==='tr'?'👁 Okuma çizgisi merceğin altına alındı':'👁 Reading line moved under the lens');
+}
+
+/* ============ IŞIK VE ÇERÇEVE DENETÇİSİ ============
+   Kameradan 32×48 örnek alıp histogram çıkarıyoruz: yüz bölgesi (orta) ile kenarları
+   karşılaştırınca arkadan ışık, patlama ve kontrast eksikliği ölçülebiliyor.
+   setInterval kullanıyoruz (rAF arka planda hiç koşmuyor). */
+let lightCv=null, lightIv=null, tiltDeg=null, tiltOn=false;
+function sampleFrame(){
+  if(!cam.videoWidth) return null;
+  if(!lightCv){ lightCv=document.createElement('canvas'); lightCv.width=32; lightCv.height=48; }
+  const c=lightCv.getContext('2d',{willReadFrequently:true});
+  try{ c.drawImage(cam,0,0,32,48); }catch(e){ return null; }
+  let d; try{ d=c.getImageData(0,0,32,48).data; }catch(e){ return null; }
+  let all=0,n=0, ctr=0,cn=0, edge=0,en=0, hot=0, dark=0, sum2=0;
+  for(let y=0;y<48;y++) for(let x=0;x<32;x++){
+    const i=(y*32+x)*4;
+    const l=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
+    all+=l; n++; sum2+=l*l;
+    if(l>250) hot++; if(l<8) dark++;
+    const inCenter = x>=8&&x<24 && y>=8&&y<34;      // yüzün olması beklenen bölge
+    if(inCenter){ ctr+=l; cn++; } else { edge+=l; en++; }
+  }
+  const mean=all/n, sd=Math.sqrt(Math.max(0,sum2/n-mean*mean));
+  return {mean, sd, center:ctr/cn, edge:edge/en, hotPct:hot/n*100, darkPct:dark/n*100};
+}
+function lightCheck(){
+  const s=sampleFrame();
+  if(!s) return [{lv:'info',t:(L==='tr'?'Kamera kapalı':'Camera off'),d:(L==='tr'?'Önce kamerayı aç':'Open the camera first')}];
+  const out=[];
+  if(s.center<55) out.push({lv:'bad',t:(L==='tr'?'Yüzün karanlık':'Your face is dark'),
+    d:(L==='tr'?'Işığı yüzünün önüne al; pencereye dönük otur. Ortalama parlaklık '+Math.round(s.center)+'/255':'Move the light in front of you. Center brightness '+Math.round(s.center)+'/255')});
+  else if(s.center<85) out.push({lv:'warn',t:(L==='tr'?'Yüzün az karanlık':'Face slightly dark'),d:(L==='tr'?'Biraz daha ışık iyi olur ('+Math.round(s.center)+'/255)':'A bit more light would help ('+Math.round(s.center)+'/255)')});
+  if(s.edge>s.center*1.55) out.push({lv:'bad',t:(L==='tr'?'Arkadan ışık geliyor':'You are backlit'),
+    d:(L==='tr'?'Pencereye sırtını dönmüşsün — dön ya da perdeyi kapat (arka '+Math.round(s.edge)+' / yüz '+Math.round(s.center)+')':'Turn away from the window (back '+Math.round(s.edge)+' / face '+Math.round(s.center)+')')});
+  if(s.hotPct>8) out.push({lv:'warn',t:(L==='tr'?'Işık patlıyor':'Highlights blown'),
+    d:(L==='tr'?'Karenin %'+Math.round(s.hotPct)+'\'i bembeyaz — ışığı kıs ya da uzaklaştır':Math.round(s.hotPct)+'% of the frame is pure white — dim or move the light')});
+  if(s.sd<16) out.push({lv:'warn',t:(L==='tr'?'Görüntü yassı, kontrast düşük':'Flat, low-contrast image'),
+    d:(L==='tr'?'Tek yönden yumuşak ışık ekle; düz tavan ışığı yassı gösterir':'Add one directional light; flat ceiling light looks dull')});
+  if(tiltDeg!=null && Math.abs(tiltDeg)>4) out.push({lv:'warn',t:(L==='tr'?'Telefon eğik':'Phone is tilted'),
+    d:Math.abs(Math.round(tiltDeg))+'° '+(L==='tr'?'yana yatık — düzelt':'roll — level it')});
+  if(!out.length) out.push({lv:'ok',t:(L==='tr'?'Işık ve çerçeve iyi görünüyor ✓':'Light and framing look good ✓'),
+    d:(L==='tr'?'yüz '+Math.round(s.center)+' · arka '+Math.round(s.edge)+' · kontrast '+Math.round(s.sd):'face '+Math.round(s.center)+' · back '+Math.round(s.edge)+' · contrast '+Math.round(s.sd))});
+  return out;
+}
+function renderLight(){
+  const box=$('#lightOut'); if(!box) return;
+  const COL={bad:'#ff6b6b',warn:'#ffb300',info:'#9aa0a6',ok:'var(--accent)'};
+  box.innerHTML=lightCheck().map(o=>'<div class="listitem"><div class="meta"><div class="t" style="color:'+COL[o.lv]+'">'+
+    esc(o.t)+'</div><div class="s">'+esc(o.d)+'</div></div></div>').join('');
+}
+function startLight(){
+  stopLight();
+  if(!stream) { renderLight(); return; }
+  renderLight();
+  lightIv=setInterval(renderLight,1500);
+}
+function stopLight(){ clearInterval(lightIv); lightIv=null; }
+async function enableTilt(){
+  if(tiltOn) return;
+  try{
+    const D=window.DeviceOrientationEvent;
+    if(D && typeof D.requestPermission==='function'){
+      const p=await D.requestPermission(); if(p!=='granted') { toast(m('tiltNo')); return; }
+    } else if(!D){ toast(m('tiltNo')); return; }
+    window.addEventListener('deviceorientation',e=>{ if(e.gamma!=null) tiltDeg=e.gamma; },{passive:true});
+    tiltOn=true; toast(m('tiltOk'));
+  }catch(e){ toast(m('tiltNo')); }
+}
+/* kamera açılınca bir kez otomatik denetle, sorun varsa uyar */
+function autoLightCheck(){
+  setTimeout(()=>{
+    const r=lightCheck().filter(o=>o.lv==='bad'||o.lv==='warn');
+    if(r.length) toast('💡 '+r[0].t);
+  },1400);
 }
 
 /* ============ ÇEKİM MODLARI ============
@@ -1836,7 +1923,7 @@ function renderMap(){
 /* ============ SHEET YÖNETİMİ ============ */
 const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
-function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; stopMeter(); }
+function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; stopMeter(); stopLight(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
 /* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */
 function dismissSheets(){
@@ -2036,7 +2123,7 @@ $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
 $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
 $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); };
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
-  if($('#tab-cam').classList.contains('on')) startMeter(); };
+  if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
 $('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
 /* uygulama arka plana atılırsa/kapatılırsa da konumu yaz */
 window.addEventListener('pagehide',rememberPos);
@@ -2063,7 +2150,7 @@ $$('.tabs button').forEach(b=>b.onclick=()=>{
   $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   $$('.tab').forEach(x=>x.classList.remove('on')); $('#tab-'+b.dataset.tab).classList.add('on');
   // seviye ölçer yalnız Kamera sekmesi görünürken çalışsın (pil)
-  if(b.dataset.tab==='cam') startMeter(); else stopMeter();
+  if(b.dataset.tab==='cam'){ startMeter(); startLight(); } else { stopMeter(); stopLight(); }
 });
 
 const bind=(sel,key,after)=>{ $(sel).oninput=e=>{ st[key]=+e.target.value; apply(); save(); if(after) after(); }; };
@@ -2090,6 +2177,8 @@ $$('#modeSeg button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true);
   toast('🎯 '+(curMode().n[L]||curMode().n.tr)); });
 $$('#vlSeg button').forEach(b=>b.onclick=()=>{ st.voiceLang=b.dataset.vl; apply(); save(); });
 $('#reopenCam').onclick=()=>openCam();
+$('#lightBtn').onclick=renderLight;
+$('#tiltBtn').onclick=enableTilt;
 
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
