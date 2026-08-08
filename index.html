@@ -518,7 +518,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -795,7 +795,8 @@ function start(){
 }
 function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf); }
 function reset(){ stop(); elapsed=0; startedAt=0; lastParaIdx=-1;
-  words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0); }
+  words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0);
+  if(voiceOn) syncVoicePtr(); }
 function toggle(){
   if(counting){ cancelCountdown(); return; }   // sayarken ikinci basış = iptal
   if(running){ stop(); return; }
@@ -1078,6 +1079,7 @@ function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').valu
 
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
+let srIdx=-1, srSeen='';
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
   .replace(/[^\p{L}\p{N}]/gu,'')
@@ -1087,10 +1089,20 @@ function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ toast(m('voiceNo')); return; }
   if(running) stop();
-  measure(); buildNorm(); vptr=Math.max(0,activeIdx); vTarget=pos; voicePaused=false;
+  measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0; vLast=performance.now();
+  vptr=0; syncVoicePtr();
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
-  sr.onresult=e=>{ const r=e.results[e.results.length-1];
-    let toks=(r[0].transcript||'').split(/\s+/).map(norm).filter(Boolean);
+  srIdx=-1; srSeen='';
+  sr.onresult=e=>{
+    const i=e.results.length-1, txt=(e.results[i][0].transcript||'');
+    // YALNIZ YENİ EKLENEN KISMI işle. Ara sonuçlar büyüyerek geliyor; tamamını her seferinde
+    // eşleştirmek aynı kelimeleri tekrar tekrar aratıp metni ileri fırlatıyordu.
+    let fresh;
+    if(i===srIdx && txt.startsWith(srSeen)) fresh=txt.slice(srSeen.length);
+    else if(i===srIdx) fresh=txt.split(/\s+/).slice(-3).join(' ');  // tanıyıcı metni yeniden yazdı
+    else fresh=txt;
+    srIdx=i; srSeen=txt;
+    let toks=fresh.split(/\s+/).map(norm).filter(Boolean);
     if(st.voiceCmd) toks=takeCommands(toks);
     matchVoice(toks); };
   sr.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast(m('micDenied')); };
@@ -1141,23 +1153,67 @@ function runVoiceCmd(c){
   toast('🗣 '+((CMDNAME[L]||CMDNAME.tr)[c]||c));
 }
 
+/* Eşleştirme: son konuşulan 5 kelimelik pencere, metinde vptr çevresinde aranır.
+   TEK kelime yetmez — en az iki kelime tutmalı. Yoksa "bir/ve/bu" gibi sık kelimeler
+   metni ileri fırlatıyordu. Pencere geriye de bakar ki kayma kendi kendini düzeltsin. */
+const WIN_BACK=8, WIN_FWD=26, MAX_JUMP=14;
+let recent=[];
+function wordEq(nw,tok){
+  if(nw===tok) return true;
+  if(tok.length>4 && nw.length>4 && (nw.indexOf(tok)===0 || tok.indexOf(nw)===0)) return true;
+  return false;
+}
+let lastTokAt=0;
 function matchVoice(spoken){
-  if(voicePaused) return;
-  const W=18;
-  for(const tok of spoken){
-    if(tok.length<2) continue;
-    for(let k=vptr;k<Math.min(normWords.length,vptr+W);k++){
-      const nw=normWords[k].n;
-      if(nw===tok || (tok.length>3&&nw.indexOf(tok)===0) || (nw.length>3&&tok.indexOf(nw)===0)){
-        vptr=k+1; vTarget=Math.max(0,wordTops[normWords[k].i]-eyeOff()); break;
-      }
+  if(voicePaused||!normWords.length) return;
+  const now=performance.now();
+  if(now-lastTokAt>4000) recent.length=0;   // uzun sessizlikten sonra eski kelimeler eşleşmesin
+  if(spoken.length) lastTokAt=now;
+  for(const t of spoken) if(t.length>=2) recent.push(t);
+  if(recent.length>5) recent=recent.slice(-5);
+  if(recent.length<2) return;
+
+  const lo=Math.max(0,vptr-WIN_BACK), hi=Math.min(normWords.length,vptr+WIN_FWD);
+  let bestK=-1,best=0;
+  for(let k=lo;k<hi;k++){
+    let score=0;
+    for(let j=0;j<recent.length;j++){
+      const wi=k-(recent.length-1-j);
+      if(wi<0||wi>=normWords.length) continue;
+      if(wordEq(normWords[wi].n,recent[j])) score += (j===recent.length-1?1.6:1);
+    }
+    if(score>best){ best=score; bestK=k; }
+  }
+  if(bestK<0 || best<2.6) return;                 // en az iki kelime tutsun
+  if(bestK-vptr>MAX_JUMP) return;                 // makul olmayan sıçramayı yut
+  vptr=bestK+1;
+  vTarget=Math.max(0,wordTops[normWords[bestK].i]-eyeOff());
+}
+/* Yumuşatma: kare hızından bağımsız + hız tavanı → ani ışınlanma yerine kayarak gider */
+let vLast=0;
+const VOICE_MAX_PXS=1100;
+function easeLoop(ts){
+  if(!voiceOn) return;
+  const dt=Math.min(0.05,(ts-vLast)/1000)||0.016; vLast=ts;
+  if(!voicePaused){
+    const d=vTarget-pos;
+    if(Math.abs(d)>0.6){
+      let step=d*(1-Math.exp(-dt/0.22));
+      const cap=VOICE_MAX_PXS*dt;
+      step=Math.max(-cap,Math.min(cap,step));
+      setPos(pos+step);
     }
   }
-}
-function easeLoop(){
-  if(!voiceOn) return;
-  if(!voicePaused) setPos(pos+(vTarget-pos)*0.14);
   vRaf=requestAnimationFrame(easeLoop);
+}
+/* Elle sardıktan sonra takip yeni konumdan devam etsin — eskiden eski hedefe geri çekiyordu */
+function syncVoicePtr(){
+  vTarget=pos; recent.length=0; srSeen=''; srIdx=-1;
+  const y=pos+eyeOff();
+  let lo=0,hi=wordTops.length-1,idx=0;
+  while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=y){idx=mid;lo=mid+1;}else hi=mid-1;}
+  let p=0; while(p<normWords.length && normWords[p].i<idx) p++;
+  vptr=p;
 }
 
 /* ============ KİLİT ============ */
@@ -1292,6 +1348,7 @@ stage.addEventListener('pointermove',e=>{
 function endDrag(){
   if(!dragging) return; dragging=false;
   $('#speedRail').classList.remove('on');
+  if(moved && dragMode==='scrub' && voiceOn) syncVoicePtr();   // takip yeni konumdan devam etsin
   if(!moved){
     const now=Date.now();
     if(now-lastTap<320){ lastTap=0; setLock(!body.classList.contains('locked')); return; }
@@ -1356,7 +1413,7 @@ function jumpLine(dir){
   let target=null;
   if(dir>0){ target=lns.find(l=>l.offsetTop>cur+4); }
   else { const before=lns.filter(l=>l.offsetTop<cur-4); target=before[before.length-1]; }
-  if(target) setPos(target.offsetTop-eyeOff()+target.offsetHeight/2);
+  if(target){ setPos(target.offsetTop-eyeOff()+target.offsetHeight/2); if(voiceOn) syncVoicePtr(); }
 }
 
 /* ============ OLAYLAR ============ */
