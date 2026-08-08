@@ -406,6 +406,7 @@
     </div>
     <input type="file" id="impFile" accept="application/json,.json" class="hidden">
     <div class="sheetbtns"><button class="cancel" id="takesBtn" data-i18n="takes">🎞 Çekimlerim</button></div>
+    <div class="sheetbtns"><button class="cancel" id="remoteBtn" data-i18n="remote">🎛 Uzaktan kumanda</button></div>
     <div class="sheetbtns"><button class="cancel" id="helpBtn2" data-i18n="help">Nasıl kullanılır?</button></div>
     <div class="hint" id="verLine" style="text-align:center;margin-top:14px">Sufle v2.0</div>
   </div>
@@ -439,6 +440,41 @@
   <div class="hint" data-i18n="takesHint">Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar'a eklemek için "Kaydet / Paylaş"a bas.</div>
 </div>
 
+<!-- UZAKTAN KUMANDA -->
+<div class="sheet" id="remoteSheet">
+  <div class="grab"></div>
+  <h2><span data-i18n="remote">🎛 Uzaktan kumanda</span><button class="iconbtn" id="remoteX">✕</button></h2>
+  <div class="hint" data-i18n="remoteHint">Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.</div>
+
+  <div class="row" style="margin-top:16px">
+    <label data-i18n="lastKeyL">Gelen son tuş</label><span class="v" id="lastKey">—</span>
+  </div>
+  <div class="sheetbtns">
+    <button class="cancel" id="learnBtn" data-i18n="learnStart">🎯 Tuş öğret</button>
+    <button class="cancel" id="mapReset" data-i18n="mapReset">↺ Varsayılana dön</button>
+  </div>
+  <div id="learnBox" class="hidden">
+    <div class="hint" id="learnMsg" style="margin-top:14px"></div>
+    <div class="seg" id="actSeg">
+      <button data-act="toggle">▶︎/⏸</button>
+      <button data-act="prevLine">↑ satır</button>
+      <button data-act="nextLine">↓ satır</button>
+      <button data-act="faster">hız +</button>
+      <button data-act="slower">hız −</button>
+      <button data-act="rec">● kayıt</button>
+      <button data-act="reset">⟲ başa</button>
+      <button data-act="none">yok</button>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px"><label data-i18n="mapList">Eşleme tablosu</label></div>
+  <div id="mapList"></div>
+
+  <div class="row" style="margin-top:22px"><label data-i18n="voiceCmdL">🗣 Sesli komut</label></div>
+  <div class="tog"><span data-i18n="voiceCmdT">"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"</span><div class="sw on" data-t="voiceCmd"></div></div>
+  <div class="hint" data-i18n="voiceCmdHint">🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.</div>
+</div>
+
 <!-- YARDIM -->
 <div class="sheet" id="helpSheet">
   <div class="grab"></div>
@@ -465,7 +501,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -490,7 +526,12 @@ const I18N={
   markHint:'# ile başlayan satır = bölüm başlığı · [köşeli parantez] = yönerge notu (okunmaz)',delete:'🗑 Sil',apply:'✓ Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
   takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Sakla',saveShare:'⬇︎ Kaydet / Paylaş',
-  resultHint:'Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar\'a ekleyebilirsin.'},
+  resultHint:'Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar\'a ekleyebilirsin.',
+  remote:'🎛 Uzaktan kumanda',
+  remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
+  lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
+  voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
+  voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · right edge = speed',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',settings:'Settings',
@@ -512,7 +553,12 @@ const I18N={
   markHint:'# line = section heading · [brackets] = direction note (not read)',delete:'🗑 Delete',apply:'✓ Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
   takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Keep',saveShare:'⬇︎ Save / Share',
-  resultHint:'Stored on device — use "Save / Share" to add it to Photos.'}
+  resultHint:'Stored on device — use "Save / Share" to add it to Photos.',
+  remote:'🎛 Remote control',
+  remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
+  lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
+  voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
+  voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
 };
 const MSG={
  tr:{noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
@@ -521,26 +567,26 @@ const MSG={
   saved:'Kaydedildi',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
   exported:'Yedek indirildi',imported:'Geri yüklendi',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
-  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız'},
+  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',
   saved:'Saved',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
   exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
-  emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed'}
+  emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored'}
 };
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
 <b>Ekran hareketleri</b><br>• Dokun = başlat/duraklat<br>• Yukarı-aşağı sürükle = metinde ileri-geri sar<br>• Sağ kenarda sürükle = hızı canlı değiştir<br>• İki kez dokun = kilidi aç/kapat<br><br>
-<b>Klavye / bluetooth kumanda</b><br>Boşluk = başlat-duraklat · ↑↓ = hız · ←→ / PageUp-Down = satır atla · R = kayıt · Home = başa sar · Esc = kapat<br><br>
+<b>Uzaktan kumanda</b><br>Bluetooth sunum kumandası / pedal / klavye: Boşluk = başlat-duraklat · ↑↓ = hız · ←→ · PageUp-Down = satır atla · R = kayıt · Home = başa sar.<br>Kumandan farklı tuş gönderiyorsa: <b>Ayarlar → Diğer → 🎛 Uzaktan kumanda → Tuş öğret</b> — tuşa bas, ne yapacağını seç. Her kumandayla çalışır.<br>Eller doluysa <b>sesli komut</b>: 🎤 açıkken "sufle başla", "sufle dur", "sufle hızlan", "sufle başa dön".<br><br>
 <b>Metin işaretleri</b><br><code>#</code> ile başlayan satır bölüm başlığı olur (küçük, yeşil, okunmaz sayılır).<br><code>[şuraya gülümse]</code> gibi köşeli parantezli satır yönerge notudur — soluk gösterilir, kelime sayısına girmez.<br><br>
 <b>Cam rig (beam splitter)</b><br>Görünüm → "Yazıyı aynala"yı aç. Profesyonel prompter camında düz okunur.<br><br>
 <b>Sesle takip</b><br>🎤 düğmesi: konuştukça metin senin hızında akar. İnternet ve mikrofon izni gerekir.<br><br>
 <b>İpucu</b><br>Okuma çizgisini kameraya olabildiğince yaklaştır (10–20). Göz teması buradan gelir.`,
  en:`<b>Quick start</b><br>1) Paste your script in 📝 Scripts.<br>2) Open the camera, hold the phone at eye level.<br>3) Red button = record (the prompter starts automatically).<br><br>
 <b>Gestures</b><br>• Tap = play/pause<br>• Drag up/down = scrub through the script<br>• Drag on the right edge = live speed<br>• Double tap = lock/unlock<br><br>
-<b>Keyboard / bluetooth clicker</b><br>Space = play-pause · ↑↓ = speed · ←→ / PageUp-Down = skip line · R = record · Home = rewind · Esc = close<br><br>
+<b>Remote control</b><br>Bluetooth clicker / pedal / keyboard: Space = play-pause · ↑↓ = speed · ←→ · PageUp-Down = skip line · R = record · Home = rewind.<br>If your clicker sends other keys: <b>Settings → More → 🎛 Remote control → Learn a key</b> — press the button, pick the action. Works with any remote.<br>Hands full? <b>Voice commands</b> with 🎤 on: "prompter start", "prompter stop", "prompter faster", "prompter rewind".<br><br>
 <b>Script markers</b><br>A line starting with <code>#</code> becomes a section heading.<br>A line in <code>[brackets]</code> is a direction note — dimmed, not counted as words.<br><br>
 <b>Beam splitter rig</b><br>Look → enable "Mirror text".<br><br>
 <b>Voice follow</b><br>🎤 button: the script follows your voice. Needs internet + mic permission.<br><br>
@@ -555,7 +601,7 @@ function applyLang(){
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
   $('#verLine').textContent='Sufle v'+VER;
-  renderScripts(); updateStats(); updateHud();
+  renderScripts(); updateStats(); updateHud(); renderMap();
 }
 
 /* ============ DURUM ============ */
@@ -566,7 +612,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:true, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100,
+  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -720,14 +766,16 @@ function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn'
 function reset(){ stop(); elapsed=0; startedAt=0; lastParaIdx=-1;
   words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0); }
 function toggle(){
+  if(counting){ cancelCountdown(); return; }   // sayarken ikinci basış = iptal
   if(running){ stop(); return; }
-  if(st.count && pos<=0 && !counting) countdown(start); else start();
+  if(st.count && pos<=0) countdown(start); else start();
 }
-let counting=false;
+let counting=false, countIv=null;
 function countdown(cb){
   counting=true; const el=$('#count'); let n=3; el.classList.add('on'); el.textContent=n;
-  const iv=setInterval(()=>{ n--; if(n<=0){ clearInterval(iv); el.classList.remove('on'); counting=false; cb(); } else el.textContent=n; },800);
+  countIv=setInterval(()=>{ n--; if(n<=0){ cancelCountdown(); cb(); } else el.textContent=n; },800);
 }
+function cancelCountdown(){ clearInterval(countIv); countIv=null; counting=false; $('#count').classList.remove('on'); }
 function clock(s){ s=Math.max(0,Math.floor(s)); return String((s/60)|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
 function updateHud(){
   const doneW=Math.max(0,activeIdx+1), left=Math.max(0,words.length-doneW);
@@ -938,8 +986,10 @@ function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').valu
 
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[];
+const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
-  .replace(/[^\p{L}\p{N}]/gu,'').replace(/[âêîôû]/g,c=>({'â':'a','ê':'e','î':'i','ô':'o','û':'u'}[c])); }
+  .replace(/[^\p{L}\p{N}]/gu,'')
+  .replace(/[çğıİşöüâêîôûéáñ]/g,c=>FOLD[c]||c); }
 function buildNorm(){ normWords=words.map((w,i)=>({i,n:norm(w.textContent)})).filter(x=>x.n); }
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -948,7 +998,9 @@ function startVoice(){
   measure(); buildNorm(); vptr=Math.max(0,activeIdx); vTarget=pos;
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
   sr.onresult=e=>{ const r=e.results[e.results.length-1];
-    matchVoice((r[0].transcript||'').split(/\s+/).map(norm).filter(Boolean)); };
+    let toks=(r[0].transcript||'').split(/\s+/).map(norm).filter(Boolean);
+    if(st.voiceCmd) toks=takeCommands(toks);
+    matchVoice(toks); };
   sr.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast(m('micDenied')); };
   sr.onend=()=>{ if(voiceOn){ try{sr.start();}catch(e){} } };
   try{ sr.start(); }catch(e){}
@@ -957,6 +1009,45 @@ function startVoice(){
 }
 function stopVoice(){ voiceOn=false; if(sr){ sr.onend=null; try{sr.stop();}catch(e){} }
   cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on'); toast(m('voiceOff')); }
+/* "sufle <komut>" kalıbını yakala, komut kelimelerini akıştan çıkar */
+const WAKE={sufle:1,suffle:1,sufl:1,sufla:1,prompter:1,promter:1};
+const VCMD={
+  basla:'play', baslat:'play', devam:'play', oku:'play',
+  dur:'pause', duraklat:'pause', bekle:'pause',
+  hizlan:'faster', hizli:'faster', yavasla:'slower', yavas:'slower',
+  basa:'reset', don:'reset', bastan:'reset',
+  kaydet:'rec', kayit:'rec',
+  start:'play', go:'play', resume:'play', stop:'pause', pause:'pause', wait:'pause',
+  faster:'faster', slower:'slower', rewind:'reset', restart:'reset', record:'rec'
+};
+const TAIL={basa:'don', bastan:'al'};
+let lastCmdAt=0;
+function takeCommands(toks){
+  const out=[];
+  for(let i=0;i<toks.length;i++){
+    if(WAKE[toks[i]] && i+1<toks.length){
+      const c=VCMD[toks[i+1]];
+      if(c){ runVoiceCmd(c);
+        i += (TAIL[toks[i+1]]===toks[i+2]) ? 2 : 1;   // "başa dön" gibi iki kelimeli kalıbı da yut
+        continue; }
+    }
+    out.push(toks[i]);
+  }
+  return out;
+}
+function runVoiceCmd(c){
+  const now=Date.now(); if(now-lastCmdAt<900) return; lastCmdAt=now;
+  if(c==='play'){ stopVoiceScrollGuard(); if(!running) start(); }
+  else if(c==='pause'){ if(running) stop(); }
+  else if(c==='faster') nudgeWpm(+10);
+  else if(c==='slower') nudgeWpm(-10);
+  else if(c==='reset') reset();
+  else if(c==='rec') toggleRec();
+  toast('🗣 '+c);
+}
+/* sesle takip açıkken start() gereksiz — takip zaten konumu sürüyor */
+function stopVoiceScrollGuard(){ if(voiceOn){ vTarget=pos; } }
+
 function matchVoice(spoken){
   const W=18;
   for(const tok of spoken){
@@ -981,8 +1072,33 @@ function setLock(on,silent){
   if(!silent) toast(on?m('locked'):m('unlocked'));
 }
 
+/* ============ KUMANDA EŞLEME EKRANI ============ */
+let learning=false;
+function renderLearn(){
+  const box=$('#learnBox'), msg=$('#learnMsg');
+  if(!learning){ box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  msg.innerHTML = learnKey
+    ? (L==='tr'?'Algılanan tuş: <b>'+esc(keyLabel(learnKey))+'</b> — ne yapsın?':'Detected key: <b>'+esc(keyLabel(learnKey))+'</b> — what should it do?')
+    : (L==='tr'?'Kumandandaki bir tuşa bas…':'Press a button on your remote…');
+}
+function renderMap(){
+  const box=$('#mapList'); if(!box) return;
+  const mp=keyMap(); box.innerHTML='';
+  Object.keys(mp).filter(k=>mp[k]&&mp[k]!=='none').sort().forEach(k=>{
+    const d=document.createElement('div'); d.className='listitem';
+    d.innerHTML='<div class="meta"><div class="t">'+esc(keyLabel(k))+'</div><div class="s">'+actName(mp[k])+'</div></div>'+
+      '<button class="iconbtn" data-a="x">🗑</button>';
+    d.querySelector('[data-a="x"]').onclick=()=>{
+      st.remoteMap=Object.assign({},keyMap()); st.remoteMap[k]='none'; save(); renderMap();
+    };
+    box.appendChild(d);
+  });
+  if(!box.children.length) box.innerHTML='<div class="empty">—</div>';
+}
+
 /* ============ SHEET YÖNETİMİ ============ */
-const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet'];
+const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); }
 function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
@@ -1071,21 +1187,45 @@ $('#lockOverlay').addEventListener('pointerup',()=>{
   if(now-lastTap<340){ lastTap=0; setLock(false); } else lastTap=now;
 },{passive:true});
 
-/* ============ KLAVYE / BLUETOOTH KUMANDA ============ */
+/* ============ UZAKTAN KUMANDA (bluetooth tuş takımı / klavye) ============ */
+const ACTIONS={
+  toggle:()=>toggle(),
+  nextLine:()=>jumpLine(1),
+  prevLine:()=>jumpLine(-1),
+  faster:()=>nudgeWpm(+5),
+  slower:()=>nudgeWpm(-5),
+  rec:()=>toggleRec(),
+  reset:()=>reset(),
+  lock:()=>setLock(!body.classList.contains('locked')),
+  none:()=>{}
+};
+const DEFAULT_MAP={
+  ' ':'toggle', 'Enter':'toggle', 'PageDown':'toggle', 'F5':'toggle', 'b':'toggle', '.':'toggle',
+  'PageUp':'prevLine', 'ArrowLeft':'prevLine', 'ArrowRight':'nextLine',
+  'ArrowUp':'faster', 'ArrowDown':'slower',
+  'r':'rec', 'R':'rec', 'Home':'reset', 'End':'lock'
+};
+function keyMap(){ return Object.assign({},DEFAULT_MAP,st.remoteMap||{}); }
+let learnKey=null;           // öğrenme modunda bekleyen tuş
+function keyLabel(k){ return k===' '?'Boşluk':k; }
 window.addEventListener('keydown',e=>{
   const tag=(e.target.tagName||'').toLowerCase();
   if(tag==='textarea'||tag==='input') return;
-  switch(e.key){
-    case ' ': case 'Enter': e.preventDefault(); toggle(); break;
-    case 'ArrowUp': e.preventDefault(); nudgeWpm(+5); break;
-    case 'ArrowDown': e.preventDefault(); nudgeWpm(-5); break;
-    case 'ArrowRight': case 'PageDown': e.preventDefault(); jumpLine(1); break;
-    case 'ArrowLeft': case 'PageUp': e.preventDefault(); jumpLine(-1); break;
-    case 'Home': e.preventDefault(); reset(); break;
-    case 'r': case 'R': e.preventDefault(); toggleRec(); break;
-    case 'Escape': closeSheets(); break;
+  $('#lastKey') && ($('#lastKey').textContent=keyLabel(e.key));
+  if(e.key==='Escape'){ closeSheets(); return; }
+  // öğrenme modu: gelen tuşu yakala, eylem seçtir
+  if($('#remoteSheet').classList.contains('open') && learning){
+    e.preventDefault(); learnKey=e.key; renderLearn(); return;
   }
+  const act=keyMap()[e.key];
+  if(act && ACTIONS[act]){ e.preventDefault(); ACTIONS[act](); flashKey(keyLabel(e.key),act); }
 });
+function flashKey(k,act){
+  if(!anySheet()) toast('🎛 '+k+' → '+actName(act));
+}
+function actName(a){ return (L==='tr'
+  ? {toggle:'başlat/duraklat',nextLine:'satır ileri',prevLine:'satır geri',faster:'hızlan',slower:'yavaşla',rec:'kayıt',reset:'başa sar',lock:'kilit',none:'yok'}
+  : {toggle:'play/pause',nextLine:'next line',prevLine:'prev line',faster:'faster',slower:'slower',rec:'record',reset:'rewind',lock:'lock',none:'none'})[a]||a; }
 function nudgeWpm(d){ st.wpm=Math.min(320,Math.max(40,st.wpm+d)); $('#wpm').value=st.wpm; $('#vWpm').textContent=st.wpm;
   $('#railV').textContent=st.wpm; $('#speedRail').classList.add('on'); setTimeout(()=>$('#speedRail').classList.remove('on'),700);
   updateHud(); save(); }
@@ -1116,6 +1256,19 @@ $('#sheetX').onclick=closeSheets;
 $('#scriptsX').onclick=()=>{ pullEditor(); buildContent(); closeSheets(); };
 $('#takesX').onclick=closeSheets;
 $('#takesBtn').onclick=()=>{ renderTakes(); openSheet('#takesSheet'); };
+$('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); };
+$('#remoteX').onclick=()=>{ learning=false; closeSheets(); };
+$('#learnBtn').onclick=()=>{ learning=!learning; learnKey=null;
+  $('#learnBtn').classList.toggle('save',learning);
+  $('#learnBtn').textContent=learning?(L==='tr'?'⏹ Öğretmeyi bitir':'⏹ Stop learning'):t('learnStart');
+  renderLearn(); };
+$('#mapReset').onclick=()=>{ st.remoteMap=null; save(); renderMap(); toast(m('mapReset')); };
+$$('#actSeg button').forEach(b=>b.onclick=()=>{
+  if(!learnKey) return;
+  st.remoteMap=Object.assign({},st.remoteMap||{}); st.remoteMap[learnKey]=b.dataset.act;
+  save(); toast(keyLabel(learnKey)+' → '+actName(b.dataset.act));
+  learnKey=null; renderLearn(); renderMap();
+});
 
 $$('.tabs button').forEach(b=>b.onclick=()=>{
   $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
