@@ -688,6 +688,7 @@
     <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
     <button class="save" id="saveBtn" data-i18n="saveShare">📥 Fotoğraflara Kaydet</button>
   </div>
+  <div class="hint" id="shareDiag" style="text-align:center;font-weight:700"></div>
   <div class="hint" id="capInfo" style="text-align:center"></div>
   <div class="hint" style="text-align:center" data-i18n="saveHint">Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.</div>
   <div class="hint" style="text-align:center" data-i18n="resultHint">Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar'a ekleyebilirsin.</div>
@@ -709,7 +710,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1704,7 +1705,16 @@ function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl=URL.createObjectURL(blob);
   const v=$('#resultVid'); v.src=resultUrl; v.load();
-  $('#rSize').textContent='· '+(blob.size/1048576).toFixed(1)+' MB · '+clock(lastDur);
+  const fmt=(blob.type.indexOf('mp4')>=0)?'MP4':(blob.type.indexOf('webm')>=0?'WebM':(blob.type||'?'));
+  $('#rSize').textContent='· '+fmt+' · '+(blob.size/1048576).toFixed(1)+' MB · '+clock(lastDur);
+  // tanı satırı: kaydetme çalışmazsa sebebi burada görünür
+  let diag='';
+  const f0=new File([blob],'x.'+(fmt==='MP4'?'mp4':'webm'),{type:blob.type});
+  const canF=!!(navigator.canShare&&navigator.canShare({files:[f0]}));
+  if(fmt!=='MP4') diag=(L==='tr'?'⚠️ Biçim '+fmt+' — iPhone Fotoğraflar yalnız MP4 kabul eder':'⚠️ Format '+fmt+' — iPhone Photos only accepts MP4');
+  else if(!canF) diag=(L==='tr'?'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)':'⚠️ This browser cannot share files (use Safari)');
+  else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');
+  $('#shareDiag').textContent=diag;
   const n=buildCues().length;
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
@@ -1789,14 +1799,30 @@ async function doTrim(){
 
 async function saveRec(){
   if(!lastBlob) return;
-  const ext=(lastBlob.type.indexOf('mp4')>=0)?'mp4':'webm';
-  const file=new File([lastBlob],fileName()+'.'+ext,{type:lastBlob.type});
+  const isMp4=lastBlob.type.indexOf('mp4')>=0;
+  const ext=isMp4?'mp4':'webm';
+  // iOS: tür boş ya da webm ise "Videoyu Kaydet" seçeneği ÇIKMAZ
+  const type=lastBlob.type||(isMp4?'video/mp4':'video/webm');
+  const file=new File([lastBlob],fileName()+'.'+ext,{type});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{ await navigator.share({files:[file],title:'Sufle'}); return; }catch(e){ if(e.name==='AbortError') return; }
+    try{
+      // SADECE files gönder: title/text eklemek bazı iOS sürümlerinde
+      // paylaşımı metin paylaşımına çeviriyor ve "Videoyu Kaydet" kayboluyor
+      await navigator.share({files:[file]});
+      if(!isMp4) toast(m('notMp4'));
+      return;
+    }catch(e){
+      if(e.name==='AbortError') return;
+      toast(m('shareFail')+' ('+(e.name||'')+')');
+    }
+  } else {
+    toast(navigator.share? m('noFileShare') : m('noShare'));
   }
+  // yedek yol: Dosyalar'a indir
   const a=document.createElement('a'); const u=URL.createObjectURL(lastBlob);
   a.href=u; a.download=file.name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);
+  setTimeout(()=>toast(m('savedFiles')),1800);
 }
 
 /* ============ ALTYAZI ÜRETİMİ (.srt / .vtt) ============
