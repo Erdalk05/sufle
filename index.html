@@ -514,7 +514,18 @@
       <input type="range" id="keySim" min="5" max="80" value="30">
       <div class="row"><label data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="vKeySmooth">10</span></div>
       <input type="range" id="keySmooth" min="1" max="40" value="10">
+      <div class="row"><label data-i18n="spill">Saçak temizliği (despill)</label><span class="v" id="vSpill">60</span></div>
+      <input type="range" id="spill" min="0" max="100" value="60">
       <div class="row"><label data-i18n="newBg">Yeni arka plan</label></div>
+      <div class="seg" id="bgKindSeg">
+        <button data-bk="color" class="on" data-i18n="bkColor">Düz renk</button>
+        <button data-bk="studio" data-i18n="bkStudio">Stüdyo</button>
+        <button data-bk="warm" data-i18n="bkWarm">Sıcak</button>
+        <button data-bk="cool" data-i18n="bkCool">Soğuk</button>
+        <button data-bk="bokeh" data-i18n="bkBokeh">Bokeh</button>
+        <button data-bk="brand" data-i18n="bkBrand">Marka</button>
+        <button data-bk="image" data-i18n="bkImage">Görsel</button>
+      </div>
       <div class="seg" id="bgcSeg">
         <button data-b="#101820" class="on" data-i18n="cNavy">Lacivert</button>
         <button data-b="#000000" data-i18n="cBlack">Siyah</button>
@@ -713,7 +724,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.2';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.3';
 
 /* ============ i18n ============ */
 const I18N={
@@ -740,6 +751,8 @@ const I18N={
   burnHint:'Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.',
   tgChroma:'🟩 Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
   keySim:'Eşik (ne kadarı silinsin)',keySmooth:'Kenar yumuşaklığı',newBg:'Yeni arka plan',
+  spill:'Saçak temizliği (despill)',bkColor:'Düz renk',bkStudio:'Stüdyo',bkWarm:'Sıcak',bkCool:'Soğuk',
+  bkBokeh:'Bokeh',bkBrand:'Marka',bkImage:'Görsel',
   bgPick:'🖼 Görsel seç',bgClear:'✕ Görseli kaldır',
   chromaHint:'Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).',
   capOffset:'💬 Altyazı kayması (sn)',
@@ -796,6 +809,8 @@ const I18N={
   burnHint:'The sentence you are reading is drawn on the video — no separate subtitle file needed. Composite must be on.',
   tgChroma:'🟩 Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
   keySim:'Threshold (how much is removed)',keySmooth:'Edge softness',newBg:'New background',
+  spill:'Spill suppression',bkColor:'Solid',bkStudio:'Studio',bkWarm:'Warm',bkCool:'Cool',
+  bkBokeh:'Bokeh',bkBrand:'Brand',bkImage:'Image',
   bgPick:'🖼 Pick image',bgClear:'✕ Remove image',
   chromaHint:'Without a green screen the background cannot be replaced — separating a person from the background needs an AI model, which is far too heavy on a phone. A plain, evenly lit sheet or wall is enough.',
   capOffset:'💬 Caption offset (s)',
@@ -920,7 +935,7 @@ const DEF={
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false,
-  comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
+  comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -1456,9 +1471,13 @@ const FS_SRC=
 'precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform sampler2D bg;'+
 'uniform vec2 sc;uniform vec2 of;uniform vec3 key;uniform float sim;uniform float smo;'+
 'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
+'uniform float spill;uniform float axis;'+
 'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+
 'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
 'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
+// despill: saç ve omuz kenarındaki yeşil/mavi saçağı bastır
+'if(spill>0.0){ if(axis<0.5){ float mx=max(c.r,c.b); if(c.g>mx) c.g=mix(c.g,mx,spill); }'+
+'else if(axis<1.5){ float mx=max(c.r,c.g); if(c.b>mx) c.b=mix(c.b,mx,spill); } }'+
 'vec3 b=useBg>0.5?texture2D(bg,uv).rgb:bgc;'+
 'gl_FragColor=vec4(mix(b,c,a),1.0);}';
 let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false};
@@ -1508,13 +1527,59 @@ function stopComp(){
   body.classList.remove('comp','burn');
   if(comp.stream){ comp.stream.getTracks().forEach(t=>t.stop()); comp.stream=null; }
 }
+/* Hazır arka planlar: dış dosya yok, hepsi tuvale çiziliyor → çevrimdışı çalışır */
+function makeBgCanvas(kind,W,H){
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  if(kind==='studio'){
+    const g=x.createRadialGradient(W/2,H*0.42,W*0.05,W/2,H*0.42,W*0.95);
+    g.addColorStop(0,'#6b7076'); g.addColorStop(.55,'#3a3e44'); g.addColorStop(1,'#191b1e');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+  } else if(kind==='warm'){
+    const g=x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#3a2418'); g.addColorStop(.5,'#7a4a24'); g.addColorStop(1,'#c98a3e');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    const v=x.createRadialGradient(W/2,H/2,W*0.2,W/2,H/2,W*0.9);
+    v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.45)');
+    x.fillStyle=v; x.fillRect(0,0,W,H);
+  } else if(kind==='cool'){
+    const g=x.createLinearGradient(0,H,W,0);
+    g.addColorStop(0,'#07202e'); g.addColorStop(.55,'#0d4a5c'); g.addColorStop(1,'#1b8a92');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+  } else if(kind==='bokeh'){
+    x.fillStyle='#0d1116'; x.fillRect(0,0,W,H);
+    let seed=7; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+    for(let i=0;i<42;i++){
+      const r=W*(0.03+rnd()*0.10), cx=rnd()*W, cy=rnd()*H;
+      const g=x.createRadialGradient(cx,cy,0,cx,cy,r);
+      const hue=[ '255,214,120','120,200,255','170,255,190','255,150,190' ][i%4];
+      g.addColorStop(0,'rgba('+hue+',.30)'); g.addColorStop(1,'rgba('+hue+',0)');
+      x.fillStyle=g; x.beginPath(); x.arc(cx,cy,r,0,7); x.fill();
+    }
+  } else if(kind==='brand'){
+    const g=x.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#04210f'); g.addColorStop(.6,'#0b6b39'); g.addColorStop(1,'#00C853');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+  } else return null;
+  return c;
+}
 function loadCompBg(){
   comp.bgReady=false;
-  if(!st.bgImg||!comp.gl) return;
-  const img=new Image();
-  img.onload=()=>{ const gl=comp.gl; gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
-    try{ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){} };
-  img.src=st.bgImg;
+  if(!comp.gl) return;
+  const gl=comp.gl, [W,H]=compSize();
+  const kind=st.bgKind||'color';
+  if(kind!=='color' && kind!=='image'){
+    const c=makeBgCanvas(kind,Math.min(1080,W),Math.min(1920,H));
+    if(c){ try{ gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); comp.bgReady=true; }catch(e){} }
+    return;
+  }
+  if(kind==='image' && st.bgImg){
+    const img=new Image();
+    img.onload=()=>{ try{ gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){} };
+    img.src=st.bgImg;
+  }
 }
 function drawComp(){
   if(!comp.on) return;
@@ -1536,6 +1601,10 @@ function drawComp(){
     gl.uniform1f(gl.getUniformLocation(comp.pr,'sim'),(st.keySim||30)/100);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'smo'),Math.max(0.01,(st.keySmooth||10)/100));
     gl.uniform1f(gl.getUniformLocation(comp.pr,'useKey'),st.chroma?1:0);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'spill'),(st.spill==null?60:st.spill)/100);
+    // hangi kanal bastırılacak: yeşil perde -> g, mavi perde -> b
+    const kk=hex2rgb(st.keyColor||'#00b140');
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'axis'), (kk[2]>kk[1])?1:0);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'useBg'),(st.chroma&&comp.bgReady)?1:0);
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
@@ -2507,6 +2576,10 @@ function apply(){
   $('#keySmooth').value=st.keySmooth; $('#vKeySmooth').textContent=st.keySmooth;
   $$('#keySeg button').forEach(b=>b.classList.toggle('on',b.dataset.k===st.keyColor));
   $$('#bgcSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bgColor));
+  $$('#bgKindSeg button').forEach(b=>b.classList.toggle('on',b.dataset.bk===(st.bgKind||'color')));
+  $('#spill').value=(st.spill==null?60:st.spill); $('#vSpill').textContent=(st.spill==null?60:st.spill);
+  const solid=(st.bgKind||'color')==='color';
+  $('#bgcSeg').style.display=solid?'':'none';
   $('#compBox').classList.toggle('hidden',!st.comp);
   $$('#colorSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c===st.color));
   $$('#bgSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bg));
@@ -2755,6 +2828,10 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
 });
 $$('#keySeg button').forEach(b=>b.onclick=()=>{ st.keyColor=b.dataset.k; apply(); save(); });
 $$('#bgcSeg button').forEach(b=>b.onclick=()=>{ st.bgColor=b.dataset.b; apply(); save(); });
+$$('#bgKindSeg button').forEach(b=>b.onclick=()=>{ st.bgKind=b.dataset.bk;
+  if(st.bgKind==='image' && !st.bgImg) $('#bgFile').click();
+  apply(); save(); loadCompBg(); });
+$('#spill').oninput=e=>{ st.spill=+e.target.value; $('#vSpill').textContent=st.spill; save(); };
 $('#keySim').oninput=e=>{ st.keySim=+e.target.value; $('#vKeySim').textContent=st.keySim; save(); };
 $('#capSize').oninput=e=>{ st.capSize=+e.target.value; $('#vCapSize').textContent=st.capSize; save(); };
 $$('#capPosSeg button').forEach(b=>b.onclick=()=>{ st.capPos=b.dataset.cp; apply(); save(); });
@@ -2774,7 +2851,7 @@ $('#bgFile').onchange=e=>{
       c.getContext('2d').drawImage(img,0,0,c.width,c.height);
       let url; try{ url=c.toDataURL('image/jpeg',0.82); }catch(err){ toast(m('bgTooBig')); return; }
       if(url.length>1400000){ toast(m('bgTooBig')); return; }
-      st.bgImg=url; save(); loadCompBg(); toast(m('bgSet'));
+      st.bgImg=url; st.bgKind='image'; save(); apply(); loadCompBg(); toast(m('bgSet'));
     };
     img.onerror=()=>toast(m('bgTooBig'));
     img.src=r.result;
