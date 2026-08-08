@@ -36,6 +36,10 @@
     max-width:100%;max-height:100%;display:none;background:#000}
   body.comp #compCv{display:block}
   body.comp #cam{display:none}
+  #compOut{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    max-width:100%;max-height:100%;display:none;background:#000}
+  body.comp.burn #compOut{display:block}
+  body.comp.burn #compCv{display:none}
   #scrim{position:absolute;inset:0;background:#000;opacity:0;z-index:1;pointer-events:none;transition:opacity .2s}
   body.cam #scrim{opacity:var(--scrim)}
 
@@ -274,6 +278,7 @@
 <div id="stage">
   <video id="cam" autoplay muted playsinline webkit-playsinline></video>
   <canvas id="compCv"></canvas>
+  <canvas id="compOut"></canvas>
   <div id="scrim"></div>
   <div id="prompt"><div id="scroller"></div></div>
   <div id="guides">
@@ -491,6 +496,15 @@
         <button class="cancel" id="bgClear" data-i18n="bgClear">✕ Görseli kaldır</button>
       </div>
       <input type="file" id="bgFile" accept="image/*" class="hidden">
+      <div class="tog"><span data-i18n="tgBurn">💬 Altyazıyı videoya göm</span><div class="sw" data-t="burnCaps"></div></div>
+      <div class="row"><label data-i18n="capSize">Altyazı boyutu</label><span class="v" id="vCapSize">42</span></div>
+      <input type="range" id="capSize" min="24" max="72" value="42">
+      <div class="row"><label data-i18n="capPos">Altyazı konumu</label></div>
+      <div class="seg" id="capPosSeg">
+        <button data-cp="bottom" class="on" data-i18n="cpBottom">Alt</button>
+        <button data-cp="middle" data-i18n="cpMiddle">Orta</button>
+      </div>
+      <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
       <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
     </div>
     <div class="row" style="margin-top:18px"><label data-i18n="micLevel">🎙 Mikrofon seviyesi</label><span class="v" id="micTxt">—</span></div>
@@ -642,7 +656,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -665,6 +679,8 @@ const I18N={
   lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
   compTitle:'🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
   compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
+  tgBurn:'💬 Altyazıyı videoya göm',capSize:'Altyazı boyutu',capPos:'Altyazı konumu',cpBottom:'Alt',cpMiddle:'Orta',
+  burnHint:'Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.',
   tgChroma:'🟩 Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
   keySim:'Eşik (ne kadarı silinsin)',keySmooth:'Kenar yumuşaklığı',newBg:'Yeni arka plan',
   bgPick:'🖼 Görsel seç',bgClear:'✕ Görseli kaldır',
@@ -715,6 +731,8 @@ const I18N={
   lightHint:'Samples once per second while this tab is open. Compares face-area brightness with the edges to catch backlight, blown highlights and low contrast.',
   compTitle:'🎛 Composite recording (real crop + green screen)',tgComp:'Enable composite',
   compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
+  tgBurn:'💬 Burn captions into the video',capSize:'Caption size',capPos:'Caption position',cpBottom:'Bottom',cpMiddle:'Middle',
+  burnHint:'The sentence you are reading is drawn on the video — no separate subtitle file needed. Composite must be on.',
   tgChroma:'🟩 Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
   keySim:'Threshold (how much is removed)',keySmooth:'Edge softness',newBg:'New background',
   bgPick:'🖼 Pick image',bgClear:'✕ Remove image',
@@ -821,7 +839,7 @@ const DEF={
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false,
-  comp:false, chroma:false, keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
+  comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -1400,13 +1418,13 @@ function startComp(){
   comp.cv=cv; comp.gl=gl; comp.pr=pr; comp.tex=glTex(gl); comp.bgTex=glTex(gl);
   gl.viewport(0,0,W,H);
   loadCompBg();
-  comp.on=true; body.classList.add('comp');
+  comp.on=true; body.classList.add('comp'); body.classList.toggle('burn',!!st.burnCaps);
   drawComp();
   return true;
 }
 function stopComp(){
   comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
-  body.classList.remove('comp');
+  body.classList.remove('comp','burn');
   if(comp.stream){ comp.stream.getTracks().forEach(t=>t.stop()); comp.stream=null; }
 }
 function loadCompBg(){
@@ -1441,21 +1459,71 @@ function drawComp(){
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    if(st.burnCaps){
+      const oc=$('#compOut');
+      if(oc.width!==cv.width||oc.height!==cv.height){ oc.width=cv.width; oc.height=cv.height; }
+      const o=oc.getContext('2d');
+      try{ o.drawImage(cv,0,0); drawCaption(o,oc.width,oc.height); }catch(e){}
+    }
   }
   comp.raf=requestAnimationFrame(drawComp);
 }
+/* ---- ALTYAZIYI VİDEOYA GÖMME ----
+   Okunan kelimeye kadar olan cümle parçası, kompozit tuvalinin üstüne çizilir.
+   WebGL ve 2D aynı tuvalde olamadığı için: GL tuvali -> 2D çıktı tuvaline kopyalanır,
+   yazı onun üstüne çizilir, kayıt 2D tuvalden alınır. Yalnız bu ayar açıkken. */
+function liveCue(){
+  if(activeIdx<0||!words.length) return '';
+  let start=activeIdx;
+  for(let n=0;n<7 && start>0;n++){
+    const p2=words[start-1]; if(!p2) break;
+    if(wordLine[start-1]!==wordLine[activeIdx]) break;
+    if(sentenceEnd(p2.textContent)) break;
+    start--;
+  }
+  const arr=[]; for(let i=start;i<=activeIdx;i++) if(words[i]) arr.push(words[i].textContent);
+  return arr.join(' ');
+}
+function drawCaption(ctx,W,Hh){
+  const txt=liveCue(); if(!txt) return;
+  const size=Math.round((st.capSize||42)*(W/1080));
+  ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  // satıra sığdır
+  const maxW=W*0.86, lines=[]; let cur='';
+  txt.split(' ').forEach(w=>{
+    const t2=cur?cur+' '+w:w;
+    if(ctx.measureText(t2).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t2;
+  });
+  if(cur) lines.push(cur);
+  const lh=size*1.25, blockH=lines.length*lh;
+  const baseY = st.capPos==='middle' ? Hh*0.5 : Hh-Hh*0.16-blockH/2;
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.45)';
+  ctx.fillRect(0, baseY-blockH/2-size*0.35, W, blockH+size*0.7);
+  ctx.lineWidth=Math.max(3,size*0.14); ctx.strokeStyle='rgba(0,0,0,.9)';
+  ctx.fillStyle='#fff'; ctx.lineJoin='round';
+  lines.forEach((ln,i)=>{
+    const y=baseY-blockH/2+lh*(i+0.5);
+    ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y);
+  });
+  ctx.restore();
+}
+
 /* oran/kalite değişince tuval boyutu da değişmeli (yoksa eski oranda kaydeder) */
 function resizeComp(){
   if(!comp.on||!comp.gl) return;
   const [W,H]=compSize();
   if(comp.cv.width===W && comp.cv.height===H) return;
   comp.cv.width=W; comp.cv.height=H; comp.gl.viewport(0,0,W,H);
+  const oc=$('#compOut'); oc.width=W; oc.height=H;
 }
 /* kayıt için kompozit akış (video tuvalden, ses kameradan) */
 function compRecStream(){
   if(!comp.on) return null;
   try{
-    const cs=comp.cv.captureStream(30);
+    const src=st.burnCaps?$('#compOut'):comp.cv;
+    const cs=src.captureStream(30);
     if(!cs.getVideoTracks().length) return null;
     comp.stream=new MediaStream([...cs.getVideoTracks(), ...stream.getAudioTracks()]);
     return comp.stream;
@@ -2165,6 +2233,8 @@ function apply(){
   $('#target').value=st.target; $('#vTarget').textContent=st.target?clock(st.target):(L==='tr'?'kapalı':'off');
   $('#capOffset').value=Math.round((st.capOffset||0)*10); $('#vCapOff').textContent=(st.capOffset||0).toFixed(1);
   $('#keySim').value=st.keySim; $('#vKeySim').textContent=st.keySim;
+  $('#capSize').value=st.capSize; $('#vCapSize').textContent=st.capSize;
+  $$('#capPosSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cp===st.capPos));
   $('#keySmooth').value=st.keySmooth; $('#vKeySmooth').textContent=st.keySmooth;
   $$('#keySeg button').forEach(b=>b.classList.toggle('on',b.dataset.k===st.keyColor));
   $$('#bgcSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bgColor));
@@ -2387,6 +2457,7 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
   if(k==='bionic'){ buildContent(); }
+  if(k==='burnCaps'){ body.classList.toggle('burn', comp.on && st.burnCaps); }
   if(k==='comp'){
     if(st.comp){ if(!stream){ toast(m('needCam')); st.comp=false; apply(); save(); }
                  else if(!startComp()){ st.comp=false; apply(); save(); } }
@@ -2396,6 +2467,8 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
 $$('#keySeg button').forEach(b=>b.onclick=()=>{ st.keyColor=b.dataset.k; apply(); save(); });
 $$('#bgcSeg button').forEach(b=>b.onclick=()=>{ st.bgColor=b.dataset.b; apply(); save(); });
 $('#keySim').oninput=e=>{ st.keySim=+e.target.value; $('#vKeySim').textContent=st.keySim; save(); };
+$('#capSize').oninput=e=>{ st.capSize=+e.target.value; $('#vCapSize').textContent=st.capSize; save(); };
+$$('#capPosSeg button').forEach(b=>b.onclick=()=>{ st.capPos=b.dataset.cp; apply(); save(); });
 $('#keySmooth').oninput=e=>{ st.keySmooth=+e.target.value; $('#vKeySmooth').textContent=st.keySmooth; save(); };
 $('#bgPick').onclick=()=>$('#bgFile').click();
 $('#bgFile').onchange=e=>{
