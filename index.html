@@ -51,6 +51,8 @@
     will-change:transform;text-shadow:0 2px 18px rgba(0,0,0,.75);
   }
   body.noshadow #scroller{text-shadow:none}
+  body.caseUp #scroller{text-transform:uppercase}
+  body.caseLow #scroller{text-transform:lowercase}
   body.mirrorText #scroller{transform:scaleX(-1)}
   body.flipText  #scroller{transform:scaleY(-1)}
   body.mirrorText.flipText #scroller{transform:scale(-1,-1)}
@@ -445,6 +447,14 @@
     <div class="row"><label data-i18n="tracking">Harf aralığı</label><span class="v" id="vLs">0</span></div>
     <input type="range" id="ls" min="-2" max="8" value="0">
 
+    <div class="row"><label data-i18n="caseL">Harf düzeni (yalnız görünüm)</label></div>
+    <div class="seg" id="caseSeg">
+      <button data-c2="none" class="on" data-i18n="caseNone">Normal</button>
+      <button data-c2="upper" data-i18n="caseUp">BÜYÜK</button>
+      <button data-c2="lower" data-i18n="caseLow">küçük</button>
+    </div>
+    <div class="hint" data-i18n="caseHint">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
+
     <div class="row"><label data-i18n="align">Hizalama</label></div>
     <div class="seg" id="alignSeg">
       <button data-a="center" class="on" data-i18n="aCenter">Orta</button>
@@ -624,6 +634,15 @@
   <input type="text" id="title" placeholder="Senaryo başlığı">
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
   <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
+  <div class="seg" id="toolSeg" style="margin-top:10px">
+    <button id="tClean" data-i18n="tClean">🧹 Temizle</button>
+    <button id="tJoin" data-i18n="tJoin">↩︎ Satırları birleştir</button>
+    <button id="tCase" data-i18n="tCase">Aa Cümle düzeni</button>
+    <button id="tBreath" data-i18n="tBreath">🫁 Nefes işareti</button>
+    <button id="tNum" data-i18n="tNum">🔢 Sayıları yaz</button>
+    <button id="undoTool" class="hidden" data-i18n="tUndo">↺ Geri al</button>
+  </div>
+  <div class="hint" data-i18n="toolHint">Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.</div>
   <div class="hint" data-i18n="markHint"># başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz</div>
   <div class="sheetbtns">
     <button class="cancel" id="checkBtn" data-i18n="checkBtn">🔍 Konuşulabilirlik denetimi</button>
@@ -734,7 +753,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -746,7 +765,11 @@ const I18N={
   fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'🎯 Okuma çizgisi',tgDim:'🌗 Odak karartma',
   tgHl:'✨ Kelime vurgusu',tgFade:'🫥 Okunanı soluklaştır',tgPause:'🫁 Paragraf sonunda nefes durağı',tgCount:'⏱ 3-2-1 geri sayım',
   font:'Yazı tipi',fSystem:'Sistem',fSerif:'Serif',fRound:'Yumuşak',fDys:'Disleksi',weight:'Kalınlık',tracking:'Harf aralığı',
-  align:'Hizalama',aCenter:'Orta',aLeft:'Sol',textColor:'Yazı rengi',cWhite:'Beyaz',cYellow:'Sarı',cGreen:'Yeşil',cBlack:'Siyah',
+  align:'Hizalama',aCenter:'Orta',aLeft:'Sol',
+  caseL:'Harf düzeni (yalnız görünüm)',caseNone:'Normal',caseUp:'BÜYÜK',caseLow:'küçük',
+  caseHint:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',
+  tClean:'🧹 Temizle',tJoin:'↩︎ Satırları birleştir',tCase:'Aa Cümle düzeni',toolHint:'Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.',
+  tBreath:'🫁 Nefes işareti',tNum:'🔢 Sayıları yaz',tUndo:'↺ Geri al',textColor:'Yazı rengi',cWhite:'Beyaz',cYellow:'Sarı',cGreen:'Yeşil',cBlack:'Siyah',
   cNavy:'Lacivert',bgColor:'Zemin (kamerasız modda)',scrim:'Kamera üstü karartma (okunurluk)',
   tgMirror:'🪞 Yazıyı aynala (cam rig / beam splitter)',tgFlip:'🔃 Yazıyı dikey çevir',tgShadow:'🌑 Yazı gölgesi',
   quality:'Kayıt kalitesi',qHint:'Cihaz desteklemezse en yakın çözünürlüğe düşer.',frameGuide:'Çerçeve kılavuzu',aspNone:'Kapalı',
@@ -804,7 +827,11 @@ const I18N={
   fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'🎯 Reading line',tgDim:'🌗 Focus dimming',
   tgHl:'✨ Word highlight',tgFade:'🫥 Fade read words',tgPause:'🫁 Breath pause at paragraphs',tgCount:'⏱ 3-2-1 countdown',
   font:'Typeface',fSystem:'System',fSerif:'Serif',fRound:'Rounded',fDys:'Dyslexia',weight:'Weight',tracking:'Letter spacing',
-  align:'Alignment',aCenter:'Center',aLeft:'Left',textColor:'Text color',cWhite:'White',cYellow:'Yellow',cGreen:'Green',cBlack:'Black',
+  align:'Alignment',aCenter:'Center',aLeft:'Left',
+  caseL:'Letter case (display only)',caseNone:'Normal',caseUp:'UPPER',caseLow:'lower',
+  caseHint:'Does not change the script — captions stay as written.',
+  tClean:'🧹 Clean up',tJoin:'↩︎ Join lines',tCase:'Aa Sentence case',toolHint:'Tools rewrite the script — ↺ undoes the last one. Sentence case also lowercases proper nouns; fix those by hand.',
+  tBreath:'🫁 Breath marks',tNum:'🔢 Numbers to words',tUndo:'↺ Undo',textColor:'Text color',cWhite:'White',cYellow:'Yellow',cGreen:'Green',cBlack:'Black',
   cNavy:'Navy',bgColor:'Background (no-camera mode)',scrim:'Dim over camera (legibility)',
   tgMirror:'🪞 Mirror text (beam splitter rig)',tgFlip:'🔃 Flip text vertically',tgShadow:'🌑 Text shadow',
   quality:'Recording quality',qHint:'Falls back to the closest resolution the device supports.',frameGuide:'Frame guide',aspNone:'Off',
@@ -862,6 +889,7 @@ const MSG={
   saved:'Kaydedildi',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
   exported:'Yedek indirildi',imported:'Geri yüklendi',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
+  tDone:'Metin güncellendi',tUndone:'↺ Geri alındı',toolNoop:'Değişiklik gerekmedi',
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
@@ -888,6 +916,7 @@ const MSG={
   saved:'Saved',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
   exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
+  tDone:'Script updated',tUndone:'↺ Undone',toolNoop:'Nothing to change',
   emptyText:'Script is empty',takeKept:'Saved to My takes',speed:'Speed',mapReset:'Default key map restored',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
   recOn:'RECORDING',recPaused:'PAUSED',recPausedInfo:'⏸ Paused — press ⏺ to continue the same video',
@@ -948,7 +977,7 @@ const DEF={
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
-  mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false,
+  mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
@@ -2307,6 +2336,80 @@ function renderCheck(){
   box.innerHTML=html;
 }
 
+/* ============ METİN ARAÇLARI ============
+   Hepsi senaryoyu DEĞİŞTİRİR; tek adımlık geri alma var. Amaç: başka yerden
+   yapıştırılan metni sesli okumaya uygun hâle getirmek. */
+let undoText=null;
+function applyTool(fn,label){
+  const cur=$('#text').value;
+  undoText=cur;
+  const out=fn(cur);
+  if(out===cur){ toast(m('toolNoop')); return; }
+  $('#text').value=out; pullEditor(); buildContent(); updateStats();
+  $('#undoTool').classList.remove('hidden');
+  toast(label);
+}
+function cleanText(t){
+  return t.replace(/\u00a0/g,' ')
+    .replace(/[\u201c\u201d\u201e]/g,'"').replace(/[\u2018\u2019\u201a]/g,"'")
+    .replace(/[ \t]+/g,' ')
+    .split(/\r?\n/).map(l=>l.trim()).join('\n')
+    .replace(/\n{3,}/g,'\n\n')
+    .replace(/ +([,.;:!?])/g,'$1')
+    .trim();
+}
+function joinLines(t){
+  const out=[];
+  t.split(/\r?\n/).forEach(line=>{
+    const x=line.trim();
+    if(!x){ out.push(''); return; }
+    if(/^#{1,3}\s|^\[.*\]$/.test(x)){ out.push(x); return; }
+    const prev=out[out.length-1];
+    if(prev && prev!=='' && !/^#{1,3}\s|^\[.*\]$/.test(prev) && !/[.!?\u2026:;]$/.test(prev))
+      out[out.length-1]=prev+' '+x;
+    else out.push(x);
+  });
+  return out.join('\n');
+}
+function sentenceCase(t){
+  return t.split(/\r?\n/).map(line=>{
+    if(!line.trim()) return line;
+    let x=line.toLocaleLowerCase('tr');
+    x=x.replace(/(^\s*|[.!?\u2026]\s+)(\p{L})/gu,(mm,a,b)=>a+b.toLocaleUpperCase('tr'));
+    return x;
+  }).join('\n');
+}
+function breathMarks(t){
+  return t.split(/\r?\n/).map(line=>{
+    const x=line.trim();
+    if(!x||/^#{1,3}\s|^\[.*\]$/.test(x)) return line;
+    if(/(^|\s)\/{1,2}(\s|$)/.test(x)) return line;          // zaten işaretli
+    return x.replace(/([.!?\u2026])\s+(?=\S)/g,'$1 / ');
+  }).join('\n');
+}
+const ONES_TR=['','bir','iki','\u00fc\u00e7','d\u00f6rt','be\u015f','alt\u0131','yedi','sekiz','dokuz'];
+const TENS_TR=['','on','yirmi','otuz','k\u0131rk','elli','altm\u0131\u015f','yetmi\u015f','seksen','doksan'];
+function tr3(n){ let s2='';
+  const h=Math.floor(n/100), t2=Math.floor((n%100)/10), o=n%10;
+  if(h) s2+=(h===1?'':ONES_TR[h]+' ')+'y\u00fcz ';
+  if(t2) s2+=TENS_TR[t2]+' ';
+  if(o) s2+=ONES_TR[o]+' ';
+  return s2.trim(); }
+function trNum(n){
+  n=Math.floor(Math.abs(n)); if(n===0) return 's\u0131f\u0131r';
+  const units=[[1e9,'milyar'],[1e6,'milyon'],[1e3,'bin']];
+  let out='';
+  for(const u of units){ const c=Math.floor(n/u[0]);
+    if(c){ out += ((c===1&&u[1]==='bin')?'':tr3(c)+' ') + u[1] + ' '; n%=u[0]; } }
+  if(n) out+=tr3(n)+' ';
+  return out.trim().replace(/\s+/g,' ');
+}
+function numbersToWords(t){
+  return t.replace(/%\s?(\d{1,9})/g,(mm,d)=>'y\u00fczde '+trNum(+d))
+          .replace(/(\d{1,9})\s?%/g,(mm,d)=>'y\u00fczde '+trNum(+d))
+          .replace(/\b(\d{1,9})\b/g,(mm,d)=>trNum(+d));
+}
+
 /* ============ BÖLÜMLER + BÖLÜM BÖLÜM ÇEKİM ============ */
 let sections=[], curSec=-1, recSection=-1;
 function measureSections(){
@@ -2625,6 +2728,8 @@ function apply(){
   body.classList.toggle('nohl',!st.hl);
   body.classList.toggle('nofade',!st.fade);
   body.classList.toggle('noshadow',!st.shadow);
+  body.classList.toggle('caseUp',st.textCase==='upper');
+  body.classList.toggle('caseLow',st.textCase==='lower');
   body.classList.toggle('mirrorText',st.mirrorText);
   body.classList.toggle('flipText',st.flipText);
   body.classList.toggle('gridOn',st.grid);
@@ -2657,6 +2762,7 @@ function apply(){
   $$('#bgSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===st.bg));
   $$('#fontSeg button').forEach(b=>b.classList.toggle('on',b.dataset.f===st.font));
   $$('#alignSeg button').forEach(b=>b.classList.toggle('on',b.dataset.a===st.align));
+  $$('#caseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c2===(st.textCase||'none')));
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
@@ -2876,6 +2982,7 @@ $$('#colorSeg button').forEach(b=>b.onclick=()=>{ st.color=b.dataset.c; apply();
 $$('#bgSeg button').forEach(b=>b.onclick=()=>{ st.bg=b.dataset.b; apply(); save(); });
 $$('#fontSeg button').forEach(b=>b.onclick=()=>{ st.font=b.dataset.f; apply(); save(); requestAnimationFrame(measure); });
 $$('#alignSeg button').forEach(b=>b.onclick=()=>{ st.align=b.dataset.a; apply(); save(); });
+$$('#caseSeg button').forEach(b=>b.onclick=()=>{ st.textCase=b.dataset.c2; apply(); save(); });
 $$('#qSeg button').forEach(b=>b.onclick=async()=>{ st.quality=b.dataset.q; apply(); save(); if(stream) await openCam(); });
 $$('#aspSeg button').forEach(b=>b.onclick=()=>{ st.asp=b.dataset.asp; apply(); save(); drawAspect(); drawSafe(); });
 $$('#modeSeg button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true);
@@ -2946,6 +3053,14 @@ $('#delScript').onclick=()=>{
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
   toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
+$('#tClean').onclick=()=>applyTool(cleanText,m('tDone'));
+$('#tJoin').onclick=()=>applyTool(joinLines,m('tDone'));
+$('#tCase').onclick=()=>applyTool(sentenceCase,m('tDone'));
+$('#tBreath').onclick=()=>applyTool(breathMarks,m('tDone'));
+$('#tNum').onclick=()=>applyTool(numbersToWords,m('tDone'));
+$('#undoTool').onclick=()=>{ if(undoText==null) return;
+  $('#text').value=undoText; undoText=null; pullEditor(); buildContent(); updateStats();
+  $('#undoTool').classList.add('hidden'); toast(m('tUndone')); };
 $('#checkBtn').onclick=()=>{ $('#diffOut').innerHTML=''; renderCheck(); };
 $('#diffBtn').onclick=()=>{ $('#checkOut').innerHTML=''; renderDiff(); };
 $('#fileScript').onclick=()=>$('#txtFile').click();
