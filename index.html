@@ -54,6 +54,10 @@
   #scroller .h{color:var(--accent);font-size:.78em;letter-spacing:.08em;text-transform:uppercase;opacity:.9;padding:.5em 0 .1em}
   #scroller .note{opacity:.45;font-style:italic;font-weight:500;font-size:.72em}
   #scroller .w.active{color:var(--accent);text-shadow:0 0 26px rgba(0,200,83,.5)}
+  #scroller .w.em{font-weight:900;color:#ffe14d}
+  #scroller .w.em.active{color:var(--accent)}
+  #scroller .hold{opacity:.35;font-weight:400;font-size:.7em;vertical-align:middle}
+  #scroller .w b{font-weight:900}
   body.nohl #scroller .w.active{color:inherit;text-shadow:inherit}
   #scroller .w.done{opacity:.55}
   body.nofade #scroller .w.done{opacity:1}
@@ -353,6 +357,7 @@
     <div class="tog"><span data-i18n="tgDim">🌗 Odak karartma</span><div class="sw on" data-t="dim"></div></div>
     <div class="tog"><span data-i18n="tgHl">✨ Kelime vurgusu</span><div class="sw on" data-t="hl"></div></div>
     <div class="tog"><span data-i18n="tgFade">🫥 Okunanı soluklaştır</span><div class="sw on" data-t="fade"></div></div>
+    <div class="tog"><span data-i18n="tgBionic">⚡ Biyonik okuma (kelime başları kalın)</span><div class="sw" data-t="bionic"></div></div>
     <div class="tog"><span data-i18n="tgPause">🫁 Paragraf sonunda nefes durağı</span><div class="sw on" data-t="breathe"></div></div>
     <div class="tog"><span data-i18n="tgCount">⏱ 3-2-1 geri sayım</span><div class="sw on" data-t="count"></div></div>
   </div>
@@ -521,7 +526,9 @@
   <input type="text" id="title" placeholder="Senaryo başlığı">
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
   <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
-  <div class="hint" data-i18n="markHint"># ile başlayan satır = bölüm başlığı · [köşeli parantez] = yönerge notu (okunmaz)</div>
+  <div class="hint" data-i18n="markHint"># başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) iki saniye bekle</div>
+  <div class="sheetbtns"><button class="cancel" id="checkBtn" data-i18n="checkBtn">🔍 Konuşulabilirlik denetimi</button></div>
+  <div id="checkOut"></div>
   <div class="sheetbtns">
     <button class="danger" id="delScript" data-i18n="delete">🗑 Sil</button>
     <button class="save" id="saveScript" data-i18n="apply">✓ Uygula</button>
@@ -599,7 +606,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -626,6 +633,7 @@ const I18N={
   chromaHint:'Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).',
   capOffset:'💬 Altyazı kayması (sn)',
   capHint:'Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.',
+  tgBionic:'⚡ Biyonik okuma (kelime başları kalın)',checkBtn:'🔍 Konuşulabilirlik denetimi',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
@@ -638,7 +646,7 @@ const I18N={
   backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
   newScript:'＋ Yeni',paste:'📋 Yapıştır',fromFile:'📄 Dosya',sections:'🔖 Bölümler — dokun, oraya atla',
   title:'Başlık',text:'📝 Metin',
-  markHint:'# ile başlayan satır = bölüm başlığı · [köşeli parantez] = yönerge notu (okunmaz)',delete:'🗑 Sil',apply:'✓ Uygula',
+  markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) iki saniye bekle',delete:'🗑 Sil',apply:'✓ Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
   takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Sakla',saveShare:'⬇︎ Kaydet / Paylaş',
   resultHint:'Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar\'a ekleyebilirsin.',
@@ -670,6 +678,7 @@ const I18N={
   chromaHint:'Without a green screen the background cannot be replaced — separating a person from the background needs an AI model, which is far too heavy on a phone. A plain, evenly lit sheet or wall is enough.',
   capOffset:'💬 Caption offset (s)',
   capHint:'Captions come from the script, not speech recognition — spelling is always right. Timing is when each word crossed the reading line; shift it here if they appear early or late.',
+  tgBionic:'⚡ Bionic reading (bold word starts)',checkBtn:'🔍 Speakability check',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
@@ -682,7 +691,7 @@ const I18N={
   backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
   newScript:'＋ New',paste:'📋 Paste',fromFile:'📄 File',sections:'🔖 Sections — tap to jump',
   title:'Title',text:'📝 Script',
-  markHint:'# line = section heading · [brackets] = direction note (not read)',delete:'🗑 Delete',apply:'✓ Apply',
+  markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait 2s',delete:'🗑 Delete',apply:'✓ Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
   takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Keep',saveShare:'⬇︎ Save / Share',
   resultHint:'Stored on device — use "Save / Share" to add it to Photos.',
@@ -759,7 +768,7 @@ const DEF={
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
-  mode:'free', safe:false, band:0, dist:60, capOffset:0,
+  mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false,
   comp:false, chroma:false, keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
@@ -807,7 +816,7 @@ function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add(
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),2200); }
 
 /* ============ METİN KURULUMU ============ */
-let words=[], wordTops=[], paraEnds=[], maxPos=0, pxPerWord=40, wordLine=[];
+let words=[], wordTops=[], paraEnds=[], holdPoints=[], maxPos=0, pxPerWord=40, wordLine=[];
 /* ---- ALTYAZI: her kelimenin okuma çizgisini geçtiği an (kayıt saniyesi) ----
    Konuşma tanımaya gerek yok; kelime zaten okunduğu anda çizgiden geçiyor.
    Sesle takipte de doğru, çünkü konum sesi izliyor. */
@@ -821,7 +830,7 @@ function buildContent(){
     if(!raw){ html+='<div class="ln br">&nbsp;</div>'; return; }
     if(/^#{1,3}\s*/.test(raw)){ html+='<div class="ln h">'+esc(raw.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
     if(/^\[.*\]$/.test(raw)){ html+='<div class="ln note">'+esc(raw)+'</div>'; return; }
-    html+='<div class="ln">'+esc(raw).replace(/\S+/g,w=>'<span class="w">'+w+'</span>')+'</div>';
+    html+='<div class="ln">'+markup(raw)+'</div>';
   });
   html+='<span class="pad" id="padBot"></span>';
   scroller.innerHTML=html;
@@ -835,6 +844,32 @@ function buildContent(){
   measure(); updateStats(); renderSections();
   requestAnimationFrame(()=>{ measure(); renderSections(); });
 }
+/* ---- SENARYO İŞARETLEME DİLİ ----
+   *vurgu*  ·  / kısa duraklama  ·  // uzun duraklama  ·  (2) iki saniye bekle
+   Duraklamalar motorda GERÇEKTEN uygulanır; nefes noktalarını sen koyarsın.
+   İşaret karakterleri kelime metnine girmez → altyazıya sızmaz. */
+function bionic(w){
+  if(!st.bionic) return esc(w);
+  const mLead=w.match(/^[^\p{L}\p{N}]*/u)[0], core=w.slice(mLead.length);
+  const n=Math.max(1,Math.min(4,Math.round(core.replace(/[^\p{L}\p{N}]/gu,'').length*0.42)));
+  return esc(mLead)+'<b>'+esc(core.slice(0,n))+'</b>'+esc(core.slice(n));
+}
+function markup(raw){
+  let out='';
+  raw.split(/\s+/).forEach(tok=>{
+    if(!tok) return;
+    // (2) / (2s) → sayılı bekleme
+    let mw=tok.match(/^\((\d+(?:[.,]\d+)?)s?\)$/);
+    if(mw){ const ms=Math.min(10000,Math.round(parseFloat(mw[1].replace(',','.'))*1000));
+      out+='<span class="hold" data-ms="'+ms+'">⏸</span> '; return; }
+    if(tok==='//'){ out+='<span class="hold" data-ms="800">‖</span> '; return; }
+    if(tok==='/'){  out+='<span class="hold" data-ms="350">|</span> '; return; }
+    const em=/^\*{1,2}[^*]+\*{1,2}$/.test(tok);
+    const clean=em?tok.replace(/^\*{1,2}|\*{1,2}$/g,''):tok;
+    out+='<span class="w'+(em?' em':'')+'">'+bionic(clean)+'</span> ';
+  });
+  return out;
+}
 function H(){ return window.innerHeight; }
 function eyeOff(){ return H()*(st.eyePos/100); }
 function measure(){
@@ -842,14 +877,17 @@ function measure(){
   if(pt) pt.style.height=eyeOff()+'px';
   if(pb) pb.style.height=Math.max(60,H()-eyeOff())+'px';
   wordTops=words.map(w=>w.offsetTop+w.offsetHeight/2);
-  // paragraf sonları: boş satırdan önceki son kelimenin y'si
-  paraEnds=[];
+  // duraklama noktaları: paragraf sonları (nefes) + metindeki / // (2) işaretleri
+  paraEnds=[]; holdPoints=[];
   const lns=[...scroller.querySelectorAll('.ln')];
   lns.forEach((ln,i)=>{
     if(ln.classList.contains('br')&&i>0){
       const prev=lns[i-1].querySelector('.w:last-child');
       if(prev) paraEnds.push(prev.offsetTop+prev.offsetHeight);
     }
+  });
+  [...scroller.querySelectorAll('.hold')].forEach(h=>{
+    holdPoints.push({y:h.offsetTop+h.offsetHeight/2, ms:+h.dataset.ms||300, used:false});
   });
   maxPos = wordTops.length ? Math.max(1, wordTops[wordTops.length-1]-eyeOff()) : 1;
   pxPerWord = wordTops.length>1 ? Math.max(6,(wordTops[wordTops.length-1]-wordTops[0])/(wordTops.length-1)) : 40;
@@ -888,6 +926,11 @@ function tick(now){
         const y=paraEnds[i]-eyeOff();
         if(pos<y && next>=y && i!==lastParaIdx){ lastParaIdx=i; holdUntil=now+420; break; }
       }
+    }
+    // metindeki duraklama işaretleri (/, //, (2)) — her biri bir kez
+    for(const h of holdPoints){
+      const y=h.y-eyeOff();
+      if(!h.used && pos<y && next>=y){ h.used=true; holdUntil=now+h.ms; break; }
     }
     setPos(next);
   }
@@ -930,7 +973,7 @@ function stop(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn'
 /* kaldığın yeri senaryoya yaz */
 function rememberPos(){ const s=active(); if(s){ s.pos=Math.round(pos); save(); } }
 function reset(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing');
-  cancelAnimationFrame(raf); elapsed=0; startedAt=0; lastParaIdx=-1;
+  cancelAnimationFrame(raf); elapsed=0; startedAt=0; lastParaIdx=-1; holdPoints.forEach(h=>h.used=false);
   words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0);
   const s=active(); if(s){ s.pos=0; save(); }
   if(voiceOn) syncVoicePtr(); }
@@ -1493,6 +1536,72 @@ async function renderTakes(){
   });
 }
 
+/* ============ KONUŞULABİLİRLİK DENETİMİ ============
+   Yapay zekâ yok, tamamen yerel ve belirlenimci. Amaç: metni okumadan önce
+   "prompter sesi" üreten yapıları göstermek. */
+const FILLERS_TR=['sey','yani','aslinda','iste','hani','falan','filan','bilirsiniz','biliyorsunuz'];
+const FILLERS_EN=['um','uh','like','basically','actually','literally','you know','sort of'];
+function syllables(w){ const v=(w.match(/[aeıioöuüAEIİOÖUÜ]/g)||[]).length; return Math.max(1,v); }
+function speakCheck(){
+  const txt=$('#text').value||active().text||'';
+  const lines=txt.split(/\r?\n/).filter(l=>{ const r=l.trim();
+    return r && !/^#{1,3}\s*/.test(r) && !/^\[.*\]$/.test(r); });
+  const body=lines.join(' ');
+  const sentences=body.split(/(?<=[.!?…])\s+/).map(s=>s.trim()).filter(Boolean);
+  const out=[];
+  // 1) uzun cümleler
+  const longS=sentences.map(s=>({s,n:(s.match(/\S+/g)||[]).length})).filter(x=>x.n>20).sort((a,b)=>b.n-a.n);
+  if(longS.length) out.push({lv:'warn',t:(L==='tr'?longS.length+' uzun cümle (>20 kelime)':longS.length+' long sentences (>20 words)'),
+    d:(L==='tr'?'En uzunu '+longS[0].n+' kelime: “':'Longest '+longS[0].n+' words: “')+longS[0].s.slice(0,70)+'…”'});
+  // 2) uzun kelimeler
+  const words0=(body.match(/[\p{L}\p{N}'’-]+/gu)||[]);
+  const longW=[...new Set(words0.filter(w=>syllables(w)>4||w.length>14))];
+  if(longW.length) out.push({lv:'info',t:(L==='tr'?longW.length+' zor kelime (5+ hece)':longW.length+' hard words (5+ syllables)'),
+    d:longW.slice(0,8).join(', ')});
+  // 3) dolgu kelimeler
+  const fl=(L==='tr'?FILLERS_TR:FILLERS_EN);
+  const fCount={}; words0.forEach(w=>{ const n=norm(w); if(fl.indexOf(n)>=0) fCount[n]=(fCount[n]||0)+1; });
+  const fKeys=Object.keys(fCount);
+  if(fKeys.length) out.push({lv:'warn',t:(L==='tr'?'Dolgu kelime':'Filler words'),
+    d:fKeys.map(k=>k+' ×'+fCount[k]).join(', ')});
+  // 4) tekrar eden kelimeler
+  const rep={}; words0.forEach(w=>{ const n=norm(w); if(n.length>4) rep[n]=(rep[n]||0)+1; });
+  const rKeys=Object.keys(rep).filter(k=>rep[k]>=4).sort((a,b)=>rep[b]-rep[a]);
+  if(rKeys.length) out.push({lv:'info',t:(L==='tr'?'Çok tekrarlanan kelime':'Heavily repeated words'),
+    d:rKeys.slice(0,6).map(k=>k+' ×'+rep[k]).join(', ')});
+  // 5) rakam ve kısaltmalar
+  const nums=[...new Set((body.match(/\d[\d.,:/%]*/g)||[]))];
+  const abbr=[...new Set((body.match(/\b[A-ZÇĞİÖŞÜ]{2,}\b/g)||[]))];
+  if(nums.length||abbr.length) out.push({lv:'info',t:(L==='tr'?'Sesli okunuşu yazılmalı':'Write out how to say these'),
+    d:[...nums.slice(0,6),...abbr.slice(0,6)].join(', ')});
+  // 6) hedef süreye sığma
+  const wc=countWords(txt), lim=curMode().limit;
+  if(lim){
+    const secs=wc/st.wpm*60, over=Math.ceil(secs-lim);
+    if(over>0){ const cut=Math.ceil(over*st.wpm/60);
+      out.push({lv:'bad',t:(L==='tr'?curMode().n.tr+' sınırını '+over+' sn aşıyor':curMode().n.en+' limit exceeded by '+over+'s'),
+        d:(L==='tr'?'Yaklaşık '+cut+' kelime çıkarman gerekiyor':'Cut roughly '+cut+' words')});
+    } else out.push({lv:'ok',t:(L==='tr'?'Süre uygun':'Duration fits'),
+      d:(L==='tr'?'~'+clock(secs)+' / sınır '+clock(lim):'~'+clock(secs)+' / limit '+clock(lim))});
+  }
+  // 7) işaretleme kullanımı
+  const hasMark=/\*[^*]+\*|(^|\s)\/\/?(\s|$)|\(\d+s?\)/m.test(txt);
+  if(!hasMark) out.push({lv:'info',t:(L==='tr'?'Hiç duraklama/vurgu işareti yok':'No pause/emphasis marks'),
+    d:(L==='tr'?'*vurgu* ve / // (2) ekle — okuma tekdüzelikten çıkar':'Add *emphasis* and / // (2) to break the monotone')});
+  return {out, wc, sentences:sentences.length,
+    avg: sentences.length? Math.round((body.match(/\S+/g)||[]).length/sentences.length):0};
+}
+function renderCheck(){
+  const r=speakCheck(), box=$('#checkOut');
+  const COL={bad:'#ff6b6b',warn:'#ffb300',info:'#9aa0a6',ok:'var(--accent)'};
+  let html='<div class="kv"><span>'+(L==='tr'?'Okunacak kelime':'Words to read')+'</span><b>'+r.wc+'</b></div>'+
+           '<div class="kv"><span>'+(L==='tr'?'Cümle / ortalama uzunluk':'Sentences / avg length')+'</span><b>'+r.sentences+' · '+r.avg+'</b></div>';
+  if(!r.out.length) html+='<div class="empty">'+(L==='tr'?'Temiz görünüyor 👍':'Looks clean 👍')+'</div>';
+  r.out.forEach(o=>{ html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+COL[o.lv]+'">'+
+    esc(o.t)+'</div><div class="s">'+esc(o.d)+'</div></div></div>'; });
+  box.innerHTML=html;
+}
+
 /* ============ BÖLÜMLER (# başlıkları) ============ */
 function renderSections(){
   const hs=[...scroller.querySelectorAll('.ln.h')];
@@ -1987,6 +2096,7 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
   if(k==='backCam'||k==='rawAudio'){ if(stream) await openCam(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
+  if(k==='bionic'){ buildContent(); }
   if(k==='comp'){
     if(st.comp){ if(!stream){ toast(m('needCam')); st.comp=false; apply(); save(); }
                  else if(!startComp()){ st.comp=false; apply(); save(); } }
@@ -2035,6 +2145,7 @@ $('#delScript').onclick=()=>{
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
   toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
+$('#checkBtn').onclick=renderCheck;
 $('#fileScript').onclick=()=>$('#txtFile').click();
 $('#txtFile').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
