@@ -734,7 +734,6 @@
   <div class="hint" id="shareDiag" style="text-align:center;font-weight:700"></div>
   <div class="hint" id="capInfo" style="text-align:center"></div>
   <div class="hint" style="text-align:center" data-i18n="saveHint">Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.</div>
-  <div class="hint" style="text-align:center" data-i18n="resultHint">Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar'a ekleyebilirsin.</div>
 </div>
 
 <div id="ready" class="sheet">
@@ -753,7 +752,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='4.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -903,6 +902,7 @@ const MSG={
   shareFail:'Paylaşım açılamadı',
   noFileShare:'Bu tarayıcı dosya paylaşamıyor — Safari\'de aç',
   noShare:'Bu tarayıcıda paylaşım yok — Safari\'de aç',
+  rewound:'↺ Metin başa sarıldı',
   savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',
   trimInPhotos:'✂️ Kırpma → Fotoğraflar',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
@@ -927,6 +927,7 @@ const MSG={
   shareFail:'Could not open the share sheet',
   noFileShare:'This browser cannot share files — open in Safari',
   noShare:'No sharing in this browser — open in Safari',
+  rewound:'↺ Rewound to the start',
   savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',
   trimInPhotos:'✂️ Trim → Photos',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
@@ -959,7 +960,10 @@ const t=k=>(I18N[L][k]||I18N.tr[k]||k);
 const m=k=>(MSG[L][k]||MSG.tr[k]||k);
 function applyLang(){
   document.documentElement.lang=L;
-  $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(I18N[L][k]) el.textContent=I18N[L][k]; });
+  $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(!I18N[L][k]) return;
+    const v=I18N[L][k];
+    // içinde etiket varsa innerHTML: eskiden <b> ham metin olarak görünüyordu
+    if(/<[a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v; });
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
   $('#verLine').textContent='Sufle v'+VER;
@@ -1795,7 +1799,7 @@ function audSummary(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
-let recPausedMs=0, pauseStart=0, recPaused=false;
+let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
   const extra = recPaused ? (performance.now()-pauseStart) : 0;
@@ -1821,6 +1825,8 @@ function startRec(){
   doStartRec();
 }
 function doStartRec(){
+  // metnin sonundaysak başa sar — yoksa sufle hiç akmaz, altyazı da üretilmez
+  if(maxPos>1 && pos>=maxPos-5){ reset(); toast(m('rewound')); }
   chunks=[]; capTimes=new Array(words.length).fill(null);
   if(!stream.getAudioTracks().length) toast(m('noMic'));
   const mime=pickMime();
@@ -1840,7 +1846,8 @@ function doStartRec(){
   }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   rec.onstop=()=>{
-    lastDur=recElapsed();
+    // süre stopRec'te ölçülüp saklanıyor: burada recT çoktan sıfırlanmış oluyor
+    lastDur=(pendingDur||recElapsed());
     lastBlob=new Blob(chunks,{type:(rec.mimeType||'video/mp4').split(';')[0]});
     autoSaveTake().then(()=>showResult(lastBlob));
   };
@@ -1858,6 +1865,7 @@ function stopRec(){
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
   if(recPaused){ recPausedMs+=performance.now()-pauseStart; recPaused=false; }
+  pendingDur=recElapsed();            // <-- recT sıfırlanmadan ÖNCE ölç
   if(rec&&rec.state!=='inactive') rec.stop();
   recT=0; buzz([40,60,40]); stopAudioMonitor(); body.classList.remove('rec','recpaused');
   $('#pauseBtn').classList.add('hidden'); $('#pauseBtn').textContent='⏸';
