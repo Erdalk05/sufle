@@ -332,6 +332,7 @@
 <div id="bar" class="hidden">
   <button class="cbtn" id="settingsBtn" title="Ayarlar">⚙︎</button>
   <button class="cbtn" id="scriptsBtn" title="Senaryolar">📝</button>
+  <button class="cbtn" id="readyBtn" title="Çekime hazır mıyım?">✅</button>
   <button class="cbtn hidden" id="pauseBtn">⏸</button>
   <button id="recBtn" disabled></button>
   <button class="cbtn" id="voiceBtn" title="Sesle takip">🎤</button>
@@ -674,6 +675,15 @@
   <div class="hint" style="text-align:center" data-i18n="resultHint">Cihazda saklanır — "Kaydet / Paylaş" ile Fotoğraflar'a ekleyebilirsin.</div>
 </div>
 
+<div id="ready" class="sheet">
+  <div class="grab"></div>
+  <h2><span data-i18n="readyTitle">✅ Çekime hazır mıyım?</span><button class="iconbtn" id="readyX">✕</button></h2>
+  <div id="readyOut"></div>
+  <div class="sheetbtns">
+    <button class="cancel" id="readyAgain" data-i18n="readyAgain">↻ Tekrar bak</button>
+    <button class="save" id="readyGo" data-i18n="readyGo">● Çekime başla</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -681,7 +691,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.8';
 
 /* ============ i18n ============ */
 const I18N={
@@ -715,7 +725,7 @@ const I18N={
   tgBionic:'⚡ Biyonik okuma (kelime başları kalın)',
   tgSection:'🎬 Bölüm sonunda dur (bölüm bölüm çek)',
   secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'🔍 Konuşulabilirlik denetimi',diffBtn:'🗺 Zorlanma haritası',
-  spLabel:'HIZ · WPM',
+  spLabel:'HIZ · WPM',readyTitle:'✅ Çekime hazır mıyım?',readyAgain:'↻ Tekrar bak',readyGo:'● Çekime başla',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
@@ -768,7 +778,7 @@ const I18N={
   tgBionic:'⚡ Bionic reading (bold word starts)',
   tgSection:'🎬 Stop at section end (shoot section by section)',
   secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'🔍 Speakability check',diffBtn:'🗺 Struggle map',
-  spLabel:'SPEED · WPM',
+  spLabel:'SPEED · WPM',readyTitle:'✅ Am I ready to shoot?',readyAgain:'↻ Check again',readyGo:'● Start recording',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
@@ -1805,6 +1815,53 @@ async function renderTakes(){
   });
 }
 
+/* ============ ÇEKİME HAZIRLIK KONTROLÜ ============
+   Işık, ses, çerçeve, süre ve eğimi tek yerde toplayıp git/gitme kararı verir.
+   Hepsi zaten ölçülen değerler; burada tek karara dönüşüyor. */
+function readyChecks(){
+  const out=[];
+  // kamera
+  if(!stream){ out.push({lv:'bad',t:(L==='tr'?'Kamera kapalı':'Camera off'),d:(L==='tr'?'Başlangıç ekranından kamerayı aç':'Open the camera from the start screen')}); }
+  else out.push({lv:'ok',t:(L==='tr'?'Kamera açık':'Camera on'),d:(()=>{const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};return (v.width||'?')+'×'+(v.height||'?');})()});
+  // ses
+  if(stream){
+    if(!aTrack) out.push({lv:'bad',t:(L==='tr'?'Mikrofon yok':'No microphone'),d:(L==='tr'?'Video sessiz kaydedilecek — izinleri kontrol et':'The video will be silent — check permissions')});
+    else out.push({lv:'ok',t:(L==='tr'?'Mikrofon hazır':'Microphone ready'),d:(L==='tr'?'Ayarlar → Kamera\'da seviyeyi görebilirsin':'See the level in Settings → Camera')});
+  }
+  // ışık + eğim (kamera açıksa)
+  if(stream) lightCheck().forEach(o=>{ if(o.lv!=='info') out.push(o); });
+  // süre
+  const wc=countWords($('#text').value||active().text||''), lim=curMode().limit;
+  const secs=wc/st.wpm*60;
+  if(!wc) out.push({lv:'bad',t:(L==='tr'?'Metin boş':'Script is empty'),d:(L==='tr'?'📝 Senaryolar\'dan metnini yapıştır':'Paste your script in 📝 Scripts')});
+  else if(lim && secs>lim) out.push({lv:'warn',t:(L==='tr'?'Metin sınırı aşıyor':'Script exceeds the limit'),
+    d:(L==='tr'?'~'+clock(secs)+' / sınır '+clock(lim)+' — yaklaşık '+Math.ceil((secs-lim)*st.wpm/60)+' kelime fazla':'~'+clock(secs)+' / limit '+clock(lim))});
+  else out.push({lv:'ok',t:(L==='tr'?'Metin ve süre uygun':'Script and duration fine'),
+    d:wc+(L==='tr'?' kelime · ~':' words · ~')+clock(secs)+(lim?(L==='tr'?' / sınır '+clock(lim):' / limit '+clock(lim)):'')});
+  // göz teması
+  const ga=gazeAngle();
+  if(ga>=9) out.push({lv:'warn',t:(L==='tr'?'Göz teması zayıf':'Weak eye contact'),
+    d:(L==='tr'?'Bakış sapması ≈'+Math.round(ga)+'° — okuma çizgisini yukarı al ya da geri çekil':'≈'+Math.round(ga)+'° — raise the reading line or move back')});
+  else out.push({lv:'ok',t:(L==='tr'?'Göz teması iyi':'Eye contact good'),d:'≈'+Math.round(ga)+'°'});
+  // konum
+  if(pos>2) out.push({lv:'warn',t:(L==='tr'?'Metin baştan başlamıyor':'Script is not at the start'),
+    d:(L==='tr'?'Başa sarmak için ⟲ (Home) — ya da kaldığın yerden devam et':'Press Home to rewind, or continue where you left off')});
+  return out;
+}
+function renderReady(){
+  const box=$('#readyOut'); if(!box) return;
+  const rows=readyChecks();
+  const COL={bad:'#ff6b6b',warn:'#ffb300',info:'#9aa0a6',ok:'var(--accent)'};
+  const bad=rows.filter(r=>r.lv==='bad').length, warn=rows.filter(r=>r.lv==='warn').length;
+  const head = bad ? (L==='tr'?'⛔ '+bad+' engel var':'⛔ '+bad+' blocker')
+             : warn ? (L==='tr'?'⚠️ '+warn+' uyarı — yine de çekebilirsin':'⚠️ '+warn+' warning — you can still shoot')
+             : (L==='tr'?'✅ Her şey hazır':'✅ All good');
+  box.innerHTML='<div class="kv"><span>'+head+'</span></div>'+rows.map(o=>
+    '<div class="listitem"><div class="meta"><div class="t" style="color:'+COL[o.lv]+'">'+esc(o.t)+
+    '</div><div class="s">'+esc(o.d)+'</div></div></div>').join('');
+  $('#readyGo').style.opacity = bad? '.45':'1';
+}
+
 /* ============ ZORLANMA HARİTASI ============
    Sabit hızda akan sufleden "zorlandı" çıkarmak sahte olur: geçiş anları kaydırmanın
    özelliği, okuyanın değil. Gerçek sinyaller şunlar:
@@ -2185,7 +2242,7 @@ function renderMap(){
 }
 
 /* ============ SHEET YÖNETİMİ ============ */
-const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet'];
+const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet','#ready'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
 function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; stopMeter(); stopLight(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
@@ -2446,6 +2503,10 @@ $('#sheetX').onclick=closeSheets;
 $('#scriptsX').onclick=()=>{ pullEditor(); buildContent(); closeSheets(); };
 $('#takesX').onclick=closeSheets;
 $('#takesBtn').onclick=()=>{ renderTakes(); openSheet('#takesSheet'); };
+$('#readyBtn').onclick=e=>{ e.stopPropagation(); openSheet('#ready'); renderReady(); };
+$('#readyX').onclick=closeSheets;
+$('#readyAgain').onclick=renderReady;
+$('#readyGo').onclick=()=>{ closeSheets(); setTimeout(()=>toggleRec(),260); };
 $('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); };
 $('#remoteX').onclick=()=>{ learning=false; closeSheets(); };
 $('#learnBtn').onclick=()=>{ learning=!learning; learnKey=null;
