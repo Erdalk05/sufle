@@ -16,7 +16,7 @@
   :root{
     --accent:#00C853; --accent-d:#04210f; --txt:#fff;
     --eyeY:24%; --fs:46px; --lh:1.45; --mg:7vw; --pcolor:#fff; --pbg:#000;
-    --scrim:.35; --weight:700; --ls:0px; --align:center; --dimSoft:26%;
+    --scrim:.35; --weight:700; --ls:0px; --align:center; --bandIn:5%; --bandOut:26%;
     --sheetbg:#141418; --card:#1e1e24; --line:#2a2a32; --muted:#9aa0a6;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
@@ -72,10 +72,10 @@
     font-size:11px;font-weight:700;padding:4px 12px;border-radius:0 0 14px 14px;display:none}
   body.eye.cam #camMark{display:block}
 
-  /* odak karartma */
+  /* odak karartma / okuma şeridi — görünür pencere JS'te satır yüksekliğinden hesaplanır */
   body.dim #prompt{
-    -webkit-mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--dimSoft)),#000 calc(var(--eyeY) - 4%),#000 calc(var(--eyeY) + 5%),transparent calc(var(--eyeY) + var(--dimSoft) + 10%));
-            mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--dimSoft)),#000 calc(var(--eyeY) - 4%),#000 calc(var(--eyeY) + 5%),transparent calc(var(--eyeY) + var(--dimSoft) + 10%));
+    -webkit-mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--bandOut)),#000 calc(var(--eyeY) - var(--bandIn)),#000 calc(var(--eyeY) + var(--bandIn) + 2%),transparent calc(var(--eyeY) + var(--bandOut) + 4%));
+            mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--bandOut)),#000 calc(var(--eyeY) - var(--bandIn)),#000 calc(var(--eyeY) + var(--bandIn) + 2%),transparent calc(var(--eyeY) + var(--bandOut) + 4%));
   }
 
   /* kılavuzlar */
@@ -318,7 +318,10 @@
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
 
     <div class="row"><label data-i18n="eyeLine">👁 Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">24</span></div>
-    <input type="range" id="eye" min="6" max="60" value="24">
+    <input type="range" id="eye" min="4" max="60" value="24">
+
+    <div class="row"><label data-i18n="dist">📏 Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
+    <input type="range" id="dist" min="25" max="200" step="5" value="60">
 
     <div class="row"><label data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
     <input type="range" id="fs" min="22" max="110" value="46">
@@ -328,6 +331,16 @@
 
     <div class="row"><label data-i18n="margin">Kenar boşluğu</label><span class="v" id="vMg">7</span></div>
     <input type="range" id="mg" min="0" max="26" value="7">
+
+    <div class="row" style="margin-top:18px"><label data-i18n="band">👁 Okuma şeridi (göz teması)</label></div>
+    <div class="seg" id="bandSeg">
+      <button data-band="0" class="on" data-i18n="bAll">Tümü</button>
+      <button data-band="1" data-i18n="b1">1 satır</button>
+      <button data-band="2" data-i18n="b2">2 satır</button>
+      <button data-band="3" data-i18n="b3">3 satır</button>
+    </div>
+    <div class="sheetbtns"><button class="cancel" id="eyeRecipe" data-i18n="eyeRecipe">👁 Göz teması ayarını uygula</button></div>
+    <div class="hint" id="gazeHint"></div>
 
     <div class="tog"><span data-i18n="tgEye">🎯 Okuma çizgisi</span><div class="sw on" data-t="eye"></div></div>
     <div class="tog"><span data-i18n="tgDim">🌗 Odak karartma</span><div class="sw on" data-t="dim"></div></div>
@@ -537,7 +550,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.7';
 
 /* ============ i18n ============ */
 const I18N={
@@ -556,6 +569,8 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
+  band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
+  eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
   tgSafe:'🚫 Platform arayüz alanlarını göster',
   micLevel:'🎙 Mikrofon seviyesi',
@@ -589,6 +604,8 @@ const I18N={
   zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'🎚 Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
+  band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
+  eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
   tgSafe:'🚫 Show platform UI zones',
   micLevel:'🎙 Microphone level',
@@ -667,7 +684,7 @@ const DEF={
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
-  mode:'free', safe:false,
+  mode:'free', safe:false, band:0, dist:60,
   scripts:null, activeId:null
 };
 const DEMO_TR=`# Giriş
@@ -964,6 +981,32 @@ function applyZoom(){
   $('#vZoom').textContent=z.toFixed(1)+'×';
 }
 function applyTorch(){ if(!vTrack) return; try{ vTrack.applyConstraints({advanced:[{torch:!!st.torch}]}); }catch(e){} }
+
+/* ============ GÖZ TEMASI ============
+   Bakış açısı = arctan(merceğe olan ekran mesafesi / yüz-telefon mesafesi).
+   Ekran yüksekliğini ~14 cm (tipik telefon) sayıyoruz — sonuç yaklaşıktır ama
+   "okuma çizgisini yukarı al" kararını somut kılar. 5°'nin altı göz teması sayılır. */
+function gazeAngle(){
+  const screenCm=14, distCm=Math.max(20,st.dist||60);
+  const dropCm=screenCm*(st.eyePos/100);
+  return Math.atan(dropCm/distCm)*180/Math.PI;
+}
+function gazeLine(){
+  const a=gazeAngle(), r=Math.round(a);
+  const good = a<5 ? '✓' : (a<9 ? '~' : '✗');
+  if(L==='tr') return 'Bakış sapması ≈'+r+'° '+good+
+    (a<5?' — göz teması iyi':(a<9?' — sınırda, çizgiyi yukarı al':' — izleyici aşağı baktığını görür'))+
+    ' · '+st.dist+' cm mesafeye göre';
+  return 'Gaze offset ≈'+r+'° '+good+
+    (a<5?' — reads as eye contact':(a<9?' — borderline, raise the line':' — viewers see you looking down'))+
+    ' · at '+st.dist+' cm';
+}
+function applyEyeRecipe(){
+  st.eyePos=8; st.band=2; st.dim=true; st.mg=Math.max(st.mg,12);
+  st.fs=Math.max(st.fs,52); st.eye=true;
+  apply(); save(); requestAnimationFrame(measure);
+  toast(L==='tr'?'👁 Okuma çizgisi merceğin altına alındı':'👁 Reading line moved under the lens');
+}
 
 /* ============ ÇEKİM MODLARI ============
    Her mod: çerçeve oranı + önerilen tempo + süre sınırı + platformun arayüzüyle
@@ -1389,8 +1432,18 @@ function apply(){
   root.style.setProperty('--weight',String(st.weight));
   root.style.setProperty('--ls',st.ls+'px');
   root.style.setProperty('--align',st.align);
+  /* okuma şeridi: görünür pencere = şerit satır sayısı × satır yüksekliği */
+  const lhPx=st.fs*(st.lh/100), Hh=Math.max(320,H());
+  if(st.band>0){
+    const half=Math.max(2.5,(st.band*lhPx)/Hh*100/2);
+    root.style.setProperty('--bandIn',half.toFixed(1)+'%');
+    root.style.setProperty('--bandOut',(half+7).toFixed(1)+'%');
+  } else {
+    root.style.setProperty('--bandIn','5%');
+    root.style.setProperty('--bandOut','26%');
+  }
   body.classList.toggle('eye',st.eye);
-  body.classList.toggle('dim',st.dim);
+  body.classList.toggle('dim',st.dim||st.band>0);
   body.classList.toggle('nohl',!st.hl);
   body.classList.toggle('nofade',!st.fade);
   body.classList.toggle('noshadow',!st.shadow);
@@ -1404,6 +1457,7 @@ function apply(){
   $('#lh').value=st.lh; $('#vLh').textContent=(st.lh/100).toFixed(2);
   $('#mg').value=st.mg; $('#vMg').textContent=st.mg;
   $('#eye').value=st.eyePos; $('#vEye').textContent=st.eyePos;
+  $('#dist').value=st.dist; $('#vDist').textContent=st.dist;
   $('#weight').value=st.weight; $('#vW').textContent=st.weight;
   $('#ls').value=st.ls; $('#vLs').textContent=st.ls;
   $('#scrim').value=st.scrim; $('#vScrim').textContent=st.scrim;
@@ -1416,6 +1470,8 @@ function apply(){
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===st.mode));
+  $$('#bandSeg button').forEach(b=>b.classList.toggle('on',+b.dataset.band===st.band));
+  $('#gazeHint').textContent=gazeLine();
   $$('.sw').forEach(s=>s.classList.toggle('on',!!st[s.dataset.t]));
   $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
   $('#modeHint').textContent=modeLine();
@@ -1562,6 +1618,9 @@ bind('#fs','fs',()=>requestAnimationFrame(measure));
 bind('#lh','lh',()=>requestAnimationFrame(measure));
 bind('#mg','mg',()=>requestAnimationFrame(measure));
 bind('#eye','eyePos',()=>requestAnimationFrame(measure));
+bind('#dist','dist');
+$$('#bandSeg button').forEach(b=>b.onclick=()=>{ st.band=+b.dataset.band; apply(); save(); requestAnimationFrame(measure); });
+$('#eyeRecipe').onclick=applyEyeRecipe;
 bind('#weight','weight'); bind('#ls','ls'); bind('#scrim','scrim'); bind('#target','target');
 $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
 
