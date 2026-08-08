@@ -501,7 +501,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='2.1';
+const cam=$('#cam'), scroller=$('#scroller'), VER='2.2';
 
 /* ============ i18n ============ */
 const I18N={
@@ -985,7 +985,7 @@ function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text
 function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').value.trim()||(L==='tr'?'Başlıksız':'Untitled'); s.text=$('#text').value; s.up=Date.now(); save(); }
 
 /* ============ SESLE TAKİP ============ */
-let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[];
+let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
   .replace(/[^\p{L}\p{N}]/gu,'')
@@ -995,7 +995,7 @@ function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ toast(m('voiceNo')); return; }
   if(running) stop();
-  measure(); buildNorm(); vptr=Math.max(0,activeIdx); vTarget=pos;
+  measure(); buildNorm(); vptr=Math.max(0,activeIdx); vTarget=pos; voicePaused=false;
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
   sr.onresult=e=>{ const r=e.results[e.results.length-1];
     let toks=(r[0].transcript||'').split(/\s+/).map(norm).filter(Boolean);
@@ -1035,20 +1035,22 @@ function takeCommands(toks){
   }
   return out;
 }
+const CMDNAME={tr:{play:'devam',pause:'durdu',faster:'hızlandı',slower:'yavaşladı',reset:'başa sarıldı',rec:'kayıt'},
+               en:{play:'resume',pause:'paused',faster:'faster',slower:'slower',reset:'rewound',rec:'record'}};
 function runVoiceCmd(c){
   const now=Date.now(); if(now-lastCmdAt<900) return; lastCmdAt=now;
-  if(c==='play'){ stopVoiceScrollGuard(); if(!running) start(); }
-  else if(c==='pause'){ if(running) stop(); }
+  // 🎤 açıkken "başla/dur" takibi sürdürür/dondurur — zamanlı kaydırmayı başlatmaz (iki döngü çakışırdı)
+  if(c==='play'){ if(voiceOn){ voicePaused=false; vTarget=pos; } else if(!running) start(); }
+  else if(c==='pause'){ if(voiceOn) voicePaused=true; else if(running) stop(); }
   else if(c==='faster') nudgeWpm(+10);
   else if(c==='slower') nudgeWpm(-10);
-  else if(c==='reset') reset();
+  else if(c==='reset'){ reset(); vptr=0; vTarget=0; }
   else if(c==='rec') toggleRec();
-  toast('🗣 '+c);
+  toast('🗣 '+((CMDNAME[L]||CMDNAME.tr)[c]||c));
 }
-/* sesle takip açıkken start() gereksiz — takip zaten konumu sürüyor */
-function stopVoiceScrollGuard(){ if(voiceOn){ vTarget=pos; } }
 
 function matchVoice(spoken){
+  if(voicePaused) return;
   const W=18;
   for(const tok of spoken){
     if(tok.length<2) continue;
@@ -1062,7 +1064,7 @@ function matchVoice(spoken){
 }
 function easeLoop(){
   if(!voiceOn) return;
-  setPos(pos+(vTarget-pos)*0.14);
+  if(!voicePaused) setPos(pos+(vTarget-pos)*0.14);
   vRaf=requestAnimationFrame(easeLoop);
 }
 
