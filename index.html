@@ -155,6 +155,25 @@
   #speedRail div{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);border-radius:20px;
     padding:10px 6px;font-size:12px;font-weight:800;color:var(--accent);writing-mode:vertical-rl}
 
+  /* ana ekranda görünür hız kontrolü — kenar sürükleme keşfedilemiyordu */
+  #speedCtl{position:absolute;left:50%;transform:translateX(-50%);
+    bottom:calc(96px + env(safe-area-inset-bottom));z-index:8;display:none;align-items:center;gap:0;
+    background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);border-radius:26px;
+    backdrop-filter:blur(10px);overflow:hidden}
+  body.started #speedCtl{display:flex}
+  #speedCtl button{width:52px;height:46px;background:none;border:none;color:#fff;font-size:26px;
+    font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center}
+  #speedCtl button:active{background:rgba(255,255,255,.18)}
+  #spVal{min-width:96px;text-align:center;font-size:15px;font-weight:800;color:var(--accent);
+    padding:0 4px;letter-spacing:.02em}
+  #spVal small{display:block;font-size:9.5px;font-weight:700;color:#9aa0a6;letter-spacing:.06em}
+  body.hideUI #speedCtl{opacity:0;pointer-events:none}
+  /* sağ kenarın hız şeridi olduğunu belli eden ince iz */
+  #railHint{position:absolute;right:0;top:34%;bottom:34%;width:3px;z-index:5;border-radius:3px;
+    background:linear-gradient(to bottom,transparent,rgba(0,200,83,.55),transparent);display:none}
+  body.started #railHint{display:block}
+  body.hideUI #railHint{opacity:0}
+
   /* ===== ALT KONTROL ===== */
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
     display:flex;align-items:center;justify-content:space-between;gap:6px;
@@ -295,8 +314,14 @@
   <div id="hud"><span id="hEl">00:00</span><span id="hRem">–</span><span id="hWpm">140</span></div>
   <div id="recDot"><i></i><span id="recLbl">KAYITTA</span><span id="recTime">00:00</span></div>
   <div id="speedRail"><div id="railV">140</div></div>
+  <div id="railHint"></div>
+  <div id="speedCtl">
+    <button id="spDown" aria-label="yavaşlat">−</button>
+    <span id="spVal">140<small data-i18n="spLabel">HIZ · WPM</small></span>
+    <button id="spUp" aria-label="hızlandır">+</button>
+  </div>
   <div id="count">3</div>
-  <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · sağ kenar = hız</div>
+  <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)</div>
 </div>
 
 <div id="backdrop"></div>
@@ -656,11 +681,11 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='3.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='3.7';
 
 /* ============ i18n ============ */
 const I18N={
- tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · sağ kenar = hız',
+ tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'🔒 kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
   startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
@@ -690,6 +715,7 @@ const I18N={
   tgBionic:'⚡ Biyonik okuma (kelime başları kalın)',
   tgSection:'🎬 Bölüm sonunda dur (bölüm bölüm çek)',
   secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'🔍 Konuşulabilirlik denetimi',diffBtn:'🗺 Zorlanma haritası',
+  spLabel:'HIZ · WPM',
   band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
@@ -712,7 +738,7 @@ const I18N={
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
- en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · right edge = speed',
+ en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
@@ -742,6 +768,7 @@ const I18N={
   tgBionic:'⚡ Bionic reading (bold word starts)',
   tgSection:'🎬 Stop at section end (shoot section by section)',
   secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'🔍 Speakability check',diffBtn:'🗺 Struggle map',
+  spLabel:'SPEED · WPM',
   band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
@@ -2222,6 +2249,7 @@ function apply(){
   ['system','serif','round','mono','dys'].forEach(f=>body.classList.toggle('f-'+f,st.font===f));
   // kontroller
   $('#wpm').value=st.wpm; $('#vWpm').textContent=st.wpm;
+  if($('#spVal')&&$('#spVal').firstChild) $('#spVal').firstChild.nodeValue=st.wpm;
   $('#fs').value=st.fs; $('#vFs').textContent=st.fs;
   $('#lh').value=st.lh; $('#vLh').textContent=(st.lh/100).toFixed(2);
   $('#mg').value=st.mg; $('#vMg').textContent=st.mg;
@@ -2274,7 +2302,7 @@ stage.addEventListener('pointermove',e=>{
   if(dragMode==='speed'){
     const w=Math.round(Math.min(320,Math.max(40, startWpm - dy*0.6 )));
     if(w!==st.wpm){ st.wpm=w; $('#railV').textContent=w; $('#speedRail').classList.add('on');
-      $('#wpm').value=w; $('#vWpm').textContent=w; updateHud(); save(); }
+      $('#wpm').value=w; $('#vWpm').textContent=w; if($('#spVal')) $('#spVal').firstChild.nodeValue=w; updateHud(); save(); }
   } else {
     setPos(startPos - dy);
   }
@@ -2341,6 +2369,7 @@ function actName(a){ return (L==='tr'
   ? {toggle:'başlat/duraklat',nextLine:'satır ileri',prevLine:'satır geri',faster:'hızlan',slower:'yavaşla',rec:'kayıt',reset:'başa sar',lock:'kilit',none:'yok'}
   : {toggle:'play/pause',nextLine:'next line',prevLine:'prev line',faster:'faster',slower:'slower',rec:'record',reset:'rewind',lock:'lock',none:'none'})[a]||a; }
 function nudgeWpm(d){ st.wpm=Math.min(320,Math.max(40,st.wpm+d)); $('#wpm').value=st.wpm; $('#vWpm').textContent=st.wpm;
+  if($('#spVal')) $('#spVal').firstChild.nodeValue=st.wpm;
   $('#railV').textContent=st.wpm; $('#speedRail').classList.add('on'); setTimeout(()=>$('#speedRail').classList.remove('on'),700);
   updateHud(); save(); }
 function jumpLine(dir){
@@ -2354,8 +2383,8 @@ function jumpLine(dir){
 }
 
 /* ============ OLAYLAR ============ */
-$('#startCam').onclick=async()=>{ if(await openCam()){ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); requestWake(); } };
-$('#startNoCam').onclick=()=>{ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); requestWake(); };
+$('#startCam').onclick=async()=>{ if(await openCam()){ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); body.classList.add('started'); requestWake(); } };
+$('#startNoCam').onclick=()=>{ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); body.classList.add('started'); requestWake(); };
 $('#helpBtn').onclick=()=>openSheet('#helpSheet');
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
 /* ayarları sıfırla — senaryolara ve çekimlere dokunmaz, iki basış ister */
@@ -2389,6 +2418,20 @@ $$('.sheet input[type=range]').forEach(r=>{
 $('#helpX').onclick=closeSheets;
 $$('#langSwitch button').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });
 
+/* hız kontrolü: dokun = 5 wpm, basılı tut = hızlı tekrar */
+let spRep=null, spAcc=0;
+function spStep(d){ nudgeWpm(d); $('#spVal').firstChild.nodeValue=st.wpm; }
+function spHold(d){
+  spStep(d); spAcc=0;
+  clearInterval(spRep);
+  spRep=setInterval(()=>{ spAcc++; spStep(d*(spAcc>8?3:1)); },140);
+}
+function spRelease(){ clearInterval(spRep); spRep=null; }
+['#spDown','#spUp'].forEach((sel,i)=>{
+  const el=$(sel), d=i?5:-5;
+  el.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); spHold(d); });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,e=>{ e.stopPropagation(); spRelease(); }));
+});
 $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
 $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
 $('#pauseBtn').onclick=e=>{ e.stopPropagation(); togglePauseRec(); };
