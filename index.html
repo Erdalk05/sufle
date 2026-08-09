@@ -574,6 +574,8 @@
     <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (gürültü temizlemesi kapalı)</span><div class="sw" data-t="rawAudio"></div></div>
     <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar ama bazı iPhone'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.</div>
     <div class="sheetbtns"><button class="cancel" id="reopenCam" data-i18n="reopenCam">🔁 Kamerayı yeniden başlat</button></div>
+    <div class="sheetbtns"><button class="cancel" id="fixAudio" data-i18n="fixAudio">🔊 Sesi onar (mikrofonu tazele)</button></div>
+    <div class="hint" data-i18n="fixAudioHint">Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.</div>
   </div>
 
   <!-- DİĞER -->
@@ -754,7 +756,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.2';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.3';
 
 /* ============ i18n ============ */
 const I18N={
@@ -799,7 +801,8 @@ const I18N={
   eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
   tgSafe:'🚫 Platform arayüz alanlarını göster',
-  micLevel:'🎙 Mikrofon seviyesi',
+  micLevel:'🎙 Mikrofon seviyesi',fixAudio:'🔊 Sesi onar (mikrofonu tazele)',
+  fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
   micHint:'Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.',
   noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
@@ -861,7 +864,8 @@ const I18N={
   eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
   tgSafe:'🚫 Show platform UI zones',
-  micLevel:'🎙 Microphone level',
+  micLevel:'🎙 Microphone level',fixAudio:'🔊 Repair audio (refresh mic)',
+  fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
   micHint:'Talk — if the bar does not move, no audio is recorded. Check iOS Settings → Safari → Microphone, or close another app holding the mic.',
   noMicShort:'🔇 no microphone — audio is not recorded',
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
@@ -894,6 +898,7 @@ const MSG={
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
+  micIosOff:'iPhone\'da kapalı (kaydı sessizleştiriyordu)',micRefresh:'🔊 Mikrofon tazeleniyor…',micFixed:'🔊 Mikrofon yenilendi — tekrar çek',
   audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
@@ -936,6 +941,7 @@ const MSG={
   savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',
   trimInPhotos:'✂️ Trim → Photos',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
+  micIosOff:'off on iPhone (it was silencing recordings)',micRefresh:'🔊 Refreshing microphone…',micFixed:'🔊 Microphone refreshed — record again',
   audClip:'⚠️ Audio is clipping — back off the mic or speak softer',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -1266,9 +1272,15 @@ let stream=null, vTrack=null, aTrack=null;
 
 /* ---- MİKROFON SEVİYE ÖLÇER ---- */
 let actx=null, meterRaf=null, analyser=null, meterData=null;
+let micTouched=false;
 function startMeter(){
   stopMeter();
   if(!aTrack) { setMeter(0); return; }
+  if(IS_WK){ // iPhone: mikrofonu Web Audio'ya bağlamak kaydı sessizleştiriyor
+    const t=$('#micTxt'); if(t) t.textContent=m('micIosOff');
+    return;
+  }
+  micTouched=true;
   try{
     const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
     actx=new AC();
@@ -1830,8 +1842,10 @@ function pickMime(){
   for(const x of list) if(window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x)) return x;
   return '';
 }
-function startRec(){
+async function startRec(){
   if(!stream){ toast(m('needCam')); return; }
+  // mikrofon Web Audio'ya bağlanmışsa iz "zehirlenmiş" olabilir: taze iz al
+  if(micTouched){ micTouched=false; toast(m('micRefresh')); await openCam(); }
   // geri sayım kayda dahil olmasın: önce say, sonra kaydı başlat
   if(st.count && pos<=0 && !counting){ countdown(doStartRec); return; }
   doStartRec();
@@ -1874,7 +1888,7 @@ function doStartRec(){
   body.classList.add('rec'); body.classList.remove('recpaused'); buzz(60);
   // iOS'ta mikrofon izini kayıt sırasında Web Audio'ya bağlamak sesi düşürebiliyor.
   // Ses kırpma uyarısı iyi bir şey ama SESİN KENDİSİ daha önemli.
-  if(!IS_WK) startAudioMonitor(); else setAudBadge('off');
+  if(!IS_WK){ micTouched=true; startAudioMonitor(); } else setAudBadge('off');
   $('#recLbl').textContent=m('recOn');
   if(canPauseRec()) $('#pauseBtn').classList.remove('hidden');
   $('#recBtn').classList.add('rec'); $('#recDot').classList.add('on');
@@ -3069,6 +3083,13 @@ $$('#modeSeg button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true);
   toast('🎯 '+(curMode().n[L]||curMode().n.tr)); });
 $$('#vlSeg button').forEach(b=>b.onclick=()=>{ st.voiceLang=b.dataset.vl; apply(); save(); });
 $('#reopenCam').onclick=()=>openCam();
+$('#fixAudio').onclick=async()=>{
+  stopMeter(); stopAudioMonitor(); micTouched=false;
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  stream=null; aTrack=null; vTrack=null;
+  const ok=await openCam();
+  toast(ok?m('micFixed'):m('noCam'));
+};
 $('#lightBtn').onclick=renderLight;
 $('#tiltBtn').onclick=enableTilt;
 
