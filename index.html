@@ -490,6 +490,9 @@
       <button class="save" id="fixAudio" data-i18n="fixAudio">🔊 Sesi onar (mikrofonu tazele)</button>
     </div>
     <div class="hint" data-i18n="fixAudioHint">Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.</div>
+    <div class="sheetbtns"><button class="cancel" id="audTestBtn" data-i18n="audTest">🔎 Ses testi (cihaza yaptır)</button></div>
+    <div class="hint" data-i18n="audTestHint">Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.</div>
+    <div id="audTestOut"></div>
     <div class="tog"><span data-i18n="tgSafeAudio">🛡 Güvenli ses modu (iPhone için önerilir)</span><div class="sw on" data-t="safeAudio"></div></div>
     <div class="hint" data-i18n="safeAudioHint">Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.</div>
 
@@ -761,7 +764,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -807,6 +810,8 @@ const I18N={
   mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
   tgSafe:'🚫 Platform arayüz alanlarını göster',
   micLevel:'🎙 Mikrofon seviyesi',fixAudio:'🔊 Sesi onar (mikrofonu tazele)',
+  audTest:'🔎 Ses testi (cihaza yaptır)',
+  audTestHint:'Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.',
   fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
   tgSafeAudio:'🛡 Güvenli ses modu (iPhone için önerilir)',
   safeAudioHint:'Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone\'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.',
@@ -872,6 +877,8 @@ const I18N={
   mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
   tgSafe:'🚫 Show platform UI zones',
   micLevel:'🎙 Microphone level',fixAudio:'🔊 Repair audio (refresh mic)',
+  audTest:'🔎 Audio test (let the device decide)',
+  audTestHint:'Tries every recording format and keeps the one that actually writes audio. Takes about 15 seconds.',
   fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
   tgSafeAudio:'🛡 Safe audio mode (recommended on iPhone)',
   safeAudioHint:'Opens the camera with the simplest request (no resolution ask). This is the setting that fixes silent recordings on iPhone.',
@@ -907,7 +914,7 @@ const MSG={
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',speed:'Hız',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
-  micIosOff:'iPhone\'da kapalı (kaydı sessizleştiriyordu)',micRefresh:'🔊 Mikrofon tazeleniyor…',micFixed:'🔊 Mikrofon yenilendi — tekrar çek',
+  micIosOff:'iPhone\'da kapalı (kaydı sessizleştiriyordu)',audTesting:'Deneniyor… (15 sn)',audTestWin:'✓ Sesli kaydeden biçim bulundu ve seçildi',audTestNone:'⚠️ Hiçbir biçimde ses yazılamadı',micRefresh:'🔊 Mikrofon tazeleniyor…',micFixed:'🔊 Mikrofon yenilendi — tekrar çek',
   audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
@@ -950,7 +957,7 @@ const MSG={
   savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',
   trimInPhotos:'✂️ Trim → Photos',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
-  micIosOff:'off on iPhone (it was silencing recordings)',micRefresh:'🔊 Refreshing microphone…',micFixed:'🔊 Microphone refreshed — record again',
+  micIosOff:'off on iPhone (it was silencing recordings)',audTesting:'Testing… (15s)',audTestWin:'✓ Found a format that records audio',audTestNone:'⚠️ No format produced audio',micRefresh:'🔊 Refreshing microphone…',micFixed:'🔊 Microphone refreshed — record again',
   audClip:'⚠️ Audio is clipping — back off the mic or speak softer',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -1000,7 +1007,7 @@ const DEF={
   eyePos:24, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', rawAudio:false, safeAudio:true, autoLock:false, wake:true, hideUI:false,
+  quality:'1080', asp:'none', rawAudio:false, safeAudio:true, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
@@ -1834,6 +1841,58 @@ function audSummary(){
   return (L==='tr'?'\ud83d\udd0a Ses seviyesi iyi':'\ud83d\udd0a Audio level good');
 }
 
+/* ============ SES TESTİ ============
+   iPhone'da hangi kayıt biçiminin sesi gerçekten yazdığını CİHAZA buldurur.
+   Her adayla 2 sn kaydeder, dosyayı açıp ses izi var mı diye bakar, kazananı
+   kalıcı seçer. Aynı kod bilgisayarda sesli çalışıp telefonda çalışmadığı için
+   tahmin yerine ölçüm gerekiyor. */
+const MIME_ADAYLARI=['video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4;codecs=avc1,mp4a','video/mp4',
+                     'video/webm;codecs=vp8,opus','video/webm','(seçeneksiz)'];
+let audTesting=false;
+function recordWith(mime,ms){
+  return new Promise(res=>{
+    let r=null;
+    try{
+      if(mime==='(seçeneksiz)') r=new MediaRecorder(stream);
+      else if(MediaRecorder.isTypeSupported(mime)) r=new MediaRecorder(stream,{mimeType:mime});
+    }catch(e){ r=null; }
+    if(!r) return res(null);
+    const parts=[];
+    r.ondataavailable=e=>{ if(e.data&&e.data.size) parts.push(e.data); };
+    r.onstop=()=>res(new Blob(parts,{type:(r.mimeType||'video/mp4').split(';')[0]}));
+    try{ r.start(); }catch(e){ return res(null); }
+    setTimeout(()=>{ try{ r.stop(); }catch(e){} }, ms);
+  });
+}
+async function runAudioTest(){
+  if(audTesting) return;
+  if(!stream){ toast(m('needCam')); return; }
+  audTesting=true;
+  const box=$('#audTestOut');
+  box.innerHTML='<div class="empty">'+m('audTesting')+'</div>';
+  const rows=[]; let winner=null;
+  for(const mime of MIME_ADAYLARI){
+    const blob=await recordWith(mime,2000);
+    if(!blob||blob.size<500){ rows.push([mime,'—',false]); continue; }
+    const n=await probeAudio(blob);
+    const ok=n>0;
+    rows.push([mime,(ok?('ses '+n):(n===0?'SES YOK':'okunamadı'))+' · '+Math.round(blob.size/1024)+'KB',ok]);
+    if(ok && !winner) winner=mime;
+  }
+  let html='';
+  rows.forEach(r=>{ html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+
+    (r[2]?'var(--accent)':'#ffb300')+'">'+(r[2]?'✓ ':'✕ ')+esc(r[0])+'</div><div class="s">'+esc(r[1])+'</div></div></div>'; });
+  if(winner){
+    st.forceNoOpts=(winner==='(seçeneksiz)');
+    st.forceMime=st.forceNoOpts?'':winner;
+    save();
+    html='<div class="kv"><span>'+m('audTestWin')+'</span><b>'+esc(winner)+'</b></div>'+html;
+    toast(m('audTestWin'));
+  } else html='<div class="kv"><span>'+m('audTestNone')+'</span></div>'+html;
+  box.innerHTML=html;
+  audTesting=false;
+}
+
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
 let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
@@ -1870,7 +1929,7 @@ function doStartRec(){
   if(!stream.getAudioTracks().length) toast(m('noMic'));
   const mime=pickMime();
   const base = mime?{mimeType:mime}:{};
-  const opts = IS_WK ? base : Object.assign({},base,
+  const opts = st.forceNoOpts ? {} : IS_WK ? base : Object.assign({},base,
     {videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
   // kompozit açıksa tuvalden kaydet; desteklenmiyorsa sessizce ham akışa dön
   let src=stream, usedComp=false;
@@ -3096,6 +3155,7 @@ $$('#modeSeg button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true);
   toast('🎯 '+(curMode().n[L]||curMode().n.tr)); });
 $$('#vlSeg button').forEach(b=>b.onclick=()=>{ st.voiceLang=b.dataset.vl; apply(); save(); });
 $('#reopenCam').onclick=()=>openCam();
+$('#audTestBtn').onclick=runAudioTest;
 $('#fixAudio').onclick=async()=>{
   stopMeter(); stopAudioMonitor(); micTouched=false;
   if(stream) stream.getTracks().forEach(t=>t.stop());
