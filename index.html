@@ -754,7 +754,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.2';
 
 /* ============ i18n ============ */
 const I18N={
@@ -910,6 +910,7 @@ const MSG={
   trimInPhotos:'✂️ Kırpma → Fotoğraflar',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
+  compAudioWarn:'⚠️ iPhone\'da kompozit açıkken ses kaydedilmeyebilir — sesli çekimde kapalı tut',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
   bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden'},
@@ -939,6 +940,7 @@ const MSG={
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
+  compAudioWarn:'⚠️ iOS may drop audio while composite is on — keep it off for spoken takes',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
   bgTooBig:'Image too large — pick a smaller one',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off'}
@@ -1913,6 +1915,36 @@ function togglePauseRec(){
   }
 }
 
+/* Kaydedilen dosyayı açıp içinde ses izi olup olmadığını ölçüyoruz.
+   Böylece "ses yok" şikâyeti kayıt mı oynatma mı sorunu, kesinleşiyor. */
+async function probeAudio(blob){
+  // 1) Safari'de video.audioTracks var — en doğrudan yol
+  const byTracks=await new Promise(res=>{
+    let done=false; const fin=v=>{ if(!done){ done=true; res(v); } };
+    try{
+      const v=document.createElement('video');
+      v.muted=true; v.preload='metadata';
+      const u=URL.createObjectURL(blob); v.src=u;
+      v.addEventListener('loadedmetadata',()=>{
+        let n=-1;
+        try{ if(v.audioTracks) n=v.audioTracks.length; }catch(e){}
+        try{ URL.revokeObjectURL(u); }catch(e){}
+        fin(n);
+      },{once:true});
+      v.addEventListener('error',()=>fin(-3),{once:true});
+      setTimeout(()=>fin(-4),2500);
+    }catch(e){ fin(-3); }
+  });
+  if(byTracks>=0) return byTracks;
+  // 2) audioTracks yoksa sesi çözmeyi dene (Chrome/Android yolu)
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return byTracks;
+    const ctx=new AC(); const buf=await blob.arrayBuffer();
+    const dec=await new Promise((ok,no)=>{ try{ ctx.decodeAudioData(buf.slice(0),ok,()=>no(0)); }catch(e){ no(0); } });
+    try{ ctx.close(); }catch(e){}
+    return (dec && dec.duration>0 && dec.numberOfChannels>0) ? dec.numberOfChannels : 0;
+  }catch(e){ return byTracks; }
+}
 function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl=URL.createObjectURL(blob);
@@ -1932,6 +1964,18 @@ function showResult(blob){
     if(!lastPath.aud) diag='⚠️ Kayıtta SES İZİ YOKTU — '+diag;
   }
   $('#shareDiag').textContent=diag;
+  // dosyanın içini ölç ve satırı güncelle
+  probeAudio(blob).then(n=>{
+    let tag;
+    if(n>0) tag=(L==='tr'?' · dosyada SES VAR ('+n+' iz)':' · file HAS AUDIO ('+n+')');
+    else if(n===0) tag=(L==='tr'?' · ⚠️ DOSYADA SES YOK':' · ⚠️ FILE HAS NO AUDIO');
+    else tag=(L==='tr'?' · ses izi okunamadı':' · could not read audio track');
+    $('#shareDiag').textContent=diag+tag;
+    if(n===0 && lastPath && lastPath.comp)
+      $('#audInfo').textContent=(L==='tr'
+        ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompoziti kapat ve tekrar çek'
+        : '⚠️ iOS drops audio when composite is on — turn Composite off in Settings → Camera');
+  });
   $('#audInfo').textContent=audSummary();
   const n=buildCues().length;
   $('#capInfo').textContent = n
@@ -3037,7 +3081,8 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
   if(k==='burnCaps'){ body.classList.toggle('burn', comp.on && st.burnCaps); }
   if(k==='comp'){
     if(st.comp){ if(!stream){ toast(m('needCam')); st.comp=false; apply(); save(); }
-                 else if(!startComp()){ st.comp=false; apply(); save(); } }
+                 else if(!startComp()){ st.comp=false; apply(); save(); }
+                 else if(IS_WK) setTimeout(()=>toast(m('compAudioWarn')),400); }
     else stopComp();
   }
 });
