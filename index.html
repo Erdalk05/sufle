@@ -252,6 +252,8 @@
   .tab{display:none}.tab.on{display:block}
   .row{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px;gap:10px}
   .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
+  .row .v.hit{animation:keyhit .5s ease-out}
+  @keyframes keyhit{0%{transform:scale(1.5);color:#3ddc84}100%{transform:scale(1)}}
   .hint{font-size:11.5px;color:#787f85;line-height:1.5;margin-top:4px}
   input[type=range]{width:100%;accent-color:var(--accent);height:32px}
   .seg{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
@@ -686,6 +688,7 @@
   <div class="row" style="margin-top:16px">
     <label data-i18n="lastKeyL">Gelen son tuş</label><span class="v" id="lastKey">—</span>
   </div>
+  <div class="hint" id="remoteDiag" style="margin-top:6px"></div>
   <div class="sheetbtns">
     <button class="cancel" id="learnBtn" data-i18n="learnStart">🎯 Tuş öğret</button>
     <button class="cancel" id="mapReset" data-i18n="mapReset">↺ Varsayılana dön</button>
@@ -738,7 +741,7 @@
     <button class="danger" id="redoBtn" data-i18n="deleteRedo">🗑 Sil</button>
     <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
     <button class="cancel" id="editBtn" data-i18n="editBtn">✂️ Düzenle</button>
-    <button class="cancel" id="capBtn">💬 .srt</button>
+    <button class="cancel" id="capBtn" data-i18n="capBtnL">💬 Altyazı dosyası</button>
   </div>
   <div class="sheetbtns">
     <button class="cancel" id="filesBtn" data-i18n="toFiles">📁 Dosyalar'a Kaydet</button>
@@ -767,7 +770,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.7';
 
 /* ============ i18n ============ */
 const I18N={
@@ -836,6 +839,7 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
+  capBtnL:'💬 Altyazı dosyası',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
@@ -903,6 +907,7 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
+  capBtnL:'💬 Caption file',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
 };
@@ -934,6 +939,7 @@ const MSG={
   trimInPhotos:'✂️ Kırpma → Fotoğraflar',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
+  needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
   compAudioWarn:'⚠️ iPhone\'da kompozit açıkken ses kaydedilmeyebilir — sesli çekimde kapalı tut',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
@@ -965,6 +971,7 @@ const MSG={
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
+  needsComp:'Composite turned on — this feature only works on the composite image',
   compAudioWarn:'⚠️ iOS may drop audio while composite is on — keep it off for spoken takes',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
@@ -2075,7 +2082,8 @@ function showResult(blob){
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
                : n+' caption lines ready — generated from the script, no typos')
-    : (L==='tr'? 'Altyazı yok (sufle akmadan çekilmiş)':'No captions (prompter did not run)');
+    : (L==='tr'? 'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.'
+               : 'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.');
   $('#capBtn').style.display = n?'':'none';
   $('#trimBox').classList.add('hidden');
   // iOS Safari video akışı vermiyor: kesme orada çalışmaz. Yanlış beklenti kurma, doğru yolu göster.
@@ -2849,7 +2857,7 @@ function renderMap(){
 /* ============ SHEET YÖNETİMİ ============ */
 const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet','#ready'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
-function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; stopMeter(); stopLight(); }
+function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
 /* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */
 function dismissSheets(){
@@ -3019,18 +3027,43 @@ const DEFAULT_MAP={
 function keyMap(){ return Object.assign({},DEFAULT_MAP,st.remoteMap||{}); }
 let learnKey=null;           // öğrenme modunda bekleyen tuş
 function keyLabel(k){ return k===' '?'Boşluk':k; }
+let gotKey=false, remoteWatch=0;
 window.addEventListener('keydown',e=>{
   const tag=(e.target.tagName||'').toLowerCase();
   if(tag==='textarea'||tag==='input') return;
-  $('#lastKey') && ($('#lastKey').textContent=keyLabel(e.key));
-  if(e.key==='Escape'){ closeSheets(); return; }
-  // öğrenme modu: gelen tuşu yakala, eylem seçtir
+  gotKey=true; noteKey(e.key);
+  // öğrenme modu Escape'ten ÖNCE: yoksa Escape gönderen kumandalar hiç öğretilemiyordu
   if($('#remoteSheet').classList.contains('open') && learning){
     e.preventDefault(); learnKey=e.key; renderLearn(); return;
   }
+  if(e.key==='Escape'){ closeSheets(); return; }
   const act=keyMap()[e.key];
   if(act && ACTIONS[act]){ e.preventDefault(); ACTIONS[act](); flashKey(keyLabel(e.key),act); }
 });
+/* Tuşun uygulamaya ULAŞTIĞINI görünür kıl — "çalışmıyor" şikâyetinin yarısı bu geri bildirimin yokluğu */
+function noteKey(k){
+  const el=$('#lastKey'); if(!el) return;
+  el.textContent=keyLabel(k);
+  el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
+  const d=$('#remoteDiag'); if(d) d.innerHTML = L==='tr'
+    ? '✅ <b>Kumanda bağlı</b> — tuşlar uygulamaya ulaşıyor. Ne yapacağını seçmek için “🎯 Tuş öğret”e bas.'
+    : '✅ <b>Remote connected</b> — keys reach the app. Tap “🎯 Learn a key” to assign an action.';
+}
+/* Hiç tuş gelmiyorsa sessiz kalma: sebebini söyle. Ucuz kumandalar Ses Aç/Kıs gönderir,
+   iOS ve Android bu tuşları tarayıcıya HİÇ vermez — uygulamanın yapabileceği bir şey yok. */
+function armRemoteWatch(){
+  clearTimeout(remoteWatch);
+  const d=$('#remoteDiag'); if(!d) return;
+  gotKey=false;
+  d.textContent = L==='tr' ? 'Kumandandaki bir tuşa bas — gelen tuşu buraya yazacağım…'
+                           : 'Press a button on your remote — I will print the key here…';
+  remoteWatch=setTimeout(()=>{
+    if(gotKey) return;
+    d.innerHTML = L==='tr'
+      ? '⚠️ <b>Hiç tuş gelmedi.</b> En yaygın sebep: ucuz kumandalar <b>Ses Aç / Ses Kıs</b> tuşu gönderir; iPhone ve Android bu tuşları tarayıcıya <b>hiç vermez</b>. Bu bir uygulama hatası değil, işletim sistemi sınırı.<br><br><b>Çalışanlar:</b> klavye modundaki (HID keyboard) sunum kumandaları, sayfa çevirici pedallar, Bluetooth klavyeler. Kutusunda “PowerPoint / Keynote sunum kumandası” yazanlar genelde çalışır.<br><br><b>Kumandan yoksa:</b> 🎤 <b>sesli komut</b> aynı işi görür — “sufle başla”, “sufle dur”, “sufle hızlan”, “sufle başa dön”.'
+      : '⚠️ <b>No key received.</b> Most likely your clicker sends <b>Volume Up / Down</b>; iOS and Android never pass those keys to a browser. This is an OS limit, not an app bug.<br><br><b>What works:</b> HID-keyboard presenters, page-turner pedals, Bluetooth keyboards — anything sold as a “PowerPoint / Keynote presenter”.<br><br><b>No clicker?</b> 🎤 <b>voice commands</b> do the same job: “prompter start”, “prompter stop”, “prompter faster”, “prompter rewind”.';
+  },6000);
+}
 function flashKey(k,act){
   if(!anySheet()) toast('🎛 '+k+' → '+actName(act));
 }
@@ -3120,7 +3153,7 @@ $('#readyX').onclick=closeSheets;
 $('#readyAgain').onclick=renderReady;
 $('#readyGo').onclick=()=>{ closeSheets(); setTimeout(()=>toggleRec(),260); };
 $('#devBtn').onclick=renderDevice;
-$('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); };
+$('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); armRemoteWatch(); };
 $('#remoteX').onclick=()=>{ learning=false; closeSheets(); };
 $('#learnBtn').onclick=()=>{ learning=!learning; learnKey=null;
   $('#learnBtn').classList.toggle('save',learning);
@@ -3177,13 +3210,25 @@ $('#fixAudio').onclick=async()=>{
 $('#lightBtn').onclick=renderLight;
 $('#tiltBtn').onclick=enableTilt;
 
+/* Kompozit gerektiren anahtar açıldığında kompoziti de aç; olmuyorsa anahtarı geri al. */
+function ensureComp(k){
+  if(!st[k] || comp.on) return true;
+  if(!stream){ st[k]=false; apply(); save(); toast(m('needCam')); return false; }
+  if(!startComp()){ st[k]=false; apply(); save(); return false; }
+  st.comp=true; apply(); save(); toast(m('needsComp')); return true;
+}
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
   if(k==='backCam'||k==='rawAudio'||k==='safeAudio'){ if(stream) await openCam(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
   if(k==='bionic'){ buildContent(); }
-  if(k==='burnCaps'){ body.classList.toggle('burn', comp.on && st.burnCaps); }
+  /* ÖLÜ AYAR TUZAĞI: altyazı gömme ve yeşil ekran YALNIZ kompozit boru hattında çiziliyor.
+     Kompozit kapalıyken bu iki anahtar hiçbir şey yapmıyor, hiçbir şey de söylemiyordu →
+     iki özellik de kullanıcıya görünmez kalıyordu. Artık gerekeni kendisi açıyor;
+     açamıyorsa anahtarı geri alıp sebebini söylüyor. */
+  if(k==='burnCaps'||k==='chroma') ensureComp(k);
+  if(k==='burnCaps') body.classList.toggle('burn', comp.on && st.burnCaps);
   if(k==='comp'){
     if(st.comp){ if(!stream){ toast(m('needCam')); st.comp=false; apply(); save(); }
                  else if(!startComp()){ st.comp=false; apply(); save(); }
