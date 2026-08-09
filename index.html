@@ -754,7 +754,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='4.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1580,7 +1580,13 @@ function startComp(){
 function stopComp(){
   comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
   body.classList.remove('comp','burn');
-  if(comp.stream){ comp.stream.getTracks().forEach(t=>t.stop()); comp.stream=null; }
+  if(comp.stream){
+    // DİKKAT: comp.stream kameranın SES izini ödünç alıyor. Hepsini durdurmak
+    // mikrofonu kalıcı öldürüyordu → sonraki bütün çekimler sessiz kalıyordu.
+    const cam0 = stream ? stream.getTracks() : [];
+    comp.stream.getTracks().forEach(t=>{ if(cam0.indexOf(t)<0) t.stop(); });
+    comp.stream=null;
+  }
 }
 /* Hazır arka planlar: dış dosya yok, hepsi tuvale çiziliyor → çevrimdışı çalışır */
 function makeBgCanvas(kind,W,H){
@@ -1803,7 +1809,7 @@ function audSummary(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
-let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0;
+let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
   const extra = recPaused ? (performance.now()-pauseStart) : 0;
@@ -1838,11 +1844,14 @@ function doStartRec(){
   const opts = IS_WK ? base : Object.assign({},base,
     {videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
   // kompozit açıksa tuvalden kaydet; desteklenmiyorsa sessizce ham akışa dön
-  let src=stream;
+  let src=stream, usedComp=false;
   if(st.comp && comp.on){
     const cs=compRecStream();
-    if(cs) src=cs; else toast(m('compFallback'));
+    if(cs){ src=cs; usedComp=true; } else toast(m('compFallback'));
   }
+  // tanı: hangi yol, kaç ses izi — sonuç ekranında görünür
+  lastPath={comp:usedComp, aud:src.getAudioTracks().length,
+            live:(src.getAudioTracks()[0]||{}).readyState||'-'};
   try{ rec=new MediaRecorder(src,opts); }
   catch(e){
     try{ rec=new MediaRecorder(src,base); }
@@ -1917,6 +1926,11 @@ function showResult(blob){
   if(fmt!=='MP4') diag=(L==='tr'?'⚠️ Biçim '+fmt+' — iPhone Fotoğraflar yalnız MP4 kabul eder':'⚠️ Format '+fmt+' — iPhone Photos only accepts MP4');
   else if(!canF) diag=(L==='tr'?'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)':'⚠️ This browser cannot share files (use Safari)');
   else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');
+  if(lastPath){
+    diag += ' · ' + (lastPath.comp?'kompozit':'ham kamera') + ' · ses izi '+lastPath.aud+
+            (lastPath.aud?(' ('+lastPath.live+')'):'');
+    if(!lastPath.aud) diag='⚠️ Kayıtta SES İZİ YOKTU — '+diag;
+  }
   $('#shareDiag').textContent=diag;
   $('#audInfo').textContent=audSummary();
   const n=buildCues().length;
