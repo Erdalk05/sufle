@@ -486,6 +486,13 @@
 
   <!-- KAMERA -->
   <div class="tab" id="tab-cam">
+    <div class="sheetbtns" style="margin-top:4px">
+      <button class="save" id="fixAudio" data-i18n="fixAudio">🔊 Sesi onar (mikrofonu tazele)</button>
+    </div>
+    <div class="hint" data-i18n="fixAudioHint">Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.</div>
+    <div class="tog"><span data-i18n="tgSafeAudio">🛡 Güvenli ses modu (iPhone için önerilir)</span><div class="sw on" data-t="safeAudio"></div></div>
+    <div class="hint" data-i18n="safeAudioHint">Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.</div>
+
     <div class="row"><label data-i18n="quality">Kayıt kalitesi</label></div>
     <div class="seg" id="qSeg">
       <button data-q="1080" class="on">1080p</button>
@@ -574,8 +581,6 @@
     <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (gürültü temizlemesi kapalı)</span><div class="sw" data-t="rawAudio"></div></div>
     <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar ama bazı iPhone'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.</div>
     <div class="sheetbtns"><button class="cancel" id="reopenCam" data-i18n="reopenCam">🔁 Kamerayı yeniden başlat</button></div>
-    <div class="sheetbtns"><button class="cancel" id="fixAudio" data-i18n="fixAudio">🔊 Sesi onar (mikrofonu tazele)</button></div>
-    <div class="hint" data-i18n="fixAudioHint">Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.</div>
   </div>
 
   <!-- DİĞER -->
@@ -756,7 +761,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -803,6 +808,8 @@ const I18N={
   tgSafe:'🚫 Platform arayüz alanlarını göster',
   micLevel:'🎙 Mikrofon seviyesi',fixAudio:'🔊 Sesi onar (mikrofonu tazele)',
   fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
+  tgSafeAudio:'🛡 Güvenli ses modu (iPhone için önerilir)',
+  safeAudioHint:'Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone\'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.',
   micHint:'Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.',
   noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
   reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
@@ -866,6 +873,8 @@ const I18N={
   tgSafe:'🚫 Show platform UI zones',
   micLevel:'🎙 Microphone level',fixAudio:'🔊 Repair audio (refresh mic)',
   fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
+  tgSafeAudio:'🛡 Safe audio mode (recommended on iPhone)',
+  safeAudioHint:'Opens the camera with the simplest request (no resolution ask). This is the setting that fixes silent recordings on iPhone.',
   micHint:'Talk — if the bar does not move, no audio is recorded. Check iOS Settings → Safari → Microphone, or close another app holding the mic.',
   noMicShort:'🔇 no microphone — audio is not recorded',
   reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
@@ -991,7 +1000,7 @@ const DEF={
   eyePos:24, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', rawAudio:false, autoLock:false, wake:true, hideUI:false,
+  quality:'1080', asp:'none', rawAudio:false, safeAudio:true, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
@@ -1323,9 +1332,13 @@ async function openCam(){
     stopMeter();
     const audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
     try{
-      stream=await navigator.mediaDevices.getUserMedia({
-        video:Object.assign({facingMode:st.backCam?'environment':'user',frameRate:{ideal:30}},qConstraint()),
-        audio});
+      // Güvenli ses modu: çalıştığı bilinen en sade istek (v1 ile birebir).
+      // Çözünürlük/kare hızı istemek bazı iPhone'larda ses izinin kayda
+      // yazılmamasına yol açıyor.
+      const vCons = st.safeAudio
+        ? {facingMode: st.backCam?'environment':'user'}
+        : Object.assign({facingMode:st.backCam?'environment':'user',frameRate:{ideal:30}},qConstraint());
+      stream=await navigator.mediaDevices.getUserMedia({video:vCons, audio});
     }catch(e1){
       // ses kısıtları bazı cihazlarda tüm isteği düşürüyor — sade sesle bir daha dene
       stream=await navigator.mediaDevices.getUserMedia({
@@ -3095,7 +3108,7 @@ $('#tiltBtn').onclick=enableTilt;
 
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
-  if(k==='backCam'||k==='rawAudio'){ if(stream) await openCam(); }
+  if(k==='backCam'||k==='rawAudio'||k==='safeAudio'){ if(stream) await openCam(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
   if(k==='bionic'){ buildContent(); }
