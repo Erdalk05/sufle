@@ -212,6 +212,8 @@
   #intro.hidden{display:none}
   #intro h1{font-size:30px;font-weight:800;letter-spacing:-.5px}#intro h1 b{color:var(--accent)}
   #intro p{color:var(--muted);font-size:14px;line-height:1.6;max-width:320px}
+  #browserWarn{background:rgba(255,59,48,.16);border:1px solid rgba(255,59,48,.55);color:#ffd7d4;
+    font-size:13px;font-weight:700;line-height:1.5;padding:12px 16px;border-radius:14px;max-width:330px;text-align:center}
   #verChip{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.08em;
     background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);padding:4px 12px;border-radius:20px;margin-top:-12px}
   .big{background:var(--accent);color:var(--accent-d);border:none;border-radius:18px;font-size:18px;font-weight:800;
@@ -355,6 +357,7 @@
 <!-- BAŞLANGIÇ -->
 <div id="intro">
   <div id="langSwitch"><button data-lang="tr">TR</button><button data-lang="en">EN</button></div>
+  <div id="browserWarn" class="hidden"></div>
   <h1>Sufle <b>·</b> Pro</h1>
   <div id="verChip">v3.9</div>
   <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
@@ -764,7 +767,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1902,6 +1905,10 @@ function recElapsed(){ if(!recT) return 0;
   return (performance.now()-recT-recPausedMs-extra)/1000; }
 /* Safari/iOS: sade 'video/mp4' + seçenek geçmemek en güvenlisi. Kodek dizisi veya
    bit hızı seçenekleri verildiğinde Safari ses izini sessizce düşürebiliyor. */
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+// iOS'ta Chrome/Firefox/Edge: WebKit motorunu kullanırlar ama kendi medya
+// katmanları var ve MediaRecorder SESİ KAYDETMİYOR. Kullanıcı bunu bilmeli.
+const IS_IOS_ALT = IS_IOS && /crios|fxios|edgios|opt\//i.test(navigator.userAgent);
 const IS_WK = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
               (/safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent));
 function pickMime(){
@@ -2044,6 +2051,7 @@ function showResult(blob){
   if(fmt!=='MP4') diag=(L==='tr'?'⚠️ Biçim '+fmt+' — iPhone Fotoğraflar yalnız MP4 kabul eder':'⚠️ Format '+fmt+' — iPhone Photos only accepts MP4');
   else if(!canF) diag=(L==='tr'?'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)':'⚠️ This browser cannot share files (use Safari)');
   else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');
+  if(IS_IOS_ALT) diag='⚠️ '+(L==='tr'?'BU TARAYICI SES KAYDETMİYOR — Safari kullan':'THIS BROWSER RECORDS NO AUDIO — use Safari')+' · '+diag;
   if(lastPath){
     diag += ' · ' + (lastPath.comp?'kompozit':'ham kamera') + ' · ses izi '+lastPath.aud+
             (lastPath.aud?(' ('+lastPath.live+')'):'');
@@ -2309,6 +2317,7 @@ function canComposite(){
 function deviceReport(){
   const MR=window.MediaRecorder, sup=x=>!!(MR&&MR.isTypeSupported&&MR.isTypeSupported(x));
   return [
+    ['Ses kaydı','Audio recording', !IS_IOS_ALT, 'iPhone\'da yalnız Safari ses kaydediyor — adresi Safari\'de aç'],
     ['Kamera','Camera', !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia), 'Kamerasız mod kullan'],
     ['Video kaydı','Video recording', !!MR, 'Bu tarayıcı kayıt yapamaz — Chrome/Safari dene'],
     ['MP4 kaydı','MP4 recording', sup('video/mp4')||sup('video/mp4;codecs=avc1.42E01E,mp4a.40.2'), 'WebM kaydedilir; galeriye eklemek için dönüştürmen gerekebilir'],
@@ -2340,6 +2349,8 @@ function renderDevice(){
    Hepsi zaten ölçülen değerler; burada tek karara dönüşüyor. */
 function readyChecks(){
   const out=[];
+  if(IS_IOS_ALT) out.push({lv:'bad',t:(L==='tr'?'Bu tarayıcı ses kaydetmiyor':'This browser records no audio'),
+    d:(L==='tr'?'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç':'On iPhone only Safari writes audio — open it in Safari')});
   // kamera
   if(!stream){ out.push({lv:'bad',t:(L==='tr'?'Kamera kapalı':'Camera off'),d:(L==='tr'?'Başlangıç ekranından kamerayı aç':'Open the camera from the start screen')}); }
   else out.push({lv:'ok',t:(L==='tr'?'Kamera açık':'Camera on'),d:(()=>{const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};return (v.width||'?')+'×'+(v.height||'?');})()});
@@ -3326,6 +3337,16 @@ function fromShortcut(){
 }
 
 /* ============ BAŞLAT ============ */
+/* iPhone'da Safari dışı tarayıcıda ses kaydedilmiyor — en başta söyle */
+if(IS_IOS_ALT){
+  const w=$('#browserWarn');
+  w.classList.remove('hidden');
+  w.innerHTML = (navigator.language||'tr').toLowerCase().startsWith('tr')
+    ? '⚠️ <b>Bu tarayıcıda ses kaydedilmiyor.</b><br>iPhone\'da yalnız <b>Safari</b> videoya ses yazabiliyor.<br>Adresi Safari\'de aç: <b>erdalk05.github.io/sufle</b><br>(Safari\'de bir kez <b>Paylaş → Ana Ekrana Ekle</b> yaparsan simgeden açılır.)'
+    : '⚠️ <b>This browser cannot record audio.</b><br>On iPhone only <b>Safari</b> writes audio into the video.<br>Open <b>erdalk05.github.io/sufle</b> in Safari.';
+  setTimeout(()=>toast('⚠️ '+((navigator.language||'tr').toLowerCase().startsWith('tr')
+    ?'Bu tarayıcıda ses kaydedilmiyor — Safari kullan':'This browser cannot record audio — use Safari')),900);
+}
 load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
 
