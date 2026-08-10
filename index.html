@@ -609,6 +609,8 @@
       <button data-vl="ar-SA">العربية</button>
     </div>
 
+    <div class="sheetbtns"><button class="cancel" id="voiceTest" data-i18n="voiceTest">🎤 Mikrofonu ve tanımayı sına</button></div>
+    <div class="hint" id="voiceTestOut"></div>
     <div class="tog"><span data-i18n="tgLock">🔒 Kayıtta ekranı kilitle</span><div class="sw" data-t="autoLock"></div></div>
     <div class="tog"><span data-i18n="tgKeepAwake">☀️ Ekranı uyanık tut</span><div class="sw on" data-t="wake"></div></div>
     <div class="tog"><span data-i18n="tgHideUI">🫧 Kayıtta düğmeleri gizle</span><div class="sw" data-t="hideUI"></div></div>
@@ -677,7 +679,13 @@
 <div class="sheet" id="takesSheet">
   <div class="grab"></div>
   <h2><span data-i18n="takes">🎞 Çekimlerim</span><button class="iconbtn" id="takesX" aria-label="Kapat" data-aria="takesX">✕</button></h2>
+  <div class="seg" id="takeSort" style="margin-bottom:8px">
+    <button data-s="new" class="on" data-i18n="sortNew">Yeni önce</button>
+    <button data-s="big" data-i18n="sortBig">Büyük önce</button>
+    <button data-s="long" data-i18n="sortLong">Uzun önce</button>
+  </div>
   <div id="takeList"></div>
+  <div class="sheetbtns"><button class="danger" id="takesWipe" data-i18n="wipeTakes">🗑 Yıldızsızları sil</button></div>
   <div class="hint" data-i18n="takesHint">Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar'a eklemek için "Kaydet / Paylaş"a bas.</div>
 </div>
 
@@ -772,7 +780,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -841,7 +849,8 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
+  capBtnL:'💬 Altyazı dosyası',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
+  wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
@@ -909,7 +918,8 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
+  capBtnL:'💬 Caption file',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
+  wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
 };
@@ -946,7 +956,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -994,7 +1004,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',noMatch:'No matching script',
+  restored:'↺ Script restored',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1727,7 +1737,8 @@ function startComp(){
   comp.cv=cv; comp.gl=gl; comp.pr=pr; comp.tex=glTex(gl); comp.bgTex=glTex(gl);
   gl.viewport(0,0,W,H);
   loadCompBg();
-  comp.on=true; body.classList.add('comp'); body.classList.toggle('burn',!!st.burnCaps);
+  comp.on=true; compFps.n=0; compFps.t0=performance.now(); compFps.v=0;
+  body.classList.add('comp'); body.classList.toggle('burn',!!st.burnCaps);
   drawComp();
   return true;
 }
@@ -1831,8 +1842,14 @@ function drawComp(){
       try{ o.drawImage(cv,0,0); drawCaption(o,oc.width,oc.height); }catch(e){}
     }
   }
+  // KARE HIZI ÖLÇÜMÜ: "kompozit yavaşlatıyor mu / ısınıyor mu" sorusunun tek dürüst
+  // cevabı ölçmek. Son 2 sn'nin gerçek fps'i; düşerse hazırlık kontrolü uyarıyor.
+  compFps.n++;
+  const nowF=performance.now();
+  if(nowF-compFps.t0>=2000){ compFps.v=Math.round(compFps.n*1000/(nowF-compFps.t0)); compFps.n=0; compFps.t0=nowF; }
   comp.raf=requestAnimationFrame(drawComp);
 }
+const compFps={n:0,t0:0,v:0};
 /* ---- ALTYAZIYI VİDEOYA GÖMME ----
    Okunan kelimeye kadar olan cümle parçası, kompozit tuvalinin üstüne çizilir.
    WebGL ve 2D aynı tuvalde olamadığı için: GL tuvali -> 2D çıktı tuvaline kopyalanır,
@@ -1849,18 +1866,34 @@ function liveCue(){
   const arr=[]; for(let i=start;i<=activeIdx;i++) if(words[i]) arr.push(words[i].textContent);
   return arr.join(' ');
 }
+/* Satıra sığdırma. ESKİ HALİ TEK KELİMEYİ HİÇ BÖLMÜYORDU: çerçeveden geniş bir kelime
+   (uzun bileşik ad, URL, "elektroansefalografi") altyazıyı görüntünün dışına taşırıyordu.
+   Ayrı fonksiyon çünkü tuval olmadan test edilebilsin. */
+function wrapLines(measure, txt, maxW){
+  const out=[]; let cur='';
+  const pushWord=w=>{
+    // tek başına sığmayan kelimeyi harf harf böl
+    while(measure(w)>maxW && w.length>1){
+      let k=1; while(k<w.length && measure(w.slice(0,k+1))<=maxW) k++;
+      out.push(w.slice(0,k)); w=w.slice(k);
+    }
+    cur=w;
+  };
+  (txt||'').split(' ').filter(Boolean).forEach(w=>{
+    const t2=cur?cur+' '+w:w;
+    if(measure(t2)<=maxW){ cur=t2; return; }
+    if(cur){ out.push(cur); cur=''; }
+    pushWord(w);
+  });
+  if(cur) out.push(cur);
+  return out.length?out:[txt||''];
+}
 function drawCaption(ctx,W,Hh){
   const txt=liveCue(); if(!txt) return;
   const size=Math.round((st.capSize||42)*(W/1080));
   ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
-  // satıra sığdır
-  const maxW=W*0.86, lines=[]; let cur='';
-  txt.split(' ').forEach(w=>{
-    const t2=cur?cur+' '+w:w;
-    if(ctx.measureText(t2).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t2;
-  });
-  if(cur) lines.push(cur);
+  const lines=wrapLines(s=>ctx.measureText(s).width, txt, W*0.86);
   const lh=size*1.25, blockH=lines.length*lh;
   const baseY = st.capPos==='middle' ? Hh*0.5 : Hh-Hh*0.16-blockH/2;
   ctx.save();
@@ -2416,8 +2449,15 @@ async function autoSaveTake(){
     created:Date.now(),title:active().title||'',srt:srtText()});
   if(!ok){ curTakeId=null; toast(m('archFail')); }   // depo dolu/kapalı — çekim ELDE, yalnız arşivlenemedi
 }
+let takeSort='new';
+function sortTakes(list){
+  const c={ big:(a,b)=>(b.size||0)-(a.size||0), long:(a,b)=>(b.dur||0)-(a.dur||0),
+            new:(a,b)=>(b.created||0)-(a.created||0) }[takeSort];
+  // yıldızlılar her zaman üstte kalsın — kullanıcı onları korumak için işaretliyor
+  return list.slice().sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||c(a,b));
+}
 async function renderTakes(){
-  const list=await dbAll(), box=$('#takeList');
+  const list=sortTakes(await dbAll()), box=$('#takeList');
   if(!list.length){ box.innerHTML='<div class="empty">'+m('noTakes')+'</div>'; return; }
   box.innerHTML='';
   list.forEach(it=>{
@@ -2538,6 +2578,12 @@ function readyChecks(){
     d:(L==='tr'?'~'+clock(secs)+' / sınır '+clock(lim)+' — yaklaşık '+Math.ceil((secs-lim)*st.wpm/60)+' kelime fazla':'~'+clock(secs)+' / limit '+clock(lim))});
   else out.push({lv:'ok',t:(L==='tr'?'Metin ve süre uygun':'Script and duration fine'),
     d:wc+(L==='tr'?' kelime · ~':' words · ~')+clock(secs)+(lim?(L==='tr'?' / sınır '+clock(lim):' / limit '+clock(lim)):'')});
+  // kompozit performansı: ölçülmeden "ısınıyor mu" sorusuna cevap verilemez
+  if(comp.on && compFps.v){
+    if(compFps.v<20) out.push({lv:'warn',t:(L==='tr'?'Kompozit yavaş: '+compFps.v+' fps':'Composite is slow: '+compFps.v+' fps'),
+      d:(L==='tr'?'Çözünürlüğü 720p yap ya da kompoziti kapat — takılmalı video kaydedebilirsin':'Drop to 720p or turn composite off')});
+    else out.push({lv:'ok',t:(L==='tr'?'Kompozit akıcı: '+compFps.v+' fps':'Composite smooth: '+compFps.v+' fps'),d:''});
+  }
   // göz teması
   const ga=gazeAngle();
   if(ga>=9) out.push({lv:'warn',t:(L==='tr'?'Göz teması zayıf':'Weak eye contact'),
@@ -3503,6 +3549,47 @@ function restoreTrash(){
   save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('restored'));
 }
 $('#scriptFind').oninput=()=>renderScripts();
+$$('#takeSort button').forEach(b=>b.onclick=()=>{ takeSort=b.dataset.s;
+  $$('#takeSort button').forEach(x=>x.classList.toggle('on',x===b)); renderTakes(); });
+/* Toplu silme: depo dolduğunda tek tek silmek işkenceydi. Yıldızlılara DOKUNMUYOR
+   ve iki aşamalı onay istiyor — silme geri alınamaz. */
+let wipeArm=0, wipeT=null;
+$('#takesWipe').onclick=async()=>{
+  const all=await dbAll(), kill=all.filter(x=>!x.fav);
+  if(!kill.length){ toast(m('nothingWipe')); return; }
+  if(!wipeArm){ wipeArm=1; $('#takesWipe').textContent=m('delConfirm')+' ('+kill.length+')';
+    clearTimeout(wipeT); wipeT=setTimeout(()=>{ wipeArm=0; $('#takesWipe').textContent=t('wipeTakes'); },4000); return; }
+  wipeArm=0; clearTimeout(wipeT); $('#takesWipe').textContent=t('wipeTakes');
+  let ok=0; for(const it of kill){ if(await dbDel(it.id)) ok++; }
+  renderTakes(); toast(ok+' '+m('wiped'));
+};
+/* SESLE TAKİP ÖZ-TESTİ: bu özellik gerçek mikrofonla hiç denenmemişti ve cihazdan
+   cihaza değişiyor. Tek dokunuşla kesin cevap: izin var mı, tanıma çalışıyor mu,
+   Türkçe kelimeyi doğru duyuyor mu. Sonuç ekranda yazıyor — tahmine gerek kalmıyor. */
+$('#voiceTest').onclick=()=>{
+  const out=$('#voiceTestOut');
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ out.innerHTML='✕ <b>'+(L==='tr'?'Bu tarayıcıda konuşma tanıma yok':'No speech recognition in this browser')+'</b>'+
+    (IS_IOS?'<br>'+(L==='tr'?'iPhone\'da Safari kullan.':'Use Safari on iPhone.'):''); return; }
+  out.innerHTML=(L==='tr'?'🎤 Dinliyorum… <b>yüksek sesle bir cümle söyle</b> (8 sn)':'🎤 Listening… <b>say a sentence out loud</b> (8 s)');
+  let heard='', got=false;
+  const r=new SR(); r.lang=st.voiceLang; r.continuous=true; r.interimResults=true;
+  r.onresult=e=>{ got=true; heard=(e.results[e.results.length-1][0].transcript||'').trim(); 
+    out.innerHTML=(L==='tr'?'👂 Duyduğum: ':'👂 Heard: ')+'<b>'+esc(heard)+'</b>'; };
+  r.onerror=ev=>{ const er=ev&&ev.error;
+    out.innerHTML='✕ <b>'+(er==='not-allowed'
+      ? (L==='tr'?'Mikrofon izni yok — Ayarlar → Safari → Mikrofon → İzin ver':'Mic permission denied — Settings → Safari → Microphone → Allow')
+      : (L==='tr'?'Tanıma hatası: ':'Recognition error: ')+esc(er||'?'))+'</b>'; };
+  try{ r.start(); }catch(e){ out.textContent='✕ '+(e.message||e); return; }
+  setTimeout(()=>{ try{ r.stop(); }catch(e){ logErr('voiceTest',e); }
+    if(!got){ out.innerHTML='⚠️ <b>'+(L==='tr'?'Hiç ses alınmadı':'No audio received')+'</b><br>'+
+      (L==='tr'?'Mikrofon izni verilmemiş olabilir ya da başka uygulama mikrofonu tutuyor.':'Permission may be denied, or another app holds the mic.'); return; }
+    const w=heard.split(/\s+/).filter(Boolean).length;
+    out.innerHTML=(L==='tr'
+      ? '✅ <b>Çalışıyor.</b> '+w+' kelime duyuldu: “'+esc(heard)+'”<br>Sesle takip bu cihazda kullanılabilir.'
+      : '✅ <b>Working.</b> '+w+' words heard: “'+esc(heard)+'”<br>Voice follow is usable on this device.');
+  },8000);
+};
 $('#undoDel').onclick=restoreTrash;
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
