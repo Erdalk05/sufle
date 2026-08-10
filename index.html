@@ -261,6 +261,11 @@
   .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
   .row .v.hit{animation:keyhit .5s ease-out}
   #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
+  .eyeline{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:4}
+  .eyeline i{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.55)}
+  .eyeline u{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.22)}
+  .eyeline b{position:absolute;top:33.3%;left:6px;transform:translateY(-140%);font-size:10px;
+    color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.3px}
   @keyframes keyhit{0%{transform:scale(1.5);color:#3ddc84}100%{transform:scale(1)}}
   .hint{font-size:11.5px;color:#787f85;line-height:1.5;margin-top:4px}
   input[type=range]{width:100%;accent-color:var(--accent);height:32px}
@@ -517,6 +522,17 @@
     </div>
     <div class="hint" data-i18n="qHint">Cihaz desteklemezse en yakın çözünürlüğe düşer.</div>
 
+    <div class="row" style="margin-top:14px"><label data-i18n="brL">Video kalitesi / dosya boyutu</label><span class="v" id="vBr">—</span></div>
+    <div class="seg" id="brSeg">
+      <button data-br="low" data-i18n="brLow">Küçük dosya</button>
+      <button data-br="mid" class="on" data-i18n="brMid">Dengeli</button>
+      <button data-br="high" data-i18n="brHigh">En iyi</button>
+    </div>
+    <div class="hint" id="brHint"></div>
+
+    <div class="row" id="micRow" style="display:none;margin-top:14px"><label data-i18n="micSel">🎙 Mikrofon</label></div>
+    <div class="seg" id="micSeg" style="display:none"></div>
+
     <div class="row"><label data-i18n="frameGuide">Çerçeve kılavuzu</label></div>
     <div class="seg" id="aspSeg">
       <button data-asp="none" class="on" data-i18n="aspNone">Kapalı</button>
@@ -525,6 +541,8 @@
       <button data-asp="1:1">1:1</button>
       <button data-asp="16:9">16:9</button>
     </div>
+    <div class="tog"><span data-i18n="tgEyeLine">👁 Göz hattı kılavuzu (üçte bir)</span><div class="sw" data-t="eyeLine"></div></div>
+    <div class="hint" data-i18n="eyeLineHint">Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.</div>
 
     <div class="row" id="zoomRow" style="display:none"><label data-i18n="zoom">Yakınlaştırma</label><span class="v" id="vZoom">1.0×</span></div>
     <input type="range" id="zoom" min="100" max="300" value="100" style="display:none">
@@ -546,7 +564,9 @@
     <div class="hint" data-i18n="compHint">Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.</div>
     <div id="compBox" class="hidden">
       <div class="tog"><span data-i18n="tgChroma">🟩 Yeşil ekran (chroma key)</span><div class="sw" data-t="chroma"></div></div>
+      <div class="tog"><span data-i18n="tgMask">🎭 Maske önizlemesi (silinen yer mor)</span><div class="sw" data-t="maskPrev"></div></div>
       <div class="row"><label data-i18n="keyColor">Perde rengi</label></div>
+      <div class="sheetbtns"><button class="cancel" id="pickKey" data-i18n="pickKey">🎯 Perdenin rengini kameradan ölç</button></div>
       <div class="seg" id="keySeg">
         <button data-k="#00b140" class="on" data-i18n="kGreen">Yeşil</button>
         <button data-k="#0047bb" data-i18n="kBlue">Mavi</button>
@@ -565,6 +585,7 @@
         <button data-bk="warm" data-i18n="bkWarm">Sıcak</button>
         <button data-bk="cool" data-i18n="bkCool">Soğuk</button>
         <button data-bk="bokeh" data-i18n="bkBokeh">Bokeh</button>
+        <button data-bk="soft" data-i18n="bkSoft">Yumuşak</button>
         <button data-bk="brand" data-i18n="bkBrand">Marka</button>
         <button data-bk="image" data-i18n="bkImage">Görsel</button>
       </div>
@@ -798,7 +819,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.2';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.3';
 
 /* ============ i18n ============ */
 const I18N={
@@ -867,7 +888,8 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',
+  capBtnL:'💬 Altyazı dosyası',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
+  eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',
   noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.',tSplit:'🪓 Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
   wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
@@ -937,7 +959,8 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',
+  capBtnL:'💬 Caption file',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
+  eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',
   noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. 🎤 voice commands do the same job.',tSplit:'🪓 Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
   wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
@@ -976,7 +999,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1024,7 +1047,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1085,7 +1108,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, safeAudio:true, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, eyeLine:false, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -1475,7 +1498,8 @@ async function openCam(){
   try{
     if(stream) stream.getTracks().forEach(x=>x.stop());
     stopMeter();
-    const audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
+    let audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
+    if(st.micId){ audio = Object.assign(typeof audio==='object'?audio:{}, {deviceId:{exact:st.micId}}); }
     try{
       // Güvenli ses modu: çalıştığı bilinen en sade istek (v1 ile birebir).
       // Çözünürlük/kare hızı istemek bazı iPhone'larda ses izinin kayda
@@ -1497,7 +1521,7 @@ async function openCam(){
     body.classList.toggle('noaudio', !aTrack);
     if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
     $('#recBtn').disabled=false;
-    setupCaps();
+    setupCaps(); setupMics();
     if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')){ startMeter(); startLight(); }
     autoLightCheck();
     return true;
@@ -1526,6 +1550,26 @@ function resNote(){
   const got=Math.min(v.width||0,v.height||0);
   if(!got) return '';
   return got<want*0.9 ? (L==='tr'?' — cihaz bu kadarını verdi':' — this is what the device gave') : '';
+}
+/* 8.6 Harici mikrofon takılıysa kullanıcı seçebilsin. Tek giriş varsa bölüm hiç görünmüyor
+   (yalancı seçenek kalabalığı olmasın). iOS izin vermeden cihaz adlarını boş döndürür. */
+async function setupMics(){
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices) return;
+    const all=await navigator.mediaDevices.enumerateDevices();
+    const mics=all.filter(d=>d.kind==='audioinput');
+    const row=$('#micRow'), seg=$('#micSeg');
+    if(!row||!seg) return;
+    if(mics.length<2){ row.style.display='none'; seg.style.display='none'; return; }
+    row.style.display='flex'; seg.style.display='flex'; seg.innerHTML='';
+    mics.forEach((d,i)=>{
+      const b=document.createElement('button');
+      b.textContent=(d.label||((L==='tr'?'Mikrofon ':'Mic ')+(i+1))).slice(0,18);
+      b.className=(st.micId===d.deviceId||(!st.micId&&i===0))?'on':'';
+      b.onclick=async()=>{ st.micId=d.deviceId; save(); await openCam(); setupMics(); };
+      seg.appendChild(b);
+    });
+  }catch(e){ logErr('mics',e); }
 }
 function setupCaps(){
   let caps={}; try{ caps=vTrack&&vTrack.getCapabilities?vTrack.getCapabilities():{}; }catch(e){}
@@ -1635,12 +1679,15 @@ async function enableTilt(){
   try{
     const D=window.DeviceOrientationEvent;
     if(D && typeof D.requestPermission==='function'){
-      const p=await D.requestPermission(); if(p!=='granted') { toast(m('tiltNo')); return; }
-    } else if(!D){ toast(m('tiltNo')); return; }
+      const p=await D.requestPermission();
+      if(p!=='granted'){ toast(m('tiltNo')); hideTilt(); return; }   // iOS'ta bir kez red = bir daha sorulmaz
+    } else if(!D){ toast(m('tiltNo')); hideTilt(); return; }
     window.addEventListener('deviceorientation',e=>{ if(e.gamma!=null) tiltDeg=e.gamma; },{passive:true});
     tiltOn=true; toast(m('tiltOk'));
-  }catch(e){ toast(m('tiltNo')); }
+  }catch(e){ toast(m('tiltNo')); hideTilt(); }
 }
+function hideTilt(){ const b=$('#tiltBtn'); if(b){ b.disabled=true; b.style.opacity='.4';
+  b.textContent=(L==='tr'?'📐 Eğim ölçümü kapalı (izin yok)':'📐 Tilt unavailable (no permission)'); } }
 /* kamera açılınca bir kez otomatik denetle, sorun varsa uyar */
 function autoLightCheck(){
   setTimeout(()=>{
@@ -1688,10 +1735,32 @@ function modeLine(){
     : (L==='tr'?' · metnin ~'+clock(secs):' · script ~'+clock(secs));
   return M.asp+' · '+st.wpm+' wpm'+(M.limit?(L==='tr'?' · sınır '+clock(M.limit):' · limit '+clock(M.limit)):'')+fit;
 }
+/* 6.8 GÖZ HATTI: üçte bir kuralı. Kadrajın üst üçte birine ince bir çizgi;
+   gözler o çizgide olduğunda kompozisyon profesyonel duruyor.
+   Güvenli alan kutusuyla aynı ölçüyü kullanıyor ki kılavuzlar birbirini tutsun. */
+function drawEyeLine(w,h){
+  let el=$('#eyeLineWrap');
+  if(!st.eyeLine){ if(el) el.remove(); return; }
+  if(!el){ el=document.createElement('div'); el.id='eyeLineWrap'; el.className='eyeline';
+    ($('#safeWrap').parentNode||body).appendChild(el); }
+  el.style.width=Math.round(w)+'px'; el.style.height=Math.round(h)+'px';
+  el.innerHTML='<i style="top:33.3%"></i><i style="top:66.6%;opacity:.35"></i>'+
+    '<u style="left:33.3%"></u><u style="left:66.6%"></u>'+
+    '<b>'+(L==='tr'?'gözler burada':'eyes here')+'</b>';
+}
 function drawSafe(){
   body.classList.toggle('safeOn', !!st.safe && !!curMode().safe);
   const S=curMode().safe; const wrap=$('#safeWrap');
-  if(!S || !st.safe){ wrap.innerHTML=''; return; }
+  if(!S || !st.safe){
+    wrap.innerHTML='';
+    // göz hattı, güvenli alandan BAĞIMSIZ çalışmalı — yoksa yalnız belli modlarda görünürdü
+    let w0=window.innerWidth, h0=window.innerHeight;
+    const a0=curMode().asp;
+    if(a0 && a0!=='none'){ const [x1,y1]=a0.split(':').map(Number), t0=x1/y1;
+      h0=w0/t0; if(h0>window.innerHeight){ h0=window.innerHeight; w0=h0*t0; } }
+    drawEyeLine(w0,h0);
+    return;
+  }
   // güvenli alan kutusu, çerçeve kılavuzuyla aynı boyutta olmalı
   let w=window.innerWidth, h=window.innerHeight;
   const asp=curMode().asp;
@@ -1707,6 +1776,7 @@ function drawSafe(){
   if(S.bottom) html+='<div style="left:0;right:0;bottom:0;height:'+S.bottom+'%"><b>'+lab+'</b></div>';
   if(S.right)  html+='<div style="right:0;width:'+S.right+'%;top:'+(S.top+20)+'%;bottom:'+(S.bottom+4)+'%"></div>';
   wrap.innerHTML=html;
+  drawEyeLine(w,h);
 }
 
 /* ============ KOMPOZİT KAYIT (yeşil ekran + gerçek kırpma) ============
@@ -1718,7 +1788,7 @@ const FS_SRC=
 'precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform sampler2D bg;'+
 'uniform vec2 sc;uniform vec2 of;uniform vec3 key;uniform float sim;uniform float smo;'+
 'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
-'uniform float spill;uniform float axis;'+
+'uniform float spill;uniform float axis;uniform float mask;'+
 'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+
 'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
 'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
@@ -1726,6 +1796,8 @@ const FS_SRC=
 'if(spill>0.0){ if(axis<0.5){ float mx=max(c.r,c.b); if(c.g>mx) c.g=mix(c.g,mx,spill); }'+
 'else if(axis<1.5){ float mx=max(c.r,c.g); if(c.b>mx) c.b=mix(c.b,mx,spill); } }'+
 'vec3 b=useBg>0.5?texture2D(bg,uv).rgb:bgc;'+
+// maske önizlemesi: silinen bölge mor. Eşiği körlemesine ayarlamak yerine GÖRÜLEREK ayarlanıyor.
+'if(mask>0.5){ gl_FragColor=vec4(mix(vec3(1.0,0.0,0.8),c,a),1.0); return; }'+
 'gl_FragColor=vec4(mix(b,c,a),1.0);}';
 let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false};
 function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]; }
@@ -1759,7 +1831,7 @@ function startComp(){
   gl.linkProgram(pr);
   if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){ toast(m('compNo')); return false; }
   gl.useProgram(pr);
-  const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  const buf=gl.createBuffer(); comp.buf=buf; gl.bindBuffer(gl.ARRAY_BUFFER,buf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
   const p=gl.getAttribLocation(pr,'p'); gl.enableVertexAttribArray(p); gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
   // WebGL bağlamı telefon belleği sıkışınca kaybolur. Yakalanmazsa kompozit donuyor,
@@ -1793,11 +1865,37 @@ function stopComp(){
     comp.stream.getTracks().forEach(t=>{ if(cam0.indexOf(t)<0) t.stop(); });
     comp.stream=null;
   }
+  // GPU kaynaklarını gerçekten bırak: aç-kapa döngüsünde doku ve program birikiyordu.
+  const gl=comp.gl;
+  if(gl){
+    try{
+      if(comp.tex) gl.deleteTexture(comp.tex);
+      if(comp.bgTex) gl.deleteTexture(comp.bgTex);
+      if(comp.buf) gl.deleteBuffer(comp.buf);
+      if(comp.pr) gl.deleteProgram(comp.pr);
+    }catch(e){ logErr('glFree',e); }
+  }
+  comp.tex=null; comp.bgTex=null; comp.buf=null; comp.pr=null; comp.gl=null; comp.bgReady=false;
 }
 /* Hazır arka planlar: dış dosya yok, hepsi tuvale çiziliyor → çevrimdışı çalışır */
 function makeBgCanvas(kind,W,H){
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const x=c.getContext('2d');
+  if(kind==='soft'){
+    // DÜRÜSTLÜK: bu kişiyi arka plandan AYIRMIYOR (o iş için model gerekir).
+    // Kameranın kendi karesini güçlü bulanıklaştırıp arka plan yapıyor —
+    // yeşil perde önünde durmayanlar için yumuşak, doğal bir zemin.
+    try{
+      if(cam && cam.videoWidth){ x.filter='blur(28px)';
+        const sA=cam.videoWidth/cam.videoHeight, tA=W/H;
+        let cw=cam.videoWidth, ch=cam.videoHeight;
+        if(sA>tA) cw=cam.videoHeight*tA; else ch=cam.videoWidth/tA;
+        x.drawImage(cam,(cam.videoWidth-cw)/2,(cam.videoHeight-ch)/2,cw,ch,-20,-20,W+40,H+40);
+        x.filter='none'; return c;
+      }
+    }catch(e){ logErr('softBg',e); }
+    x.fillStyle='#1a1a20'; x.fillRect(0,0,W,H); return c;
+  }
   if(kind==='studio'){
     const g=x.createRadialGradient(W/2,H*0.42,W*0.05,W/2,H*0.42,W*0.95);
     g.addColorStop(0,'#6b7076'); g.addColorStop(.55,'#3a3e44'); g.addColorStop(1,'#191b1e');
@@ -1843,8 +1941,20 @@ function loadCompBg(){
   }
   if(kind==='image' && st.bgImg){
     const img=new Image();
-    img.onload=()=>{ try{ gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){ logErr('bg',e); } };
+    img.onload=()=>{ try{
+      // Görseli doğrudan yüklemek 9:16 hedefte yatay fotoğrafı EZİYORDU.
+      // "cover" ile kırpıp öyle yükle — oran korunur, boşluk kalmaz.
+      const tw=Math.min(1080,W), th=Math.min(1920,H);
+      const c=document.createElement('canvas'); c.width=tw; c.height=th;
+      const x=c.getContext('2d');
+      const sA=img.width/img.height, tA=tw/th;
+      let cw=img.width, ch=img.height;
+      if(sA>tA) cw=img.height*tA; else ch=img.width/tA;
+      x.drawImage(img,(img.width-cw)/2,(img.height-ch)/2,cw,ch,0,0,tw,th);
+      gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); comp.bgReady=true;
+    }catch(e){ logErr('bg',e); } };
+    img.onerror=()=>logErr('bg','görsel yüklenemedi');
     img.src=st.bgImg;
   }
 }
@@ -1873,6 +1983,7 @@ function drawComp(){
     const kk=hex2rgb(st.keyColor||'#00b140');
     gl.uniform1f(gl.getUniformLocation(comp.pr,'axis'), (kk[2]>kk[1])?1:0);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'useBg'),(st.chroma&&comp.bgReady)?1:0);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'mask'),(st.chroma&&st.maskPrev)?1:0);
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
@@ -2102,6 +2213,28 @@ const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 const IS_IOS_ALT = IS_IOS && /crios|fxios|edgios|opt\//i.test(navigator.userAgent);
 const IS_WK = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
               (/safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent));
+/* 8.9/8.10 Bit hızı: kaliteyi ve dosya boyutunu birlikte belirliyor.
+   Kullanıcı "neden 200 MB oldu" diye şaşırmasın diye dakikalık boyut da gösteriliyor.
+   iOS'ta MediaRecorder'a bit hızı vermek sesi düşürebildiği için orada dokunulmuyor. */
+function vBitrate(){
+  const q=st.quality, mode=st.bitrate||'mid';
+  const tbl={ '720':{low:2500000,mid:5000000,high:8000000},
+              '1080':{low:5000000,mid:9000000,high:14000000},
+              '4k':{low:12000000,mid:20000000,high:32000000} };
+  return (tbl[q]||tbl['1080'])[mode];
+}
+function mbPerMin(){ return ((vBitrate()+128000)/8*60)/1048576; }
+function renderBitrate(){
+  const v=$('#vBr'); if(!v) return;
+  const mb=mbPerMin();
+  v.textContent=(vBitrate()/1000000).toFixed(0)+' Mbps';
+  const h=$('#brHint');
+  if(h) h.textContent = IS_WK
+    ? (L==='tr'?'iPhone bu ayarı yok sayar (ses kaybı riski) — dosya boyutunu çözünürlük belirler'
+              :'iPhone ignores this (audio-loss risk) — resolution decides file size')
+    : (L==='tr'?'Dakikada ~'+mb.toFixed(0)+' MB · 10 dakikalık çekim ≈ '+(mb*10).toFixed(0)+' MB'
+              :'~'+mb.toFixed(0)+' MB per minute · a 10-minute take ≈ '+(mb*10).toFixed(0)+' MB');
+}
 function pickMime(){
   // MP4 her platformda öncelikli: galeriler, Instagram ve iOS yalnız onu sorunsuz kabul ediyor.
   // (Eskiden masaüstü/Android'de webm seçiliyordu ve paylaşınca galeri kabul etmiyordu.)
@@ -2128,7 +2261,7 @@ function doStartRec(){
   const mime=pickMime();
   const base = mime?{mimeType:mime}:{};
   const opts = st.forceNoOpts ? {} : IS_WK ? base : Object.assign({},base,
-    {videoBitsPerSecond: st.quality==='4k'?20000000:(st.quality==='720'?5000000:9000000), audioBitsPerSecond:128000});
+    {videoBitsPerSecond: vBitrate(), audioBitsPerSecond:128000});
   // kompozit açıksa tuvalden kaydet; desteklenmiyorsa sessizce ham akışa dön
   let src=stream, usedComp=false;
   if(st.comp && comp.on){
@@ -2165,6 +2298,12 @@ function doStartRec(){
     if(!IS_WK && !chunks.length) toast(m('recNoData'));
   },2500);
   recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
+  clearInterval(lightWatch);
+  lightWatch=setInterval(()=>{
+    if(!rec||rec.state!=='recording'||recPaused) return;
+    const bad=lightCheck().filter(o=>o.lv==='bad');
+    if(bad.length && !lightWarned){ lightWarned=true; toast('💡 '+bad[0].t); buzz(40); }
+  },20000);
   body.classList.add('rec'); body.classList.remove('recpaused'); buzz(60);
   // iOS'ta mikrofon izini kayıt sırasında Web Audio'ya bağlamak sesi düşürebiliyor.
   // Ses kırpma uyarısı iyi bir şey ama SESİN KENDİSİ daha önemli.
@@ -2176,7 +2315,9 @@ function doStartRec(){
   if(!running) start();
   if(st.autoLock) setTimeout(()=>{ if(rec&&rec.state==='recording') setLock(true,true); },900);
 }
+let lightWatch=0, lightWarned=false;
 function stopRec(){
+  clearInterval(lightWatch); lightWatch=0; lightWarned=false;
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
   if(recPaused){ recPausedMs+=performance.now()-pauseStart; recPaused=false; }
@@ -3297,6 +3438,8 @@ function apply(){
   $$('#fontSeg button').forEach(b=>b.classList.toggle('on',b.dataset.f===st.font));
   $$('#alignSeg button').forEach(b=>b.classList.toggle('on',b.dataset.a===st.align));
   $$('#caseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c2===(st.textCase||'none')));
+  $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
+  renderBitrate();
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
@@ -3605,6 +3748,7 @@ function ensureComp(k){
 }
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
+  if(k==='backCam'){ st.zoom=100; st.torch=false; }   // yeni kameranın yetenekleri farklı — devretme
   if(k==='backCam'||k==='rawAudio'||k==='safeAudio'){ if(stream) await openCam(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
@@ -3625,6 +3769,24 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
     else stopComp();
   }
 });
+$$('#brSeg button').forEach(b=>b.onclick=()=>{ st.bitrate=b.dataset.br; apply(); save(); });
+/* 7.3 Gerçek yeşil perde hiçbir zaman tam #00b140 değildir (ışık, kumaş, beyaz dengesi).
+   Kadrajın SOL ÜST köşesinden — genelde perde orası — ortalama rengi ölç ve anahtar yap.
+   Tahmini renk yerine ölçülen renk chroma kalitesini gözle görülür artırıyor. */
+$('#pickKey').onclick=()=>{
+  if(!stream||!cam.videoWidth){ toast(m('needCam')); return; }
+  try{
+    const c=document.createElement('canvas'); c.width=32; c.height=32;
+    const x=c.getContext('2d');
+    x.drawImage(cam, 0,0, Math.round(cam.videoWidth*0.18), Math.round(cam.videoHeight*0.18), 0,0,32,32);
+    const d=x.getImageData(0,0,32,32).data;
+    let r=0,g=0,b=0; const px=d.length/4;
+    for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
+    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+    st.keyColor=hex; apply(); save();
+    toast(m('keyPicked')+' '+hex);
+  }catch(e){ logErr('pickKey',e); toast(m('keyPickFail')); }
+};
 $$('#keySeg button').forEach(b=>b.onclick=()=>{ st.keyColor=b.dataset.k; apply(); save(); });
 $$('#bgcSeg button').forEach(b=>b.onclick=()=>{ st.bgColor=b.dataset.b; apply(); save(); });
 $$('#bgKindSeg button').forEach(b=>b.onclick=()=>{ st.bgKind=b.dataset.bk;
