@@ -780,7 +780,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1194,12 +1194,14 @@ function markup(raw){
       out+='<span class="hold" data-ms="'+ms+'">⏸</span> '; return; }
     if(tok==='//'){ out+='<span class="hold" data-ms="800">‖</span> '; return; }
     if(tok==='/'){  out+='<span class="hold" data-ms="350">|</span> '; return; }
-    // telaffuz ipucu: Nietzsche{ni-çe} → ipucu data- içinde, kelime metnine girmez (altyazıya sızmaz)
-    let ph=''; let base=tok;
-    const mp=tok.match(/^(.+?)\{([^}]{1,24})\}$/);
-    if(mp){ base=mp[1]; ph=mp[2]; }
-    const em=/^\*{1,2}[^*]+\*{1,2}$/.test(base);
-    const clean=em?base.replace(/^\*{1,2}|\*{1,2}$/g,''):base;
+    // SIRA ÖNEMLİ: önce vurgu yıldızları, SONRA telaffuz ipucu.
+    // Tersi sıradayken "*Goethe{gö-te}*" ipucu regex'ine takılmıyordu (sonda } değil * var):
+    // ipucu hem çalışmıyor hem de "{gö-te}" suflede ve ALTYAZIDA görünüyordu.
+    const em=/^\*{1,2}[^*]+\*{1,2}$/.test(tok);
+    let clean=em?tok.replace(/^\*{1,2}|\*{1,2}$/g,''):tok;
+    let ph='';
+    const mp=clean.match(/^(.+?)\{([^}]{1,24})\}$/);
+    if(mp){ clean=mp[1]; ph=mp[2]; }
     out+='<span class="w'+(em?' em':'')+'"'+(ph?' data-ph="'+esc(ph)+'"':'')+'>'+bionic(clean)+'</span> ';
   });
   return out;
