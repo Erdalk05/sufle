@@ -333,9 +333,9 @@
   <div id="speedRail"><div id="railV">140</div></div>
   <div id="railHint"></div>
   <div id="speedCtl">
-    <button id="spDown" aria-label="yavaşlat">−</button>
+    <button id="spDown" aria-label="Yavaşlat" data-aria="spDown">−</button>
     <span id="spVal">140<small data-i18n="spLabel">HIZ · WPM</small></span>
-    <button id="spUp" aria-label="hızlandır">+</button>
+    <button id="spUp" aria-label="Hızlandır" data-aria="spUp">+</button>
   </div>
   <div id="count">3</div>
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)</div>
@@ -347,13 +347,13 @@
 
 <!-- ALT KONTROL -->
 <div id="bar" class="hidden">
-  <button class="cbtn" id="settingsBtn" title="Ayarlar">⚙︎</button>
-  <button class="cbtn" id="scriptsBtn" title="Senaryolar">📝</button>
-  <button class="cbtn" id="readyBtn" title="Çekime hazır mıyım?">✅</button>
-  <button class="cbtn hidden" id="pauseBtn">⏸</button>
-  <button id="recBtn" disabled></button>
-  <button class="cbtn" id="voiceBtn" title="Sesle takip">🎤</button>
-  <button class="cbtn" id="playBtn" title="Başlat">▶︎</button>
+  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" title="Ayarlar">⚙︎</button>
+  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" title="Senaryolar">📝</button>
+  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" title="Çekime hazır mıyım?">✅</button>
+  <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn">⏸</button>
+  <button id="recBtn" aria-label="Kayıt başlat/durdur" data-aria="recBtn" disabled></button>
+  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" title="Sesle takip">🎤</button>
+  <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" title="Başlat">▶︎</button>
 </div>
 
 <!-- BAŞLANGIÇ -->
@@ -372,7 +372,7 @@
 <!-- AYARLAR -->
 <div class="sheet" id="sheet">
   <div class="grab"></div>
-  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:11px;color:#6b7075;font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX">✕</button></h2>
+  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:11px;color:#6b7075;font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX" aria-label="Kapat" data-aria="sheetX">✕</button></h2>
   <div class="tabs">
     <button data-tab="read" class="on" data-i18n="tabRead">Okuma</button>
     <button data-tab="look" data-i18n="tabLook">Görünüm</button>
@@ -420,7 +420,7 @@
       <button data-band="2" data-i18n="b2">2 satır</button>
       <button data-band="3" data-i18n="b3">3 satır</button>
     </div>
-    <div class="sheetbtns"><button class="cancel hidden" id="tempoBtn"></button></div>
+    <div class="sheetbtns"><button class="cancel hidden" id="tempoBtn" aria-label="Ölçülen tempoyu uygula" data-aria="tempoBtn"></button></div>
     <div class="sheetbtns"><button class="cancel" id="eyeRecipe" data-i18n="eyeRecipe">👁 Göz teması ayarını uygula</button></div>
     <div class="hint" id="gazeHint"></div>
 
@@ -633,12 +633,14 @@
 <!-- SENARYOLAR -->
 <div class="sheet" id="scriptsSheet">
   <div class="grab"></div>
-  <h2><span data-i18n="scripts">Senaryolar</span><button class="iconbtn" id="scriptsX">✕</button></h2>
+  <h2><span data-i18n="scripts">Senaryolar</span><button class="iconbtn" id="scriptsX" aria-label="Kapat" data-aria="scriptsX">✕</button></h2>
   <div id="secWrap" class="hidden">
     <div class="row" style="margin:6px 0"><label data-i18n="sections">🔖 Bölümler — dokun, oraya atla</label></div>
     <div class="seg" id="secList"></div>
   </div>
+  <input type="text" id="scriptFind" placeholder="🔎 Senaryolarda ara…" data-i18n-ph="findPh">
   <div id="scriptList"></div>
+  <div class="sheetbtns"><button class="cancel hidden" id="undoDel" data-i18n="undoDel">↺ Silineni geri getir</button></div>
   <div class="sheetbtns">
     <button class="cancel" id="newScript" data-i18n="newScript">＋ Yeni</button>
     <button class="cancel" id="pasteScript" data-i18n="paste">📋 Yapıştır</button>
@@ -674,7 +676,7 @@
 <!-- ÇEKİMLER -->
 <div class="sheet" id="takesSheet">
   <div class="grab"></div>
-  <h2><span data-i18n="takes">🎞 Çekimlerim</span><button class="iconbtn" id="takesX">✕</button></h2>
+  <h2><span data-i18n="takes">🎞 Çekimlerim</span><button class="iconbtn" id="takesX" aria-label="Kapat" data-aria="takesX">✕</button></h2>
   <div id="takeList"></div>
   <div class="hint" data-i18n="takesHint">Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar'a eklemek için "Kaydet / Paylaş"a bas.</div>
 </div>
@@ -682,7 +684,7 @@
 <!-- UZAKTAN KUMANDA -->
 <div class="sheet" id="remoteSheet">
   <div class="grab"></div>
-  <h2><span data-i18n="remote">🎛 Uzaktan kumanda</span><button class="iconbtn" id="remoteX">✕</button></h2>
+  <h2><span data-i18n="remote">🎛 Uzaktan kumanda</span><button class="iconbtn" id="remoteX" aria-label="Kapat" data-aria="remoteX">✕</button></h2>
   <div class="hint" data-i18n="remoteHint">Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.</div>
 
   <div class="row" style="margin-top:16px">
@@ -696,7 +698,7 @@
   <div id="learnBox" class="hidden">
     <div class="hint" id="learnMsg" style="margin-top:14px"></div>
     <div class="seg" id="actSeg">
-      <button data-act="toggle">▶︎/⏸</button>
+      <button data-act="toggle" aria-label="Başlat veya duraklat">▶︎/⏸</button>
       <button data-act="prevLine">↑ satır</button>
       <button data-act="nextLine">↓ satır</button>
       <button data-act="faster">hız +</button>
@@ -718,7 +720,7 @@
 <!-- YARDIM -->
 <div class="sheet" id="helpSheet">
   <div class="grab"></div>
-  <h2><span data-i18n="help">Nasıl kullanılır?</span><button class="iconbtn" id="helpX">✕</button></h2>
+  <h2><span data-i18n="help">Nasıl kullanılır?</span><button class="iconbtn" id="helpX" aria-label="Kapat" data-aria="helpX">✕</button></h2>
   <div id="helpBody" style="font-size:13.5px;line-height:1.75;color:#c9ccd0;padding-bottom:10px"></div>
 </div>
 
@@ -756,7 +758,7 @@
 
 <div id="ready" class="sheet">
   <div class="grab"></div>
-  <h2><span data-i18n="readyTitle">✅ Çekime hazır mıyım?</span><button class="iconbtn" id="readyX">✕</button></h2>
+  <h2><span data-i18n="readyTitle">✅ Çekime hazır mıyım?</span><button class="iconbtn" id="readyX" aria-label="Kapat" data-aria="readyX">✕</button></h2>
   <div id="readyOut"></div>
   <div class="sheetbtns">
     <button class="cancel" id="readyAgain" data-i18n="readyAgain">↻ Tekrar bak</button>
@@ -770,7 +772,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -839,7 +841,7 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',
+  capBtnL:'💬 Altyazı dosyası',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
@@ -907,7 +909,7 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',
+  capBtnL:'💬 Caption file',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
 };
@@ -940,6 +942,11 @@ const MSG={
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
+  camDenied:'📷 Kamera izni verilmemiş — Ayarlar → Safari → Kamera → İzin ver, sonra sayfayı yenile',
+  camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
+  camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
+  delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
+  restored:'↺ Senaryo geri geldi',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -983,6 +990,11 @@ const MSG={
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   needsComp:'Composite turned on — this feature only works on the composite image',
+  camDenied:'📷 Camera permission denied — Settings → Safari → Camera → Allow, then reload',
+  camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
+  camNone:'📷 No suitable camera — try 720p and retry',
+  delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
+  restored:'↺ Script restored',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1018,12 +1030,15 @@ const HELP={
 let L='tr';
 const t=k=>(I18N[L][k]||I18N.tr[k]||k);
 const m=k=>(MSG[L][k]||MSG.tr[k]||k);
+const ARIA={tr:{spDown:'Yavaşlat',spUp:'Hızlandır',settingsBtn:'Ayarlar',scriptsBtn:'Senaryolar',readyBtn:'Çekime hazır mıyım',pauseBtn:'Kaydı duraklat',recBtn:'Kayıt başlat/durdur',voiceBtn:'Sesle takip',playBtn:'Başlat/duraklat',tempoBtn:'Ölçülen tempoyu uygula',sheetX:'Kapat',scriptsX:'Kapat',takesX:'Kapat',remoteX:'Kapat',helpX:'Kapat',readyX:'Kapat'},en:{spDown:'Slower',spUp:'Faster',settingsBtn:'Settings',scriptsBtn:'Scripts',readyBtn:'Readiness check',pauseBtn:'Pause recording',recBtn:'Start or stop recording',voiceBtn:'Voice follow',playBtn:'Play or pause',tempoBtn:'Apply measured pace',sheetX:'Close',scriptsX:'Close',takesX:'Close',remoteX:'Close',helpX:'Close',readyX:'Close'}};
 function applyLang(){
   document.documentElement.lang=L;
+  $$('[data-aria]').forEach(el=>{ const v=ARIA[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
   $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(!I18N[L][k]) return;
     const v=I18N[L][k];
     // içinde etiket varsa innerHTML: eskiden <b> ham metin olarak görünüyordu
     if(/<[a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v; });
+  $$('[data-i18n-ph]').forEach(el=>{ const v=I18N[L][el.dataset.i18nPh]; if(v) el.placeholder=v; });
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
   $('#verLine').textContent='Sufle v'+VER;
@@ -1040,7 +1055,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, safeAudio:true, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true,
+  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true, trash:[],
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -1436,10 +1451,30 @@ async function openCam(){
     autoLightCheck();
     return true;
   }catch(e){
-    toast(m('noCam')+': '+(e.name||e.message));
-    setTimeout(()=>toast(m('camHelp')),2300);
+    // Eskiden her hata aynı mesajı veriyordu ("kamera açılamadı: NotAllowedError").
+    // Sebebe göre NE YAPILACAĞINI söyle — hata adı kullanıcıya bir şey anlatmıyor.
+    logErr('cam',e);
+    const n=e&&e.name;
+    if(n==='NotAllowedError'||n==='SecurityError')      toast(m('camDenied'));
+    else if(n==='NotReadableError'||n==='AbortError')   toast(m('camBusy'));
+    else if(n==='NotFoundError'||n==='OverconstrainedError') toast(m('camNone'));
+    else toast(m('noCam')+': '+(n||e.message));
+    setTimeout(()=>toast(m('camHelp')),2600);
     return false;
   }
+}
+/* İstenen çözünürlük sessizce düşebiliyor (4K seçip 1080p almak gibi).
+   Gerçekte ne alındığını göster — "4K seçtim ama 4K değil" şaşkınlığı bitsin. */
+function realRes(){
+  const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};
+  return (v.width&&v.height) ? v.width+'×'+v.height : '';
+}
+function resNote(){
+  const want={'4k':2160,'1080':1080,'720':720}[st.quality]||1080;
+  const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};
+  const got=Math.min(v.width||0,v.height||0);
+  if(!got) return '';
+  return got<want*0.9 ? (L==='tr'?' — cihaz bu kadarını verdi':' — this is what the device gave') : '';
 }
 function setupCaps(){
   let caps={}; try{ caps=vTrack&&vTrack.getCapabilities?vTrack.getCapabilities():{}; }catch(e){}
@@ -2453,6 +2488,13 @@ function renderDevice(){
   });
   // Depo kullanımı: "arşive yazamadım" uyarısının sebebi burada görünsün
   html+='<div class="kv" id="quotaKv"><span>'+(L==='tr'?'Depo':'Storage')+'</span><b>—</b></div>';
+  // Arşiv kalıcı mı: değilse tarayıcı çekimleri bir gün silebilir, kullanıcı bilmeli
+  html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+(persistedOK?'var(--accent)':'#ffb300')+'">'+
+    (persistedOK?'✓ ':'✕ ')+(L==='tr'?'Çekim arşivi kalıcı':'Take archive is persistent')+'</div>'+
+    (persistedOK?'':'<div class="s">'+(L==='tr'
+      ? 'Tarayıcı yer açmak için eski çekimleri silebilir. Önemli çekimleri Fotoğraflar\'a kaydet. Uygulamayı Ana Ekrana eklemek kalıcılığı genelde açar.'
+      : 'The browser may delete old takes to free space. Save important takes to Photos. Adding the app to the Home Screen usually makes storage persistent.')+'</div>')+
+    '</div></div>';
   // Hata günlüğü: sessiz kırılmalar artık okunabilir. Yoksa satır hiç çıkmıyor.
   if(ERRLOG.length){
     html+='<div class="kv" style="margin-top:10px"><span>'+(L==='tr'?'Son hatalar':'Recent errors')+'</span><b>'+ERRLOG.length+'</b></div>';
@@ -2480,7 +2522,7 @@ function readyChecks(){
     d:(L==='tr'?'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç':'On iPhone only Safari writes audio — open it in Safari')});
   // kamera
   if(!stream){ out.push({lv:'bad',t:(L==='tr'?'Kamera kapalı':'Camera off'),d:(L==='tr'?'Başlangıç ekranından kamerayı aç':'Open the camera from the start screen')}); }
-  else out.push({lv:'ok',t:(L==='tr'?'Kamera açık':'Camera on'),d:(()=>{const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};return (v.width||'?')+'×'+(v.height||'?');})()});
+  else out.push({lv:'ok',t:(L==='tr'?'Kamera açık':'Camera on'),d:(realRes()||'?')+resNote()});
   // ses
   if(stream){
     if(!aTrack) out.push({lv:'bad',t:(L==='tr'?'Mikrofon yok':'No microphone'),d:(L==='tr'?'Video sessiz kaydedilecek — izinleri kontrol et':'The video will be silent — check permissions')});
@@ -2773,7 +2815,12 @@ function renderTempo(){
 function renderScripts(){
   const box=$('#scriptList'); if(!box) return;
   box.innerHTML='';
-  st.scripts.forEach(s=>{
+  const ub=$('#undoDel'); if(ub) ub.classList.toggle('hidden',!(st.trash&&st.trash.length));
+  // Arama: liste uzayınca senaryo bulunamıyordu. Türkçe katlama norm() ile aynı kural.
+  const q=norm(($('#scriptFind')&&$('#scriptFind').value)||'');
+  const list=q ? st.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q)) : st.scripts;
+  if(!list.length){ box.innerHTML='<div class="empty">'+m('noMatch')+'</div>'; return; }
+  list.forEach(s=>{
     const d=document.createElement('div'); d.className='listitem'+(s.id===st.activeId?' on':'');
     d.innerHTML='<div class="meta"><div class="t">'+esc(s.title||'—')+'</div><div class="s">'+
       statLine(countWords(s.text))+'</div></div><button class="iconbtn" data-a="dup">⧉</button>';
@@ -2795,7 +2842,24 @@ function selectScript(id){
   }
 }
 function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||''; updateStats(); }
-function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').value.trim()||(L==='tr'?'Başlıksız':'Untitled'); s.text=$('#text').value; s.up=Date.now(); save(); }
+function firstLineTitle(txt){
+  const l=(txt||'').split(/\r?\n/).map(x=>x.replace(/^#{1,3}\s*/,'').trim()).find(x=>x.length>1);
+  return l ? l.slice(0,40) : '';
+}
+/* Word/web'den yapıştırılan metinde sıfır-genişlikli karakterler ve kırılmayan boşluk
+   oluyor: kelime bölme, sesle takip eşleşmesi ve altyazı bunlardan bozuluyor.
+   GÖRÜNEN içeriğe dokunmuyoruz — yalnız görünmez olanlar sadeleşiyor. */
+function stripInvisible(x){
+  return (x||'')
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g,'')      // sıfır genişlik + BOM
+    .replace(/\u00A0/g,' ')                            // kırılmayan boşluk
+    .replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"')
+    .replace(/\r\n?/g,'\n');
+}
+function pullEditor(){ const s=active(); if(!s) return;
+  // Başlık boşsa "Başlıksız" yığını oluşuyordu; ilk satırdan anlamlı bir ad üret.
+  s.title=$('#title').value.trim() || firstLineTitle($('#text').value) || (L==='tr'?'Başlıksız':'Untitled');
+  s.text=stripInvisible($('#text').value); s.up=Date.now(); save(); }
 
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
@@ -3362,6 +3426,9 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
      Kompozit kapalıyken bu iki anahtar hiçbir şey yapmıyor, hiçbir şey de söylemiyordu →
      iki özellik de kullanıcıya görünmez kalıyordu. Artık gerekeni kendisi açıyor;
      açamıyorsa anahtarı geri alıp sebebini söylüyor. */
+  if(k==='voiceCmd' && st.voiceCmd && !(window.SpeechRecognition||window.webkitSpeechRecognition)){
+    st.voiceCmd=false; apply(); save(); toast(m('voiceNo'));    // ölü anahtar olmasın
+  }
   if(k==='burnCaps'||k==='chroma') ensureComp(k);
   if(k==='burnCaps') body.classList.toggle('burn', comp.on && st.burnCaps);
   if(k==='comp'){
@@ -3411,11 +3478,32 @@ $('#text').oninput=()=>{ pullEditor(); updateStats(); };
 $('#saveScript').onclick=()=>{ pullEditor(); buildContent(); reset(); renderScripts(); closeSheets(); };
 $('#newScript').onclick=()=>{ rememberPos(); pullEditor(); const s={id:uid(),title:L==='tr'?'Yeni senaryo':'New script',text:'',up:Date.now()};
   st.scripts.unshift(s); st.activeId=s.id; save(); fillEditor(); renderScripts(); buildContent(); $('#text').focus(); };
+/* VERİ KAYBI: silme tek dokunuştu — onay yok, geri dönüş yok. Saatlerce yazılan metin
+   yanlışlıkla tek dokunuşla gidiyordu. Artık iki aşamalı onay + geri alma var. */
+let delArm=0, delArmT=null;
+function disarmDel(){ delArm=0; clearTimeout(delArmT); const b=$('#delScript'); if(b) b.textContent=t('delete'); }
 $('#delScript').onclick=()=>{
-  if(st.scripts.length<2){ $('#text').value=''; pullEditor(); buildContent(); toast(m('deleted')); return; }
-  st.scripts=st.scripts.filter(x=>x.id!==st.activeId); st.activeId=st.scripts[0].id;
-  save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('deleted'));
+  if(!delArm){
+    delArm=1; $('#delScript').textContent=m('delConfirm');
+    clearTimeout(delArmT); delArmT=setTimeout(disarmDel,4000);
+    return;
+  }
+  disarmDel();
+  pullEditor();
+  const gone=active();
+  st.trash=(st.trash||[]).concat([JSON.parse(JSON.stringify(gone))]).slice(-5);   // son 5 silinen
+  if(st.scripts.length<2){ $('#text').value=''; $('#title').value=''; pullEditor(); }
+  else { st.scripts=st.scripts.filter(x=>x.id!==st.activeId); st.activeId=st.scripts[0].id; fillEditor(); }
+  save(); renderScripts(); buildContent(); reset(); toast(m('deletedUndo'));
 };
+function restoreTrash(){
+  const r=(st.trash||[]).pop(); if(!r) return;
+  r.id=uid(); r.up=Date.now();
+  st.scripts.unshift(r); st.activeId=r.id;
+  save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('restored'));
+}
+$('#scriptFind').oninput=()=>renderScripts();
+$('#undoDel').onclick=restoreTrash;
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
   toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
@@ -3529,6 +3617,18 @@ if(IS_IOS_ALT){
 }
 load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
+
+/* ARŞİV KALICILIĞI: tarayıcılar (özellikle iOS Safari) uzun süre açılmayan sitenin
+   IndexedDB'sini SİLEBİLİYOR — yani çekim arşivin buharlaşabilir. Kalıcı depo istemek
+   bunu engelliyor. Ana ekrana eklenmiş uygulamalarda istek genelde kabul ediliyor. */
+let persistedOK=null;
+(async()=>{
+  try{
+    if(!navigator.storage||!navigator.storage.persist) return;
+    persistedOK = await navigator.storage.persisted();
+    if(!persistedOK) persistedOK = await navigator.storage.persist();
+  }catch(e){ logErr('persist',e); }
+})();
 
 /* Android/Chrome: uygulamayı ana ekrana kurma istemi (iOS'ta bu API yok, düğme gizli kalır) */
 let deferredInstall=null;
