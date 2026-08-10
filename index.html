@@ -251,8 +251,16 @@
   .tabs button.on{background:var(--accent);color:var(--accent-d);border-color:transparent}
   .tab{display:none}.tab.on{display:block}
   .row{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px;gap:10px}
+  /* İşletim sisteminde "hareketi azalt" açıksa vurgu/geçiş animasyonlarını kapat.
+     Vestibüler rahatsızlığı olanlar için gerçek bir gerekçe. Kaydırmanın kendisi
+     işlevsel olduğu için durmuyor — yalnız süslemeler duruyor. */
+  @media (prefers-reduced-motion: reduce){
+    .w,.ln,.sw,.sheet,.toast,#speedRail{transition:none!important;animation:none!important}
+    .row .v.hit{animation:none!important}
+  }
   .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
   .row .v.hit{animation:keyhit .5s ease-out}
+  #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
   @keyframes keyhit{0%{transform:scale(1.5);color:#3ddc84}100%{transform:scale(1)}}
   .hint{font-size:11.5px;color:#787f85;line-height:1.5;margin-top:4px}
   input[type=range]{width:100%;accent-color:var(--accent);height:32px}
@@ -658,10 +666,12 @@
     <button id="tJoin" data-i18n="tJoin">↩︎ Satırları birleştir</button>
     <button id="tCase" data-i18n="tCase">Aa Cümle düzeni</button>
     <button id="tBreath" data-i18n="tBreath">🫁 Nefes işareti</button>
+    <button id="tSplit" data-i18n="tSplit">🪓 Uzun satırları böl</button>
     <button id="tNum" data-i18n="tNum">🔢 Sayıları yaz</button>
     <button id="undoTool" class="hidden" data-i18n="tUndo">↺ Geri al</button>
   </div>
   <div class="hint" data-i18n="toolHint">Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.</div>
+  <div id="markPrev" class="hint" style="display:none"></div>
   <div class="hint" data-i18n="markHint"># başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz</div>
   <div class="sheetbtns">
     <button class="cancel" id="checkBtn" data-i18n="checkBtn">🔍 Konuşulabilirlik denetimi</button>
@@ -693,6 +703,7 @@
 <div class="sheet" id="remoteSheet">
   <div class="grab"></div>
   <h2><span data-i18n="remote">🎛 Uzaktan kumanda</span><button class="iconbtn" id="remoteX" aria-label="Kapat" data-aria="remoteX">✕</button></h2>
+  <div class="hint" data-i18n="noRemoteHint">Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.</div>
   <div class="hint" data-i18n="remoteHint">Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.</div>
 
   <div class="row" style="margin-top:16px">
@@ -702,9 +713,14 @@
   <div class="sheetbtns">
     <button class="cancel" id="learnBtn" data-i18n="learnStart">🎯 Tuş öğret</button>
     <button class="cancel" id="mapReset" data-i18n="mapReset">↺ Varsayılana dön</button>
+    <button class="cancel" id="mapExport" data-i18n="mapExport">⬆︎ Profili dışa aktar</button>
   </div>
   <div id="learnBox" class="hidden">
     <div class="hint" id="learnMsg" style="margin-top:14px"></div>
+    <div class="seg" id="tapSeg" style="margin-top:8px">
+      <button data-tap="1" class="on" data-i18n="tap1">Tek basış</button>
+      <button data-tap="2" data-i18n="tap2">Çift basış</button>
+    </div>
     <div class="seg" id="actSeg">
       <button data-act="toggle" aria-label="Başlat veya duraklat">▶︎/⏸</button>
       <button data-act="prevLine">↑ satır</button>
@@ -722,6 +738,8 @@
 
   <div class="row" style="margin-top:22px"><label data-i18n="voiceCmdL">🗣 Sesli komut</label></div>
   <div class="tog"><span data-i18n="voiceCmdT">"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"</span><div class="sw on" data-t="voiceCmd"></div></div>
+  <div class="row" style="margin-top:10px"><label data-i18n="wakeWordL">Kendi tetik kelimen</label></div>
+  <input type="text" id="wakeWord" placeholder="örn: hazir" maxlength="20">
   <div class="hint" data-i18n="voiceCmdHint">🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.</div>
 </div>
 
@@ -780,7 +798,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.1';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.2';
 
 /* ============ i18n ============ */
 const I18N={
@@ -849,7 +867,8 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
+  capBtnL:'💬 Altyazı dosyası',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',
+  noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.',tSplit:'🪓 Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
   wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
@@ -918,7 +937,8 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
+  capBtnL:'💬 Caption file',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',
+  noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. 🎤 voice commands do the same job.',tSplit:'🪓 Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
   wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
@@ -956,7 +976,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1004,7 +1024,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1065,7 +1085,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', rawAudio:false, safeAudio:true, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, voiceCmd:true, trash:[],
+  target:0, voiceLang:'tr-TR', zoom:100, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -1209,6 +1229,7 @@ function markup(raw){
 function H(){ return window.innerHeight; }
 function eyeOff(){ return H()*(st.eyePos/100); }
 function measure(){
+  const t0m=performance.now();
   const pt=$('#padTop'), pb=$('#padBot');
   if(pt) pt.style.height=eyeOff()+'px';
   if(pb) pb.style.height=Math.max(60,H()-eyeOff())+'px';
@@ -1226,9 +1247,21 @@ function measure(){
     holdPoints.push({y:h.offsetTop+h.offsetHeight/2, ms:+h.dataset.ms||300, used:false});
   });
   maxPos = wordTops.length ? Math.max(1, wordTops[wordTops.length-1]-eyeOff()) : 1;
-  pxPerWord = wordTops.length>1 ? Math.max(6,(wordTops[wordTops.length-1]-wordTops[0])/(wordTops.length-1)) : 40;
+  const span = wordTops.length>1 ? (wordTops[wordTops.length-1]-wordTops[0]) : 0;
+  if(span>1) pxPerWord = Math.max(6, span/(wordTops.length-1));
+  else {
+    // tek satır: kaydırılacak mesafe yok gibi; satır yüksekliğini kelime sayısına böl
+    const lh = (lns[0] && lns[0].offsetHeight) || (st.font*1.4) || 60;
+    pxPerWord = Math.max(6, lh/Math.max(1,words.length));
+  }
   drawAspect(); drawSafe(); updateHud();
+  // 1.8 Ölçüm maliyeti: 10 bin kelimelik metinde her ölçüm pahalıya gelebilir.
+  // Tahmin etmek yerine ölç; eşiği aşarsa bir kez uyar.
+  const cost=performance.now()-t0m;
+  if(cost>120 && !measureWarned){ measureWarned=true; logErr('measure', cost.toFixed(0)+' ms / '+words.length+' kelime');
+    toast(m('longScript')); }
 }
+let measureWarned=false;
 /* okunacak gerçek kelime sayısı: # başlıklar ve [notlar] hariç */
 function countWords(txt){
   return (txt||'').split(/\r?\n/).reduce((n,line)=>{
@@ -1245,6 +1278,7 @@ function updateStats(){
 /* ============ KAYDIRMA MOTORU ============ */
 let running=false, raf=null, pos=0, activeIdx=-1, lastT=0, holdUntil=0, lastParaIdx=-1, startedAt=0, elapsed=0, lastHud=0;
 function pxPerSec(){ return (st.wpm/60)*pxPerWord; }
+let curPPS=0;
 function setPos(p){
   pos=Math.max(-eyeOff()*0.4, Math.min(maxPos+H()*0.2, p));
   scroller.style.transform='translateY('+(-pos)+'px)';
@@ -1256,8 +1290,13 @@ function tick(now){
   if(!running) return;
   const dt=Math.min(0.1,(now-lastT)/1000); lastT=now;
   elapsed+= dt;
+  // 1.4 HIZ RAMPASI: hız değişince anında sıçramak okumayı bozuyordu (~200 ms yumuşak geçiş)
+  curPPS += (pxPerSec()-curPPS)*Math.min(1, dt/0.2);
   if(now>=holdUntil){
-    const next=pos+pxPerSec()*dt;
+    // 1.2 YUMUŞAK DURUŞ: metin sonunda sert kesiliyordu; son 60 px'te yavaşla
+    const near=maxPos-pos;
+    const brake = near<60 ? Math.max(0.18, near/60) : 1;
+    const next=pos+curPPS*brake*dt;
     if(st.breathe){
       for(let i=0;i<paraEnds.length;i++){
         const y=paraEnds[i]-eyeOff();
@@ -1310,7 +1349,7 @@ function highlight(y){
 }
 function start(){
   if(running) return;
-  running=true; lastT=performance.now(); holdUntil=0;
+  running=true; lastT=performance.now(); holdUntil=0; curPPS=pxPerSec();   // rampa baştan sıfırlamasın
   if(!startedAt) startedAt=performance.now();
   $('#playBtn').textContent='⏸'; $('#playBtn').classList.add('playing');
   $('#tapnote').style.opacity='0';
@@ -2692,6 +2731,11 @@ function speakCheck(){
   const fKeys=Object.keys(fCount);
   if(fKeys.length) out.push({lv:'warn',t:(L==='tr'?'Dolgu kelime':'Filler words'),
     d:fKeys.map(k=>k+' ×'+fCount[k]).join(', ')});
+  // 5) kısaltmalar: harf harf mi okunacak, kelime gibi mi? Prova edilmezse tökezleme sebebi.
+  const acr=[...new Set((body.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g)||[]))].filter(a=>a!=='TV');
+  if(acr.length) out.push({lv:'info',t:(L==='tr'?acr.length+' kısaltma':acr.length+' acronyms'),
+    d:(L==='tr'?'Harf harf mi okuyacaksın? Telaffuzu yaz: '+acr[0]+'{'+acr[0].split('').join('-').toLowerCase()+'} · '
+              :'Read letter by letter? Add pronunciation: ')+acr.slice(0,8).join(', ')});
   // 4) tekrar eden kelimeler
   const rep={}; words0.forEach(w=>{ const n=norm(w); if(n.length>4) rep[n]=(rep[n]||0)+1; });
   const rKeys=Object.keys(rep).filter(k=>rep[k]>=4).sort((a,b)=>rep[b]-rep[a]);
@@ -2771,6 +2815,25 @@ function sentenceCase(t){
     let x=line.toLocaleLowerCase('tr');
     x=x.replace(/(^\s*|[.!?\u2026]\s+)(\p{L})/gu,(mm,a,b)=>a+b.toLocaleUpperCase('tr'));
     return x;
+  }).join('\n');
+}
+/* Uzun satır suflede tek blok gibi akıyor ve nefes yeri kalmıyor.
+   Noktalama sınırlarından bölüyoruz — kelime ortasından ASLA. */
+function splitLongLines(t, maxw){
+  maxw=maxw||12;
+  return t.split(/\r?\n/).map(line=>{
+    const r=line.trim();
+    if(!r || /^#{1,3}\s|^\[.*\]$/.test(r)) return line;     // başlık ve notlara dokunma
+    const words=r.split(/\s+/);
+    if(words.length<=maxw) return line;
+    const out=[]; let cur=[];
+    words.forEach(w=>{
+      cur.push(w);
+      const brk = /[,;:]$/.test(w) || /[.!?…]$/.test(w);
+      if((brk && cur.length>=Math.ceil(maxw*0.6)) || cur.length>=maxw){ out.push(cur.join(' ')); cur=[]; }
+    });
+    if(cur.length) out.push(cur.join(' '));
+    return out.join('\n');
   }).join('\n');
 }
 function breathMarks(t){
@@ -2951,7 +3014,14 @@ function startVoice(){
   srFails=0;
   sr.onerror=ev=>{
     const er=ev&&ev.error;
-    if(er==='not-allowed'||er==='service-not-allowed'){ toast(m('micDenied')); stopVoice(); return; }
+    if(er==='not-allowed'||er==='service-not-allowed'){
+      stopVoice();
+      const o=$('#voiceTestOut');
+      if(o) o.innerHTML='⚠️ <b>'+(L==='tr'?'Mikrofon izni yok.':'Microphone permission denied.')+'</b><br>'+
+        (L==='tr'? 'iPhone: <b>Ayarlar → Safari → Mikrofon → Sor/İzin ver</b>, sonra sayfayı yenile.<br>Sayfa içi izin kutusu bir kez reddedilince tekrar çıkmaz — ayardan açman gerekiyor.'
+                 : 'iPhone: <b>Settings → Safari → Microphone → Ask/Allow</b>, then reload. Once denied, the in-page prompt never reappears.');
+      toast(m('micDenied')); return;
+    }
     if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
   };
   sr.onend=()=>{ if(voiceOn) restartVoice(); };
@@ -2960,9 +3030,13 @@ function startVoice(){
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
 }
 function stopVoice(){ voiceOn=false; if(sr){ sr.onend=null; try{sr.stop();}catch(e){} }
-  cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on'); toast(m('voiceOff')); }
+  cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on','lost'); vBadge=''; toast(m('voiceOff')); }
 /* "sufle <komut>" kalıbını yakala, komut kelimelerini akıştan çıkar */
-const WAKE={sufle:1,suffle:1,sufl:1,sufla:1,prompter:1,promter:1};
+// Uyandırma sözcüğü: dil seçeneğinde Almanca ve Arapça vardı ama sözlükte
+// karşılıkları yoktu — o dilleri seçen kullanıcı için özellik ölüydü.
+const WAKE={sufle:1,suffle:1,sufl:1,sufla:1,prompter:1,promter:1,
+            teleprompter:1,souffleur:1,suffleur:1,           // Almanca
+            mulaqqin:1,mulakkin:1,nass:1};                    // Arapça, latin harfe katlanmış hâli
 const VCMD={
   basla:'play', baslat:'play', devam:'play', oku:'play',
   dur:'pause', duraklat:'pause', bekle:'pause',
@@ -2970,14 +3044,22 @@ const VCMD={
   basa:'reset', don:'reset', bastan:'reset',
   kaydet:'rec', kayit:'rec',
   start:'play', go:'play', resume:'play', stop:'pause', pause:'pause', wait:'pause',
-  faster:'faster', slower:'slower', rewind:'reset', restart:'reset', record:'rec'
+  faster:'faster', slower:'slower', rewind:'reset', restart:'reset', record:'rec',
+  // Almanca
+  los:'play', weiter:'play', lesen:'play',
+  stopp:'pause', halt:'pause', warte:'pause',
+  schneller:'faster', langsamer:'slower', zuruck:'reset', anfang:'reset', aufnehmen:'rec',
+  // Arapça — norm ile latin harfe katlanmış hâlleri
+  ibda:'play', tabi:'play', qif:'pause', tawaqaf:'pause',
+  asra:'faster', abta:'slower', bidaya:'reset', sajjil:'rec'
 };
 const TAIL={basa:'don', bastan:'al'};
 let lastCmdAt=0;
+let userWake='';
 function takeCommands(toks){
   const out=[];
   for(let i=0;i<toks.length;i++){
-    if(WAKE[toks[i]] && i+1<toks.length){
+    if((WAKE[toks[i]]||(userWake&&toks[i]===userWake)) && i+1<toks.length){
       const c=VCMD[toks[i+1]];
       if(c){ runVoiceCmd(c);
         i += (TAIL[toks[i+1]]===toks[i+2]) ? 2 : 1;   // "başa dön" gibi iki kelimeli kalıbı da yut
@@ -3012,6 +3094,14 @@ function wordEq(nw,tok){
   return false;
 }
 let lastTokAt=0;
+let lastHitAt=0, vBadge='';
+function setVoiceBadge(k){
+  if(k===vBadge) return; vBadge=k;
+  const b=$('#voiceBtn'); if(!b) return;
+  b.classList.toggle('lost', k==='lost');
+  b.title = k==='lost' ? (L==='tr'?'Metni bulamıyorum — okuduğun yeri parmakla göster':'Lost the text — tap where you are')
+                       : (L==='tr'?'Takip ediyor':'Following');
+}
 function matchVoice(spoken){
   if(voicePaused||!normWords.length) return;
   const now=performance.now();
@@ -3032,7 +3122,12 @@ function matchVoice(spoken){
     }
     if(score>best){ best=score; bestK=k; }
   }
-  if(bestK<0 || best<2.6) return;                 // en az iki kelime tutsun
+  if(bestK<0 || best<2.6){
+    // Eşleşme yok: eskiden sessizce duruyordu, kullanıcı "bozuk mu?" diye düşünüyordu.
+    if(now-lastHitAt>3500) setVoiceBadge('lost');
+    return;                                        // en az iki kelime tutsun
+  }
+  lastHitAt=now; setVoiceBadge('ok');
   if(bestK-vptr>MAX_JUMP) return;                 // makul olmayan sıçramayı yut
   vptr=bestK+1;
   const wi=normWords[bestK].i, tnow=performance.now();
@@ -3077,7 +3172,7 @@ function setLock(on,silent){
 }
 
 /* ============ KUMANDA EŞLEME EKRANI ============ */
-let learning=false;
+let learning=false, learnTap=1;
 function renderLearn(){
   const box=$('#learnBox'), msg=$('#learnMsg');
   if(!learning){ box.classList.add('hidden'); return; }
@@ -3088,7 +3183,14 @@ function renderLearn(){
 }
 function renderMap(){
   const box=$('#mapList'); if(!box) return;
-  const mp=keyMap(); box.innerHTML='';
+  const mp=keyMap(), mp2=keyMap2(); box.innerHTML='';
+  Object.keys(mp2).filter(k=>mp2[k]&&mp2[k]!=='none').sort().forEach(k=>{
+    const d=document.createElement('div'); d.className='listitem';
+    d.innerHTML='<div class="meta"><div class="t">'+esc(keyLabel(k))+' ×2</div><div class="s">'+actName(mp2[k])+'</div></div>'+
+      '<button class="iconbtn" data-a="x" aria-label="Sil">🗑</button>';
+    d.querySelector('[data-a="x"]').onclick=()=>{ st.remoteMap2=Object.assign({},keyMap2()); delete st.remoteMap2[k]; save(); renderMap(); };
+    box.appendChild(d);
+  });
   Object.keys(mp).filter(k=>mp[k]&&mp[k]!=='none').sort().forEach(k=>{
     const d=document.createElement('div'); d.className='listitem';
     d.innerHTML='<div class="meta"><div class="t">'+esc(keyLabel(k))+'</div><div class="s">'+actName(mp[k])+'</div></div>'+
@@ -3198,6 +3300,8 @@ function apply(){
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
+  if($('#wakeWord')){ $('#wakeWord').value=st.wakeWord||''; userWake=norm(st.wakeWord||''); }
+  if($('#wakeWord')){ $('#wakeWord').value=st.wakeWord||''; userWake=norm(st.wakeWord||''); }
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===st.mode));
   $$('#bandSeg button').forEach(b=>b.classList.toggle('on',+b.dataset.band===st.band));
   $('#gazeHint').textContent=gazeLine();
@@ -3285,8 +3389,27 @@ window.addEventListener('keydown',e=>{
   }
   if(e.key==='Escape'){ closeSheets(); return; }
   const act=keyMap()[e.key];
-  if(act && ACTIONS[act]){ e.preventDefault(); ACTIONS[act](); flashKey(keyLabel(e.key),act); }
+  if(!act || !ACTIONS[act]) return;
+  e.preventDefault();
+  // 5.5 BASILI TUTMA: hız tuşları tekrar tekrar gelirse sürekli değişsin;
+  // e.repeat olmayan kumandalar için de aynı tuşun hızlı tekrarı aynı işi görüyor.
+  if(e.repeat && act!=='faster' && act!=='slower') return;   // ▶︎/kayıt tekrarı tehlikeli
+  // 5.6 ÇİFT BASIŞ: tek tuşlu kumandalar için ikinci eylem (300 ms içinde iki basış)
+  const nowK=Date.now();
+  const dbl=keyMap2()[e.key];
+  if(dbl && ACTIONS[dbl] && remoteTap.k===e.key && nowK-remoteTap.t<300){
+    remoteTap={k:'',t:0}; clearTimeout(tapT);
+    ACTIONS[dbl](); flashKey(keyLabel(e.key)+'×2',dbl); return;
+  }
+  if(dbl && ACTIONS[dbl]){                    // ikinci basışı bekle, sonra teki uygula
+    remoteTap={k:e.key,t:nowK}; clearTimeout(tapT);
+    tapT=setTimeout(()=>{ ACTIONS[act](); flashKey(keyLabel(e.key),act); },300);
+    return;
+  }
+  ACTIONS[act](); flashKey(keyLabel(e.key),act);
 });
+let remoteTap={k:'',t:0}, tapT=null;
+function keyMap2(){ return st.remoteMap2||{}; }
 /* Tuşun uygulamaya ULAŞTIĞINI görünür kıl — "çalışmıyor" şikâyetinin yarısı bu geri bildirimin yokluğu */
 function noteKey(k){
   const el=$('#lastKey'); if(!el) return;
@@ -3318,6 +3441,7 @@ function actName(a){ return (L==='tr'
   ? {toggle:'başlat/duraklat',nextLine:'satır ileri',prevLine:'satır geri',faster:'hızlan',slower:'yavaşla',rec:'kayıt',reset:'başa sar',lock:'kilit',none:'yok'}
   : {toggle:'play/pause',nextLine:'next line',prevLine:'prev line',faster:'faster',slower:'slower',rec:'record',reset:'rewind',lock:'lock',none:'none'})[a]||a; }
 function nudgeWpm(d){ st.wpm=Math.min(320,Math.max(40,st.wpm+d)); $('#wpm').value=st.wpm; $('#vWpm').textContent=st.wpm;
+  updateStats();
   if($('#spVal')) $('#spVal').firstChild.nodeValue=st.wpm;
   $('#railV').textContent=st.wpm; $('#speedRail').classList.add('on'); setTimeout(()=>$('#speedRail').classList.remove('on'),700);
   updateHud(); save(); }
@@ -3402,15 +3526,30 @@ $('#readyGo').onclick=()=>{ closeSheets(); setTimeout(()=>toggleRec(),260); };
 $('#devBtn').onclick=renderDevice;
 $('#remoteBtn').onclick=()=>{ learning=false; learnKey=null; renderLearn(); renderMap(); openSheet('#remoteSheet'); armRemoteWatch(); };
 $('#remoteX').onclick=()=>{ learning=false; closeSheets(); };
+$$('#tapSeg button').forEach(b=>b.onclick=()=>{ learnTap=+b.dataset.tap;
+  $$('#tapSeg button').forEach(x=>x.classList.toggle('on',x===b)); });
 $('#learnBtn').onclick=()=>{ learning=!learning; learnKey=null;
   $('#learnBtn').classList.toggle('save',learning);
   $('#learnBtn').textContent=learning?(L==='tr'?'⏹ Öğretmeyi bitir':'⏹ Stop learning'):t('learnStart');
   renderLearn(); };
-$('#mapReset').onclick=()=>{ st.remoteMap=null; save(); renderMap(); toast(m('mapReset')); };
+$('#mapReset').onclick=()=>{ st.remoteMap=null; st.remoteMap2=null; save(); renderMap(); toast(m('mapReset')); };
+/* 5.4 Kumanda profili: aynı kumandayı ikinci cihazda baştan öğretmek zorunda kalma. */
+$('#mapExport').onclick=async()=>{
+  const data=JSON.stringify({sufleRemote:1,map:keyMap(),map2:keyMap2()},null,1);
+  const f=new File([data],'sufle-kumanda.json',{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+    try{ await navigator.share({files:[f]}); return; }catch(e){ if(e.name==='AbortError') return; }
+  }
+  const u=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+  const a=document.createElement('a'); a.href=u; a.download='sufle-kumanda.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+};
 $$('#actSeg button').forEach(b=>b.onclick=()=>{
   if(!learnKey) return;
-  st.remoteMap=Object.assign({},st.remoteMap||{}); st.remoteMap[learnKey]=b.dataset.act;
-  save(); toast(keyLabel(learnKey)+' → '+actName(b.dataset.act));
+  // tek mi çift basış mı: tek tuşlu kumandalarda iki eylem çıkarmanın tek yolu
+  const slot = learnTap===2 ? 'remoteMap2' : 'remoteMap';
+  st[slot]=Object.assign({},st[slot]||{}); st[slot][learnKey]=b.dataset.act;
+  save(); toast(keyLabel(learnKey)+(learnTap===2?' ×2':'')+' → '+actName(b.dataset.act));
   learnKey=null; renderLearn(); renderMap();
 });
 
@@ -3551,6 +3690,7 @@ function restoreTrash(){
   save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('restored'));
 }
 $('#scriptFind').oninput=()=>renderScripts();
+$('#wakeWord').oninput=()=>{ st.wakeWord=$('#wakeWord').value.trim(); userWake=norm(st.wakeWord); save(); };
 $$('#takeSort button').forEach(b=>b.onclick=()=>{ takeSort=b.dataset.s;
   $$('#takeSort button').forEach(x=>x.classList.toggle('on',x===b)); renderTakes(); });
 /* Toplu silme: depo dolduğunda tek tek silmek işkenceydi. Yıldızlılara DOKUNMUYOR
@@ -3601,6 +3741,22 @@ $('#tJoin').onclick=()=>applyTool(joinLines,m('tDone'));
 $('#tCase').onclick=()=>applyTool(sentenceCase,m('tDone'));
 $('#tBreath').onclick=()=>applyTool(breathMarks,m('tDone'));
 $('#tNum').onclick=()=>applyTool(numbersToWords,m('tDone'));
+$('#tSplit').onclick=()=>applyTool(t2=>splitLongLines(t2,12),m('tDone'));
+/* İmlecin bulunduğu satırın işaretlemesini canlı göster: vurgu kalın, duraklama
+   simgesi, telaffuz ipucu köşeli. Yazarken ne olacağını görmek deneme-yanılmayı bitiriyor. */
+function renderMarkPrev(){
+  const ta=$('#text'), box=$('#markPrev'); if(!ta||!box) return;
+  const upto=ta.value.slice(0,ta.selectionStart||0);
+  const line=(ta.value.split(/\n/)[upto.split(/\n/).length-1]||'').trim();
+  if(!line || !/[*/{]|\(\d/.test(line)){ box.style.display='none'; return; }
+  box.style.display='';
+  box.innerHTML='<b>'+(L==='tr'?'Önizleme: ':'Preview: ')+'</b>'+
+    markup(line).replace(/class="w em"/g,'style="font-weight:900;color:var(--accent)"')
+                .replace(/class="w"/g,'style="opacity:.85"')
+                .replace(/class="hold"[^>]*>/g,'style="color:#ffb300">');
+}
+$('#text').addEventListener('keyup',renderMarkPrev);
+$('#text').addEventListener('click',renderMarkPrev);
 $('#undoTool').onclick=()=>{ if(undoText==null) return;
   $('#text').value=undoText; undoText=null; pullEditor(); buildContent(); updateStats();
   $('#undoTool').classList.add('hidden'); toast(m('tUndone')); };
