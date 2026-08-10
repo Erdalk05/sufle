@@ -770,7 +770,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='5.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='5.8';
 
 /* ============ i18n ============ */
 const I18N={
@@ -940,6 +940,17 @@ const MSG={
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
+  jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
+  lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
+  cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
+  archFail:'⚠️ Çekim arşive yazılamadı (depo dolu) — video elinde, hemen paylaş/kaydet',
+  recDied:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',
+  recNoStart:'⛔ Kayıt başlamadı — kamerayı kapatıp aç, sonra tekrar dene',
+  recNoData:'⚠️ Kayıttan veri gelmiyor — durdurup tekrar başlat',
+  glLost:'⚠️ Kompozit koptu (bellek) — kompoziti kapatıp aç',
+  glBack:'✅ Kompozit geri geldi',
+  camBack:'✅ Kamera yeniden bağlandı',
+  voiceDied:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',
   compAudioWarn:'⚠️ iPhone\'da kompozit açıkken ses kaydedilmeyebilir — sesli çekimde kapalı tut',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
@@ -972,6 +983,17 @@ const MSG={
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   needsComp:'Composite turned on — this feature only works on the composite image',
+  jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
+  lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
+  cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
+  archFail:'⚠️ Take could not be archived (storage full) — the video is here, share it now',
+  recDied:'⛔ Recording stopped early — what was captured is kept',
+  recNoStart:'⛔ Recording did not start — close and reopen the camera, then retry',
+  recNoData:'⚠️ No data coming from the recorder — stop and start again',
+  glLost:'⚠️ Composite dropped (memory) — turn composite off and on',
+  glBack:'✅ Composite restored',
+  camBack:'✅ Camera reconnected',
+  voiceDied:'⛔ Voice follow lost its connection — turn it on again with 🎤',
   compAudioWarn:'⚠️ iOS may drop audio while composite is on — keep it off for spoken takes',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
@@ -1049,7 +1071,15 @@ Good luck!`;
 let st;
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function load(){
-  try{ st=Object.assign({},DEF,JSON.parse(localStorage.getItem(LS)||'{}')); }catch(e){ st=Object.assign({},DEF); }
+  // Bozuk JSON'da eskiden her şey sessizce siliniyordu: senaryolar dahil.
+  // Artık bozuk içerik yedeğe alınıyor — kurtarılabilir kalsın.
+  const raw=localStorage.getItem(LS)||'{}';
+  try{ st=Object.assign({},DEF,JSON.parse(raw)); }
+  catch(e){
+    st=Object.assign({},DEF);
+    try{ localStorage.setItem(LS+'_bozuk_'+Date.now(),raw); }catch(_){}
+    setTimeout(()=>{ try{ toast(m('cfgBroken')); }catch(_){} },1200);
+  }
   L = st.lang || ((navigator.language||'tr').toLowerCase().startsWith('tr')?'tr':'en');
   if(!Array.isArray(st.scripts)||!st.scripts.length){
     st.scripts=[{id:uid(),title:L==='tr'?'Örnek metin':'Sample script',text:L==='tr'?DEMO_TR:DEMO_EN,up:Date.now()}];
@@ -1058,13 +1088,37 @@ function load(){
   if(!st.scripts.find(s=>s.id===st.activeId)) st.activeId=st.scripts[0].id;
 }
 let saveT=null;
-function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{ try{localStorage.setItem(LS,JSON.stringify(st));}catch(e){} },120); }
+let lsFullWarned=false;
+function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{
+  try{ localStorage.setItem(LS,JSON.stringify(st)); lsFullWarned=false; }
+  catch(e){
+    // KOTA DOLU: eskiden sessizce yutuluyordu → yazdığın senaryo kaydolmuyor ama uygulama
+    // "kaydettim" gibi davranıyordu. Artık bir kez açıkça söylüyor.
+    if(!lsFullWarned){ lsFullWarned=true; try{ toast(m('lsFull')); }catch(_){} }
+  } },120); }
 function active(){ return st.scripts.find(s=>s.id===st.activeId)||st.scripts[0]; }
 
 /* ============ TOAST ============ */
 let toastT=null;
 function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add('on');
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),2200); }
+
+/* ============ HATA GÜNLÜĞÜ ============
+   Bu uygulamada en pahalı hata sınıfı "sessizce kırılmak" oldu: bir yerde istisna atılıyor,
+   olay işleyicisi yarıda kalıyor, kullanıcı özelliğin YOK olduğunu sanıyor.
+   Artık her istisna kaydediliyor, kullanıcıya bir kez görünüyor ve uyumluluk panelinde okunabiliyor. */
+const ERRLOG=[]; let errShown=0;
+function logErr(where,e){
+  const msg=((e&&(e.message||e.reason||e))+'').slice(0,180);
+  ERRLOG.push({t:Date.now(),where,msg});
+  if(ERRLOG.length>30) ERRLOG.shift();
+  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}
+  // aynı anda onlarca hata olabilir; kullanıcıyı boğma, 8 sn'de bir tek uyarı
+  const n=Date.now();
+  if(n-errShown>8000){ errShown=n; try{ toast(m('jsErr')); }catch(_){} }
+}
+window.addEventListener('error',e=>logErr('js',e.error||e.message));
+window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
 
 /* ============ METİN KURULUMU ============ */
 let words=[], wordTops=[], paraEnds=[], holdPoints=[], maxPos=0, pxPerWord=40, wordLine=[];
@@ -1292,6 +1346,14 @@ async function requestWake(){
   try{ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null;}); }catch(e){}
 }
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&running) requestWake(); });
+/* Uygulama arka plana alınıp dönünce iOS kamera izini KAPATABİLİYOR. Eskiden ekran siyah
+   kalıyordu ve tek çare uygulamayı kapatıp açmaktı. Artık kendiliğinden yeniden bağlanıyor. */
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState!=='visible' || !stream) return;
+  if(rec && rec.state==='recording') return;              // kayıt sürerken akışa dokunma
+  const v=stream.getVideoTracks()[0];
+  if(v && v.readyState==='ended'){ logErr('cam','track ended'); if(await openCam()) toast(m('camBack')); }
+});
 
 /* ============ KAMERA ============ */
 let stream=null, vTrack=null, aTrack=null;
@@ -1323,7 +1385,7 @@ function startMeter(){
       meterRaf=requestAnimationFrame(loop);
     };
     loop();
-  }catch(e){}
+  }catch(e){ logErr('meter',e); }
 }
 function stopMeter(){
   cancelAnimationFrame(meterRaf); meterRaf=null; analyser=null;
@@ -1614,6 +1676,19 @@ function startComp(){
   const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
   const p=gl.getAttribLocation(pr,'p'); gl.enableVertexAttribArray(p); gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+  // WebGL bağlamı telefon belleği sıkışınca kaybolur. Yakalanmazsa kompozit donuyor,
+  // kayıt boş kare basıyor ve hiçbir yerde uyarı çıkmıyordu.
+  if(!cv.dataset.glHooked){
+    cv.dataset.glHooked='1';
+    cv.addEventListener('webglcontextlost',ev=>{
+      ev.preventDefault(); logErr('gl','context lost');
+      comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
+      body.classList.remove('comp','burn'); toast(m('glLost'));
+    });
+    cv.addEventListener('webglcontextrestored',()=>{
+      if(st.comp && stream && startComp()) toast(m('glBack'));
+    });
+  }
   comp.cv=cv; comp.gl=gl; comp.pr=pr; comp.tex=glTex(gl); comp.bgTex=glTex(gl);
   gl.viewport(0,0,W,H);
   loadCompBg();
@@ -1676,13 +1751,13 @@ function loadCompBg(){
   if(kind!=='color' && kind!=='image'){
     const c=makeBgCanvas(kind,Math.min(1080,W),Math.min(1920,H));
     if(c){ try{ gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); comp.bgReady=true; }catch(e){} }
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); comp.bgReady=true; }catch(e){ logErr('bg',e); } }
     return;
   }
   if(kind==='image' && st.bgImg){
     const img=new Image();
     img.onload=()=>{ try{ gl.bindTexture(gl.TEXTURE_2D,comp.bgTex);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){} };
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); comp.bgReady=true; }catch(e){ logErr('bg',e); } };
     img.src=st.bgImg;
   }
 }
@@ -1826,7 +1901,7 @@ function startAudioMonitor(){
       else setAudBadge('ok');
     },100);
     audMon={ctx,iv};
-  }catch(e){}
+  }catch(e){ logErr('audmon',e); }
 }
 function stopAudioMonitor(){
   if(audMon){ clearInterval(audMon.iv); try{ audMon.ctx.close(); }catch(e){} audMon=null; }
@@ -1960,6 +2035,9 @@ function doStartRec(){
     catch(e2){ try{ rec=new MediaRecorder(src); }catch(e3){ toast(m('recErr')+': '+e3.message); return; } }
   }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
+  // MediaRecorder çekim ortasında ölebilir (disk dolu, kamera koptu, kodek düştü).
+  // Eskiden hiçbir yerde yakalanmıyordu: kırmızı nokta yanıyor ama kayıt yok.
+  rec.onerror=ev=>{ logErr('rec',(ev&&ev.error)||ev); toast(m('recDied')); };
   rec.onstop=()=>{
     // süre stopRec'te ölçülüp saklanıyor: burada recT çoktan sıfırlanmış oluyor
     lastDur=(pendingDur||recElapsed());
@@ -1970,6 +2048,13 @@ function doStartRec(){
   // iOS: timeslice vermek parçalı MP4 üretiyor ve Fotoğraflar onu kabul etmiyor
   // ("Videoyu Kaydet" satırı menüde hiç görünmüyor). Tek parça yazdırıyoruz.
   if(IS_WK) rec.start(); else rec.start(1000);
+  // KAYIT GERÇEKTEN BAŞLADI MI: start() istisna atmadan da başarısız olabiliyor.
+  // 2,5 sn sonra hâlâ 'recording' değilse ya da (iOS dışı) tek parça bile gelmediyse söyle.
+  setTimeout(()=>{
+    if(!body.classList.contains('rec')) return;         // kullanıcı çoktan durdurmuş
+    if(!rec || rec.state!=='recording'){ toast(m('recNoStart')); return; }
+    if(!IS_WK && !chunks.length) toast(m('recNoData'));
+  },2500);
   recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
   body.classList.add('rec'); body.classList.remove('recpaused'); buzz(60);
   // iOS'ta mikrofon izini kayıt sırasında Web Audio'ya bağlamak sesi düşürebiliyor.
@@ -2235,12 +2320,10 @@ function srtText(){
   const cues=buildCues();
   return cues.map((c,n)=>(n+1)+'\n'+tc(c.start,',')+' --> '+tc(c.end,',')+'\n'+c.text+'\n').join('\n');
 }
-function vttText(){
-  const cues=buildCues();
-  return 'WEBVTT\n\n'+cues.map(c=>tc(c.start,'.')+' --> '+tc(c.end,'.')+'\n'+c.text+'\n').join('\n');
-}
+/* .vtt üretimi vardı ama arayüzde hiçbir yere bağlı değildi — ulaşılamayan kod = yük.
+   .srt her editörde (Premiere, DaVinci, CapCut, YouTube) çalışıyor; tek biçim yeter. */
 async function shareCaptions(fmt){
-  const txt = fmt==='vtt' ? vttText() : srtText();
+  const txt = srtText();
   const cues=buildCues();
   if(!cues.length){ toast(m('noCaps')); return; }
   const name=fileName()+'.'+fmt;
@@ -2268,16 +2351,35 @@ function openDB(){
     }catch(e){ res(null); }
   });
 }
-async function dbPut(rec){ const d=await openDB(); if(!d) return; try{ d.transaction('takes','readwrite').objectStore('takes').put(rec); }catch(e){} }
+/* Eskiden yazma hatası sessizce yutuluyordu: çekim arşive GİRMİYOR ama uygulama girmiş gibi
+   davranıyordu. Artık başarıyı bekliyor ve sonucu döndürüyor. */
+async function dbPut(rec){
+  const d=await openDB(); if(!d) return false;
+  return new Promise(res=>{
+    try{
+      const tx=d.transaction('takes','readwrite');
+      tx.objectStore('takes').put(rec);
+      tx.oncomplete=()=>res(true);
+      tx.onerror=()=>{ logErr('dbPut',tx.error); res(false); };
+      tx.onabort=()=>{ logErr('dbPut',tx.error); res(false); };
+    }catch(e){ logErr('dbPut',e); res(false); }
+  });
+}
 async function dbAll(){ const d=await openDB(); if(!d) return [];
   return new Promise(res=>{ try{ const q=d.transaction('takes').objectStore('takes').getAll();
     q.onsuccess=()=>res((q.result||[]).sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.created-a.created)); q.onerror=()=>res([]); }catch(e){res([]);} }); }
-async function dbDel(id){ const d=await openDB(); if(!d) return; try{ d.transaction('takes','readwrite').objectStore('takes').delete(id); }catch(e){} }
+async function dbDel(id){ const d=await openDB(); if(!d) return false;
+  return new Promise(res=>{ try{ const tx=d.transaction('takes','readwrite');
+    tx.objectStore('takes').delete(id);
+    tx.oncomplete=()=>res(true); tx.onerror=()=>{ logErr('dbDel',tx.error); res(false); };
+  }catch(e){ logErr('dbDel',e); res(false); } });
+}
 async function autoSaveTake(){
   if(!lastBlob) return;
   curTakeId=uid();
-  await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
+  const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
     created:Date.now(),title:active().title||'',srt:srtText()});
+  if(!ok){ curTakeId=null; toast(m('archFail')); }   // depo dolu/kapalı — çekim ELDE, yalnız arşivlenemedi
 }
 async function renderTakes(){
   const list=await dbAll(), box=$('#takeList');
@@ -2349,7 +2451,24 @@ function renderDevice(){
     html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+(ok?'var(--accent)':'#ffb300')+'">'+
       (ok?'✓ ':'✕ ')+esc(name)+'</div>'+(!ok&&r[3]?'<div class="s">'+esc(r[3])+'</div>':'')+'</div></div>';
   });
+  // Depo kullanımı: "arşive yazamadım" uyarısının sebebi burada görünsün
+  html+='<div class="kv" id="quotaKv"><span>'+(L==='tr'?'Depo':'Storage')+'</span><b>—</b></div>';
+  // Hata günlüğü: sessiz kırılmalar artık okunabilir. Yoksa satır hiç çıkmıyor.
+  if(ERRLOG.length){
+    html+='<div class="kv" style="margin-top:10px"><span>'+(L==='tr'?'Son hatalar':'Recent errors')+'</span><b>'+ERRLOG.length+'</b></div>';
+    ERRLOG.slice(-5).reverse().forEach(e=>{
+      html+='<div class="listitem"><div class="meta"><div class="t" style="color:#ffb300">'+esc(e.where)+'</div>'+
+        '<div class="s">'+esc(e.msg)+'</div></div></div>';
+    });
+  }
   box.innerHTML=html;
+  if(navigator.storage&&navigator.storage.estimate){
+    navigator.storage.estimate().then(q=>{
+      const kv=$('#quotaKv'); if(!kv) return;
+      const mb=n=>(n/1048576).toFixed(0)+' MB';
+      kv.querySelector('b').textContent=mb(q.usage||0)+' / '+mb(q.quota||0);
+    }).catch(e=>logErr('quota',e));
+  }
 }
 
 /* ============ ÇEKİME HAZIRLIK KONTROLÜ ============
@@ -2680,6 +2799,14 @@ function pullEditor(){ const s=active(); if(!s) return; s.title=$('#title').valu
 
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
+let srFails=0, srRetryT=null;
+function restartVoice(){
+  if(!voiceOn||!sr) return;
+  if(++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }
+  clearTimeout(srRetryT);
+  srRetryT=setTimeout(()=>{ if(!voiceOn||!sr) return;
+    try{ sr.start(); srFails=0; }catch(e){ logErr('voice',e); restartVoice(); } }, 250*srFails);
+}
 let srIdx=-1, srSeen='', vPrev={i:-1,t:0};
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
@@ -2706,9 +2833,17 @@ function startVoice(){
     let toks=fresh.split(/\s+/).map(norm).filter(Boolean);
     if(st.voiceCmd) toks=takeCommands(toks);
     matchVoice(toks); };
-  sr.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast(m('micDenied')); };
-  sr.onend=()=>{ if(voiceOn){ try{sr.start();}catch(e){} } };
-  try{ sr.start(); }catch(e){}
+  /* SESSİZ ÖLÜM: SpeechRecognition kendiliğinden düşer. Eskiden yeniden başlatma denemesi
+     istisna atarsa yutuluyordu → rozet "açık" görünüyor ama tanıma ölmüş oluyordu.
+     Artık artan gecikmeyle 5 kez deneniyor, olmuyorsa özellik görünür şekilde kapanıyor. */
+  srFails=0;
+  sr.onerror=ev=>{
+    const er=ev&&ev.error;
+    if(er==='not-allowed'||er==='service-not-allowed'){ toast(m('micDenied')); stopVoice(); return; }
+    if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
+  };
+  sr.onend=()=>{ if(voiceOn) restartVoice(); };
+  try{ sr.start(); }catch(e){ logErr('voice',e); restartVoice(); }
   voiceOn=true; $('#voiceBtn').classList.add('on');
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
 }
