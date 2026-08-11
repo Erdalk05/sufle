@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='7.3';   // telefon sürümüyle aynı numaralama
+  const VER='7.4';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1015,7 +1015,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       toast('Kamera açık — '+(vs.width||'?')+'×'+(vs.height||'?')+
             (stream.getAudioTracks().length?'':' · 🔇 MİKROFON YOK'));
     }catch(e){
-      toast('Kameraya erişilemedi: '+(e.message||e.name));
+      // Her hata ayni mesaji veriyordu; hata adi kullaniciya bir sey anlatmiyor.
+      // Sebebe gore NE YAPILACAGINI soyle (telefonda v5.9'da yapilmisti).
+      logErr('cam',e);
+      const nm=e&&e.name;
+      if(nm==='NotAllowedError'||nm==='SecurityError')
+        toast('📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile');
+      else if(nm==='NotReadableError'||nm==='AbortError')
+        toast('📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\'u kapat ve tekrar dene');
+      else if(nm==='NotFoundError'||nm==='OverconstrainedError')
+        toast('📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç');
+      else toast('Kameraya erişilemedi: '+(e.message||nm));
     }
   }
   function stopCam(){
@@ -1208,6 +1218,13 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const [W,H]=cropSize();
     cropCv=document.createElement('canvas'); cropCv.width=W; cropCv.height=H;
     if(typeof cropCv.captureStream!=='function'){ cropCv=null; return false; }
+    // WebGL baglami bellek sikisinca kaybolur. Yakalanmazsa kirpma donuyor,
+    // kayit bos kare basiyor ve hicbir yerde uyari cikmiyordu (telefonda v5.8).
+    cropCv.addEventListener('webglcontextlost',ev=>{
+      ev.preventDefault(); logErr('gl','context lost');
+      cancelAnimationFrame(cropRaf); cropRaf=0;
+      toast('⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat');
+    });
     const useGL=initGL(cropCv);
     if(!useGL){ cropCtx=cropCv.getContext('2d'); if(state.chroma) toast('Yeşil ekran için WebGL yok — yalnız kırpma'); }
     const loop=()=>{
@@ -1298,6 +1315,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       cropStream.getTracks().forEach(t=>{ if(camTracks.indexOf(t)<0) t.stop(); });
       cropStream=null;
     }
+    // GPU kaynaklarini GERCEKTEN birak: null'a cekmek dokuyu serbest birakmaz.
+    // Kirpmayi ac-kapa yapinca bellek birikiyordu (telefonda v6.3'te ayni hata).
+    if(gl){
+      try{
+        if(glTexV) gl.deleteTexture(glTexV);
+        if(glTexB) gl.deleteTexture(glTexB);
+        if(glPr)   gl.deleteProgram(glPr);
+      }catch(e){ logErr('glFree',e); }
+    }
+    glTexV=null; glTexB=null; bgReady=false;
     cropCv=null; cropCtx=null; capOut=null; capLocked=false; gl=null; glPr=null;
   }
   /* ============ SES STÜDYOSU + NEFESLE AKIŞ (telefondan taşındı) ============
@@ -1933,6 +1960,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     normWords=[]; words.forEach((w,i)=>{ const n=norm(w.textContent); if(n) normWords.push({n,i}); });
   }
   function toggleVoice(){ voiceOn ? stopVoice() : startVoice(); }
+  var srFails=0, srRetryT=null;
+  function restartVoice(){
+    if(!voiceOn) return;
+    if(++srFails>5){ toast('⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç'); stopVoice(); return; }
+    clearTimeout(srRetryT);
+    srRetryT=setTimeout(()=>{
+      if(!voiceOn) return;
+      try{ rec.start(); srFails=0; }catch(e){ logErr('voice',e); restartVoice(); }
+    }, 250*srFails);
+  }
   function startVoice(){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){ toast('Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın'); return; }
@@ -1954,9 +1991,21 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       spoken=takeCommands(spoken);   // "sufle başla" gibi komutları ayıkla
       matchVoice(spoken);
     };
-    rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast('Mikrofon izni gerekli'); };
-    rec.onend=()=>{ if(voiceOn){ try{rec.start();}catch(_){} } };
-    try{ rec.start(); }catch(_){}
+    /* SESSIZ OLUM (telefonda v5.8): SpeechRecognition kendiliginden duser.
+       Yeniden baslatma denemesi istisna atarsa yutuluyordu -> rozet "acik"
+       gorunuyor ama tanima olmus oluyordu. Artan gecikmeyle 5 deneme,
+       olmuyorsa ozellik GORUNUR sekilde kapaniyor. */
+    srFails=0;
+    rec.onerror=ev=>{
+      const er=ev&&ev.error;
+      if(er==='not-allowed'||er==='service-not-allowed'){
+        toast('🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile');
+        stopVoice(); return;
+      }
+      if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
+    };
+    rec.onend=()=>{ if(voiceOn) restartVoice(); };
+    try{ rec.start(); }catch(e){ logErr('voice',e); restartVoice(); }
     voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceBtn').textContent='🎤 Ses: Açık';
     $('#voiceBtn').title='Sesle takip + sesli komut: "sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"';
     toast('Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"');

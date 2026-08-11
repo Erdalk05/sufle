@@ -95,3 +95,43 @@ say('Mac: kamera yenilenince ikisi de kapanıyor', /stopAudioFx\(\); vadDurdur\(
 say('Mac: kamera sonrası VAD yeniden kuruluyor', /if\(state\.vad\) setTimeout\(vadBaslat,300\)/.test(mac));
 say('Mac: uğultu 120 Hz altından kesiliyor (telefonla aynı)',
   /hp\.frequency\.value=120/.test(tel) && /hp\.frequency\.value=120/.test(mac));
+
+/* ── OTOMATİK ASİMETRİ TESPİTİ ──────────────────────────────────────────
+   Yukarıdaki liste ELLE yazılıyor: listede olmayan bir koruma tek platformda
+   kalırsa kapı sessiz kalır. Nitekim öyle oldu — WebGL kaynak bırakma ve
+   kamera hata ayrımı listede yoktu, Mac'te de yoktu, kapı yeşil görünüyordu.
+
+   Bu bölüm listeye bakmıyor: iki dosyanın KORUMA İZLERİNİ karşılaştırıyor.
+   Her logErr etiketi korunmuş bir hata yolunu işaretler. Bir kavram bir
+   tarafta korunuyor da diğerinde korunmuyorsa burada görünür. */
+const jsT = tel.match(/<script>([\s\S]*)<\/script>/)[1];
+const jsM = mac.match(/<script>([\s\S]*)<\/script>/)[1];
+const etiketler = s => new Set([...s.matchAll(/logErr\('([A-Za-z0-9_]+)'/g)].map(m=>m[1]));
+
+/* Aynı kavramın iki dosyadaki farklı adları. Buraya yazmak "eşdeğer sayıldı"
+   demektir — muafiyet değil, isim eşlemesi. */
+const ESDEGER = { dbPut:'idbPut', dbDel:'idbDel', restore:'import' };
+const norm = (set) => new Set([...set].map(x => ESDEGER[x] || x));
+
+const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
+/* Platforma özgü olduğu kanıtlanmış etiketler — her biri gerekçeli. */
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg']);
+const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
+
+const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));
+const macFazla = [...mE].filter(x => !tE.has(x) && !SADECE_MAC.has(x));
+say('telefonda korunup Mac\'te korunmayan hata yolu yok',
+    telFazla.length===0 || (console.log('   → Mac\'te eksik:', telFazla), false));
+say('Mac\'te korunup telefonda korunmayan hata yolu yok',
+    macFazla.length===0 || (console.log('   → telefonda eksik:', macFazla), false));
+
+/* Bu turda bulunan üç somut eksik — bir daha geri gelmesin */
+say('Mac: GPU kaynakları gerçekten bırakılıyor',
+    /deleteTexture/.test(jsM) && /deleteProgram/.test(jsM));
+say('Mac: WebGL bağlam kaybı yakalanıyor', /webglcontextlost/.test(jsM));
+say('Mac: bağlam kaybı kullanıcıya söyleniyor', /Kırpma koptu/.test(jsM));
+say('Mac: kamera izni hatası ayrı', /NotAllowedError/.test(jsM));
+say('Mac: kamera meşgul hatası ayrı', /NotReadableError/.test(jsM));
+say('Mac: kamera yok hatası ayrı', /NotFoundError/.test(jsM));
+say('iki platformda da GPU bırakma var',
+    /deleteTexture/.test(jsT) && /deleteTexture/.test(jsM));
