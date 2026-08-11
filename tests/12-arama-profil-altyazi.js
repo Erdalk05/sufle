@@ -93,3 +93,18 @@ function goster(esles){ return esles ? '' : 'none'; }
 ok('normal eşleşme satır içi stil bırakmıyor', goster(true,false)==='');
 
 ok('eşleşmeyen gizleniyor', goster(false)==='none');
+
+// ---------- KLAVYE ERİŞİLEBİLİRLİĞİ (v8.1, gerçek tarayıcıda bulundu) ----------
+// Anahtara odaklanıp Boşluk'a basınca anahtar açılıyor AMA olay pencere
+// düzeyindeki kumanda işleyicisine kabarıp 3-2-1 geri sayımını başlatıyordu.
+ok('anahtar tuşu yukarı kabarmıyor', /e\.preventDefault\(\); e\.stopPropagation\(\); s\.click\(\);/.test(src));
+ok('sayfa açıkken kumanda eylemleri koşmuyor', /if\(anySheet\(\)\) return;\n  const act=keyMap\(\)\[e\.key\];/.test(src));
+// Çapa belirsizdi: 'if(anySheet()) return;' dosyada başka yerde de geçiyor.
+// Sıra ölçümü YALNIZ keydown bloğu içinde yapılmalı.
+const kd = cikar(src, /window\.addEventListener\('keydown',e=>\{[\s\S]*?\n\}\);/, 'keydown');
+ok('Escape sayfa kapatma engelden ÖNCE',
+   kd.indexOf("e.key==='Escape'") < kd.indexOf('if(anySheet()) return;'));
+ok('öğrenme modu engelden ÖNCE',
+   kd.indexOf('learnKey=e.key') < kd.indexOf('if(anySheet()) return;'));
+ok('engel eylem eşleşmesinden ÖNCE',
+   kd.indexOf('if(anySheet()) return;') < kd.indexOf('const act=keyMap()'));

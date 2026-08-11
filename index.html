@@ -897,7 +897,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -3981,6 +3981,9 @@ window.addEventListener('keydown',e=>{
     e.preventDefault(); learnKey=e.key; renderLearn(); return;
   }
   if(e.key==='Escape'){ closeSheets(); return; }
+  // Bir sayfa/menü açıkken tuşlar sufleyi sürmemeli: kullanıcı ayar yapıyor,
+  // çekim yapmıyor. Öğrenme modu yukarıda zaten ele alındı, Escape de öyle.
+  if(anySheet()) return;
   const act=keyMap()[e.key];
   if(!act || !ACTIONS[act]) return;
   e.preventDefault();
@@ -4241,7 +4244,11 @@ function ensureComp(k){
 /* Anahtarlar <div> olduğu için klavyeyle ne odaklanabiliyor ne de açılabiliyordu. */
 $$('.sw').forEach(s=>{
   s.setAttribute('tabindex','0'); s.setAttribute('role','switch');
-  s.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); s.click(); } });
+  s.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){
+    // GERÇEK TARAYICIDA BULUNDU: olay pencere düzeyindeki kumanda işleyicisine
+    // kabarıyor, Boşluk orada 'başlat/duraklat'a bağlı → ayar açarken 3-2-1
+    // geri sayımı başlıyordu. Klavye kullanan için ciddi bir sürpriz.
+    e.preventDefault(); e.stopPropagation(); s.click(); } });
 });
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
