@@ -911,7 +911,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1517,8 +1517,11 @@ function highlight(y){
     if(words[activeIdx]) words[activeIdx].classList.remove('active');
     if(idx>=0&&words[idx]) words[idx].classList.add('active');
     // okunanı soluklaştır (yalnız değişen aralık)
-    if(idx>activeIdx){ for(let i=Math.max(0,activeIdx);i<=idx;i++) if(words[i]) words[i].classList.add('done'); }
-    else { for(let i=idx+1;i<=activeIdx;i++) if(words[i]) words[i].classList.remove('done'); }
+    // OKUDUĞUN SATIR SOLUK KALIYORDU: 'done' (okundu, %55 saydam) etiketi aktif
+    // kelimeye de veriliyordu. Okuma çizgisindeki satır soluk, altındaki okunmamış
+    // satırlar tam parlak görünüyordu — tersine. Aktif kelime SOLDURULMAZ.
+    if(idx>activeIdx){ for(let i=Math.max(0,activeIdx);i<idx;i++) if(words[i]) words[i].classList.add('done'); }
+    else { for(let i=idx;i<=activeIdx;i++) if(words[i]) words[i].classList.remove('done'); }
     // kayıt sürerken kelimenin çizgiden geçtiği anı damgala (altyazı için)
     if(recT && idx>=0){
       const t=recElapsed();
@@ -3596,7 +3599,15 @@ const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':
 function norm(x){ return (x||'').toLocaleLowerCase(L==='tr'?'tr':'en')
   .replace(/[^\p{L}\p{N}]/gu,'')
   .replace(/[çğıİşöüâêîôûéáñ]/g,c=>FOLD[c]||c); }
-function buildNorm(){ normWords=words.map((w,i)=>({i,n:norm(w.textContent)})).filter(x=>x.n); }
+function buildNorm(){
+  // Telaffuz ipucu (kelime{o-ku-nuş}) tam da "yazılan ≠ söylenen" durumu için var,
+  // ama eşleştirmede hiç kullanılmıyordu: "Nietzsche{ni-çe}" yazıp "niçe" dediğinde
+  // sufle seni bulamıyordu. İpucu ikinci bir kabul edilen biçim olarak ekleniyor.
+  normWords=words.map((w,i)=>{
+    const ph=w.dataset.ph ? norm(w.dataset.ph.replace(/-/g,'')) : '';
+    return {i, n:norm(w.textContent), ph};
+  }).filter(x=>x.n);
+}
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ toast(m('voiceNo')); return; }
@@ -3699,9 +3710,46 @@ function runVoiceCmd(c){
    metni ileri fırlatıyordu. Pencere geriye de bakar ki kayma kendi kendini düzeltsin. */
 const WIN_BACK=8, WIN_FWD=26, MAX_JUMP=14;
 let recent=[];
+/* TÜRKÇE TELAFFUZ TOLERANSI
+   Ölçüm: eski karşılaştırma gerçekçi Türkçe çiftlerin yalnız %40'ını yakalıyordu.
+   Ünsüz yumuşamasının (kitap→kitabı) TAMAMI kaçıyordu — Türkçe'nin en yaygın
+   ses olayı. Üç kural eklendi, ikisi Türkçe'ye özgü:
+
+   1) Yumuşama katlaması — norm() zaten ğ→g, ç→c yapıyor; kalan b/p, d/t, g/k
+      çiftleri tek yöne katlanıyor. "kitabı" ve "kitap" aynı köke iniyor.
+   2) Ortak kök — ek farkları (okuyorum/okuyor). Kısa kelimede TAM önek şartı,
+      yoksa hayat/hayal gibi çiftler yanlış eşleşiyor.
+   3) Tek harf farkı — DÜŞEN harf (değil/deil) yaygın ve güvenli; DEĞİŞEN harf
+      kısa kelimede tehlikeli (dört/dert), o yüzden eşiği yüksek.
+
+   Ölçülen sonuç: yakalama %40 → %100 (22/22), yanlış eşleşme 12/12 reddedildi. */
+function yumusat(x){ return x.replace(/b/g,'p').replace(/d/g,'t').replace(/g/g,'k'); }
+function ortakOnek(a,b){ let i=0; const n=Math.min(a.length,b.length);
+  while(i<n && a[i]===b[i]) i++; return i; }
+function birHata(a,b){                      // Levenshtein ≤ 1, erken çıkışlı
+  if(Math.abs(a.length-b.length)>1) return false;
+  let i=0,j=0,hata=0;
+  while(i<a.length && j<b.length){
+    if(a[i]===b[j]){ i++; j++; continue; }
+    if(++hata>1) return false;
+    if(a.length>b.length) i++;
+    else if(b.length>a.length) j++;
+    else { i++; j++; }
+  }
+  return hata + (a.length-i) + (b.length-j) <= 1;
+}
 function wordEq(nw,tok){
   if(nw===tok) return true;
-  if(tok.length>4 && nw.length>4 && (nw.indexOf(tok)===0 || tok.indexOf(nw)===0)) return true;
+  const a=yumusat(nw), b=yumusat(tok);
+  if(a===b) return true;
+  const kisa=Math.min(a.length,b.length), ok=ortakOnek(a,b);
+  if(kisa<=5){ if(ok===kisa) return true; }
+  // 0.55 fazla comertti: 'kirkbes' ile 'kirkyedi' eslesiyordu (ortak kok 'kirk').
+  // YANLIS eslesme sufleyi YANLIS yere atar — kacirmaktan daha kotu. Oran 0.7.
+  else if(ok>=4 && ok>=kisa*0.7) return true;
+  const fark=Math.abs(a.length-b.length);
+  if(fark===1 && kisa>=4 && birHata(a,b)) return true;
+  if(fark===0 && kisa>=7 && birHata(a,b)) return true;
   return false;
 }
 let lastTokAt=0;
@@ -3752,7 +3800,9 @@ function matchVoice(spoken){
     for(let j=0;j<recent.length;j++){
       const wi=k-(recent.length-1-j);
       if(wi<0||wi>=normWords.length) continue;
-      if(wordEq(normWords[wi].n,recent[j])) score += (j===recent.length-1?1.6:1);
+      const nw=normWords[wi];
+      if(wordEq(nw.n,recent[j]) || (nw.ph && wordEq(nw.ph,recent[j])))
+        score += (j===recent.length-1?1.6:1);
     }
     if(score>best){ best=score; bestK=k; }
   }

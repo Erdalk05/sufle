@@ -14,7 +14,11 @@ const L='tr';
 
 eval(cikar(jsHam,/const FOLD=\{[^}]*\};/,'FOLD').replace('const','var'));
 eval(cikar(jsHam,/function norm\(x\)\{[\s\S]*?FOLD\[c\]\|\|c\); \}/,'norm'));
-eval(cikar(jsHam,/function wordEq\([^)]*\)\{[\s\S]*?\n\}/,'wordEq'));
+// wordEq artık Türkçe yardımcılarına dayanıyor (v8.4) — onları da çıkar
+eval(cikar(jsHam,/function yumusat\(x\)\{[^\n]*\}/,'yumusat'));
+eval(cikar(jsHam,/function ortakOnek\(a,b\)\{[\s\S]*?\n\}/,'ortakOnek'));
+eval(cikar(jsHam,/function birHata\(a,b\)\{[\s\S]*?\n\}/,'birHata'));
+eval(cikar(jsHam,/function wordEq\(nw,tok\)\{[\s\S]*?\n\}/,'wordEq'));
 eval(cikar(js,/const WIN_BACK=\d+, WIN_FWD=\d+, MAX_JUMP=\d+;?/,'sabitler').replace('const','var'));
 
 const metin=('bir iki üç dört beş altı yedi sekiz dokuz on onbir oniki onüç ondört onbeş '+
