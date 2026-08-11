@@ -17,7 +17,11 @@ sessionStorage document window navigator location history performance screen con
 speechSynthesis SpeechRecognition webkitSpeechRecognition""".split())
 
 def audit(path, msg_var="const MSG", i18n_var="const I18N"):
+    """Telefon (index.html) ve Mac (Teleprompter Pro.html) dosyalarını denetler.
+    Mac sürümünde durum `state.x`, telefonda `st.x`; sözlük yok. Farkları burada
+    ayırıyoruz — Mac bugüne kadar hiç tam denetimden geçmemişti."""
     src = open(path, encoding="utf-8").read()
+    is_mac = "Teleprompter Pro" in path or "teleprompter_pro_v1" in src
     js = re.findall(r"<script>(.*?)</script>", src, re.S)[-1]
     html = re.sub(r"<script.*?</script>", "", src, flags=re.S)
     problems = []
@@ -27,7 +31,8 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     if dup: problems.append(("yinelenen DOM id", dup))
 
     used = set(re.findall(r"\$\('#([A-Za-z0-9_-]+)'\)", js))
-    dynamic = {"padTop", "padBot", "diffClear", "quotaKv", "eyeLineWrap"}   # JS'in kendi ürettiği ögeler
+    dynamic = {"padTop", "padBot", "diffClear", "quotaKv", "eyeLineWrap",
+               "sbErr", "sbVer", "readyBtn", "takesBtn", "scExport", "scImport"}   # JS'in kendi ürettiği ögeler
     miss = sorted(u for u in used if u not in ids and u not in dynamic)
     if miss: problems.append(("HTML'de olmayan #id", miss))
 
@@ -56,16 +61,18 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
 
     # ÖLÜ AYAR: HTML'de anahtarı var (data-t="x") ama JS onu hiç OKUMUYOR (st.x geçmiyor)
     # -> kullanıcı açıyor, hiçbir şey olmuyor, hiçbir şey de yazmıyor. Bu depoda 3 kez çıktı.
+    onek = "state" if is_mac else "st"
     togs = set(re.findall(r'data-t="([A-Za-z0-9_]+)"', html))
-    dead = sorted(t for t in togs if not re.search(r"\bst\.%s\b" % re.escape(t), js))
+    dead = sorted(t for t in togs if not re.search(r"\b%s\.%s\b" % (onek, re.escape(t)), js))
     if dead: problems.append(("ölü ayar (JS hiç okumuyor)", dead))
 
     # SESSİZ YUTULAN İSTİSNA: catch bloğu tamamen boş -> hata kaybolur, özellik sessizce ölür
     # Taban 23: hepsi tek tek gözden geçirildi (vibrate/close/revokeObjectURL gibi zararsız
     # temizlik çağrıları). ARTIŞ = gözden geçirilmemiş yeni sessiz yutma demektir.
     empty_catch = len(re.findall(r"catch\s*\([^)]*\)\s*\{\s*\}", js))
-    if empty_catch > 23:
-        problems.append(("boş catch tabanın üstünde (yeni sessiz yutma?)", [empty_catch, "taban 23"]))
+    taban = 16 if is_mac else 23
+    if empty_catch > taban:
+        problems.append(("boş catch tabanın üstünde (yeni sessiz yutma?)", [empty_catch, "taban %d" % taban]))
 
     def keys(var):
         m = re.search(var + r"=\{(.*?)\n\};", js, re.S)
@@ -73,6 +80,9 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
         parts = re.split(r"\n\s*en:\{", m.group(1))
         kk = lambda b: set(re.findall(r"""(?:^|[,{\s])([a-zA-Z][a-zA-Z0-9]*)\s*:\s*['"]""", b))
         return kk(parts[0]), (kk(parts[1]) if len(parts) > 1 else set())
+
+    if is_mac:
+        return problems      # Mac tek dilli: sözlük ve data-i18n kontrolleri geçersiz
 
     mt, me = keys(msg_var); it, ie = keys(i18n_var)
     if mt ^ me: problems.append(("MSG TR/EN farkı", sorted(mt ^ me)))

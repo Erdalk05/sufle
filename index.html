@@ -889,7 +889,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1604,6 +1604,7 @@ async function openCam(){
   try{
     if(stream) stream.getTracks().forEach(x=>x.stop());
     stopMeter();
+    stopAudioFx();   // zincir eski mikrofon izine bağlıydı; yeni akışta baştan kurulur
     let audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
     if(st.micId){ audio = Object.assign(typeof audio==='object'?audio:{}, {deviceId:{exact:st.micId}}); }
     try{
@@ -2556,7 +2557,11 @@ function doStartRec(){
   try{ rec=new MediaRecorder(src,opts); }
   catch(e){
     try{ rec=new MediaRecorder(src,base); }
-    catch(e2){ try{ rec=new MediaRecorder(src); }catch(e3){ toast(m('recErr')+': '+e3.message); return; } }
+    catch(e2){ try{ rec=new MediaRecorder(src); }
+      catch(e3){ toast(m('recErr')+': '+e3.message);
+        // kayıt kurulamadı: ses zincirini de bırak, yoksa AudioContext açık kalırdı
+        if(fxTrack){ try{ fxTrack.stop(); }catch(e4){ logErr('fxStop',e4); } fxTrack=null; }
+        stopAudioFx(); fxUsed=false; return; } }
   }
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   // MediaRecorder çekim ortasında ölebilir (disk dolu, kamera koptu, kodek düştü).
@@ -3657,7 +3662,13 @@ function renderMap(){
 
 /* ============ SHEET YÖNETİMİ ============ */
 const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet','#ready','#newsSheet'];
-function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
+function openSheet(id){
+  closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting');
+  // Arama kalıntısı: kapatıp açınca filtre uygulanmış hâlde kalıyor, sekme düğmeleri
+  // gizli olduğu için sayfa "bozuk" görünüyordu. Her açılışta sıfırla.
+  if(id==='#sheet' && $('#setFind') && $('#setFind').value){ $('#setFind').value=''; searchSettings(); }
+  if(id==='#sheet') gateSettings();
+}
 function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
 /* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */

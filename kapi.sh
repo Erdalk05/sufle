@@ -1,5 +1,7 @@
 #!/bin/bash
 # Sufle yeşil kapı — yayından ÖNCE koşturulur. Hepsi geçmeden yayınlanmaz.
+# ⚠️ .son-yayin dosyasını YAYINDAN SONRA yaz. Önce yazarsan kapı yeni sürümü
+#    "zaten yayınlanmış" sanıp kendini bloke eder (bir kez başıma geldi).
 #   ./kapi.sh
 # Çıkış kodu 0 = yayınlanabilir.
 set -uo pipefail
@@ -7,8 +9,15 @@ cd "$(dirname "$0")"
 KOD=0
 say(){ printf '\n\033[1m== %s ==\033[0m\n' "$1"; }
 
-say "1/4 Statik denetim (telefon)"
-python3 denetim.py index.html || KOD=1
+say "1/4 Statik denetim (telefon + Mac)"
+MACF="$HOME/Desktop/Teleprompter/Teleprompter Pro.html"
+[ -f "$MACF" ] || MACF="mac/Teleprompter Pro.html"
+if [ -f "$MACF" ]; then
+  python3 denetim.py index.html "$MACF" || KOD=1
+else
+  python3 denetim.py index.html || KOD=1
+  echo "  (Mac dosyası bulunamadı, atlandı)"
+fi
 
 say "2/4 JS sözdizimi"
 TMP=$(mktemp -d)
@@ -21,7 +30,6 @@ open(os.path.join(tmp, 'telefon.js'), 'w', encoding='utf-8').write(js)
 print("  script bloğu çıkarıldı:", len(js), "karakter")
 PY
 node --check "$TMP/telefon.js" && echo "  telefon JS ✓" || KOD=1
-MACF="$HOME/Desktop/Teleprompter/Teleprompter Pro.html"
 if [ -f "$MACF" ]; then
   python3 - "$TMP" "$MACF" <<'PY'
 import re, sys, os

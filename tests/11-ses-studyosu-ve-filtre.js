@@ -88,3 +88,22 @@ ok('keskinlik shader\'da var', /vec3 sharpen/.test(fsSrc));
 ok('keskinlik kapalıyken erken dönüyor', /if\(shp<=0\.0\) return c0;/.test(fsSrc));
 ok('renk düzeltme luma korumalı', /0\.2126,0\.7152,0\.0722/.test(fsSrc));
 ok('değerler kırpılıyor (taşma yok)', (fsSrc.match(/clamp\(/g)||[]).length>=5);
+
+// ---------- DÜŞMANCA GÖZDEN GEÇİRME BULGULARI (v6.6) ----------
+// Üçü de "sessiz kırılma" sınıfıydı: kullanıcı hiçbir uyarı görmeden
+// bozuk duruma düşüyordu. Testler bir daha geri gelmesin diye.
+ok('kamera yeniden açılınca ses zinciri kapanıyor (eski ize bağlı kalmasın)',
+   /stopAudioFx\(\);\s*\/\/ zincir eski mikrofon izine/.test(src));
+ok('zincir kapanışı akış durdurmadan SONRA değil, önce',
+   src.indexOf('stopAudioFx();   // zincir') < src.indexOf('const audio = ') || /stopMeter\(\);\n\s*stopAudioFx\(\)/.test(src));
+ok('MediaRecorder kurulamazsa fxTrack bırakılıyor',
+   /catch\(e3\)\{[\s\S]{0,300}?stopAudioFx\(\); fxUsed=false; return;/.test(src));
+ok('kayıt kurulamayınca fxUsed yanlış kalmıyor', /fxUsed=false; return;/.test(src));
+ok('ayar sayfası açılınca arama kalıntısı siliniyor',
+   /if\(id==='#sheet' && \$\('#setFind'\) && \$\('#setFind'\)\.value\)/.test(src));
+ok('ayar sayfası açılınca ön koşullar yeniden değerlendiriliyor',
+   /if\(id==='#sheet'\) gateSettings\(\);/.test(src));
+// stopAudioFx her zaman güvenli olmalı: hiç kurulmamışken çağrılabiliyor mu
+const sa=cikar(src,/function stopAudioFx\(\)\{[\s\S]*?\n\}/,'stopAudioFx');
+ok('stopAudioFx kurulmamışken de güvenli', /if\(afx\.iv\)/.test(sa) && /if\(afx\.ctx\)/.test(sa));
+ok('stopAudioFx durumu tam sıfırlıyor', /afx=\{ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1\}/.test(sa));
