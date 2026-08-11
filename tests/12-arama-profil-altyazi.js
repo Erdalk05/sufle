@@ -79,14 +79,16 @@ ok('sessiz mod uyarısı var', /sessiz düğmesine bak/.test(src));
 // Arama, `.hidden` sınıfındaki bir kapsayıcıyı eşleştirdiğinde display:'' veriyordu.
 // Bu satır içi stili KALDIRIR, sınıf kazanır: "4 ayar bulundu" yazıyor ama
 // aradığın ayar görünmüyordu. Yalnız canlı tıklamayla ortaya çıktı.
-ok('arama gizli kapsayıcıyı açıyor',
-   /el\.classList\.contains\('hidden'\) \? 'block' : ''/.test(src));
-ok('eşleşmeyen hâlâ gizleniyor', /esles \? \([\s\S]{0,80}?\) : 'none'/.test(src));
+// İLK ONARIM YANLIŞTI: .hidden{display:none!important} satır içi stille ezilemiyor.
+// Doğru çözüm eşit güçte bir CSS kuralı. Bunu ancak canlı tarayıcı gösterdi.
+ok('gizli bloğu açan kural !important ile yazılmış',
+   /#sheet \.hidden\.aramaAcik\{display:block!important\}/.test(src));
+ok('eşleşen gizli bloğa sınıf takılıyor',
+   /el\.classList\.toggle\('aramaAcik', esles && el\.classList\.contains\('hidden'\)\)/.test(src));
+ok('temizlemede sınıf kaldırılıyor', /c\.classList\.remove\('aramaAcik'\)/.test(src));
+ok('eşleşmeyen hâlâ gizleniyor', /el\.style\.display = esles \? '' : 'none';/.test(src));
 // davranış
-function goster(esles, gizliSinif){
-  return esles ? (gizliSinif ? 'block' : '') : 'none';
-}
-ok('gizli sınıflı eşleşme block oluyor', goster(true,true)==='block');
+function goster(esles){ return esles ? '' : 'none'; }
 ok('normal eşleşme satır içi stil bırakmıyor', goster(true,false)==='');
-ok('eşleşmeyen gizleniyor (gizli sınıflı)', goster(false,true)==='none');
-ok('eşleşmeyen gizleniyor (normal)', goster(false,false)==='none');
+
+ok('eşleşmeyen gizleniyor', goster(false)==='none');

@@ -260,6 +260,9 @@
   }
   .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
   .row .v.hit{animation:keyhit .5s ease-out}
+  /* Ayar aramasında eşleşen blok gizli sınıfta olsa bile GÖRÜNMELİ.
+     .hidden !important kullandığı için satır içi stil yetmiyor; eşit güçte kural. */
+  #sheet .hidden.aramaAcik{display:block!important}
   #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
   /* 11.7 Klavye gezintisi: odak halkası hiç görünmüyordu, klavyeyle kullanmak imkânsızdı.
      :focus-visible sayesinde fareyle tıklayanda halka çıkmıyor, yalnız klavyede çıkıyor. */
@@ -894,7 +897,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='7.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='7.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -4363,7 +4366,8 @@ function searchSettings(){
   const q=norm($('#setFind').value||'');
   const out=$('#setFindOut');
   const panes=[...$('#sheet').querySelectorAll('.tab')];
-  const temizle=()=>panes.forEach(p=>{ p.style.display=''; [...p.children].forEach(c=>c.style.display=''); });
+  const temizle=()=>panes.forEach(p=>{ p.style.display='';
+    [...p.children].forEach(c=>{ c.style.display=''; c.classList.remove('aramaAcik'); }); });
   if(!q){
     temizle();
     $$('#sheet .tabs button').forEach(b=>b.style.display='');
@@ -4381,7 +4385,10 @@ function searchSettings(){
       // kapalıyken kapalı duran bloklar gibi) display:'' satır içi stili KALDIRIR
       // ve sınıf kazanır — arama "4 ayar bulundu" der ama aradığın ayar görünmez.
       // Satır içi 'block' sınıfı ezer. Bu bloklar hep <div>, flex değil.
-      el.style.display = esles ? (el.classList.contains('hidden') ? 'block' : '') : 'none';
+      // .hidden{display:none!important} satır içi stille ezilemiyor —
+      // eşleşen gizli bloğa eşit güçte bir sınıf takıyoruz (gerçek tarayıcıda ölçüldü).
+      el.style.display = esles ? '' : 'none';
+      el.classList.toggle('aramaAcik', esles && el.classList.contains('hidden'));
       if(esles){ hit++; bulunan++; }
     });
     pane.style.display=hit?'block':'none';
