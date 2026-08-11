@@ -264,6 +264,18 @@
      .hidden !important kullandığı için satır içi stil yetmiyor; eşit güçte kural. */
   #sheet .hidden.aramaAcik{display:block!important}
   #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
+  /* Takip açıkken ne duyduğunu ve eşleşip eşleşmediğini göster: "çalışmıyor"
+     şikâyeti ancak zincirin hangi halkasının koptuğu görülünce çözülebiliyor. */
+  #vHud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);
+    z-index:7;display:flex;gap:8px;align-items:center;pointer-events:none;
+    background:rgba(0,0,0,.72);border-radius:10px;padding:7px 11px;font-size:12.5px;
+    backdrop-filter:blur(6px)}
+  #vHud b{font-weight:800;white-space:nowrap}
+  #vHud b.ok{color:var(--accent)} #vHud b.kayip{color:#ffb300} #vHud b.sessiz{color:#8a8f97}
+  #vHud span{flex:1;color:#e8e8ee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-style:italic;opacity:.9}
+  #vHud i{color:#8a8f97;font-style:normal;font-variant-numeric:tabular-nums;white-space:nowrap}
+  body.locked #vHud{opacity:.35}
   /* 11.7 Klavye gezintisi: odak halkası hiç görünmüyordu, klavyeyle kullanmak imkânsızdı.
      :focus-visible sayesinde fareyle tıklayanda halka çıkmıyor, yalnız klavyede çıkıyor. */
   /* 11.3 Yüksek kontrast: gri üstüne gri metin güneş altında ve düşük görüşte okunmuyor.
@@ -837,6 +849,8 @@
 </div>
 
 <!-- YARDIM -->
+<div id="vHud" class="hidden"><b id="vHudDurum">—</b><span id="vHudDuydu"></span><i id="vHudYer"></i></div>
+
 <div class="sheet" id="newsSheet">
   <div class="grab"></div>
   <h2><span data-i18n="newsTitle">🆕 Ne değişti?</span><button class="iconbtn" id="newsX" aria-label="Kapat">✕</button></h2>
@@ -897,7 +911,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.1';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.2';
 
 /* ============ i18n ============ */
 const I18N={
@@ -3607,10 +3621,12 @@ function startVoice(){
   sr.onend=()=>{ if(voiceOn) restartVoice(); };
   try{ sr.start(); }catch(e){ logErr('voice',e); restartVoice(); }
   voiceOn=true; $('#voiceBtn').classList.add('on');
+  vHud('sessiz','',vptr,false);
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
 }
 function stopVoice(){ voiceOn=false; if(sr){ sr.onend=null; try{sr.stop();}catch(e){} }
-  cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on','lost'); vBadge=''; toast(m('voiceOff')); }
+  cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on','lost'); vBadge='';
+  clearTimeout(vHudT); $('#vHud') && $('#vHud').classList.add('hidden'); toast(m('voiceOff')); }
 /* "sufle <komut>" kalıbını yakala, komut kelimelerini akıştan çıkar */
 // Uyandırma sözcüğü: dil seçeneğinde Almanca ve Arapça vardı ama sözlükte
 // karşılıkları yoktu — o dilleri seçen kullanıcı için özellik ölüydü.
@@ -3674,7 +3690,24 @@ function wordEq(nw,tok){
   return false;
 }
 let lastTokAt=0;
-let lastHitAt=0, vBadge='';
+let lastHitAt=0, vBadge='', jumpSwallow=0;
+/* Şerit: durum · ne duyduğu · metinde nerede olduğu. Kullanıcı "çalışmıyor"
+   dediğinde hangi halkanın koptuğunu tek bakışta gösteriyor. */
+let vHudT=0;
+function vHud(durum, duydu, yer, genis){
+  const el=$('#vHud'); if(!el) return;
+  el.classList.remove('hidden');
+  const d=$('#vHudDurum');
+  d.className = durum==='ok'?'ok':(durum==='kayip'?'kayip':'sessiz');
+  d.textContent = durum==='ok' ? (L==='tr'?'✓ takip':'✓ tracking')
+                : durum==='kayip' ? (L==='tr'?'✕ bulamadım':'✕ lost')
+                : (L==='tr'?'… dinliyorum':'… listening');
+  $('#vHudDuydu').textContent = duydu ? '“'+duydu+'”' : (L==='tr'?'(ses yok)':'(no audio)');
+  const toplam=normWords.length||1;
+  $('#vHudYer').textContent = Math.min(100,Math.round(yer/toplam*100))+'%'+(genis?' ⟳':'');
+  clearTimeout(vHudT);
+  vHudT=setTimeout(()=>{ if(voiceOn) vHud('sessiz','',vptr,false); },2500);
+}
 function setVoiceBadge(k){
   if(k===vBadge) return; vBadge=k;
   const b=$('#voiceBtn'); if(!b) return;
@@ -3691,7 +3724,13 @@ function matchVoice(spoken){
   if(recent.length>5) recent=recent.slice(-5);
   if(recent.length<2) return;
 
-  const lo=Math.max(0,vptr-WIN_BACK), hi=Math.min(normWords.length,vptr+WIN_FWD);
+  // 3 saniyedir bulamıyorsak pencereyi TÜM METNE aç: kullanıcı atlamış olabilir
+  // (paragraf atlama, doğaçlama, baştan başlama). Eskiden pencere vptr'ye bağlıydı
+  // ve dışına çıkınca bir daha asla bulunamıyordu.
+  const kayipSure = now-lastHitAt;
+  const genis = lastHitAt>0 && kayipSure>3000;
+  const lo = genis ? 0 : Math.max(0,vptr-WIN_BACK);
+  const hi = genis ? normWords.length : Math.min(normWords.length,vptr+WIN_FWD);
   let bestK=-1,best=0;
   for(let k=lo;k<hi;k++){
     let score=0;
@@ -3705,10 +3744,18 @@ function matchVoice(spoken){
   if(bestK<0 || best<2.6){
     // Eşleşme yok: eskiden sessizce duruyordu, kullanıcı "bozuk mu?" diye düşünüyordu.
     if(now-lastHitAt>3500) setVoiceBadge('lost');
+    vHud('kayip', recent.slice(-3).join(' '), vptr, genis);
     return;                                        // en az iki kelime tutsun
   }
   lastHitAt=now; setVoiceBadge('ok');
-  if(bestK-vptr>MAX_JUMP) return;                 // makul olmayan sıçramayı yut
+  vHud('ok', recent.slice(-3).join(' '), bestK, genis);
+  // ESKİDEN: sıçrama büyükse yutuluyor ama vptr GÜNCELLENMİYORDU. Tanıyıcı sürekli
+  // ileride eşleşirse (hızlı okuma, geç gelen sonuç) sufle KALICI olarak takılıyordu.
+  // Artık üst üste üç kez yutulursa kabul ediyoruz: kullanıcı gerçekten ileride demektir.
+  if(bestK-vptr>MAX_JUMP && !genis){
+    if(++jumpSwallow<3) return;
+    jumpSwallow=0;                               // kabul et ve senkronu düzelt
+  } else jumpSwallow=0;
   vptr=bestK+1;
   const wi=normWords[bestK].i, tnow=performance.now();
   if(vPrev.i>=0 && wi>vPrev.i){
