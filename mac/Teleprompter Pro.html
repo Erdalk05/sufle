@@ -322,6 +322,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
         <div class="toggle" style="margin-top:8px"><span>🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
         <div class="toggle" style="margin-top:8px"><span>💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
+        <div class="field" style="margin-top:10px">
+          <div class="top"><label>🎚 Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
+          <div class="seg" id="fxSeg">
+            <button data-fx="off">Kapalı</button>
+            <button data-fx="voice" class="on">Konuşma</button>
+            <button data-fx="noisy">Gürültülü</button>
+            <button data-fx="studio">Stüdyo</button>
+          </div>
+          <div class="rb-note">Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.</div>
+        </div>
+        <div class="toggle" style="margin-top:8px"><span>🫁 Konuşmayı kesince sufle dursun</span><div class="sw2" data-t="vad"></div></div>
         <div id="chromaBox" style="display:none">
           <div class="top" style="margin-top:8px"><label>Perde rengi</label></div>
           <div class="selectish" id="keySel">
@@ -489,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='7.2';   // telefon sürümüyle aynı numaralama
+  const VER='7.3';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -513,7 +524,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:42,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -741,6 +752,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     $$('#famSel button').forEach(b=>b.classList.toggle('on',b.dataset.fam===state.fam));
     $$('#themeSel .sw').forEach(b=>b.classList.toggle('on',b.dataset.theme===state.theme));
     $$('.sw2').forEach(t=>t.classList.toggle('on',state[t.dataset.t]));
+    $$('#fxSeg button').forEach(b=>b.classList.toggle('on',b.dataset.fx===(state.audioFx||'voice')));
+    const fs=$('#fxState'); if(fs) fs.textContent=(state.audioFx||'voice')==='off'?'kapalı':'açık';
     $$('#fmtPill button').forEach(b=>b.classList.toggle('on',b.dataset.fmt===state.fmt));
     $$('#modeSel button').forEach(b=>b.classList.toggle('on',b.dataset.mode===state.mode));
     $('#dist').value=state.dist; $('#distV').textContent=state.dist;
@@ -988,12 +1001,14 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   async function toggleCam(){
     if(stream){ stopCam(); return; }
     try{
+      stopAudioFx(); vadDurdur();   // eski mikrofon izine bağlı kalmasınlar
       stream=await navigator.mediaDevices.getUserMedia({
         video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30},facingMode:'user'},
         // Ses kısıtlarını açıkça iste: varsayılana bırakmak tarayıcıdan tarayıcıya
         // değişiyordu. Telefon sürümüyle aynı davranış.
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
       cam.srcObject=stream; frame.classList.add('cam-on');
+      if(state.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
       camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
       recBtn.disabled=false; recBtn.style.opacity='1';
       const vs=stream.getVideoTracks()[0].getSettings?.()||{};
@@ -1268,7 +1283,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); });
     ctx.restore();
   }
+  function stopFx(){
+    if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
+    setTimeout(stopAudioFx,300);
+  }
   function stopCrop(){
+    stopFx();
     cancelAnimationFrame(cropRaf); cropRaf=0;
     if(cropStream){
       // DİKKAT: cropStream kameranın SES izini ödünç alıyor. Hepsini durdurmak
@@ -1280,6 +1300,107 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     }
     cropCv=null; cropCtx=null; capOut=null; capLocked=false; gl=null; glPr=null;
   }
+  /* ============ SES STÜDYOSU + NEFESLE AKIŞ (telefondan taşındı) ============
+     Parite kapısı bu ikisinin Mac'te olmadığını gösterdi. Mac Web Audio icin
+     EN IYI platform: iPhone'daki "Web Audio kaydi susturur" kisiti burada YOK.
+     Mantik ve sabitler telefonla BIREBIR ayni; ayrisirlarsa kapi yakalar. */
+  const FXP={
+    off:   null,
+    voice: {hp:80,  gate:18, pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
+    noisy: {hp:110, gate:34, pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
+    studio:{hp:70,  gate:10, pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
+  };
+  var afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1}, fxTrack=null;
+  function fxOn(){ return (state.audioFx||'voice')!=='off'; }
+  function fxParams(){ return FXP[state.audioFx||'voice']||FXP.voice; }
+  function gateWant(rms, gateVal){
+    const th=(gateVal||0)/1000;
+    if(!th) return 1;
+    if(rms>=th*1.6) return 1;
+    if(rms>=th)     return 0.55;
+    return 0.12;
+  }
+  function stopAudioFx(){
+    if(afx.iv) clearInterval(afx.iv);
+    if(afx.ctx){ try{ afx.ctx.close(); }catch(e){ logErr('fxClose',e); } }
+    afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1};
+  }
+  function makeFxTrack(){
+    if(!fxOn()) return null;
+    const at=stream && stream.getAudioTracks()[0];
+    if(!at) return null;
+    try{
+      stopAudioFx();
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
+      const ctx=new AC(), P=fxParams();
+      const src=ctx.createMediaStreamSource(new MediaStream([at]));
+      const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=P.hp; hp.Q.value=0.7;
+      const n50=ctx.createBiquadFilter(); n50.type='notch'; n50.frequency.value=50; n50.Q.value=14;
+      const n100=ctx.createBiquadFilter();n100.type='notch';n100.frequency.value=100;n100.Q.value=14;
+      const warm=ctx.createBiquadFilter(); warm.type='peaking'; warm.frequency.value=220; warm.Q.value=0.8; warm.gain.value=P.warm;
+      const pres=ctx.createBiquadFilter(); pres.type='peaking'; pres.frequency.value=3000; pres.Q.value=0.9; pres.gain.value=P.pres;
+      const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=P.lp; lp.Q.value=0.7;
+      const gate=ctx.createGain(); gate.gain.value=1;
+      const comp=ctx.createDynamicsCompressor();
+      comp.threshold.value=P.comp; comp.ratio.value=P.ratio; comp.knee.value=8;
+      comp.attack.value=0.005; comp.release.value=0.14;
+      const lim=ctx.createDynamicsCompressor();
+      lim.threshold.value=-3; lim.ratio.value=20; lim.knee.value=0; lim.attack.value=0.001; lim.release.value=0.05;
+      const out=ctx.createGain(); out.gain.value=1.25;
+      const an=ctx.createAnalyser(); an.fftSize=512;
+      const dest=ctx.createMediaStreamDestination();
+      src.connect(hp); hp.connect(n50); n50.connect(n100); n100.connect(warm);
+      warm.connect(pres); pres.connect(lp); lp.connect(an); lp.connect(gate);
+      gate.connect(comp); comp.connect(lim); lim.connect(out); out.connect(dest);
+      afx={ctx,dest,gate,an,iv:0,buf:new Uint8Array(an.fftSize),open:1};
+      afx.iv=setInterval(()=>{
+        if(!afx.an||!afx.gate) return;
+        afx.an.getByteTimeDomainData(afx.buf);
+        let sum=0; for(let i=0;i<afx.buf.length;i++){ const v=(afx.buf[i]-128)/128; sum+=v*v; }
+        const want=gateWant(Math.sqrt(sum/afx.buf.length), P.gate);
+        afx.gate.gain.setTargetAtTime(want, afx.ctx.currentTime, want<afx.open?0.08:0.02);
+        afx.open=want;
+      },40);
+      return dest.stream.getAudioTracks()[0]||null;
+    }catch(e){ logErr('audioFx',e); stopAudioFx(); return null; }
+  }
+  /* NEFESLE AKIS — histerezis telefonla ayni: tek esikle sufle her hecede titrerdi */
+  var vad={ctx:null,an:null,buf:null,iv:0,sesli:false,bosluk:0};
+  function vadKarar(rms, esik, suAn){
+    if(rms >= esik*1.5) return {sesli:true, bekle:0};
+    if(rms >= esik)     return {sesli:suAn, bekle:0};
+    return {sesli:false, bekle:1};
+  }
+  function vadDurdur(){
+    if(vad.iv) clearInterval(vad.iv);
+    if(vad.ctx){ try{ vad.ctx.close(); }catch(e){ logErr('vadClose',e); } }
+    vad={ctx:null,an:null,buf:null,iv:0,sesli:false,bosluk:0};
+  }
+  function vadBaslat(){
+    vadDurdur();
+    if(!state.vad) return;
+    const at=stream && stream.getAudioTracks()[0];
+    if(!at){ toast('Önce kamerayı aç'); state.vad=false; applyAll(); save(); return; }
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      const ctx=new AC();
+      const src=ctx.createMediaStreamSource(new MediaStream([at]));
+      const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=120;
+      const an=ctx.createAnalyser(); an.fftSize=512;
+      src.connect(hp); hp.connect(an);
+      vad={ctx,an,buf:new Uint8Array(an.fftSize),iv:0,sesli:false,bosluk:0};
+      vad.iv=setInterval(()=>{
+        if(!vad.an) return;
+        vad.an.getByteTimeDomainData(vad.buf);
+        let t=0; for(let i=0;i<vad.buf.length;i++){ const v=(vad.buf[i]-128)/128; t+=v*v; }
+        const k=vadKarar(Math.sqrt(t/vad.buf.length), 0.02, vad.sesli);
+        if(k.bekle) vad.bosluk++; else vad.bosluk=0;
+        vad.sesli=k.sesli;
+        if(vad.sesli && !running) togglePlay();
+        else if(!vad.sesli && vad.bosluk>=5 && running) stop();
+      },100);
+    }catch(e){ logErr('vad',e); state.vad=false; applyAll(); save(); }
+  }
   function recSource(){
     if(!cropOn()) return stream;
     if(!startCrop()) return stream;
@@ -1288,7 +1409,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       capLocked=(srcCv===capOut);      // kayıt boyunca bu tuvali beslemeye devam et
       const cs=srcCv.captureStream(30);
       if(!cs.getVideoTracks().length) return stream;
-      cropStream=new MediaStream([...cs.getVideoTracks(), ...stream.getAudioTracks()]);
+      fxTrack=makeFxTrack();
+      const sesIzleri = fxTrack ? [fxTrack] : stream.getAudioTracks();
+      cropStream=new MediaStream([...cs.getVideoTracks(), ...sesIzleri]);
       return cropStream;
     }catch(e){ return stream; }
   }
@@ -1682,6 +1805,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     /* ÖLÜ AYAR TUZAĞI (telefonda üç kez çıktı): altyazı gömme ve yeşil ekran YALNIZ
        kırpma boru hattında çiziliyor. Kırpma kapalıyken bu anahtarlar hiçbir şey
        yapmıyor, hiçbir şey de söylemiyordu. Artık gerekeni kendisi açıyor. */
+    if(k==='vad'){ if(state.vad) vadBaslat(); else vadDurdur(); }
     if((k==='burnCaps'||k==='chroma') && state[k] && !cropOn()){
       if(state.fmt==='free'){ state.fmt='9:16'; toast('Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor'); }
       state.crop=true;
@@ -1990,6 +2114,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   $('#rrKeep').onclick=keepTake;
   $('#pipBtn').onclick=pipAc;
   $('#undoDelBtn').onclick=copGeriAl;
+  $$('#fxSeg button').forEach(b=>b.onclick=()=>{ state.audioFx=b.dataset.fx; applyAll(); save(); });
   if(!pipVar()){ $('#pipBtn').style.opacity='.45'; $('#pipBtn').title='Chrome ya da Edge gerekiyor (Safari desteklemiyor)'; }
   window.addEventListener('pagehide',()=>{ if(pipWin) pipKapat(); });
   /* 12.10 Sunucusuz taşıma: telefonun JSON yedeğiyle AYNI biçim.
