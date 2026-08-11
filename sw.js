@@ -1,5 +1,5 @@
 /* Sufle — çevrimdışı çalışması için service worker */
-const CACHE = 'sufle-v45';
+const CACHE = 'sufle-v46';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './icon-180.png', './icon-192.png', './icon-512.png'

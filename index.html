@@ -522,6 +522,18 @@
     </div>
     <div class="hint" data-i18n="qHint">Cihaz desteklemezse en yakın çözünürlüğe düşer.</div>
 
+    <div class="row" style="margin-top:20px"><label data-i18n="vfxTitle">🎨 Görüntü filtresi</label><span class="v" id="vFxAmt">—</span></div>
+    <div class="seg" id="vfxSeg">
+      <button data-vfx="off" data-i18n="vfxOff">Kapalı</button>
+      <button data-vfx="natural" class="on" data-i18n="vfxNat">Doğal</button>
+      <button data-vfx="bright" data-i18n="vfxBright">Aydınlık</button>
+      <button data-vfx="warm" data-i18n="vfxWarm">Sıcak</button>
+      <button data-vfx="crisp" data-i18n="vfxCrisp">Net</button>
+      <button data-vfx="lowlight" data-i18n="vfxLow">Az ışık</button>
+    </div>
+    <input type="range" id="vidAmt" min="0" max="150" value="100">
+    <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
+
     <div class="row" style="margin-top:14px"><label data-i18n="brL">Video kalitesi / dosya boyutu</label><span class="v" id="vBr">—</span></div>
     <div class="seg" id="brSeg">
       <button data-br="low" data-i18n="brLow">Küçük dosya</button>
@@ -615,7 +627,24 @@
     <div id="micWrap"><div id="micBar"></div></div>
     <div class="hint" data-i18n="micHint">Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.</div>
 
-    <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (gürültü temizlemesi kapalı)</span><div class="sw" data-t="rawAudio"></div></div>
+    <div class="row" style="margin-top:20px"><label data-i18n="fxTitle">🎚 Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
+    <div class="seg" id="fxSeg">
+      <button data-fx="off" data-i18n="fxOff">Kapalı</button>
+      <button data-fx="voice" class="on" data-i18n="fxVoice">Konuşma</button>
+      <button data-fx="noisy" data-i18n="fxNoisy">Gürültülü ortam</button>
+      <button data-fx="studio" data-i18n="fxStudio">Stüdyo</button>
+    </div>
+    <div class="hint" id="fxHint"></div>
+    <div id="fxAdv" class="hidden">
+      <div class="row"><label data-i18n="fxGate">Gürültü kapısı</label><span class="v" id="vGate">—</span></div>
+      <input type="range" id="fxGate" min="0" max="60" value="22">
+      <div class="row"><label data-i18n="fxPres">Netlik (anlaşılırlık)</label><span class="v" id="vPres">—</span></div>
+      <input type="range" id="fxPres" min="0" max="9" value="3">
+      <div class="row"><label data-i18n="fxWarm">Tok ses (gövde)</label><span class="v" id="vWarm">—</span></div>
+      <input type="range" id="fxWarm" min="-4" max="6" value="1">
+      <div class="hint" data-i18n="fxAdvHint">Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.</div>
+    </div>
+    <div class="tog"><span data-i18n="tgRaw">🎚 Ham ses (hiç işleme yapma)</span><div class="sw" data-t="rawAudio"></div></div>
     <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar ama bazı iPhone'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.</div>
     <div class="sheetbtns"><button class="cancel" id="reopenCam" data-i18n="reopenCam">🔁 Kamerayı yeniden başlat</button></div>
   </div>
@@ -819,7 +848,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -840,7 +869,7 @@ const I18N={
   tgMirror:'🪞 Yazıyı aynala (cam rig / beam splitter)',tgFlip:'🔃 Yazıyı dikey çevir',tgShadow:'🌑 Yazı gölgesi',
   quality:'Kayıt kalitesi',qHint:'Cihaz desteklemezse en yakın çözünürlüğe düşer.',frameGuide:'Çerçeve kılavuzu',aspNone:'Kapalı',
   zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
-  tgRaw:'🎚 Ham ses (gürültü temizlemesi kapalı)',
+  tgRaw:'🎚 Ham ses (hiç işleme yapma)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
   lightTitle:'💡 Işık ve çerçeve denetçisi',lightBtn:'🔎 Şimdi denetle',tiltBtn:'📐 Eğim ölç',
   lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
@@ -888,7 +917,10 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
+  capBtnL:'💬 Altyazı dosyası',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
+  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'🎚 Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
+  fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',
   noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.',tSplit:'🪓 Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
   wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
@@ -959,7 +991,10 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
+  capBtnL:'💬 Caption file',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
+  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'🎚 Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
+  fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',
   noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. 🎤 voice commands do the same job.',tSplit:'🪓 Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
   wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
@@ -1107,7 +1142,7 @@ const DEF={
   eyePos:24, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', rawAudio:false, safeAudio:true, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
+  quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
   target:0, voiceLang:'tr-TR', zoom:100, eyeLine:false, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
@@ -1789,7 +1824,23 @@ const FS_SRC=
 'uniform vec2 sc;uniform vec2 of;uniform vec3 key;uniform float sim;uniform float smo;'+
 'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
 'uniform float spill;uniform float axis;uniform float mask;'+
-'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+
+'uniform float bri;uniform float con;uniform float sat;uniform float wrm;uniform float shp;uniform vec2 px;'+
+// Keskinlik: unsharp mask — komşu 4 pikselin ortalamasından farkı güçlendir.
+// Telefon kamerasının yumuşak görüntüsünü "net" gösteren şey budur.
+'vec3 sharpen(vec2 t){vec3 c0=texture2D(tex,t).rgb;'+
+'if(shp<=0.0) return c0;'+
+'vec3 b4=(texture2D(tex,t+vec2(px.x,0.0)).rgb+texture2D(tex,t-vec2(px.x,0.0)).rgb+'+
+'texture2D(tex,t+vec2(0.0,px.y)).rgb+texture2D(tex,t-vec2(0.0,px.y)).rgb)*0.25;'+
+'return clamp(c0+(c0-b4)*shp,0.0,1.0);}'+
+// Renk düzeltme: parlaklık, kontrast (0.5 etrafında), doygunluk (luma korumalı), sıcaklık
+'vec3 grade(vec3 c){'+
+'c=clamp(c+bri,0.0,1.0);'+
+'c=clamp((c-0.5)*con+0.5,0.0,1.0);'+
+'float l=dot(c,vec3(0.2126,0.7152,0.0722));'+
+'c=clamp(mix(vec3(l),c,sat),0.0,1.0);'+
+'c.r=clamp(c.r+wrm,0.0,1.0); c.b=clamp(c.b-wrm,0.0,1.0);'+
+'return c;}'+
+'void main(){vec2 t=uv*sc+of;vec3 c=grade(sharpen(t));'+
 'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
 'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
 // despill: saç ve omuz kenarındaki yeşil/mavi saçağı bastır
@@ -1800,6 +1851,26 @@ const FS_SRC=
 'if(mask>0.5){ gl_FragColor=vec4(mix(vec3(1.0,0.0,0.8),c,a),1.0); return; }'+
 'gl_FragColor=vec4(mix(b,c,a),1.0);}';
 let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false};
+/* GÖRÜNTÜ FİLTRELERİ
+   Telefon kamerası ham görüntüyü düz ve yumuşak verir. Bu hazır ayarlar
+   konuşan-kafa çekimi için ayarlandı: hafif kontrast, cilde zarar vermeyen
+   doygunluk, ölçülü keskinlik. "Abartılı" olanı kasten koymadık.
+   Ayrı fonksiyon: tuval olmadan test edilebilsin. */
+const VIDP={
+  off:    {bri:0,    con:1,    sat:1,    wrm:0,     shp:0},
+  natural:{bri:0.02, con:1.06, sat:1.05, wrm:0.01,  shp:0.35},
+  bright: {bri:0.09, con:1.10, sat:1.08, wrm:0.02,  shp:0.45},
+  warm:   {bri:0.04, con:1.08, sat:1.12, wrm:0.045, shp:0.35},
+  crisp:  {bri:0.01, con:1.14, sat:1.02, wrm:0.0,   shp:0.75},
+  lowlight:{bri:0.16,con:1.04, sat:0.95, wrm:0.01,  shp:0.15}   // karanlıkta keskinlik gürültüyü büyütür
+};
+function vidParams(){
+  const base=VIDP[st.vidFx||'natural']||VIDP.natural;
+  if(st.vidFx==='off') return base;
+  const k=(st.vidAmt==null?100:st.vidAmt)/100;      // şiddet: hazır ayarla nötr arası karışım
+  return { bri:base.bri*k, con:1+(base.con-1)*k, sat:1+(base.sat-1)*k,
+           wrm:base.wrm*k, shp:base.shp*k };
+}
 function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]; }
 function compSize(){
   const asp=(curMode().asp&&curMode().asp!=='none')?curMode().asp:(st.asp!=='none'?st.asp:null);
@@ -1984,6 +2055,13 @@ function drawComp(){
     gl.uniform1f(gl.getUniformLocation(comp.pr,'axis'), (kk[2]>kk[1])?1:0);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'useBg'),(st.chroma&&comp.bgReady)?1:0);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'mask'),(st.chroma&&st.maskPrev)?1:0);
+    const V=vidParams();
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'bri'),V.bri);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'con'),V.con);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'sat'),V.sat);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'wrm'),V.wrm);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'shp'),V.shp);
+    gl.uniform2f(gl.getUniformLocation(comp.pr,'px'),1/Math.max(1,cam.videoWidth),1/Math.max(1,cam.videoHeight));
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
@@ -2198,8 +2276,133 @@ async function runAudioTest(){
   audTesting=false;
 }
 
+/* ============ SES STÜDYOSU ============
+   Neden gerekli: telefonun dahili mikrofonu her şeyi eşit duyar — klima, trafik,
+   bilgisayar fanı, odanın yankısı. Tarayıcının kendi gürültü bastırması (constraint)
+   iyi bir başlangıç ama konuşma için ayarlanmış bir zincir çok daha fazlasını yapıyor.
+
+   ⚠️ iOS KISITI: iPhone'da mikrofon izini Web Audio'ya bağlamak MediaRecorder'ın
+   ses yazmasını durduruyor (bu tuzağa bu projede bir kez düşüldü, saatler kaybedildi).
+   Bu yüzden iOS'ta zincir ÇALIŞMAZ; orada tarayıcının kendi bastırması kullanılıyor
+   ve kullanıcıya bunun neden böyle olduğu yazılıyor. Sessizce kapatmıyoruz. */
+const FXP={
+  off:   null,
+  voice: {hp:80,  gate:18, pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
+  noisy: {hp:110, gate:34, pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
+  studio:{hp:70,  gate:10, pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
+};
+let afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1};
+function fxOn(){ return !IS_WK && !st.rawAudio && (st.audioFx||'voice')!=='off'; }
+function fxParams(){
+  const base=FXP[st.audioFx||'voice']||FXP.voice;
+  return Object.assign({},base,{
+    gate: st.fxGate==null?base.gate:st.fxGate,
+    pres: st.fxPres==null?base.pres:st.fxPres,
+    warm: st.fxWarm==null?base.warm:st.fxWarm
+  });
+}
+function stopAudioFx(){
+  if(afx.iv) clearInterval(afx.iv);
+  if(afx.ctx){ try{ afx.ctx.close(); }catch(e){ logErr('fxClose',e); } }
+  afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1};
+}
+/* Kayıt için işlenmiş ses izi üretir. Başarısız olursa null döner ve
+   çağıran taraf HAM ize düşer — ses hiç gelmemesindense işlenmemiş gelsin. */
+function makeFxTrack(){
+  if(!fxOn()) return null;
+  const at=stream && stream.getAudioTracks()[0];
+  if(!at) return null;
+  try{
+    stopAudioFx();
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return null;
+    const ctx=new AC();
+    const P=fxParams();
+    const src=ctx.createMediaStreamSource(new MediaStream([at]));
+
+    // 1) Uğultu kesme: 80 Hz altı klima/trafik/masa titreşimi. İnsan sesi burada yok.
+    const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=P.hp; hp.Q.value=0.7;
+    // 2) Şebeke uğultusu: Türkiye 50 Hz, harmoniği 100 Hz. Dar çentik, sese dokunmaz.
+    const n50=ctx.createBiquadFilter(); n50.type='notch'; n50.frequency.value=50;  n50.Q.value=14;
+    const n100=ctx.createBiquadFilter();n100.type='notch';n100.frequency.value=100; n100.Q.value=14;
+    // 3) Gövde: 200 Hz civarı — sesi cılız olmaktan çıkarır
+    const warm=ctx.createBiquadFilter(); warm.type='peaking'; warm.frequency.value=220; warm.Q.value=0.8; warm.gain.value=P.warm;
+    // 4) Anlaşılırlık: 3 kHz — ünsüzlerin ayırt edildiği bant
+    const pres=ctx.createBiquadFilter(); pres.type='peaking'; pres.frequency.value=3000; pres.Q.value=0.9; pres.gain.value=P.pres;
+    // 5) Tiz sınırı: mikrofon hışırtısı ve 's' cızırtısı
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=P.lp; lp.Q.value=0.7;
+    // 6) GÜRÜLTÜ KAPISI: konuşmadığın anlarda ortam sesini kıs (aşağıda ölçülüyor)
+    const gate=ctx.createGain(); gate.gain.value=1;
+    // 7) Seviye dengeleme: alçak sesli cümleler duyulur, bağırınca patlamaz
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=P.comp; comp.ratio.value=P.ratio;
+    comp.knee.value=8; comp.attack.value=0.005; comp.release.value=0.14;
+    // 8) Limitleyici: kırpma olmasın
+    const lim=ctx.createDynamicsCompressor();
+    lim.threshold.value=-3; lim.ratio.value=20; lim.knee.value=0; lim.attack.value=0.001; lim.release.value=0.05;
+    const out=ctx.createGain(); out.gain.value=1.25;   // işlemeden sonra kayıp telafisi
+
+    const an=ctx.createAnalyser(); an.fftSize=512;
+    const dest=ctx.createMediaStreamDestination();
+    src.connect(hp); hp.connect(n50); n50.connect(n100); n100.connect(warm);
+    warm.connect(pres); pres.connect(lp); lp.connect(an); lp.connect(gate);
+    gate.connect(comp); comp.connect(lim); lim.connect(out); out.connect(dest);
+
+    afx={ctx,dest,gate,an,iv:0,buf:new Uint8Array(an.fftSize),open:1};
+    // kapı kararı: 40 ms'de bir RMS ölç, yumuşak geçişle aç/kapa (pompalama olmasın)
+    afx.iv=setInterval(()=>{
+      if(!afx.an||!afx.gate) return;
+      afx.an.getByteTimeDomainData(afx.buf);
+      let sum=0; for(let i=0;i<afx.buf.length;i++){ const v=(afx.buf[i]-128)/128; sum+=v*v; }
+      const rms=Math.sqrt(sum/afx.buf.length);
+      const want=gateWant(rms, P.gate);
+      const g=afx.gate.gain;
+      g.setTargetAtTime(want, afx.ctx.currentTime, want<afx.open?0.08:0.02);  // kapanış yavaş, açılış hızlı
+      afx.open=want;
+    },40);
+    return dest.stream.getAudioTracks()[0]||null;
+  }catch(e){ logErr('audioFx',e); stopAudioFx(); return null; }
+}
+/* Kapı kararı ayrı fonksiyon: tuval/mikrofon olmadan test edilebilsin.
+   Tam sıfıra indirmiyoruz — 0.12 bırakmak "ölü sessizlik" hissini önlüyor. */
+function gateWant(rms, gateVal){
+  const th=(gateVal||0)/1000;          // 0..60 -> 0..0.06 RMS
+  if(!th) return 1;
+  if(rms>=th*1.6) return 1;            // net konuşma
+  if(rms>=th)     return 0.55;         // sınırda: yarı kıs, cümle başını kesme
+  return 0.12;                         // ortam gürültüsü
+}
+function fxLabel(){
+  if(st.rawAudio) return L==='tr'?'ham (işleme yok)':'raw (no processing)';
+  if(IS_WK) return L==='tr'?'tarayıcı bastırması':'browser suppression';
+  return (st.audioFx||'voice')==='off' ? (L==='tr'?'kapalı':'off') : (L==='tr'?'açık':'on');
+}
+function renderVfx(){
+  $$('#vfxSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vfx===(st.vidFx||'natural')));
+  const a=$('#vidAmt'), lab=$('#vFxAmt');
+  if(a) a.value=(st.vidAmt==null?100:st.vidAmt);
+  if(a) a.style.display=(st.vidFx==='off')?'none':'';
+  if(lab) lab.textContent=(st.vidFx==='off')?(L==='tr'?'kapalı':'off'):('%'+(st.vidAmt==null?100:st.vidAmt));
+}
+function renderFx(){
+  const st2=$('#fxState'); if(st2) st2.textContent=fxLabel();
+  const h=$('#fxHint');
+  if(h) h.innerHTML = IS_WK
+    ? (L==='tr'? '⚠️ <b>iPhone\'da ses işleme zinciri çalıştırılamıyor.</b> Mikrofonu işleme hattına bağlamak Safari\'de kaydın sesini tümden düşürüyor. Burada tarayıcının kendi gürültü bastırması kullanılıyor — <b>Ham ses</b> kapalı kaldığı sürece açıktır.'
+              : '⚠️ <b>The processing chain cannot run on iPhone.</b> Routing the mic through Web Audio silences the recording in Safari. The browser\'s own noise suppression is used instead.')
+    : (L==='tr'? 'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan ayar budur.'
+              : 'Rumble cut + 50 Hz mains notch + noise gate + levelling. This matters most when using the built-in microphone.');
+  const adv=$('#fxAdv'); if(adv) adv.classList.toggle('hidden', IS_WK || st.rawAudio || (st.audioFx||'voice')==='off');
+  const P=fxParams();
+  if($('#fxGate')){ $('#fxGate').value=P.gate; $('#vGate').textContent=P.gate; }
+  if($('#fxPres')){ $('#fxPres').value=P.pres; $('#vPres').textContent=(P.pres>0?'+':'')+P.pres+' dB'; }
+  if($('#fxWarm')){ $('#fxWarm').value=P.warm; $('#vWarm').textContent=(P.warm>0?'+':'')+P.warm+' dB'; }
+  $$('#fxSeg button').forEach(b=>b.classList.toggle('on',b.dataset.fx===(st.audioFx||'voice')));
+}
+
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
+let fxTrack=null, fxUsed=false;
 let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
@@ -2268,6 +2471,14 @@ function doStartRec(){
     const cs=compRecStream();
     if(cs){ src=cs; usedComp=true; } else toast(m('compFallback'));
   }
+  // SES STÜDYOSU: işlenmiş izi kayda tak. Üretilemezse sessizce ham ize dönüyoruz —
+  // "işleme yapılamadı" durumu kaydın sessiz kalmasına ASLA yol açmamalı.
+  fxTrack=makeFxTrack();
+  if(fxTrack){
+    const v=src.getVideoTracks();
+    src=new MediaStream([...v, fxTrack]);
+    fxUsed=true;
+  } else fxUsed=false;
   // tanı: hangi yol, kaç ses izi — sonuç ekranında görünür
   lastPath={comp:usedComp, aud:src.getAudioTracks().length,
             live:(src.getAudioTracks()[0]||{}).readyState||'-'};
@@ -2318,6 +2529,8 @@ function doStartRec(){
 let lightWatch=0, lightWarned=false;
 function stopRec(){
   clearInterval(lightWatch); lightWatch=0; lightWarned=false;
+  if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
+  setTimeout(stopAudioFx,300);          // son parçalar yazılsın diye kısa gecikme
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
   if(recPaused){ recPausedMs+=performance.now()-pauseStart; recPaused=false; }
@@ -2412,7 +2625,7 @@ function showResult(blob){
         ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompoziti kapat ve tekrar çek'
         : '⚠️ iOS drops audio when composite is on — turn Composite off in Settings → Camera');
   });
-  $('#audInfo').textContent=audSummary();
+  $('#audInfo').textContent=audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · audio processed'):'');
   const n=buildCues().length;
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
@@ -3439,7 +3652,7 @@ function apply(){
   $$('#alignSeg button').forEach(b=>b.classList.toggle('on',b.dataset.a===st.align));
   $$('#caseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c2===(st.textCase||'none')));
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
-  renderBitrate();
+  renderBitrate(); renderFx(); renderVfx();
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
@@ -3769,6 +3982,14 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
     else stopComp();
   }
 });
+$$('#vfxSeg button').forEach(b=>b.onclick=()=>{ st.vidFx=b.dataset.vfx; apply(); save(); });
+$('#vidAmt').oninput=e=>{ st.vidAmt=+e.target.value; renderVfx(); save(); };
+$$('#fxSeg button').forEach(b=>b.onclick=()=>{ st.audioFx=b.dataset.fx;
+  st.fxGate=null; st.fxPres=null; st.fxWarm=null;      // hazır ayara dönerken elle değerleri bırak
+  apply(); save(); });
+$('#fxGate').oninput=e=>{ st.fxGate=+e.target.value; renderFx(); save(); };
+$('#fxPres').oninput=e=>{ st.fxPres=+e.target.value; renderFx(); save(); };
+$('#fxWarm').oninput=e=>{ st.fxWarm=+e.target.value; renderFx(); save(); };
 $$('#brSeg button').forEach(b=>b.onclick=()=>{ st.bitrate=b.dataset.br; apply(); save(); });
 /* 7.3 Gerçek yeşil perde hiçbir zaman tam #00b140 değildir (ışık, kumaş, beyaz dengesi).
    Kadrajın SOL ÜST köşesinden — genelde perde orası — ortalama rengi ölç ve anahtar yap.
