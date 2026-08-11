@@ -897,7 +897,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='7.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -4376,6 +4376,8 @@ function searchSettings(){
   }
   // Aramada sekme sınırı yok: satır içi display, sınıf tabanlı gizlemeyi ezer.
   $$('#sheet .tabs button').forEach(b=>b.style.display='none');
+  // Gizli sınıf !important kullandığı için açma tek yerden yapılmalı
+  const ac = el => { el.style.display=''; if(el.classList.contains('hidden')) el.classList.add('aramaAcik'); };
   let bulunan=0;
   panes.forEach(pane=>{
     let hit=0;
@@ -4387,10 +4389,25 @@ function searchSettings(){
       // Satır içi 'block' sınıfı ezer. Bu bloklar hep <div>, flex değil.
       // .hidden{display:none!important} satır içi stille ezilemiyor —
       // eşleşen gizli bloğa eşit güçte bir sınıf takıyoruz (gerçek tarayıcıda ölçüldü).
-      el.style.display = esles ? '' : 'none';
-      el.classList.toggle('aramaAcik', esles && el.classList.contains('hidden'));
+      if(esles) ac(el); else el.style.display='none';
       if(esles){ hit++; bulunan++; }
     });
+    // ETİKET İLE DENETİM AYRI KARDEŞ: "nefes" araması "🫁 Nefesle akış"
+    // etiketini buluyor ama anahtarın metni "Konuşmayı kesince..." olduğu için
+    // anahtar gizli kalıyordu — bulunan ama KULLANILAMAYAN sonuç.
+    // Eşleşenin çevresindeki denetimleri de aç. (Gerçek tarayıcıda bulundu.)
+    if(hit){
+      const c=[...pane.children];
+      c.forEach((el,i)=>{
+        if(el.style.display==='none') return;
+        for(let j=i+1;j<c.length;j++){            // etiketten sonraki denetimler
+          if(c[j].classList.contains('row')) break;
+          ac(c[j]);
+        }
+        const onceki=c[i-1];                       // denetimden önceki etiket
+        if(onceki && onceki.classList.contains('row')) ac(onceki);
+      });
+    }
     pane.style.display=hit?'block':'none';
   });
   out.style.display='';

@@ -83,10 +83,11 @@ ok('sessiz mod uyarısı var', /sessiz düğmesine bak/.test(src));
 // Doğru çözüm eşit güçte bir CSS kuralı. Bunu ancak canlı tarayıcı gösterdi.
 ok('gizli bloğu açan kural !important ile yazılmış',
    /#sheet \.hidden\.aramaAcik\{display:block!important\}/.test(src));
-ok('eşleşen gizli bloğa sınıf takılıyor',
-   /el\.classList\.toggle\('aramaAcik', esles && el\.classList\.contains\('hidden'\)\)/.test(src));
+ok('açma tek yerden yapılıyor', /const ac = el => \{ el\.style\.display=''; if\(el\.classList\.contains\('hidden'\)\) el\.classList\.add\('aramaAcik'\); \}/.test(src));
+ok('etiketin denetimleri de açılıyor', /for\(let j=i\+1;j<c\.length;j\+\+\)\{[\s\S]*?ac\(c\[j\]\);/.test(src));
+ok('denetimin etiketi de açılıyor', /if\(onceki && onceki\.classList\.contains\('row'\)\) ac\(onceki\)/.test(src));
 ok('temizlemede sınıf kaldırılıyor', /c\.classList\.remove\('aramaAcik'\)/.test(src));
-ok('eşleşmeyen hâlâ gizleniyor', /el\.style\.display = esles \? '' : 'none';/.test(src));
+ok('eşleşmeyen hâlâ gizleniyor', /if\(esles\) ac\(el\); else el\.style\.display='none';/.test(src));
 // davranış
 function goster(esles){ return esles ? '' : 'none'; }
 ok('normal eşleşme satır içi stil bırakmıyor', goster(true,false)==='');
