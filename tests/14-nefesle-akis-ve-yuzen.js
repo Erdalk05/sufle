@@ -70,3 +70,28 @@ ok('pencerede klavye çalışıyor', /d\.addEventListener\('keydown'/.test(mac))
 ok('yeni genişlikte satırlar yeniden ölçülüyor', /setTimeout\(\(\)=>\{ measure\(\); setPos\(pos\); \},120\)/.test(mac));
 ok('sayfa kapanınca pencere de kapanıyor', /window\.addEventListener\('pagehide',\(\)=>\{ if\(pipWin\) pipKapat\(\); \}\)/.test(mac));
 ok('hata durumunda sufle geri konuyor', /catch\(e\)\{ logErr\('pip',e\)[\s\S]{0,80}pipGeriAl\(\)/.test(mac));
+
+// ---------- v7.1 DÜŞMANCA TARAMA BULGULARI ----------
+// 1) Ses Stüdyosu için düzelttiğim hatanın AYNISI nefesle akışta duruyordu:
+//    kamera yeniden açılınca VAD eski mikrofon izinde kalıyor, hiç ses duymuyordu.
+const openCam=cikar(js,/async function openCam\(\)\{[\s\S]*?\n\}/,'openCam');
+ok('kamera yenilenince nefesle akış da kapanıyor', /vadDurdur\(\)/.test(openCam));
+ok('ses zinciri de kapanıyor (eski düzeltme duruyor)', /stopAudioFx\(\)/.test(openCam));
+ok('yeni akışla nefesle akış yeniden kuruluyor', /if\(st\.vad\) setTimeout\(vadBaslat,300\)/.test(openCam));
+ok('iki temizlik de akış durdurulduktan sonra', 
+   openCam.indexOf('getTracks().forEach(x=>x.stop())') < openCam.indexOf('vadDurdur()'));
+
+// 2) Yüzen pencerede geometri: #prompt taşınınca ana pencerenin #frame
+//    yüksekliği ölçülüyordu → okuma çizgisi yanlış yerde, maxPos yanlış.
+const frameH=cikar(mac,/function frameH\(\)\{[\s\S]*?\n  \}/,'frameH');
+ok('yüzen pencerede kendi kutusu ölçülüyor', /pipWin\.document\.getElementById\('prompt'\)/.test(frameH));
+ok('ölçüm makul değilse çerçeveye düşüyor', /clientHeight>40/.test(frameH));
+ok('yüzen pencere yokken eski davranış', /return frame\.clientHeight;/.test(frameH));
+ok('taşınan düğüme akış kutusu veriliyor', /position:relative;width:100%;height:100%/.test(mac));
+ok('geri alırken satır içi biçim temizleniyor', /prompt\.style\.cssText='';/.test(mac));
+
+// 3) TDZ: frameH pipWin'i YUKARIDAN okuyor. let olsaydı aradaki herhangi bir
+//    üst düzey çağrı tüm uygulamayı ReferenceError ile kırardı.
+ok('pipWin var ile bildirilmiş (TDZ imkânsız)', /var pipWin=null, pipYuva=null;/.test(mac));
+ok('let ile bildirilmemiş', !/let pipWin=null/.test(mac));
+ok('sebebi kodda yazılı', /geçici ölü bölgeye \(TDZ\)/.test(mac));

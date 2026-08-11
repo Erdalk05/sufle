@@ -894,7 +894,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='7.0';
+const cam=$('#cam'), scroller=$('#scroller'), VER='7.1';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1620,6 +1620,7 @@ async function openCam(){
     if(stream) stream.getTracks().forEach(x=>x.stop());
     stopMeter();
     stopAudioFx();   // zincir eski mikrofon izine bağlıydı; yeni akışta baştan kurulur
+    vadDurdur();     // aynısı nefesle akış için de geçerli — eski ize bağlı kalırsa hiç ses duymaz
     let audio = st.rawAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
     if(st.micId){ audio = Object.assign(typeof audio==='object'?audio:{}, {deviceId:{exact:st.micId}}); }
     try{
@@ -1660,6 +1661,7 @@ async function openCam(){
     if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
     $('#recBtn').disabled=false;
     setupCaps(); setupMics();
+    if(st.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
     if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')){ startMeter(); startLight(); }
     autoLightCheck();
     return true;

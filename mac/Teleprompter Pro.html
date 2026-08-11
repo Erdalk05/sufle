@@ -488,7 +488,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='7.0';   // telefon sürümüyle aynı numaralama
+  const VER='7.1';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -866,7 +866,15 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   }
 
   /* ---------- KAYDIRMA MOTORU ---------- */
-  function frameH(){ return frame.clientHeight; }
+  function frameH(){
+    // #prompt yüzen pencereye taşındıysa ONUN kutusunu ölç: ana penceredeki
+    // #frame yüksekliği artık suflenin gerçek yüksekliği değil.
+    if(pipWin){
+      const p=pipWin.document.getElementById('prompt');
+      if(p && p.clientHeight>40) return p.clientHeight;
+    }
+    return frame.clientHeight;
+  }
   function eyeOff(){ return frameH()*(state.eyePos/100); }
   function maxScroll(){ return Math.max(0, scroller.scrollHeight - eyeOff()); }
   // state.speed = WPM (dakikada kelime) → piksel/saniye. Kare hızından BAĞIMSIZ:
@@ -1323,7 +1331,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      Aynı metni ikinci kez render etmiyoruz: ASIL #prompt düğümünü taşıyoruz.
      Böylece kaydırma motoru, vurgu ve sesle takip olduğu gibi çalışmaya devam
      ediyor — iki kopya arasında senkron tutmaya çalışmak kırılgan olurdu. */
-  let pipWin=null, pipYuva=null;
+  // var: frameH() bunu YUKARIDAN okuyor. let olsaydı, aradaki herhangi bir
+  // üst düzey çağrı geçici ölü bölgeye (TDZ) düşüp tüm uygulamayı kırardı.
+  var pipWin=null, pipYuva=null;
   function pipVar(){ return !!(window.documentPictureInPicture && window.documentPictureInPicture.requestWindow); }
   async function pipAc(){
     if(pipWin){ pipKapat(); return; }
@@ -1346,6 +1356,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       const prompt=$('#prompt');
       pipYuva=document.createElement('div');            // asıl yerine iz bırak
       prompt.parentNode.insertBefore(pipYuva, prompt);
+      // Ana pencerede #prompt mutlak konumlu; taşınınca kendi kutusu kalmıyordu.
+      // Yüzen pencerede akış kutusu ver ki frameH() gerçek yüksekliği ölçebilsin.
+      prompt.style.cssText='position:relative;width:100%;height:100%;inset:auto';
       d.body.appendChild(prompt);
       // saydamlık: görüşmede arkadaki yüzü kapatmasın
       const bar=d.createElement('div');
@@ -1368,6 +1381,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function pipGeriAl(){
     const prompt=$('#prompt');
     if(pipYuva && prompt && pipYuva.parentNode){
+      prompt.style.cssText='';        // yüzen pencere için verdiğimiz biçimi kaldır
       pipYuva.parentNode.insertBefore(prompt, pipYuva);
       pipYuva.remove();
     }
