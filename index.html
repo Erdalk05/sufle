@@ -894,7 +894,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='7.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='7.8';
 
 /* ============ i18n ============ */
 const I18N={
@@ -4377,7 +4377,11 @@ function searchSettings(){
     let hit=0;
     [...pane.children].forEach(el=>{
       const esles=norm(el.textContent||'').includes(q);
-      el.style.display=esles?'':'none';
+      // GERÇEK TARAYICIDA BULUNDU: eşleşen öge `.hidden` sınıfındaysa (kompozit
+      // kapalıyken kapalı duran bloklar gibi) display:'' satır içi stili KALDIRIR
+      // ve sınıf kazanır — arama "4 ayar bulundu" der ama aradığın ayar görünmez.
+      // Satır içi 'block' sınıfı ezer. Bu bloklar hep <div>, flex değil.
+      el.style.display = esles ? (el.classList.contains('hidden') ? 'block' : '') : 'none';
       if(esles){ hit++; bulunan++; }
     });
     pane.style.display=hit?'block':'none';

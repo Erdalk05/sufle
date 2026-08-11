@@ -74,3 +74,19 @@ ok('Mac içe aktarma bozuk dosyada çökmüyor', /catch\(err\)\{ logErr\('import
 ok('ses yoksa ne yapılacağı yazıyor', /BU VİDEODA SES YOK/.test(src) && /Güvenli ses modu/.test(src));
 ok('paylaşım iptali bildiriliyor', (src.match(/shareCancelled\(\)/g)||[]).length>=3);
 ok('sessiz mod uyarısı var', /sessiz düğmesine bak/.test(src));
+
+// ---------- GERÇEK TARAYICIDA BULUNAN HATA (v7.8) ----------
+// Arama, `.hidden` sınıfındaki bir kapsayıcıyı eşleştirdiğinde display:'' veriyordu.
+// Bu satır içi stili KALDIRIR, sınıf kazanır: "4 ayar bulundu" yazıyor ama
+// aradığın ayar görünmüyordu. Yalnız canlı tıklamayla ortaya çıktı.
+ok('arama gizli kapsayıcıyı açıyor',
+   /el\.classList\.contains\('hidden'\) \? 'block' : ''/.test(src));
+ok('eşleşmeyen hâlâ gizleniyor', /esles \? \([\s\S]{0,80}?\) : 'none'/.test(src));
+// davranış
+function goster(esles, gizliSinif){
+  return esles ? (gizliSinif ? 'block' : '') : 'none';
+}
+ok('gizli sınıflı eşleşme block oluyor', goster(true,true)==='block');
+ok('normal eşleşme satır içi stil bırakmıyor', goster(true,false)==='');
+ok('eşleşmeyen gizleniyor (gizli sınıflı)', goster(false,true)==='none');
+ok('eşleşmeyen gizleniyor (normal)', goster(false,false)==='none');
