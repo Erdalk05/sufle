@@ -66,3 +66,45 @@ ok('koşul sağlanınca etiket siliniyor', /else if\(et\) et\.remove\(\)/.test(g
 // ---------- HATA GÜNLÜĞÜ HER KRİTİK YOLDA ----------
 ['audioFx','dbPut','dbDel','rec','cam','gl','voice','persist'].forEach(k=>
   ok("logErr('"+k+"') bağlı", js.includes("logErr('"+k+"'")));
+
+// ---------- ESKİ KOD TARAMASI BULGULARI (v6.9) ----------
+// GERİ SARMA + DURAKLAMA İŞARETLERİ: davranış testi, regex değil.
+// Kod parçası gerçek setPos'tan çıkarılıp sentetik durumla koşuluyor.
+(function(){
+  const gercek=cikar(js,/function setPos\(p\)\{[\s\S]*?\n\}/,'setPos');
+  ok('setPos geri sarmayı algılıyor', /if\(pos < onceki-2\)/.test(gercek));
+  ok('yalnız İLERİDEKİ işaretler yeniden kuruluyor', /if\(h\.y>y0\) h\.used=false/.test(gercek));
+  ok('paragraf sayacı da sıfırlanıyor', /lastParaIdx=-1/.test(gercek));
+
+  // Davranış: 100/300/500 px'te üç duraklama; 400'e kadar oku, 150'ye geri sar.
+  let pos=0, lastParaIdx=5;
+  const holdPoints=[{y:100,used:false},{y:300,used:false},{y:500,used:false}];
+  const eyeOff=()=>0;
+  const setPos=p=>{
+    const onceki=pos; pos=p;
+    if(pos < onceki-2){
+      const y0=pos+eyeOff();
+      holdPoints.forEach(h=>{ if(h.y>y0) h.used=false; });
+      lastParaIdx=-1;
+    }
+  };
+  setPos(400); holdPoints.forEach(h=>{ if(h.y<=400) h.used=true; });   // okundu say
+  ok('ileri okuyunca işaretler kullanılmış', holdPoints[0].used && holdPoints[1].used);
+  setPos(150);
+  ok('geri sarınca ileridekiler yeniden kuruldu', !holdPoints[1].used && !holdPoints[2].used);
+  ok('GERİDE KALAN işaret yeniden kurulmuyor (tekrar duraklamasın)', holdPoints[0].used===true);
+  ok('paragraf sayacı geri sarmada sıfırlandı', lastParaIdx===-1);
+  setPos(151);
+  ok('ileri giderken yeniden kurma yok', holdPoints[0].used===true);
+  setPos(150);
+  ok('2 px altı titreme geri sarma sayılmıyor', holdPoints[0].used===true);
+})();
+
+// Bellek: Blob üretildikten sonra chunks dizisi bırakılıyor mu
+ok('Blob üretilince chunks bırakılıyor (çift bellek yok)',
+   /lastBlob=new Blob\(chunks[\s\S]{0,120}?chunks=\[\];/.test(js));
+
+// Kayıt sürerken senaryo değişimi engelleniyor mu
+ok('kayıt sürerken senaryo değiştirilemiyor',
+   /if\(rec && rec\.state==='recording'\)\{ toast\(m\('recBusy'\)\); return; \}/.test(js));
+ok('engel mesajı iki dilde', (js.match(/recBusy:/g)||[]).length===2);

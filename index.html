@@ -889,7 +889,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1083,7 +1083,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1131,7 +1131,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1409,7 +1409,15 @@ let running=false, raf=null, pos=0, activeIdx=-1, lastT=0, holdUntil=0, lastPara
 function pxPerSec(){ return (st.wpm/60)*pxPerWord; }
 let curPPS=0;
 function setPos(p){
+  const onceki=pos;
   pos=Math.max(-eyeOff()*0.4, Math.min(maxPos+H()*0.2, p));
+  // GERİ SARMA: ileride kalan duraklama işaretlerini yeniden kur. Yoksa aynı
+  // yeri tekrar okurken / // (2) hiç çalışmıyordu (bir kez kullanılıp bitiyordu).
+  if(pos < onceki-2){
+    const y0=pos+eyeOff();
+    holdPoints.forEach(h=>{ if(h.y>y0) h.used=false; });
+    lastParaIdx=-1;
+  }
   scroller.style.transform='translateY('+(-pos)+'px)';
   $('#progress').style.width=Math.min(100,Math.max(0,pos/maxPos*100))+'%';
   highlight(pos+eyeOff());
@@ -2587,6 +2595,7 @@ function doStartRec(){
     // süre stopRec'te ölçülüp saklanıyor: burada recT çoktan sıfırlanmış oluyor
     lastDur=(pendingDur||recElapsed());
     lastBlob=new Blob(chunks,{type:(rec.mimeType||'video/mp4').split(';')[0]});
+    chunks=[];   // Blob veriyi devraldı; diziyi tutmak aynı videoyu ikinci kez bellekte tutmak demekti
     autoSaveTake().then(()=>showResult(lastBlob));
   };
   recSection=(curSec>=0?curSec:sectionAt(pos));
@@ -3408,6 +3417,9 @@ function renderScripts(){
   });
 }
 function selectScript(id){
+  // Kayıt sürerken senaryo değiştirmek altyazı damgalarını (capTimes) eski kelime
+  // sayısında bırakıyor ve çekim yanlış başlıkla arşivleniyordu. İzin verme.
+  if(rec && rec.state==='recording'){ toast(m('recBusy')); return; }
   rememberPos(); pullEditor(); st.activeId=id; save();
   // hedefin kayıtlı konumunu reset() sıfırlamadan ÖNCE al
   const want=(active().pos||0);
