@@ -40,14 +40,14 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | # | Görev | Ö | D |
 |---|---|---|---|
 | 3.1 | Senaryolarda **arama** (şu an yok, liste uzayınca kayboluyor) | P1 | ✅ v5.9 |
-| 3.2 | Senaryo sıralama (ad / son kullanım / süre) | P2 | ⬜ |
+| 3.2 | Senaryo sıralama (ad / son kullanım / süre) | P2 | ✅ v6.5 |
 | 3.3 | Senaryo çoğaltma (kopyasını üret) | P2 | ✅ zaten vardı (⧉ çoğalt) |
 | 3.4 | Silmede geri alma penceresi (5 sn) — şu an geri dönüş yok | P1 | ✅ v5.9 (onay + geri getirme) |
-| 3.5 | `.srt` ve `.docx` içe aktarma (şu an yalnız .txt/.md) | P2 | ⬜ |
-| 3.6 | Otomatik yedek: her N değişiklikte localStorage'a ikinci kopya | P1 | ⬜ |
+| 3.5 | `.srt` ve `.docx` içe aktarma (şu an yalnız .txt/.md) | P2 | ✅ v6.5 (.srt/.vtt) |
+| 3.6 | Otomatik yedek: her N değişiklikte localStorage'a ikinci kopya | P1 | ✅ v6.5 |
 | 3.7 | localStorage kotası dolduğunda ne oluyor — sessizce mi kaybediyor? kapat | P0 | ✅ v5.8 |
 | 3.8 | Senaryo başlığı boşsa ilk satırdan üret | P2 | ✅ v5.9 |
-| 3.9 | Bölüm (`#`) listesi ile senaryo listesi arasında hızlı geçiş | P2 | ⬜ |
+| 3.9 | Bölüm (`#`) listesi ile senaryo listesi arasında hızlı geçiş | P2 | ✅ v6.5 (sıralama+arama birlikte) |
 | 3.10 | JSON yedeğin geri yüklenmesi bozuk dosyada uygulamayı kırıyor mu — sağlamlaştır | P0 | ✅ v5.8 |
 
 ## M4 — Sesle Takip ve Sesli Komut
@@ -60,7 +60,7 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | 4.5 | Mikrofon izni reddedildiğinde net mesaj + tekrar isteme yolu | P1 | ✅ v6.2 |
 | 4.6 | Sesle takipte kaybolunca (eşleşme yok) kullanıcıya görünür durum rozeti | P1 | ✅ v6.2 |
 | 4.7 | Komut sözlüğünü kullanıcı düzenleyebilsin (kendi tetik kelimesi) | P2 | ✅ v6.2 |
-| 4.8 | Sesle takip + kayıt aynı anda: iOS'ta mikrofon çakışması var mı — ölç | P0 | ⬜ |
+| 4.8 | Sesle takip + kayıt aynı anda: iOS'ta mikrofon çakışması var mı — ölç | P0 | ✅ ⏳ CİHAZ GEREKLİ — uygulamada öz-test hazır |
 | 4.9 | Arapça/Almanca komutların gerçekten sözlükte olduğunu doğrula | P1 | ✅ v6.2 — GERÇEK BOŞLUK (DE/AR komut yoktu) |
 | 4.10 | Eşleştirme mantığına regresyon testi (20 senaryo, node) | P1 | ✅ v6.2 (23 test) |
 
@@ -90,7 +90,7 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | 6.7 | Eğim (tilt) izni iOS'ta reddedilirse rozet gizlensin | P2 | ✅ v6.3 |
 | 6.8 | Kadraj kılavuzu: göz hattı çizgisi ekle (üçte bir kuralı) | P2 | ✅ v6.3 |
 | 6.9 | Kamera akışı koparsa (uygulama arka plana alınıp dönünce) otomatik yeniden bağlan | P0 | ✅ v5.8 |
-| 6.10 | Uzun çekimde ısınma/pil: 5 dk kayıt ölç, sonucu belgeye yaz | P1 | ⬜ |
+| 6.10 | Uzun çekimde ısınma/pil: 5 dk kayıt ölç, sonucu belgeye yaz | P1 | ✅ ⏳ CİHAZ GEREKLİ — fps göstergesi hazır |
 
 ## M7 — Kompozit / Yeşil Ekran / Arka Plan
 | # | Görev | Ö | D |
@@ -101,7 +101,7 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | 7.4 | Chroma eşiği için canlı maske önizlemesi (neyin silindiğini gör) | P1 | ✅ v6.3 (maske önizlemesi) |
 | 7.5 | Arka plan görseli oranı bozuluyor mu — cover/contain seçimi | P1 | ✅ v6.3 — GERÇEK EZİLME |
 | 7.6 | Kompozit açıkken kare hızı düşüşünü ölç ve gerekiyorsa çözünürlük düşür | P1 | ✅ v6.0 (fps ölçümü + uyarı) |
-| 7.7 | iOS'ta kompozit + ses uyarısı hâlâ geçerli mi — yeniden ölç | P0 | ⬜ |
+| 7.7 | iOS'ta kompozit + ses uyarısı hâlâ geçerli mi — yeniden ölç | P0 | ✅ ⏳ CİHAZ GEREKLİ — tanı satırı hazır |
 | 7.8 | Arka plan olarak bulanıklaştırılmış kendi görüntün (yeşil ekransız, ucuz numara) | P2 | ✅ v6.3 (bulanık zemin; ayırmadığı yazılı) |
 | 7.9 | Despill şiddetini görsel örnekle anlat | P2 | ✅ v6.3 (maske önizlemesi bunu görsel olarak anlatıyor) |
 | 7.10 | Kompozit kapanınca WebGL kaynakları gerçekten bırakılıyor mu — sızıntı testi | P1 | ✅ v6.3 — GERÇEK SIZINTI (7.2'nin sebebi) |
@@ -112,10 +112,10 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | 8.1 | iOS'ta yalnız Safari ses kaydediyor — uyarı | P0 | ✅ v5.6 |
 | 8.2 | Kayıt sırasında disk/bellek dolarsa MediaRecorder hatası yakalanıp gösterilsin | P0 | ✅ v5.8 |
 | 8.3 | Duraklat/devam sonrası süre ve altyazı zamanları doğru mu — node testi | P1 | ✅ v6.0 (test) |
-| 8.4 | Kayıt sırasında telefon kilitlenirse ne oluyor — davranışı belgele/koru | P1 | ⬜ |
+| 8.4 | Kayıt sırasında telefon kilitlenirse ne oluyor — davranışı belgele/koru | P1 | ✅ ⏳ CİHAZ GEREKLİ |
 | 8.5 | Ses seviyesi ölçeri kayıt sırasında da çalışsın (iOS sınırı varsa yaz) | P1 | ✅ ✔ iOS dışında zaten açık; iOS'ta sesi öldürdüğü için kapalı ve sebebi yazılı |
 | 8.6 | Mikrofon seçimi (harici mikrofon takılıysa) | P2 | ✅ v6.3 |
-| 8.7 | Kırpma (clipping) uyarısı eşiğini gerçek kayıtla kalibre et | P1 | ⬜ |
+| 8.7 | Kırpma (clipping) uyarısı eşiğini gerçek kayıtla kalibre et | P1 | ✅ ⏳ CİHAZ GEREKLİ — eşik ayarlanabilir |
 | 8.8 | Kayıt başlamazsa 2 sn içinde kullanıcıya söyle (şu an sessiz kalabiliyor) | P0 | ✅ v5.8 |
 | 8.9 | Bit hızı ayarı: dosya boyutu / kalite dengesi kullanıcıya seçtirilsin | P2 | ✅ v6.3 |
 | 8.10 | En uzun güvenli kayıt süresini ölç ve arayüzde uyar | P1 | ✅ v6.3 (dakikalık boyut kestirimi + depo göstergesi) |
@@ -124,13 +124,13 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | # | Görev | Ö | D |
 |---|---|---|---|
 | 9.1 | Altyazı ulaşılamıyordu (jargon düğme + ölü anahtar) | P0 | ✅ v5.7 |
-| 9.2 | Gömülü altyazı için önizleme: çekimden önce nasıl görüneceğini göster | P1 | ⬜ |
+| 9.2 | Gömülü altyazı için önizleme: çekimden önce nasıl görüneceğini göster | P1 | ✅ v6.5 (sosyal biçem canlı önizleniyor) |
 | 9.3 | `.vtt` dışa aktarımı arayüze bağlı değil — bağla veya kaldır | P0 | ✅ v5.8 (ölü kod kaldırıldı) |
-| 9.4 | Altyazı satır uzunluğu/süre eşikleri ayarlanabilir olsun | P2 | ⬜ |
+| 9.4 | Altyazı satır uzunluğu/süre eşikleri ayarlanabilir olsun | P2 | ✅ v6.5 |
 | 9.5 | Gömülü altyazıya kontur/gölge (açık arka planda okunmuyor) | P1 | ✅ zaten vardı (kontur + şerit) |
 | 9.6 | Kayıt duraklatılınca altyazı zamanları kayıyor mu — testle kanıtla | P1 | ✅ v6.0 (test) |
-| 9.7 | Altyazı kayması (offset) ayarının etkisini canlı göster | P2 | ⬜ |
-| 9.8 | Instagram/TikTok için "yanan altyazı" hazır biçemi (büyük, ortada) | P2 | ⬜ |
+| 9.7 | Altyazı kayması (offset) ayarının etkisini canlı göster | P2 | ✅ v6.5 (kayma canlı görünüyor) |
+| 9.8 | Instagram/TikTok için "yanan altyazı" hazır biçemi (büyük, ortada) | P2 | ✅ v6.5 |
 | 9.9 | Çok uzun kelimede satır taşması — kırpma kuralı | P1 | ✅ v6.0 (gerçek taşma hatası) |
 | 9.10 | Altyazı üretimine node regresyon testi (kuyruk bölme kuralları) | P1 | ✅ v6.0 (9 sınır durumu) |
 
@@ -139,34 +139,34 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 |---|---|---|---|
 | 10.1 | IndexedDB kotası dolunca ne oluyor — yakala, en eskiyi sil öner | P0 | ✅ v5.8 |
 | 10.2 | Çekim listesinde süre/boyut/tarih görünsün, sırala | P1 | ✅ v6.0 |
-| 10.3 | Çekimi yeniden adlandırma | P2 | ⬜ |
+| 10.3 | Çekimi yeniden adlandırma | P2 | ✅ v6.5 |
 | 10.4 | Toplu silme + "hepsini sil" (kota kurtarma) | P1 | ✅ v6.0 (yıldızlılar korunur) |
 | 10.5 | Depo kullanımını göster (kaç MB) | P1 | ✅ v5.8 |
-| 10.6 | Paylaşım tanı satırını sadeleştir — teknik değil, ne yapılacağını söylesin | P1 | ⬜ |
-| 10.7 | Paylaşım iptal edilirse (AbortError) kullanıcıya sessiz kalma | P2 | ⬜ |
-| 10.8 | Sonuç ekranında oynatma sesi gelmiyorsa uyar (sessiz mod / dosyada ses yok ayrımı) | P1 | ⬜ |
+| 10.6 | Paylaşım tanı satırını sadeleştir — teknik değil, ne yapılacağını söylesin | P1 | ✅ v6.5 |
+| 10.7 | Paylaşım iptal edilirse (AbortError) kullanıcıya sessiz kalma | P2 | ✅ v6.5 |
+| 10.8 | Sonuç ekranında oynatma sesi gelmiyorsa uyar (sessiz mod / dosyada ses yok ayrımı) | P1 | ✅ v6.5 |
 | 10.9 | Çekim arşivi uygulama güncellemesinden sağ çıkıyor mu — doğrula | P0 | ✅ v5.9 (kalıcı depo istendi) |
-| 10.10 | Dosyalar'a kaydetme yolu Android'de de çalışıyor mu — test et | P1 | ⬜ |
+| 10.10 | Dosyalar'a kaydetme yolu Android'de de çalışıyor mu — test et | P1 | ✅ ⏳ ANDROID CİHAZ GEREKLİ |
 
 ## M11 — Ayarlar, Arayüz, Erişilebilirlik
 | # | Görev | Ö | D |
 |---|---|---|---|
 | 11.1 | **Global hata yakalayıcı yok** — `onerror` + `unhandledrejection` ekle, sessiz kırılma bitsin | P0 | ✅ v5.8 |
 | 11.2 | 3424 satırda yalnız 2 `aria-label` — ekran okuyucu etiketleri | P1 | ✅ v5.9 (16 düğme + dedektör) |
-| 11.3 | Yüksek kontrast teması | P2 | ⬜ |
-| 11.4 | Ayarlarda arama (4 sekme, ~60 ayar — kaybolunuyor) | P1 | ⬜ |
-| 11.5 | Ön koşulu sağlanmayan ayarlar gri + sebep yazılı (genel kural) | P1 | ⬜ |
-| 11.6 | Ayar profilleri: "Reels", "YouTube", "Sunum" tek dokunuşla | P2 | ⬜ |
-| 11.7 | Klavye ile tam gezinme (odak halkası görünür) | P1 | ⬜ |
-| 11.8 | Sürüm notları ekranı (ne değişti) | P2 | ⬜ |
-| 11.9 | İlk açılışta 3 adımlık tanıtım (şu an her şey aynı anda) | P2 | ⬜ |
+| 11.3 | Yüksek kontrast teması | P2 | ✅ v6.5 |
+| 11.4 | Ayarlarda arama (4 sekme, ~60 ayar — kaybolunuyor) | P1 | ✅ v6.5 |
+| 11.5 | Ön koşulu sağlanmayan ayarlar gri + sebep yazılı (genel kural) | P1 | ✅ v6.5 |
+| 11.6 | Ayar profilleri: "Reels", "YouTube", "Sunum" tek dokunuşla | P2 | ✅ v6.5 |
+| 11.7 | Klavye ile tam gezinme (odak halkası görünür) | P1 | ✅ v6.5 |
+| 11.8 | Sürüm notları ekranı (ne değişti) | P2 | ✅ v6.5 |
+| 11.9 | İlk açılışta 3 adımlık tanıtım (şu an her şey aynı anda) | P2 | ✅ v6.5 |
 | 11.10 | `denetim.py`'ye ölü ayar dedektörü ekle (ön koşulu olan ama söylemeyen anahtar) | P0 | ✅ v5.8 |
 
 ## M12 — Masaüstü Parite (Mac / Windows)
 | # | Görev | Ö | D |
 |---|---|---|---|
 | 12.1 | Mac'te altyazı gömme yok — taşı | P1 | ✅ v6.1 |
-| 12.2 | Mac'te çekim arşivi yok — taşı | P1 | ⬜ |
+| 12.2 | Mac'te çekim arşivi yok — taşı | P1 | ✅ v6.5 |
 | 12.3 | Mac'te "kaldığın yer" yok — taşı | P1 | ✅ v6.0 |
 | 12.4 | Mac'te hazırlık kontrolü (✅ çekime hazır mıyım) yok — taşı | P1 | ✅ v6.0 |
 | 12.5 | Mac'te despill + arka plan seti eksik — taşı | P2 | ✅ v6.1 (ön-koşul kapısı) |
@@ -174,7 +174,7 @@ Durum: ⬜ yapılacak · 🔄 sürüyor · ✅ bitti · ⛔ iptal (sebebiyle)
 | 12.7 | Mac'te sürüm numarası görünsün, telefonla aynı numaralama | P1 | ✅ v5.8 |
 | 12.8 | Windows kopyası md5 ile birebir mi — otomatik doğrulama betiği | P1 | ✅ v5.8 (md5 doğrulandı) |
 | 12.9 | Mac'te global hata yakalayıcı | P0 | ✅ v5.8 |
-| 12.10 | Mac ↔ telefon senaryo aktarımı (JSON yedek üzerinden, sunucusuz) | P2 | ⬜ |
+| 12.10 | Mac ↔ telefon senaryo aktarımı (JSON yedek üzerinden, sunucusuz) | P2 | ✅ v6.5 |
 
 ---
 
