@@ -42,3 +42,18 @@ ok('kırpma açılıyor', gate('burnCaps',true,'9:16',false).crop===true);
 ok('zaten uygunsa dokunmuyor', JSON.stringify(gate('burnCaps',true,'9:16',true))==='{"fmt":"9:16","crop":true}');
 ok('kapatırken dokunmuyor', gate('burnCaps',false,'free',false).fmt==='free');
 ok('ilgisiz anahtara dokunmuyor', gate('safe',true,'free',false).fmt==='free');
+
+// ---------- MAC DÜŞMANCA TARAMA BULGULARI (v6.8) ----------
+const macSrc=oku(macYolu());
+// Kayıt sürerken gömme kapatılırsa akış donmuş kareye düşüyordu.
+ok('kayıt boyunca boru hattı kilitleniyor', /if\(\(burnOn\(\)\|\|capLocked\)&&cropCv\)/.test(macSrc));
+ok('kilit kayıt kaynağı seçilirken kuruluyor', /capLocked=\(srcCv===capOut\)/.test(macSrc));
+ok('kilit kırpma bitince çözülüyor', /capOut=null, capLocked=false|capOut=null; capLocked=false/.test(macSrc));
+ok('kilit değişkeni tanımlı', /let capOut=null, capLocked=false;/.test(macSrc));
+// Ses kısıtları artık açıkça isteniyor (tarayıcı varsayılanına bırakılmıyordu).
+ok('gürültü bastırma açıkça isteniyor', /noiseSuppression:true/.test(macSrc));
+ok('yankı engelleme açıkça isteniyor', /echoCancellation:true/.test(macSrc));
+ok('otomatik kazanç açıkça isteniyor', /autoGainControl:true/.test(macSrc));
+// YANLIŞ POZİTİF olarak doğrulandı: editör her tuşta senkronlanıyor,
+// beforeunload'ın ayrıca syncEditorToState çağırmasına gerek yok.
+ok('editör her tuşta durumla senkron', /\$\('#editor'\)\.addEventListener\('input',\(\)=>\{ syncEditorToState\(\)/.test(macSrc));

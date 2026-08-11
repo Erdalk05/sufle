@@ -487,7 +487,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='6.5';   // telefon sürümüyle aynı numaralama
+  const VER='6.8';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -955,7 +955,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(stream){ stopCam(); return; }
     try{
       stream=await navigator.mediaDevices.getUserMedia({
-        video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30},facingMode:'user'},audio:true});
+        video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30},facingMode:'user'},
+        // Ses kısıtlarını açıkça iste: varsayılana bırakmak tarayıcıdan tarayıcıya
+        // değişiyordu. Telefon sürümüyle aynı davranış.
+        audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
       cam.srcObject=stream; frame.classList.add('cam-on');
       camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
       recBtn.disabled=false; recBtn.style.opacity='1';
@@ -1166,7 +1169,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           try{ cropCtx.drawImage(cam, sx,sy,cw,ch, 0,0,W,H); }catch(e){}
         }
       }
-      if(burnOn()&&cropCv){
+      // Kayıt sürerken anahtar değişse bile boru hattı DEĞİŞMEMELİ:
+      // akış capOut'tan alınıyorsa capOut beslenmeye devam etmeli, yoksa donar.
+      if((burnOn()||capLocked)&&cropCv){
         if(!capOut) capOut=document.createElement('canvas');
         if(capOut.width!==W||capOut.height!==H){ capOut.width=W; capOut.height=H; }
         const o=capOut.getContext('2d');
@@ -1180,7 +1185,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   /* ---- ALTYAZIYI VİDEOYA GÖMME (telefon sürümünden taşındı) ----
      WebGL ve 2D aynı tuvalde olamaz: GL tuvali -> 2D çıktı tuvaline kopyalanır,
      yazı onun üstüne çizilir, kayıt 2D tuvalden alınır. Yalnız bu ayar açıkken. */
-  let capOut=null;
+  let capOut=null, capLocked=false;
   function burnOn(){ return !!state.burnCaps; }
   function liveCue(){
     if(activeIdx<0||!words.length) return '';
@@ -1234,13 +1239,14 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       cropStream.getTracks().forEach(t=>{ if(camTracks.indexOf(t)<0) t.stop(); });
       cropStream=null;
     }
-    cropCv=null; cropCtx=null; capOut=null; gl=null; glPr=null;
+    cropCv=null; cropCtx=null; capOut=null; capLocked=false; gl=null; glPr=null;
   }
   function recSource(){
     if(!cropOn()) return stream;
     if(!startCrop()) return stream;
     try{
       const srcCv=(burnOn()&&capOut)?capOut:cropCv;
+      capLocked=(srcCv===capOut);      // kayıt boyunca bu tuvali beslemeye devam et
       const cs=srcCv.captureStream(30);
       if(!cs.getVideoTracks().length) return stream;
       cropStream=new MediaStream([...cs.getVideoTracks(), ...stream.getAudioTracks()]);
