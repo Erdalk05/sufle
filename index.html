@@ -261,6 +261,20 @@
   .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
   .row .v.hit{animation:keyhit .5s ease-out}
   #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
+  /* 11.7 Klavye gezintisi: odak halkası hiç görünmüyordu, klavyeyle kullanmak imkânsızdı.
+     :focus-visible sayesinde fareyle tıklayanda halka çıkmıyor, yalnız klavyede çıkıyor. */
+  /* 11.3 Yüksek kontrast: gri üstüne gri metin güneş altında ve düşük görüşte okunmuyor.
+     Yalnız renkleri sertleştiriyor; yerleşime dokunmuyor. */
+  body.hicon{--accent:#00ff7f}
+  body.hicon .hint,body.hicon .row label,body.hicon .s{color:#e8e8ee!important}
+  body.hicon .seg button{border-color:#fff!important;color:#fff!important}
+  body.hicon .seg button.on{background:#00ff7f!important;color:#000!important}
+  body.hicon .sheet{background:#000!important}
+  body.hicon .listitem{border-color:#fff!important}
+  body.hicon #scroller{color:#fff!important;text-shadow:0 2px 6px #000}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, .sw:focus-visible,
+  [tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+  .sw{cursor:pointer}
   .eyeline{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:4}
   .eyeline i{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.55)}
   .eyeline u{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.22)}
@@ -392,10 +406,19 @@
     <button data-tab="cam" data-i18n="tabCam">Kamera</button>
     <button data-tab="more" data-i18n="tabMore">Diğer</button>
   </div>
+  <input type="text" id="setFind" placeholder="🔎 Ayarlarda ara…" data-i18n-ph="setFindPh">
+  <div id="setFindOut" class="hint" style="display:none"></div>
 
   <!-- OKUMA -->
   <div class="tab on" id="tab-read">
     <div class="row"><label data-i18n="mode">🎯 Çekim modu</label><span class="v" id="vMode">—</span></div>
+    <div class="row"><label data-i18n="profL">⚡ Hazır kurulum</label></div>
+    <div class="seg" id="profSeg">
+      <button data-pf="reels" data-i18n="pfReels">Reels</button>
+      <button data-pf="youtube" data-i18n="pfYT">YouTube</button>
+      <button data-pf="sunum" data-i18n="pfTalk">Sunum</button>
+    </div>
+    <div class="hint" data-i18n="profHint">Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.</div>
     <div class="seg" id="modeSeg">
       <button data-mode="free" class="on" data-i18n="mFree">Serbest</button>
       <button data-mode="reels">Reels</button>
@@ -620,6 +643,12 @@
         <button data-cp="bottom" class="on" data-i18n="cpBottom">Alt</button>
         <button data-cp="middle" data-i18n="cpMiddle">Orta</button>
       </div>
+      <div class="seg" id="capStyleSeg">
+        <button data-cs="clean" class="on" data-i18n="csClean">Sade</button>
+        <button data-cs="social" data-i18n="csSocial">Sosyal (büyük, ortada)</button>
+      </div>
+      <div class="row"><label data-i18n="capMaxW">Satırda en fazla kelime</label><span class="v" id="vCapW">7</span></div>
+      <input type="range" id="capMaxW" min="3" max="12" value="7">
       <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
       <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
     </div>
@@ -671,6 +700,7 @@
     <div class="hint" id="voiceTestOut"></div>
     <div class="tog"><span data-i18n="tgLock">🔒 Kayıtta ekranı kilitle</span><div class="sw" data-t="autoLock"></div></div>
     <div class="tog"><span data-i18n="tgKeepAwake">☀️ Ekranı uyanık tut</span><div class="sw on" data-t="wake"></div></div>
+    <div class="tog"><span data-i18n="tgHicon">◐ Yüksek kontrast</span><div class="sw" data-t="hicon"></div></div>
     <div class="tog"><span data-i18n="tgHideUI">🫧 Kayıtta düğmeleri gizle</span><div class="sw" data-t="hideUI"></div></div>
 
     <div class="row"><label data-i18n="backup">Yedekle / Geri yükle</label></div>
@@ -699,14 +729,19 @@
     <div class="seg" id="secList"></div>
   </div>
   <input type="text" id="scriptFind" placeholder="🔎 Senaryolarda ara…" data-i18n-ph="findPh">
+  <div class="seg" id="scSort" style="margin-bottom:6px">
+    <button data-ss="used" class="on" data-i18n="ssUsed">Son kullanılan</button>
+    <button data-ss="name" data-i18n="ssName">Ada göre</button>
+    <button data-ss="len" data-i18n="ssLen">Uzunluğa göre</button>
+  </div>
   <div id="scriptList"></div>
-  <div class="sheetbtns"><button class="cancel hidden" id="undoDel" data-i18n="undoDel">↺ Silineni geri getir</button></div>
+  <div class="sheetbtns"><button class="cancel hidden" id="undoDel" data-i18n="undoDel">↺ Silineni geri getir</button><button class="cancel" id="restoreBk" data-i18n="restoreBk">🛟 Otomatik yedekten dön</button></div>
   <div class="sheetbtns">
     <button class="cancel" id="newScript" data-i18n="newScript">＋ Yeni</button>
     <button class="cancel" id="pasteScript" data-i18n="paste">📋 Yapıştır</button>
     <button class="cancel" id="fileScript" data-i18n="fromFile">📄 Dosya</button>
   </div>
-  <input type="file" id="txtFile" accept=".txt,.md,text/plain,text/markdown" class="hidden">
+  <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,text/plain,text/markdown" class="hidden">
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" placeholder="Senaryo başlığı">
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
@@ -794,6 +829,12 @@
 </div>
 
 <!-- YARDIM -->
+<div class="sheet" id="newsSheet">
+  <div class="grab"></div>
+  <h2><span data-i18n="newsTitle">🆕 Ne değişti?</span><button class="iconbtn" id="newsX" aria-label="Kapat">✕</button></h2>
+  <div id="newsBody" class="hint"></div>
+</div>
+
 <div class="sheet" id="helpSheet">
   <div class="grab"></div>
   <h2><span data-i18n="help">Nasıl kullanılır?</span><button class="iconbtn" id="helpX" aria-label="Kapat" data-aria="helpX">✕</button></h2>
@@ -848,7 +889,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -917,7 +958,11 @@ const I18N={
   remote:'🎛 Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
   lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
-  capBtnL:'💬 Altyazı dosyası',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
+  ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
+  csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
+  profL:'⚡ Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
+  profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
+  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'💬 Altyazı dosyası',setFindPh:'🔎 Ayarlarda ara…',restoreBk:'🛟 Otomatik yedekten dön',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
   vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'🎚 Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
@@ -991,7 +1036,11 @@ const I18N={
   remote:'🎛 Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
   lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
-  capBtnL:'💬 Caption file',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
+  ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
+  csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
+  profL:'⚡ Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
+  profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
+  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'💬 Caption file',setFindPh:'🔎 Search settings…',restoreBk:'🛟 Restore auto-backup',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
   vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'🎚 Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
@@ -1034,7 +1083,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1082,7 +1131,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1143,7 +1192,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100, eyeLine:false, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, eyeLine:false, hicon:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -1191,9 +1240,31 @@ function load(){
   if(!st.scripts.find(s=>s.id===st.activeId)) st.activeId=st.scripts[0].id;
 }
 let saveT=null;
+/* 3.6 OTOMATİK YEDEK: ayarların TEK kopyası vardı. Bozulma ya da yanlış
+   toplu silme her şeyi götürürdü. Her 20 kayıtta bir ikinci kopya alınıyor;
+   yalnız senaryolar (asıl değerli veri), ayarlar değil. */
+let saveCount=0;
+function autoBackup(){
+  if(++saveCount % 20) return;
+  try{
+    localStorage.setItem(LS+'_yedek', JSON.stringify({
+      t:Date.now(), scripts:st.scripts, activeId:st.activeId
+    }));
+  }catch(e){ /* kota dolu — asıl kayıt zaten uyarıyor */ }
+}
+function restoreBackup(){
+  try{
+    const b=JSON.parse(localStorage.getItem(LS+'_yedek')||'null');
+    if(!b||!b.scripts||!b.scripts.length){ toast(m('noBackup')); return; }
+    st.trash=(st.trash||[]).concat(st.scripts).slice(-5);   // mevcut hâli çöpe at, geri alınabilsin
+    st.scripts=b.scripts; st.activeId=b.activeId||b.scripts[0].id;
+    save(); fillEditor(); renderScripts(); buildContent(); reset();
+    toast(m('restoredBackup')+' '+new Date(b.t).toLocaleString());
+  }catch(e){ logErr('restore',e); toast(m('noBackup')); }
+}
 let lsFullWarned=false;
 function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{
-  try{ localStorage.setItem(LS,JSON.stringify(st)); lsFullWarned=false; }
+  try{ localStorage.setItem(LS,JSON.stringify(st)); lsFullWarned=false; autoBackup(); }
   catch(e){
     // KOTA DOLU: eskiden sessizce yutuluyordu → yazdığın senaryo kaydolmuyor ama uygulama
     // "kaydettim" gibi davranıyordu. Artık bir kez açıkça söylüyor.
@@ -2625,7 +2696,14 @@ function showResult(blob){
         ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompoziti kapat ve tekrar çek'
         : '⚠️ iOS drops audio when composite is on — turn Composite off in Settings → Camera');
   });
-  $('#audInfo').textContent=audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · audio processed'):'');
+  // 10.6 Önce ne yapman gerektiği, sonra teknik ayrıntı.
+  const sesVar=lastPath && lastPath.aud>0;
+  $('#audInfo').innerHTML = (sesVar
+      ? '<b style="color:var(--accent)">✅ '+(L==='tr'?'Ses kaydedildi':'Audio recorded')+'</b>'
+      : '<b style="color:#ff5252">⛔ '+(L==='tr'?'BU VİDEODA SES YOK':'THIS VIDEO HAS NO AUDIO')+'</b><br>'+
+        (L==='tr'?'Tekrar çekmeden önce: Ayarlar → Kamera → <b>Güvenli ses modu</b> açık olsun'
+                :'Before reshooting: Settings → Camera → enable <b>Safe audio mode</b>'))
+    + '<br><small style="opacity:.6">'+audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'')+'</small>';
   const n=buildCues().length;
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
@@ -2728,7 +2806,7 @@ async function saveRec(){
       if(!isMp4) toast(m('notMp4'));
       return;
     }catch(e){
-      if(e.name==='AbortError') return;
+      if(e.name==='AbortError'){ shareCancelled(); return; }
       toast(m('shareFail')+' ('+(e.name||'')+')');
     }
   } else {
@@ -2744,7 +2822,8 @@ async function saveRec(){
 /* ============ ALTYAZI ÜRETİMİ (.srt / .vtt) ============
    Kaynak: kelimelerin okuma çizgisinden geçme anları. Konuşma tanıma yok →
    kelime yazımı %100 doğru (senaryonun kendisi), senkron da okuma anından geliyor. */
-const CAP_MAXW=7, CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+const CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+function capMaxW(){ return st.capMaxW||7; }
 function sentenceEnd(s){ return /[.!?…:;]["')\]]?$/.test(s); }
 function buildCues(){
   const off=(st.capOffset||0);
@@ -2759,7 +2838,7 @@ function buildCues(){
     const w=list[k];
     if(!cur){ cur={start:w.t, words:[w.s], ln:w.ln, chars:w.s.length}; continue; }
     const dur=w.t-cur.start;
-    const brk = cur.words.length>=CAP_MAXW || cur.chars+1+w.s.length>CAP_MAXCH ||
+    const brk = cur.words.length>=capMaxW() || cur.chars+1+w.s.length>CAP_MAXCH ||
                 dur>=CAP_MAXSEC || w.ln!==cur.ln || sentenceEnd(cur.words[cur.words.length-1]);
     if(brk){ cues.push(cur); cur={start:w.t, words:[w.s], ln:w.ln, chars:w.s.length}; }
     else { cur.words.push(w.s); cur.chars+=1+w.s.length; }
@@ -2792,7 +2871,7 @@ async function shareCaptions(fmt){
   const name=fileName()+'.'+fmt;
   const file=new File([txt],name,{type:'text/plain'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{ await navigator.share({files:[file],title:name}); toast(cues.length+' '+m('capsMade')); return; }catch(e){ if(e.name==='AbortError') return; }
+    try{ await navigator.share({files:[file],title:name}); toast(cues.length+' '+m('capsMade')); return; }catch(e){ if(e.name==='AbortError'){ shareCancelled(); return; } }
   }
   const b=new Blob([txt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
   const a=document.createElement('a'); a.href=u; a.download=name;
@@ -2863,6 +2942,12 @@ async function renderTakes(){
       '<button class="iconbtn" data-a="play">▶︎</button>'+(it.srt?'<button class="iconbtn" data-a="srt">💬</button>':'')+
       '<button class="iconbtn" data-a="share">⬇︎</button><button class="iconbtn" data-a="del">🗑</button>';
     d.querySelector('[data-a="fav"]').onclick=async()=>{ it.fav=!it.fav; await dbPut(it); renderTakes(); };
+    // 10.3 Yeniden adlandırma: arşivde hepsi aynı senaryo adını taşıyordu, ayırt edilemiyordu
+    d.querySelector('.t').onclick=async()=>{
+      const ad=prompt(L==='tr'?'Çekimin adı:':'Take name:', it.title||'');
+      if(ad==null) return;
+      it.title=ad.trim().slice(0,60); await dbPut(it); renderTakes();
+    };
     d.querySelector('[data-a="play"]').onclick=()=>{ lastBlob=it.blob; lastDur=it.dur||0; curTakeId=it.id; closeSheets(); showResult(it.blob); };
     if(it.srt) d.querySelector('[data-a="srt"]').onclick=()=>{
       const b=new Blob([it.srt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
@@ -3283,7 +3368,12 @@ function renderScripts(){
   const ub=$('#undoDel'); if(ub) ub.classList.toggle('hidden',!(st.trash&&st.trash.length));
   // Arama: liste uzayınca senaryo bulunamıyordu. Türkçe katlama norm() ile aynı kural.
   const q=norm(($('#scriptFind')&&$('#scriptFind').value)||'');
-  const list=q ? st.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q)) : st.scripts;
+  let list=q ? st.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q)) : st.scripts.slice();
+  // 3.2 Sıralama: liste büyüdükçe "en son ne üzerinde çalışıyordum" kaybolur.
+  const ss=st.scSort||'used';
+  list.sort(ss==='name' ? (a,b)=>(a.title||'').localeCompare(b.title||'','tr')
+          : ss==='len'  ? (a,b)=>countWords(b.text||'')-countWords(a.text||'')
+                        : (a,b)=>(b.up||0)-(a.up||0));
   if(!list.length){ box.innerHTML='<div class="empty">'+m('noMatch')+'</div>'; return; }
   list.forEach(s=>{
     const d=document.createElement('div'); d.className='listitem'+(s.id===st.activeId?' on':'');
@@ -3314,6 +3404,14 @@ function firstLineTitle(txt){
 /* Word/web'den yapıştırılan metinde sıfır-genişlikli karakterler ve kırılmayan boşluk
    oluyor: kelime bölme, sesle takip eşleşmesi ve altyazı bunlardan bozuluyor.
    GÖRÜNEN içeriğe dokunmuyoruz — yalnız görünmez olanlar sadeleşiyor. */
+/* 3.5 .srt/.vtt içe aktarma: hazır altyazıdan senaryo üretmek yaygın bir ihtiyaç
+   (eski videonun metnini yeniden çekmek gibi). Sıra numaraları ve zaman kodları atılır. */
+function srtToText(t){
+  if(!/-->/.test(t)) return t;              // .srt değil, olduğu gibi bırak
+  return t.split(/\r?\n/)
+    .filter(l=>!/^\s*\d+\s*$/.test(l) && !/-->/.test(l) && !/^WEBVTT/i.test(l))
+    .join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
 function stripInvisible(x){
   return (x||'')
     .replace(/[\u200B-\u200D\u2060\uFEFF]/g,'')      // sıfır genişlik + BOM
@@ -3558,7 +3656,7 @@ function renderMap(){
 }
 
 /* ============ SHEET YÖNETİMİ ============ */
-const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet','#ready'];
+const SHEETS=['#sheet','#scriptsSheet','#takesSheet','#helpSheet','#remoteSheet','#ready','#newsSheet'];
 function openSheet(id){ closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting'); }
 function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
@@ -3616,6 +3714,7 @@ function apply(){
   body.classList.toggle('nohl',!st.hl);
   body.classList.toggle('nofade',!st.fade);
   body.classList.toggle('noshadow',!st.shadow);
+  body.classList.toggle('hicon',!!st.hicon);
   body.classList.toggle('caseUp',st.textCase==='upper');
   body.classList.toggle('caseLow',st.textCase==='lower');
   body.classList.toggle('mirrorText',st.mirrorText);
@@ -3651,8 +3750,11 @@ function apply(){
   $$('#fontSeg button').forEach(b=>b.classList.toggle('on',b.dataset.f===st.font));
   $$('#alignSeg button').forEach(b=>b.classList.toggle('on',b.dataset.a===st.align));
   $$('#caseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c2===(st.textCase||'none')));
+  $$('#scSort button').forEach(b=>b.classList.toggle('on',b.dataset.ss===(st.scSort||'used')));
+  $$('#capStyleSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cs===(st.capStyle||'clean')));
+  if($('#capMaxW')){ $('#capMaxW').value=st.capMaxW||7; $('#vCapW').textContent=st.capMaxW||7; }
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
-  renderBitrate(); renderFx(); renderVfx();
+  renderBitrate(); renderFx(); renderVfx(); gateSettings();
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
@@ -3815,6 +3917,32 @@ function jumpLine(dir){
 $('#startCam').onclick=async()=>{ if(await openCam()){ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); body.classList.add('started'); requestWake(); } };
 $('#startNoCam').onclick=()=>{ $('#intro').classList.add('hidden'); $('#bar').classList.remove('hidden'); body.classList.add('started'); requestWake(); };
 $('#helpBtn').onclick=()=>openSheet('#helpSheet');
+$('#newsX').onclick=closeSheets;
+/* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
+   Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
+const NEWS={
+ '6.4':{tr:'🎚 <b>Ses Stüdyosu</b>: uğultu kesme, 50 Hz şebeke çentiği, gürültü kapısı ve seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan yenilik bu.<br>🎨 <b>Görüntü filtreleri</b>: 6 hazır ayar + şiddet. Kompozit açıkken videoya işleniyor.<br>🔎 Ayarlarda ve senaryolarda arama · ⚡ Reels/YouTube/Sunum hazır kurulumları · ◐ yüksek kontrast · 🛟 otomatik yedek.',
+       en:'🎚 <b>Audio Studio</b>: rumble cut, 50 Hz mains notch, noise gate and levelling.<br>🎨 <b>Video filters</b>: 6 presets + intensity.<br>🔎 Search in settings and scripts · ⚡ quick setups · ◐ high contrast · 🛟 auto-backup.'}
+};
+function showNews(){
+  const k=Object.keys(NEWS).sort().pop();
+  $('#newsBody').innerHTML='<b>v'+k+'</b><br><br>'+(NEWS[k][L]||NEWS[k].tr);
+  openSheet('#newsSheet');
+}
+/* 11.9 İlk açılış: her şey aynı anda görünüyordu, nereden başlanacağı belli değildi. */
+function firstRun(){
+  if(st.seenVer===VER) return;
+  const ilk=!st.seenVer;
+  st.seenVer=VER; save();
+  setTimeout(()=>{
+    if(ilk){
+      $('#newsBody').innerHTML=(L==='tr'
+        ? '<b>Üç adımda başla:</b><br><br>1️⃣ <b>📝 Senaryolar</b>&#39;a metnini yapıştır.<br>2️⃣ Ana ekranda <b>−/+</b> ile hızını ayarla (kendi okuma hızını bul).<br>3️⃣ <b>✅ Hazır mıyım</b> ile ışığı ve sesi kontrol et, sonra <b>●</b> ile çek.<br><br>Gerisi isteğe bağlı — hepsini şimdi öğrenmen gerekmiyor.'
+        : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>📝 Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>✅ Ready?</b>, then hit <b>●</b>.');
+      openSheet('#newsSheet');
+    } else showNews();
+  },1400);
+}
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
 /* ayarları sıfırla — senaryolara ve çekimlere dokunmaz, iki basış ister */
 let resetArm=0;
@@ -3894,7 +4022,7 @@ $('#mapExport').onclick=async()=>{
   const data=JSON.stringify({sufleRemote:1,map:keyMap(),map2:keyMap2()},null,1);
   const f=new File([data],'sufle-kumanda.json',{type:'application/json'});
   if(navigator.canShare&&navigator.canShare({files:[f]})){
-    try{ await navigator.share({files:[f]}); return; }catch(e){ if(e.name==='AbortError') return; }
+    try{ await navigator.share({files:[f]}); return; }catch(e){ if(e.name==='AbortError'){ shareCancelled(); return; } }
   }
   const u=URL.createObjectURL(new Blob([data],{type:'application/json'}));
   const a=document.createElement('a'); a.href=u; a.download='sufle-kumanda.json';
@@ -3928,6 +4056,22 @@ $('#eyeRecipe').onclick=applyEyeRecipe;
 bind('#weight','weight'); bind('#ls','ls'); bind('#scrimSl','scrim'); bind('#target','target');
 $('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
 $('#capBtn').onclick=()=>shareCaptions('srt');
+/* 10.8 "Oynatıyorum ses yok" iki ayrı şey olabilir: dosyada ses YOK, ya da
+   telefon sessiz moddadır. İkisini ayırt etmeden kullanıcı yanlış yeri arıyor. */
+$('#resultVid').addEventListener('play',()=>{
+  const v=$('#resultVid');
+  setTimeout(()=>{
+    if(!lastPath) return;
+    if(lastPath.aud>0 && v.volume>0 && !v.muted)
+      toast(L==='tr'?'Ses gelmiyorsa telefonun yan tarafındaki sessiz düğmesine bak'
+                    :'No sound? Check the silent switch on the side of your phone');
+  },1200);
+},{once:true});
+
+/* 10.7 Paylaşım iptal edilince eskiden hiçbir şey olmuyordu; kullanıcı
+   "çalışmadı mı?" diye tekrar tekrar basıyordu. */
+function shareCancelled(){ toast(L==='tr'?'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin'
+                                        :'Sharing cancelled — the file is still here'); }
 $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
 
 $$('#colorSeg button').forEach(b=>b.onclick=()=>{ st.color=b.dataset.c; apply(); save(); });
@@ -3959,6 +4103,11 @@ function ensureComp(k){
   if(!startComp()){ st[k]=false; apply(); save(); return false; }
   st.comp=true; apply(); save(); toast(m('needsComp')); return true;
 }
+/* Anahtarlar <div> olduğu için klavyeyle ne odaklanabiliyor ne de açılabiliyordu. */
+$$('.sw').forEach(s=>{
+  s.setAttribute('tabindex','0'); s.setAttribute('role','switch');
+  s.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); s.click(); } });
+});
 $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
   if(k==='backCam'){ st.zoom=100; st.torch=false; }   // yeni kameranın yetenekleri farklı — devretme
@@ -4073,6 +4222,88 @@ function restoreTrash(){
   save(); fillEditor(); renderScripts(); buildContent(); reset(); toast(m('restored'));
 }
 $('#scriptFind').oninput=()=>renderScripts();
+/* 11.4 AYAR ARAMA: ~70 ayar dört sekmeye dağılmış durumda; adını bilsen bile
+   hangi sekmede olduğunu hatırlamak gerekiyordu. Arama sekmeleri yok sayıp
+   eşleşen satırları gösteriyor. Türkçe katlama norm() ile aynı. */
+function searchSettings(){
+  const q=norm($('#setFind').value||'');
+  const out=$('#setFindOut');
+  const panes=[...$('#sheet').querySelectorAll('.tab')];
+  const temizle=()=>panes.forEach(p=>{ p.style.display=''; [...p.children].forEach(c=>c.style.display=''); });
+  if(!q){
+    temizle();
+    $$('#sheet .tabs button').forEach(b=>b.style.display='');
+    out.style.display='none';
+    return;                       // görünürlüğü .on sınıfı yönetiyor, karışma
+  }
+  // Aramada sekme sınırı yok: satır içi display, sınıf tabanlı gizlemeyi ezer.
+  $$('#sheet .tabs button').forEach(b=>b.style.display='none');
+  let bulunan=0;
+  panes.forEach(pane=>{
+    let hit=0;
+    [...pane.children].forEach(el=>{
+      const esles=norm(el.textContent||'').includes(q);
+      el.style.display=esles?'':'none';
+      if(esles){ hit++; bulunan++; }
+    });
+    pane.style.display=hit?'block':'none';
+  });
+  out.style.display='';
+  out.textContent = bulunan
+    ? (L==='tr'? bulunan+' ayar bulundu — sekmeler geçici olarak kapalı':bulunan+' settings found')
+    : (L==='tr'? 'Eşleşen ayar yok':'No matching setting');
+}
+$('#setFind').oninput=searchSettings;
+$$('#scSort button').forEach(b=>b.onclick=()=>{ st.scSort=b.dataset.ss;
+  $$('#scSort button').forEach(x=>x.classList.toggle('on',x===b)); save(); renderScripts(); });
+$$('#capStyleSeg button').forEach(b=>b.onclick=()=>{ st.capStyle=b.dataset.cs;
+  // sosyal biçem: büyük punto, ortada — Reels/TikTok'ta okunan hâli budur
+  if(st.capStyle==='social'){ st.capSize=64; st.capPos='middle'; } else { st.capSize=42; st.capPos='bottom'; }
+  apply(); save(); });
+$('#capMaxW').oninput=e=>{ st.capMaxW=+e.target.value; $('#vCapW').textContent=st.capMaxW; save(); };
+/* 11.6 Hazır kurulumlar: her biri denenmiş bir takım. Sihir yok — sadece
+   o iş için doğru bilinen değerleri birlikte uyguluyor. */
+const PROF={
+  reels:  {mode:'reels', asp:'9:16', wpm:150, band:1, eyeLine:true,  audioFx:'voice', vidFx:'bright',  capStyle:'social'},
+  youtube:{mode:'yt',    asp:'16:9', wpm:135, band:2, eyeLine:true,  audioFx:'studio',vidFx:'natural', capStyle:'clean'},
+  sunum:  {mode:'free',  asp:'none', wpm:120, band:0, eyeLine:false, audioFx:'noisy', vidFx:'off',     capStyle:'clean'}
+};
+$$('#profSeg button').forEach(b=>b.onclick=()=>{
+  const p=PROF[b.dataset.pf]; if(!p) return;
+  Object.assign(st,p);
+  st.capSize = p.capStyle==='social'?64:42;
+  st.capPos  = p.capStyle==='social'?'middle':'bottom';
+  applyMode(st.mode,false); apply(); save(); buildContent(); updateStats(); renderScripts();
+  toast('⚡ '+b.textContent);
+});
+$('#restoreBk').onclick=restoreBackup;
+/* 11.5 ÖN KOŞUL: koşulu sağlanmayan ayar açıkken hiçbir şey yapmıyordu.
+   Artık soluk görünüyor ve NEDEN çalışmadığı yanına yazılıyor. */
+function gateSettings(){
+  const kural=[
+    ['burnCaps', ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    ['chroma',   ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    ['maskPrev', ()=>!!st.chroma, L==='tr'?'yeşil ekran açık olmalı':'needs green screen'],
+    ['torch',    ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    ['voiceCmd', ()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition),
+                 L==='tr'?'bu tarayıcıda tanıma yok':'no recognition here'],
+    ['rawAudio', ()=>true, '']
+  ];
+  kural.forEach(([k,ok,sebep])=>{
+    const sw=$('#sheet').querySelector('[data-t="'+k+'"]');
+    if(!sw) return;
+    const satir=sw.closest('.tog'); if(!satir) return;
+    const uygun=ok();
+    satir.style.opacity=uygun?'':'0.45';
+    let et=satir.querySelector('.gateWhy');
+    if(!uygun && sebep){
+      if(!et){ et=document.createElement('small'); et.className='gateWhy';
+        et.style.cssText='display:block;font-size:11px;color:#ffb300;font-weight:700';
+        sw.parentNode.insertBefore(et,sw); }
+      et.textContent='· '+sebep;
+    } else if(et) et.remove();
+  });
+}
 $('#wakeWord').oninput=()=>{ st.wakeWord=$('#wakeWord').value.trim(); userWake=norm(st.wakeWord); save(); };
 $$('#takeSort button').forEach(b=>b.onclick=()=>{ takeSort=b.dataset.s;
   $$('#takeSort button').forEach(x=>x.classList.toggle('on',x===b)); renderTakes(); });
@@ -4150,7 +4381,7 @@ $('#txtFile').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
   const r=new FileReader();
   r.onload=()=>{
-    const txt=String(r.result||'').replace(/\r\n/g,'\n');
+    const txt=String(srtToText(String(r.result))||'').replace(/\r\n/g,'\n');
     if(!txt.trim()){ toast(m('emptyText')); return; }
     const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
     st.scripts.unshift(s); st.activeId=s.id; save();
@@ -4245,6 +4476,7 @@ if(IS_IOS_ALT){
 }
 load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
+firstRun();
 
 /* ARŞİV KALICILIĞI: tarayıcılar (özellikle iOS Safari) uzun süre açılmayan sitenin
    IndexedDB'sini SİLEBİLİYOR — yani çekim arşivin buharlaşabilir. Kalıcı depo istemek

@@ -37,8 +37,12 @@ let t0=0,pausedMs=0;
 ok('duraklama altyazıyı kaydırmıyor', JSON.stringify(stamps)==='[1,2,3]');
 
 // ---- 9.10 kuyruk bölme kuralları (gerçek sabitler) ----
-var C=grab(/const CAP_MAXW=\d+, CAP_MAXCH=\d+, CAP_MAXSEC=[\d.]+, CAP_GAP=[\d.]+;/);
+// CAP_MAXW artık sabit değil, ayardan geliyor (9.4) — test de ona göre.
+var C=grab(/const CAP_MAXCH=\d+, CAP_MAXSEC=[\d.]+, CAP_GAP=[\d.]+;/);
 eval(C.replace('const ','var '));
+var st={capMaxW:null};
+eval(grab(/function capMaxW\(\)\{[\s\S]*?\}/).replace('function','var _cmw=function').replace('_cmw=function capMaxW','capMaxW=function'));
+var CAP_MAXW=capMaxW();
 eval(grab(/function sentenceEnd\(s\)\{[\s\S]*?\n\}/));
 ok('nokta cümle sonu', sentenceEnd('bitti.')===true);
 ok('tırnaklı nokta da', sentenceEnd('bitti."')===true);

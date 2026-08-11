@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teleprompter Pro — Video Çekim Sufle</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#141418; --panel2:#1c1c22; --line:#2a2a32;
+    --txt:#e8e8ee; --muted:#8a8a96; --accent:#00C853;
+    --pFont:64px; --pLine:1.5; --pMargin:6vw; --pFamily:system; --bandIn:5%; --bandOut:34%;
+    --pText:#ffffff; --pBg:#000000; --eyeY:42%;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;font-size:14px}
+  button{font-family:inherit;cursor:pointer}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#33333d;border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ===== GENEL DÜZEN ===== */
+  #app{display:grid;grid-template-columns:300px 1fr 280px;grid-template-rows:56px 1fr;height:100%}
+  #app.full{grid-template-columns:0 1fr 0}
+  #topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;
+    padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);z-index:20}
+  #left{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column}
+  #right{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto}
+  #left,#right{transition:opacity .2s}
+  #app.full #left,#app.full #right{opacity:0;pointer-events:none;overflow:hidden}
+
+  /* ===== ÜST ÇUBUK ===== */
+  .brand{font-weight:800;font-size:15px;letter-spacing:.3px;color:#fff;margin-right:6px}
+  .brand b{color:var(--accent)}
+  .spacer{flex:1}
+  .btn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{border-color:#3d3d48}
+  .btn.primary{background:var(--accent);color:#04210f;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.danger{color:#ff6b6b}
+  .btn.rec{background:#e53935;color:#fff;border-color:transparent}
+  .btn.rec.active{animation:pulse 1.2s infinite}
+  @keyframes pulse{50%{filter:brightness(.7)}}
+  .pill{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .pill button{background:none;border:none;color:var(--muted);padding:8px 11px;font-size:12px;font-weight:600}
+  .pill button.on{background:var(--accent);color:#04210f}
+  .clock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:14px;min-width:54px;text-align:center}
+
+  /* ===== SOL PANEL — SENARYOLAR + METİN ===== */
+  .sec{padding:14px 14px 0}
+  .sec h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+  .iconbtn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:7px;width:26px;height:26px;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .scripts{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+  .scriptItem{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:9px}
+  .scriptItem.on{border-color:var(--accent);background:rgba(0,200,83,.08)}
+  .scriptItem .nm{flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scriptItem .meta{font-size:11px;color:var(--muted)}
+  .scriptItem .x{color:var(--muted);font-size:16px;background:none;border:none;padding:0 2px}
+  .scriptItem .x:hover{color:#ff6b6b}
+  #editorWrap{flex:1;display:flex;flex-direction:column;padding:6px 14px 14px;min-height:220px}
+  #title{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:13px;font-weight:600;margin-bottom:8px}
+  #title:focus,#editor:focus{outline:none;border-color:var(--accent)}
+  #editor{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:11px;color:var(--txt);
+    padding:13px;font-size:15px;line-height:1.65;resize:none;font-family:inherit;min-height:160px}
+  .editStats{font-size:11px;color:var(--muted);margin-top:7px;display:flex;justify-content:space-between}
+
+  /* ===== SAĞ PANEL — AYARLAR ===== */
+  .ctrl{padding:13px 16px;border-bottom:1px solid var(--line)}
+  .ctrl .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+  .ctrl .row:last-child{margin-bottom:0}
+  .ctrl label{font-size:12.5px;color:var(--txt)}
+  .ctrl .v{font-size:12px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent);height:22px}
+  .field{margin-bottom:11px}
+  .field:last-child{margin-bottom:0}
+  .field .top{display:flex;justify-content:space-between;margin-bottom:3px}
+  .field .top label{font-size:12px;color:var(--muted)}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap}
+  .sw{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative}
+  .sw.on{border-color:#fff}
+  .selectish{display:flex;gap:6px;flex-wrap:wrap}
+  .selectish button{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600}
+  .selectish button.on{background:var(--accent);color:#04210f;border-color:transparent}
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+  .toggle span{font-size:12.5px}
+  .sw2{position:relative;width:42px;height:24px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;transition:.15s}
+  .sw2::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#777;transition:.15s}
+  .sw2.on{background:var(--accent)}
+  .sw2.on::after{left:21px;background:#fff}
+  .colorRow{display:flex;align-items:center;gap:10px}
+  .colorRow input[type=color]{width:40px;height:30px;border:1px solid var(--line);border-radius:8px;background:none;padding:2px}
+
+  /* ===== ORTA SAHNE ===== */
+  #stageWrap{position:relative;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 30%,#1a1a20,#070708);overflow:hidden;padding:18px}
+  /* tam ekranda çerçeve en üste yapışsın — yazı Mac kamerasının hemen altından başlasın */
+  #stageWrap:fullscreen{align-items:flex-start;padding:0;background:#000}
+  #stageWrap:-webkit-full-screen{align-items:flex-start;padding:0;background:#000}
+  #stageWrap:fullscreen #frame{border-radius:0}
+  #stageWrap:-webkit-full-screen #frame{border-radius:0}
+  #frame{position:relative;background:var(--pBg);overflow:hidden;border-radius:8px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);max-width:100%;max-height:100%}
+  /* kamera arka plan */
+  #cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none}
+  #frame.cam-on #cam{display:block}
+  #frame.cam-on #prompt{ }
+  /* yazı katmanı */
+  #prompt{position:absolute;inset:0;overflow:hidden}
+  #scroller{
+    padding:62% var(--pMargin);
+    font-size:var(--pFont);line-height:var(--pLine);font-weight:650;color:var(--pText);
+    white-space:pre-wrap;word-wrap:break-word;text-align:center;will-change:transform;
+    text-shadow:0 2px 14px rgba(0,0,0,.55);
+  }
+  #scroller .fam-serif{}
+  body[data-fam=serif] #scroller{font-family:Georgia,"Times New Roman",serif}
+  body[data-fam=mono] #scroller{font-family:"SF Mono",Menlo,Consolas,monospace}
+  body[data-fam=system] #scroller{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  body[data-fam=round] #scroller{font-family:"Avenir Next","Trebuchet MS",sans-serif}
+  /* ayna / ters */
+  #frame.caseUp #scroller{text-transform:uppercase}
+  #frame.caseLow #scroller{text-transform:lowercase}
+  #frame.mirror #prompt{transform:scaleX(-1)}
+  #frame.flip #prompt{transform:scaleY(-1)}
+  #frame.mirror.flip #prompt{transform:scale(-1,-1)}
+  /* kelime vurgu */
+  /* platform arayüzünün kapattığı alanlar (yaklaşık) */
+  #safe{position:absolute;inset:0;display:none;pointer-events:none;z-index:4}
+  #frame.safeOn #safe{display:block}
+  #safe div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.16) 0 8px,transparent 8px 16px);
+    border:1px dashed rgba(255,59,48,.5)}
+  #safe div b{position:absolute;left:6px;top:4px;font-size:10px;font-weight:800;color:rgba(255,180,175,.95)}
+  #scroller .ln{display:block;min-height:.2em}
+  #scroller .h{color:var(--accent);font-size:.72em;letter-spacing:.08em;text-transform:uppercase;opacity:.9;padding:.5em 0 .1em}
+  #scroller .note{opacity:.45;font-style:italic;font-weight:500;font-size:.7em}
+  #scroller .w{transition:color .12s,opacity .12s}
+  #frame.hl #scroller .w.active{color:var(--accent);text-shadow:0 0 22px rgba(0,200,83,.5)}
+  /* odak karartma */
+  #frame.dim #prompt{
+    -webkit-mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--bandOut)),#000 calc(var(--eyeY) - var(--bandIn)),#000 calc(var(--eyeY) + var(--bandIn) + 2%),transparent calc(var(--eyeY) + var(--bandOut) + 4%));
+            mask-image:linear-gradient(to bottom,transparent calc(var(--eyeY) - var(--bandOut)),#000 calc(var(--eyeY) - var(--bandIn)),#000 calc(var(--eyeY) + var(--bandIn) + 2%),transparent calc(var(--eyeY) + var(--bandOut) + 4%));
+  }
+  /* göz çizgisi */
+  #eyeline{position:absolute;left:0;right:0;top:var(--eyeY,42%);height:0;border-top:2px solid rgba(0,200,83,.4);display:none;pointer-events:none;z-index:4}
+  #frame.eye #eyeline{display:block}
+  #eyeline::before,#eyeline::after{content:"";position:absolute;top:-8px;border:8px solid transparent}
+  #eyeline::before{left:0;border-left-color:var(--accent)}
+  #eyeline::after{right:0;border-right-color:var(--accent)}
+  /* format etiketi + rec göstergesi */
+  #fmtTag{position:absolute;top:10px;left:12px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;z-index:6}
+  #audBadge{position:absolute;top:52px;right:14px;z-index:6;display:none;background:rgba(0,0,0,.6);
+    color:#fff;font-size:11px;font-weight:800;padding:5px 11px;border-radius:16px}
+  #recDot{position:absolute;top:10px;right:12px;display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;z-index:6}
+  #recDot.on{display:flex}
+  #recDot i{width:9px;height:9px;border-radius:50%;background:#e53935;animation:pulse 1s infinite}
+  /* ilerleme çubuğu */
+  #progress{position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--accent);z-index:6;transition:width .1s linear}
+  /* sayaç */
+  #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-size:34vh;font-weight:800;color:var(--accent);z-index:8;text-shadow:0 0 60px rgba(0,200,83,.4)}
+
+  /* alt durum çubuğu */
+  #statusbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:14px;
+    background:rgba(10,10,12,.8);border:1px solid var(--line);border-radius:12px;padding:7px 14px;font-size:12px;color:var(--muted);z-index:7;backdrop-filter:blur(6px)}
+  #statusbar b{color:var(--txt)}
+  kbd{background:#26262e;border:1px solid #3a3a44;border-radius:4px;padding:1px 6px;font-size:11px;color:#cfcfd6}
+
+  /* mobil panel açma + arka karartma */
+  .mobileOnly{display:none}
+  #backdrop{display:none}
+  @media(max-width:820px){
+    .mobileOnly{display:inline-flex}
+    .desktopOnly{display:none}
+    #app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+    #app.full{grid-template-columns:1fr}
+    #topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:7px}
+    .brand{font-size:13px;margin-right:0}
+    .btn{padding:8px 11px;font-size:12px}
+    #statusbar{display:none}
+    #left,#right{position:fixed;top:0;bottom:0;width:88%;max-width:340px;z-index:40;opacity:1 !important;
+      pointer-events:auto !important;overflow-y:auto !important;transition:transform .25s ease}
+    #left{left:0;transform:translateX(-106%);border-right:1px solid var(--line)}
+    #right{right:0;transform:translateX(106%);border-left:1px solid var(--line)}
+    #app.showLeft #left{transform:translateX(0)}
+    #app.showRight #right{transform:translateX(0)}
+    #app.showLeft #backdrop,#app.showRight #backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:38}
+  }
+  .rb-note{font-size:11.5px;color:var(--muted);line-height:1.5}
+  .rb-note b{color:var(--txt)}
+  .rb-url{margin-top:6px;font-size:13px;font-weight:700;color:var(--accent);word-break:break-all;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;text-align:center}
+  #connDot{color:#555;font-size:11px}
+  #connDot.on{color:var(--accent)}
+  #voiceBtn.primary{background:var(--accent);color:#04210f;border-color:transparent}
+  /* kayıt önizleme penceresi */
+  #recResult{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.78);backdrop-filter:blur(6px);padding:24px}
+  #recResult.open{display:flex}
+  .rr-box{background:#141418;border:1px solid var(--line);border-radius:18px;padding:18px;
+    width:min(720px,92vw);max-height:90vh;display:flex;flex-direction:column;gap:14px}
+  .rr-head{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .rr-head #rrSize{font-size:12px;font-weight:600;color:var(--muted)}
+  #rrVideo{width:100%;max-height:62vh;background:#000;border-radius:12px}
+  .rr-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .rr-note{font-size:12px;color:var(--muted);text-align:center}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--accent);color:#04210f;font-weight:700;font-size:13px;padding:11px 18px;border-radius:11px;
+    opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body data-fam="system">
+<div id="app">
+
+  <!-- ===== ÜST ÇUBUK ===== -->
+  <div id="topbar">
+    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar">📝</button>
+    <div class="brand">Teleprompter <b>Pro</b></div>
+    <button class="btn primary" id="playBtn">▶︎ Başlat</button>
+    <button class="btn" id="resetBtn" title="Başa sar (R)">⟲</button>
+    <span class="clock" id="clock">00:00</span>
+
+    <span class="pill" id="fmtPill" title="Çekim formatı">
+      <button data-fmt="9:16" class="on">📱 9:16</button>
+      <button data-fmt="16:9">🖥 16:9</button>
+      <button data-fmt="1:1">⬜ 1:1</button>
+      <button data-fmt="4:5">📷 4:5</button>
+      <button data-fmt="free">⛶ Tam</button>
+    </span>
+
+    <div class="spacer"></div>
+
+    <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle">🎤 Sesle</button>
+    <button class="btn" id="camBtn">📷 Kamera</button>
+    <button class="btn" id="readyBtn" title="Çekime hazır mıyım?">✅ Hazır mıyım</button>
+    <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
+    <button class="btn" id="takesBtn" title="Arşivdeki çekimler">🎞 Çekimlerim</button>
+    <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)">⬆︎ Senaryolar</button>
+    <input type="file" id="scImport" accept="application/json,.json" style="display:none">
+    <button class="btn" id="fsBtn" title="Tam ekran (F)">⛶ Tam Ekran</button>
+    <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)">⇔ Sade</button>
+    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar">⚙︎</button>
+  </div>
+  <div id="backdrop"></div>
+
+  <!-- ===== SOL PANEL ===== -->
+  <div id="left">
+    <div class="sec">
+      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo">＋</button></h3>
+      <div class="scripts" id="scriptList"></div>
+    </div>
+    <div class="sec" id="secWrap" style="display:none">
+      <h3>🔖 Bölümler</h3>
+      <div class="selectish" id="secList"></div>
+    </div>
+    <div id="editorWrap">
+      <input id="title" placeholder="Senaryo başlığı" value="Yeni Senaryo">
+      <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın...">Merhaba! Bu Teleprompter Pro.
+
+Telefon formatında (9:16) çekim yapıyorsanız sağ üstten formatı seçtiniz bile. Kamerayı açıp doğrudan kayıt da alabilirsiniz.
+
+Yazıyı kameranızın merceğinin hizasına getirin, BAŞLAT'a basın ve göz çizgisinden doğal bir şekilde okuyun.
+
+Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çekimler!</textarea>
+      <div class="selectish" style="margin:6px 0">
+        <button class="btn" id="tClean">🧹 Temizle</button>
+        <button class="btn" id="tJoin">↩︎ Satırları birleştir</button>
+        <button class="btn" id="tCase">Aa Cümle düzeni</button>
+        <button class="btn" id="tBreath">🫁 Nefes işareti</button>
+        <button class="btn" id="tNum">🔢 Sayıları yaz</button>
+        <button class="btn" id="undoTool" style="display:none">↺ Geri al</button>
+      </div>
+      <div class="editStats"><span id="wc">0 kelime</span><span id="rt">~0 sn</span></div>
+    </div>
+  </div>
+
+  <!-- ===== ORTA SAHNE ===== -->
+  <div id="stageWrap">
+    <div id="frame" class="eye dim hl">
+      <video id="cam" autoplay muted playsinline></video>
+      <div id="prompt"><div id="scroller"></div></div>
+      <div id="eyeline"></div>
+      <div id="safe"></div>
+      <div id="fmtTag">📱 9:16 · 1080×1920</div>
+      <div id="recDot"><i></i><span id="recTime">00:00</span></div>
+      <div id="audBadge"></div>
+      <div id="progress"></div>
+      <div id="count">3</div>
+    </div>
+    <div id="statusbar">
+      <span><kbd>Boşluk</kbd> başlat</span>
+      <span><kbd>↑</kbd><kbd>↓</kbd> hız</span>
+      <span><kbd>R</kbd> başa</span>
+      <span><kbd>←</kbd><kbd>→</kbd> satır</span>
+      <span><kbd>K</kbd> kayıt</span>
+      <span><kbd>F</kbd> tam ekran</span>
+      <span><kbd>H</kbd> sade</span>
+      <span>WPM <b id="sbWpm">140</b> <b id="sbSpeed" style="display:none">140</b></span>
+      <span id="sbDev" style="opacity:.6"></span>
+      <span id="sbVer" style="opacity:.6"></span>
+      <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla"></span>
+    </div>
+  </div>
+
+  <!-- ===== SAĞ PANEL — AYARLAR ===== -->
+  <div id="right">
+    <div class="ctrl">
+      <div class="field">
+        <div class="top"><label>🎯 Çekim modu</label><span class="v" id="modeV">Serbest</span></div>
+        <div class="selectish" id="modeSel">
+          <button data-mode="free" class="on">Serbest</button>
+          <button data-mode="reels">Reels</button>
+          <button data-mode="story">Story</button>
+          <button data-mode="post">IG Gönderi</button>
+          <button data-mode="shorts">Shorts</button>
+          <button data-mode="video">YouTube</button>
+        </div>
+        <div class="rb-note" id="modeHint" style="margin-top:6px"></div>
+        <div class="toggle" style="margin-top:8px"><span>⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
+        <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
+        <div class="toggle" style="margin-top:8px"><span>🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
+        <div class="toggle" style="margin-top:8px"><span>💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
+        <div id="chromaBox" style="display:none">
+          <div class="top" style="margin-top:8px"><label>Perde rengi</label></div>
+          <div class="selectish" id="keySel">
+            <button data-k="#00b140" class="on">Yeşil</button>
+            <button data-k="#0047bb">Mavi</button>
+            <button data-k="#ffffff">Beyaz</button>
+          </div>
+          <div class="top" style="margin-top:8px"><label>Eşik</label><span class="v" id="keySimV">30</span></div>
+          <input type="range" id="keySim" min="5" max="80" value="30">
+          <div class="top" style="margin-top:6px"><label>Kenar yumuşaklığı</label><span class="v" id="keySmoothV">10</span></div>
+          <input type="range" id="keySmooth" min="1" max="40" value="10">
+          <div class="top" style="margin-top:8px"><label>Saçak temizliği (despill)</label><span class="v" id="spillV">60</span></div>
+          <input type="range" id="spill" min="0" max="100" value="60">
+          <div class="top" style="margin-top:8px"><label>Yeni arka plan</label></div>
+          <div class="selectish" id="bgKindSel">
+            <button data-bk="color" class="on">Düz renk</button>
+            <button data-bk="studio">Stüdyo</button>
+            <button data-bk="warm">Sıcak</button>
+            <button data-bk="cool">Soğuk</button>
+            <button data-bk="bokeh">Bokeh</button>
+            <button data-bk="brand">Marka</button>
+            <button data-bk="image">Görsel</button>
+          </div>
+          <div class="selectish" id="bgcSel">
+            <button data-b="#101820" class="on">Lacivert</button>
+            <button data-b="#000000">Siyah</button>
+            <button data-b="#f2efe6">Krem</button>
+            <button data-b="#0F3D2E">Koyu yeşil</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn" id="bgPick" style="flex:1">🖼 Görsel</button>
+            <button class="btn" id="bgClear" style="flex:1">✕ Kaldır</button>
+          </div>
+          <input type="file" id="bgFile" accept="image/*" style="display:none">
+          <div class="rb-note" style="margin-top:6px">Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.</div>
+        </div>
+        <div class="toggle" style="margin-top:8px"><span>🚫 Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
+      </div>
+      <div class="field">
+        <div class="top"><label>Hız — WPM (dakikada kelime)</label><span class="v" id="speedV">140</span></div>
+        <input type="range" id="speed" min="0" max="320" step="1" value="140">
+      </div>
+      <div class="field">
+        <div class="top"><label>Yazı Boyutu</label><span class="v" id="fontV">64</span></div>
+        <input type="range" id="font" min="24" max="160" value="64">
+      </div>
+      <div class="field">
+        <div class="top"><label>Satır Aralığı</label><span class="v" id="lineV">1.5</span></div>
+        <input type="range" id="line" min="10" max="32" value="15">
+      </div>
+      <div class="field">
+        <div class="top"><label>Kenar Boşluğu</label><span class="v" id="marginV">6</span></div>
+        <input type="range" id="margin" min="0" max="22" value="6">
+      </div>
+      <div class="field">
+        <div class="top"><label>👁 Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="eyeposV">42</span></div>
+        <input type="range" id="eyepos" min="0" max="55" value="42">
+      </div>
+      <div class="field">
+        <div class="top"><label>👁 Okuma şeridi (göz teması)</label><span class="v" id="bandV">Tümü</span></div>
+        <div class="selectish" id="bandSel">
+          <button data-band="0" class="on">Tümü</button>
+          <button data-band="1">1 satır</button>
+          <button data-band="2">2 satır</button>
+          <button data-band="3">3 satır</button>
+        </div>
+        <button class="btn" id="eyeRecipe" style="margin-top:8px;width:100%">👁 Göz teması ayarını uygula</button>
+        <div class="rb-note" id="gazeHint" style="margin-top:6px"></div>
+        <div class="top" style="margin-top:10px"><label>📏 Yüz–ekran mesafesi (cm)</label><span class="v" id="distV">60</span></div>
+        <input type="range" id="dist" min="30" max="200" step="5" value="60">
+        <div class="top" style="margin-top:8px"><label>🖥 Ekran yüksekliği (cm)</label><span class="v" id="schV">21</span></div>
+        <input type="range" id="sch" min="12" max="45" value="21">
+        <div class="top" style="margin-top:10px"><label>Aa Harf düzeni (yalnız görünüm)</label></div>
+        <div class="selectish" id="caseSel">
+          <button data-c2="none" class="on">Normal</button>
+          <button data-c2="upper">BÜYÜK</button>
+          <button data-c2="lower">küçük</button>
+        </div>
+        <div class="rb-note" style="margin-top:4px">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
+        <div class="top" style="margin-top:10px"><label>💬 Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
+        <input type="range" id="capOff" min="-20" max="20" value="0">
+        <div class="rb-note">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
+      </div>
+    </div>
+
+    <div class="ctrl">
+      <div class="field">
+        <div class="top"><label>Yazı Tipi</label></div>
+        <div class="selectish" id="famSel">
+          <button data-fam="system" class="on">Sistem</button>
+          <button data-fam="serif">Serif</button>
+          <button data-fam="round">Yumuşak</button>
+          <button data-fam="mono">Mono</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:11px">
+        <div class="top"><label>Tema</label></div>
+        <div class="swatches" id="themeSel">
+          <div class="sw on" data-theme="classic" style="background:#000" title="Klasik"></div>
+          <div class="sw" data-theme="paper" style="background:#fff" title="Beyaz"></div>
+          <div class="sw" data-theme="green" style="background:#0F3D2E" title="Yeşil"></div>
+          <div class="sw" data-theme="blue" style="background:#0d2440" title="Mavi"></div>
+          <div class="sw" data-theme="amber" style="background:#2a1c00" title="Amber"></div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:11px">
+        <div class="colorRow">
+          <label style="flex:1;font-size:12px;color:var(--muted)">Özel: Yazı / Zemin</label>
+          <input type="color" id="cText" value="#ffffff">
+          <input type="color" id="cBg" value="#000000">
+        </div>
+      </div>
+    </div>
+
+    <div class="ctrl">
+      <div class="toggle"><span>🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
+      <div class="toggle"><span>🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
+      <div class="toggle"><span>🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
+      <div class="toggle"><span>🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
+      <div class="toggle"><span>✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
+      <div class="toggle"><span>⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
+    </div>
+
+    <div class="ctrl" id="remoteCtrl">
+      <div class="field">
+        <div class="top"><label>📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
+        <div id="remoteBox">
+          <div id="remoteOff" class="rb-note">📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
+          <div id="remoteOn" style="display:none">
+            <img id="qrImg" alt="QR" style="display:none;width:140px;height:140px;border-radius:10px;background:#fff;padding:6px;margin:2px auto 8px;display:block">
+            <div class="rb-note">Telefonla QR’ı okutun ya da şu adrese girin:</div>
+            <div id="remoteUrl" class="rb-url">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KAYIT ÖNİZLEME -->
+<div id="recResult">
+  <div class="rr-box">
+    <div class="rr-head">🎬 Çekim hazır <span id="rrSize"></span></div>
+    <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
+    <video id="rrVideo" controls playsinline></video>
+    <div class="rr-btns">
+      <button class="btn danger" id="rrDiscard">🗑 Sil / Yeniden</button>
+      <button class="btn" id="rrClose">Kapat</button>
+      <button class="btn" id="rrSrt">💬 Altyazı</button>
+      <button class="btn" id="rrKeep">⭐ Arşive al</button>
+      <button class="btn primary" id="rrDownload">⬇︎ İndir (.webm)</button>
+    </div>
+    <div class="rr-note">Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = s=>document.querySelector(s);
+  const root=document.documentElement, body=document.body;
+  const app=$('#app'), frame=$('#frame'), prompt=$('#prompt'), scroller=$('#scroller'),
+        stageWrap=$('#stageWrap'), cam=$('#cam');
+  const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
+
+  const LS='teleprompter_pro_v1';
+  const VER='6.5';   // telefon sürümüyle aynı numaralama
+
+  /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
+     Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
+     yarıda kesiyor, kullanıcı özelliğin YOK olduğunu sanıyor. Artık durum çubuğunda görünüyor. */
+  const ERRLOG=[];
+  function logErr(where,e){
+    const msg=((e&&(e.message||e.reason||e))+'').slice(0,180);
+    ERRLOG.push({t:Date.now(),where,msg});
+    if(ERRLOG.length>30) ERRLOG.shift();
+    const el=document.getElementById('sbErr');
+    if(el){ el.style.display=''; el.textContent='⚠️ '+ERRLOG.length+' hata';
+      el.onclick=()=>alert(ERRLOG.slice(-8).reverse().map(x=>x.where+': '+x.msg).join('\n')); }
+  }
+  window.addEventListener('error',e=>logErr('js',e.error||e.message));
+  window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
+  let state, running=false, raf=null, pos=0, speed=6;
+  let startTime=0, elapsed=0, words=[], wordTops=[], activeIdx=-1, pxPerWord=40;
+  let lastTs=0, maxPos=1, wordLine=[], capTimes=[];
+
+  /* ---------- KALICI DURUM ---------- */
+  const DEFAULT={
+    scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
+    current:'s1',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    cText:'#ffffff',cBg:'#000000',fmt:'9:16',
+    eyePos:42,
+    mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
+  };
+  function load(){
+    try{ state=Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(LS)||'{}')); }
+    catch(e){ state=Object.assign({},DEFAULT); }
+    if(!state.scripts||!state.scripts.length) state.scripts=DEFAULT.scripts.slice();
+    // eski piksel-ölçekli hız (0.5–40) kayıtlıysa bir kez WPM'e çevir (bayrakla korunur)
+    if(!state.speedScale){
+      if(state.speed<55) state.speed=Math.max(60,Math.min(320,Math.round(state.speed*23)));
+      state.speedScale='wpm';
+    }
+  }
+  function save(){ localStorage.setItem(LS,JSON.stringify(state)); }
+
+  /* ---------- SENARYOLAR ---------- */
+  function curScript(){ return state.scripts.find(s=>s.id===state.current)||state.scripts[0]; }
+  function renderScripts(){
+    const list=$('#scriptList'); list.innerHTML='';
+    state.scripts.forEach(s=>{
+      const wc=countWords(s.text);
+      const el=document.createElement('div');
+      el.className='scriptItem'+(s.id===state.current?' on':'');
+      el.innerHTML=`<span class="nm">${escapeHtml(s.title||'(başlıksız)')}</span>
+        <span class="meta">${wc} kl</span>
+        <button class="x" title="Sil">×</button>`;
+      el.querySelector('.nm').onclick=()=>selectScript(s.id);
+      el.onclick=(e)=>{ if(!e.target.classList.contains('x')) selectScript(s.id); };
+      el.querySelector('.x').onclick=(e)=>{ e.stopPropagation(); delScript(s.id); };
+      list.appendChild(el);
+    });
+  }
+  function selectScript(id){
+    syncEditorToState();
+    rememberPos();
+    state.current=id; const s=curScript();
+    $('#title').value=s.title; $('#editor').value=s.text;
+    // hedefin kayıtlı konumunu reset() sıfırlamadan ÖNCE al — telefonda bu sıra hatası
+    // özelliği tümden ölü bırakmıştı
+    const want=(s.pos||0);
+    renderScripts(); buildWords(); reset(); updateStats(); save();
+    if(want>0){ setPos(Math.min(want,maxPos)); rememberPos(); toast('Kaldığın yerden'); }
+  }
+  function newScript(){
+    syncEditorToState();
+    const id='s'+Math.max(0,...state.scripts.map(s=>+(s.id.slice(1))||0))+1;
+    state.scripts.push({id,title:'Senaryo '+(state.scripts.length+1),text:''});
+    state.current=id; $('#title').value='Senaryo '+(state.scripts.length); $('#editor').value='';
+    renderScripts(); buildWords(); reset(); updateStats(); save(); $('#title').select();
+  }
+  function delScript(id){
+    if(state.scripts.length<=1){ toast('En az bir senaryo kalmalı'); return; }
+    state.scripts=state.scripts.filter(s=>s.id!==id);
+    if(state.current===id) state.current=state.scripts[0].id;
+    const s=curScript(); $('#title').value=s.title; $('#editor').value=s.text;
+    renderScripts(); buildWords(); reset(); updateStats(); save();
+  }
+  function syncEditorToState(){
+    const s=curScript(); if(!s) return;
+    s.title=$('#title').value; s.text=$('#editor').value;
+  }
+
+  /* ---------- METİN ARAÇLARI (senaryoyu değiştirir, tek adım geri al) ---------- */
+  let undoText=null;
+  function applyTool(fn,label){
+    const cur=$('#editor').value, out=fn(cur);
+    if(out===cur){ toast('Değişiklik gerekmedi'); return; }
+    undoText=cur; $('#editor').value=out;
+    syncEditorToState(); buildWords(); updateStats(); save();
+    $('#undoTool').style.display='';
+    toast(label);
+  }
+  function cleanText(t){
+    return t.replace(/\u00a0/g,' ')
+      .replace(/[\u201c\u201d\u201e]/g,'"').replace(/[\u2018\u2019\u201a]/g,"'")
+      .replace(/[ \t]+/g,' ')
+      .split(/\r?\n/).map(l=>l.trim()).join('\n')
+      .replace(/\n{3,}/g,'\n\n').replace(/ +([,.;:!?])/g,'$1').trim();
+  }
+  function joinLines(t){
+    const out=[];
+    t.split(/\r?\n/).forEach(line=>{
+      const x=line.trim();
+      if(!x){ out.push(''); return; }
+      if(/^#{1,3}\s|^\[.*\]$/.test(x)){ out.push(x); return; }
+      const prev=out[out.length-1];
+      if(prev && prev!=='' && !/^#{1,3}\s|^\[.*\]$/.test(prev) && !/[.!?\u2026:;]$/.test(prev))
+        out[out.length-1]=prev+' '+x;
+      else out.push(x);
+    });
+    return out.join('\n');
+  }
+  function sentenceCase(t){
+    return t.split(/\r?\n/).map(line=>{
+      if(!line.trim()) return line;
+      let x=line.toLocaleLowerCase('tr');
+      return x.replace(/(^\s*|[.!?\u2026]\s+)(\p{L})/gu,(mm,a,b)=>a+b.toLocaleUpperCase('tr'));
+    }).join('\n');
+  }
+  function breathMarks(t){
+    return t.split(/\r?\n/).map(line=>{
+      const x=line.trim();
+      if(!x||/^#{1,3}\s|^\[.*\]$/.test(x)) return line;
+      if(/(^|\s)\/{1,2}(\s|$)/.test(x)) return line;
+      return x.replace(/([.!?\u2026])\s+(?=\S)/g,'$1 / ');
+    }).join('\n');
+  }
+  const ONES_TR=['','bir','iki','üç','dört','beş','altı','yedi','sekiz','dokuz'];
+  const TENS_TR=['','on','yirmi','otuz','kırk','elli','altmış','yetmiş','seksen','doksan'];
+  function tr3(n){ let s2='';
+    const h=Math.floor(n/100), t2=Math.floor((n%100)/10), o=n%10;
+    if(h) s2+=(h===1?'':ONES_TR[h]+' ')+'yüz ';
+    if(t2) s2+=TENS_TR[t2]+' ';
+    if(o) s2+=ONES_TR[o]+' ';
+    return s2.trim(); }
+  function trNum(n){
+    n=Math.floor(Math.abs(n)); if(n===0) return 'sıfır';
+    const units=[[1e9,'milyar'],[1e6,'milyon'],[1e3,'bin']];
+    let out='';
+    for(const u of units){ const c=Math.floor(n/u[0]);
+      if(c){ out += ((c===1&&u[1]==='bin')?'':tr3(c)+' ') + u[1] + ' '; n%=u[0]; } }
+    if(n) out+=tr3(n)+' ';
+    return out.trim().replace(/\s+/g,' ');
+  }
+  function numbersToWords(t){
+    return t.replace(/%\s?(\d{1,9})/g,(mm,d)=>'yüzde '+trNum(+d))
+            .replace(/(\d{1,9})\s?%/g,(mm,d)=>'yüzde '+trNum(+d))
+            .replace(/\b(\d{1,9})\b/g,(mm,d)=>trNum(+d));
+  }
+
+  /* ---------- KELİME İNŞASI (vurgu için) ---------- */
+  // "# satır" = bölüm başlığı, "[köşeli parantez]" = yönerge notu (okunmaz, kelime sayılmaz)
+  function buildWords(){
+    let html='';
+    ($('#editor').value||'').split(/\r?\n/).forEach(line=>{
+      const r=line.trim();
+      if(!r){ html+='<div class="ln br">&nbsp;</div>'; return; }
+      if(/^#{1,3}\s*/.test(r)){ html+='<div class="ln h">'+escapeHtml(r.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
+      if(/^\[.*\]$/.test(r)){ html+='<div class="ln note">'+escapeHtml(r)+'</div>'; return; }
+      html+='<div class="ln">'+escapeHtml(r).replace(/\S+/g,m=>'<span class="w">'+m+'</span>')+'</div>';
+    });
+    scroller.innerHTML=html;
+    words=[...scroller.querySelectorAll('.w')];
+    const lns=[...scroller.querySelectorAll('.ln')];
+    wordLine=words.map(w=>lns.indexOf(w.parentElement));
+    capTimes=new Array(words.length).fill(null);
+    activeIdx=-1;
+    measure(); renderSections();                 // rAF'a bağlı bırakmak arka plan sekmesinde ölçümü hiç yapmıyordu
+    requestAnimationFrame(()=>{ measure(); renderSections(); });
+  }
+  function countWords(txt){
+    return (txt||'').split(/\r?\n/).reduce((n,line)=>{
+      const r=line.trim();
+      if(!r||/^#{1,3}\s*/.test(r)||/^\[.*\]$/.test(r)) return n;
+      return n+(r.match(/\S+/g)||[]).length;
+    },0);
+  }
+  function measure(){
+    // ilk kelime tam okuma çizgisinde başlasın, son kelime çizgiye ulaşabilsin
+    scroller.style.paddingTop=eyeOff()+'px';
+    scroller.style.paddingBottom=Math.max(60,frameH()-eyeOff())+'px';
+    wordTops=words.map(w=>w.offsetTop+w.offsetHeight/2);
+    // kelime başına ortalama dikey mesafe — WPM temelli akış için
+    if(wordTops.length>1) pxPerWord=(wordTops[wordTops.length-1]-wordTops[0])/(wordTops.length-1);
+    else pxPerWord=state.font*(state.line/10);
+    maxPos = wordTops.length ? Math.max(1, wordTops[wordTops.length-1]-eyeOff()) : 1;
+  }
+
+  /* ---------- AYAR UYGULA ---------- */
+  function applyAll(){
+    speed=state.speed;
+    root.style.setProperty('--pFont',state.font+'px');
+    root.style.setProperty('--pLine',(state.line/10).toFixed(1));
+    root.style.setProperty('--pMargin',state.margin+'vw');
+    root.style.setProperty('--pText',state.cText);
+    root.style.setProperty('--pBg',state.cBg);
+    root.style.setProperty('--eyeY',state.eyePos+'%');
+    body.dataset.fam=state.fam;
+    frame.classList.toggle('caseUp',state.textCase==='upper');
+    frame.classList.toggle('caseLow',state.textCase==='lower');
+    $$('#caseSel button').forEach(b=>b.classList.toggle('on',b.dataset.c2===(state.textCase||'none')));
+    frame.classList.toggle('mirror',state.mirror);
+    frame.classList.toggle('flip',state.flip);
+    frame.classList.toggle('eye',state.eye);
+    frame.classList.toggle('dim',state.dim);
+    frame.classList.toggle('hl',state.hl);
+    // değer etiketleri (state.speed = WPM)
+    const spTxt=Math.round(state.speed).toString();
+    $('#speedV').textContent=spTxt; $('#sbSpeed').textContent=spTxt;
+    $('#fontV').textContent=state.font;
+    $('#lineV').textContent=(state.line/10).toFixed(1);
+    $('#marginV').textContent=state.margin;
+    $('#eyeposV').textContent=state.eyePos;
+    $('#sbWpm').textContent=Math.round(state.speed);
+    // slider konumları
+    $('#speed').value=state.speed; $('#font').value=state.font;
+    $('#line').value=state.line; $('#margin').value=state.margin; $('#eyepos').value=state.eyePos;
+    $('#cText').value=state.cText; $('#cBg').value=state.cBg;
+    // seçimler
+    $$('#famSel button').forEach(b=>b.classList.toggle('on',b.dataset.fam===state.fam));
+    $$('#themeSel .sw').forEach(b=>b.classList.toggle('on',b.dataset.theme===state.theme));
+    $$('.sw2').forEach(t=>t.classList.toggle('on',state[t.dataset.t]));
+    $$('#fmtPill button').forEach(b=>b.classList.toggle('on',b.dataset.fmt===state.fmt));
+    $$('#modeSel button').forEach(b=>b.classList.toggle('on',b.dataset.mode===state.mode));
+    $('#dist').value=state.dist; $('#distV').textContent=state.dist;
+    $('#sch').value=state.sch; $('#schV').textContent=state.sch;
+    applyBand(); $('#gazeHint').textContent=gazeLine();
+    if($('#chromaBox')) $('#chromaBox').style.display = state.chroma?'block':'none';
+    if($('#keySim')){ $('#keySim').value=state.keySim; $('#keySimV').textContent=state.keySim;
+      $('#keySmooth').value=state.keySmooth; $('#keySmoothV').textContent=state.keySmooth;
+      $$('#keySel button').forEach(b=>b.classList.toggle('on',b.dataset.k===state.keyColor));
+      $$('#bgcSel button').forEach(b=>b.classList.toggle('on',b.dataset.b===state.bgColor));
+      $$('#bgKindSel button').forEach(b=>b.classList.toggle('on',b.dataset.bk===(state.bgKind||'color')));
+      $('#spill').value=(state.spill==null?60:state.spill); $('#spillV').textContent=(state.spill==null?60:state.spill);
+      $('#bgcSel').style.display=((state.bgKind||'color')==='color')?'flex':'none'; }
+    if($('#cropNote')){
+      const [W,H]=cropSize();
+      $('#cropNote').textContent = cropOn()
+        ? 'Kayıt '+W+'×'+H+' çıkacak — çerçevede gördüğün kadarı.'
+        : (state.fmt==='free' ? 'Serbest çerçevede kırpma yapılmaz.' : 'Kapalı: kayıt kameranın kendi oranında (yatay) çıkar.');
+    }
+    if($('#capOffV')){ $('#capOffV').textContent=(state.capOffset||0).toFixed(1); $('#capOff').value=Math.round((state.capOffset||0)*10); }
+    $('#modeV').textContent=curMode().name;
+    $('#modeHint').textContent=modeLine();
+    layoutFrame();
+    requestAnimationFrame(()=>{ measure(); drawSafe(); });
+  }
+  function $$(s){return [...document.querySelectorAll(s)];}
+
+  /* ---------- FORMAT / ÇERÇEVE BOYUTU ---------- */
+  const FMT={'9:16':[9,16,'1080×1920','📱 9:16'],'16:9':[16,9,'1920×1080','🖥 16:9'],
+             '1:1':[1,1,'1080×1080','⬜ 1:1'],'4:5':[4,5,'1080×1350','📷 4:5'],
+             'free':[0,0,'Serbest','⛶ Tam']};
+  function layoutFrame(){
+    const pad=36;
+    const W=stageWrap.clientWidth-pad, H=stageWrap.clientHeight-pad;
+    const f=FMT[state.fmt];
+    let w,h;
+    if(state.fmt==='free'){ w=W; h=H; }
+    else{
+      const ar=f[0]/f[1];
+      w=W; h=w/ar;
+      if(h>H){ h=H; w=h*ar; }
+    }
+    frame.style.width=Math.round(w)+'px';
+    frame.style.height=Math.round(h)+'px';
+    $('#fmtTag').textContent=f[3]+' · '+f[2];
+  }
+
+  /* ---------- BÖLÜMLER (# başlıkları) ---------- */
+  function renderSections(){
+    const hs=[...scroller.querySelectorAll('.ln.h')];
+    const wrap=$('#secWrap'), box=$('#secList');
+    if(!wrap||!box) return;
+    wrap.style.display = hs.length? '' : 'none';
+    box.innerHTML='';
+    hs.forEach(h=>{
+      const b=document.createElement('button');
+      b.textContent=h.textContent;
+      b.onclick=()=>{ setPos(Math.max(0,h.offsetTop-eyeOff()+h.offsetHeight/2));
+        if(voiceOn) syncVoicePtr(); toast('🔖 '+h.textContent); };
+      box.appendChild(b);
+    });
+  }
+
+  /* ---------- OKUMA ŞERİDİ + GÖZ TEMASI ---------- */
+  function applyBand(){
+    const lhPx=state.font*(state.line/10), Hh=Math.max(240,frameH());
+    if(state.band>0){
+      const half=Math.max(2.5,(state.band*lhPx)/Hh*100/2);
+      root.style.setProperty('--bandIn',half.toFixed(1)+'%');
+      root.style.setProperty('--bandOut',(half+8).toFixed(1)+'%');
+    } else { root.style.setProperty('--bandIn','5%'); root.style.setProperty('--bandOut','34%'); }
+    frame.classList.toggle('dim', state.dim || state.band>0);
+    $$('#bandSel button').forEach(b=>b.classList.toggle('on',+b.dataset.band===state.band));
+    $('#bandV').textContent = state.band? state.band+' satır':'Tümü';
+  }
+  /* Bakış sapması: okuma çizgisinin kameradan (ekranın üstü) kaç cm aşağıda olduğunu
+     ekran yüksekliğinden çıkarıp arctan ile dereceye çeviriyoruz. Yaklaşıktır. */
+  function gazeAngle(){
+    const fr=frame.getBoundingClientRect();
+    const yPx=fr.top + fr.height*(state.eyePos/100);          // okuma çizgisinin pencere içi y'si
+    const cmPerPx=(state.sch||21)/Math.max(200,window.innerHeight);
+    const dropCm=Math.max(0,yPx)*cmPerPx;
+    return Math.atan(dropCm/Math.max(20,state.dist||60))*180/Math.PI;
+  }
+  function gazeLine(){
+    const a=gazeAngle(), r=Math.round(a);
+    const tag = a<5?'✓ — göz teması iyi' : (a<9?'~ — sınırda, çizgiyi yukarı al ya da geri çekil':'✗ — izleyici aşağı baktığını görür');
+    return 'Bakış sapması ≈'+r+'° '+tag;
+  }
+  function applyEyeRecipe(){
+    state.eyePos=4; state.band=2; state.dim=true;
+    state.margin=Math.max(state.margin,10);
+    applyAll(); save();
+    toast('👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar');
+  }
+
+  /* ---------- ÇEKİM MODLARI ----------
+     Her mod: çerçeve oranı + önerilen tempo + yazı boyutu + süre sınırı +
+     platform arayüzünün kapattığı alanlar (yüzdeler yaklaşıktır). */
+  const MODES={
+    free:  {name:'Serbest',           fmt:null,   wpm:null, font:null, limit:0,   safe:null},
+    // yazı boyutları çerçeve genişliğine göre: 9:16 önizlemesi dar, 16:9 geniş
+    reels: {name:'Instagram Reels',   fmt:'9:16', wpm:165,  font:46,   limit:90,  safe:{top:6,bottom:22,right:16}},
+    story: {name:'Instagram Story',   fmt:'9:16', wpm:160,  font:46,   limit:60,  safe:{top:12,bottom:14,right:0}},
+    post:  {name:'Instagram Gönderi', fmt:'4:5',  wpm:150,  font:54,   limit:0,   safe:null},
+    shorts:{name:'YouTube Shorts',    fmt:'9:16', wpm:170,  font:46,   limit:180, safe:{top:8,bottom:18,right:15}},
+    video: {name:'YouTube Video',     fmt:'16:9', wpm:145,  font:64,   limit:0,   safe:null}
+  };
+  function curMode(){ return MODES[state.mode]||MODES.free; }
+  function applyMode(key,fromUser){
+    state.mode=key; const M=curMode();
+    if(fromUser){
+      if(M.fmt)  state.fmt=M.fmt;
+      if(M.wpm)  state.speed=M.wpm;
+      if(M.font) state.font=M.font;
+      state.safe = !!M.safe;
+    }
+    applyAll(); drawSafe(); updateStats(); save();
+  }
+  function modeLine(){
+    const M=curMode();
+    if(state.mode==='free') return 'Kendi ayarların. Bir platform seçersen çerçeve, tempo ve süre sınırı birlikte ayarlanır.';
+    const secs=countWords($('#editor').value)/state.speed*60;
+    const fit = M.limit
+      ? (secs<=M.limit ? ' · metnin ~'+fmtTime(secs)+' → sınıra uygun ✓'
+                       : ' · metnin ~'+fmtTime(secs)+' → '+Math.ceil(secs-M.limit)+' sn FAZLA ✗')
+      : ' · metnin ~'+fmtTime(secs);
+    return M.fmt+' · '+Math.round(state.speed)+' wpm'+(M.limit?' · sınır '+fmtTime(M.limit):'')+fit;
+  }
+  function drawSafe(){
+    const M=curMode(), S=M.safe, el=$('#safe');
+    frame.classList.toggle('safeOn', !!(state.safe && S));
+    if(!S||!state.safe){ el.innerHTML=''; return; }
+    let html='';
+    if(S.top)    html+='<div style="left:0;right:0;top:0;height:'+S.top+'%"><b>uygulama arayüzü</b></div>';
+    if(S.bottom) html+='<div style="left:0;right:0;bottom:0;height:'+S.bottom+'%"><b>uygulama arayüzü</b></div>';
+    if(S.right)  html+='<div style="right:0;width:'+S.right+'%;top:'+(S.top+20)+'%;bottom:'+(S.bottom+4)+'%"></div>';
+    el.innerHTML=html;
+  }
+
+  /* ---------- TEMALAR ---------- */
+  const THEMES={classic:['#ffffff','#000000'],paper:['#111111','#ffffff'],
+                green:['#eafff3','#0F3D2E'],blue:['#eaf3ff','#0d2440'],amber:['#ffe9c2','#1a1100']};
+  function setTheme(t){
+    state.theme=t;
+    if(THEMES[t]){ state.cText=THEMES[t][0]; state.cBg=THEMES[t][1]; }
+    applyAll(); save();
+  }
+
+  /* ---------- KAYDIRMA MOTORU ---------- */
+  function frameH(){ return frame.clientHeight; }
+  function eyeOff(){ return frameH()*(state.eyePos/100); }
+  function maxScroll(){ return Math.max(0, scroller.scrollHeight - eyeOff()); }
+  // state.speed = WPM (dakikada kelime) → piksel/saniye. Kare hızından BAĞIMSIZ:
+  // eskiden kare başına sabit piksel ekleniyordu ve 60 fps varsayılıyordu; 120 Hz
+  // ProMotion ekranlı Mac'te metin iki kat hızlı akıyordu.
+  function pxPerSec(){ return (state.speed/60)*pxPerWord; }
+  function tick(ts){
+    if(!running) return;
+    const dt=Math.min(0.1,(ts-lastTs)/1000); lastTs=ts;
+    pos += pxPerSec()*dt;
+    scroller.style.transform=`translateY(${-pos}px)`;
+    $('#progress').style.width=Math.min(100,Math.max(0,(pos/maxPos)*100))+'%';
+    elapsed=(performance.now()-startTime)/1000 + state._base;
+    $('#clock').textContent=fmtTime(elapsed);
+    if($('#recDot').classList.contains('on')) showRecTime();
+    highlightAt(pos + eyeOff());
+    if(pos>=maxPos+frameH()*0.15){ stop(); toast('Metin bitti'); }
+    else raf=requestAnimationFrame(tick);
+  }
+  function highlightAt(eyeY){
+    if(!(state.hl && wordTops.length)) return;
+    let lo=0,hi=wordTops.length-1,idx=0;
+    while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=eyeY){idx=mid;lo=mid+1;}else hi=mid-1;}
+    if(idx!==activeIdx){
+      if(words[activeIdx]) words[activeIdx].classList.remove('active');
+      if(words[idx]) words[idx].classList.add('active');
+      if($('#recDot').classList.contains('on') && idx>=0){
+        const t=(performance.now()-recStart)/1000;
+        for(let i=Math.max(0,activeIdx<0?0:activeIdx);i<=idx;i++) if(capTimes[i]==null) capTimes[i]=t;
+      }
+      activeIdx=idx;
+    }
+  }
+  function realStart(){
+    if(running) return;
+    running=true; playBtn.textContent='⏸ Durdur'; playBtn.classList.remove('primary');
+    startTime=performance.now(); state._base=elapsed||0; lastTs=performance.now();
+    requestWake();
+    raf=requestAnimationFrame(tick);
+  }
+  /* ekran uyanık kalsın (uzun metinde ekran kararması çekimi bozuyordu) */
+  let wakeLock=null;
+  async function requestWake(){
+    if(!('wakeLock' in navigator)) return;
+    try{ wakeLock=await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release',()=>{wakeLock=null;}); }catch(e){}
+  }
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState!=='visible') return;
+    if(running) requestWake();
+    // arka plan sekmesinde açıldıysa rAF hiç çalışmaz, ölçüler alınmamış olur → görünür olunca ölç
+    relayout();
+  });
+  function stop(){
+    running=false; playBtn.textContent='▶︎ Devam'; playBtn.classList.add('primary');
+    cancelAnimationFrame(raf);
+    rememberPos();
+  }
+  /* KALDIĞIN YER (telefon sürümüyle aynı davranış): duraklatınca konumu senaryoya yaz. */
+  function rememberPos(){ const s=curScript(); if(s){ s.pos=Math.round(pos); save(); } }
+  function reset(){
+    stop(); pos=0; elapsed=0; state._base=0;
+    scroller.style.transform='translateY(0)';
+    $('#progress').style.width='0'; $('#clock').textContent='00:00';
+    if(words[activeIdx]) words[activeIdx].classList.remove('active'); activeIdx=-1;
+    playBtn.textContent='▶︎ Başlat'; playBtn.classList.add('primary');
+    if(voiceOn) syncVoicePtr();
+  }
+  let counting=false, countIv=null;
+  function togglePlay(){
+    if(counting){ cancelCountdown(); return; }   // sayarken ikinci basış iptal eder
+    if(running){ stop(); return; }
+    if(state.count && pos<=0){ countdown(realStart); }
+    else realStart();
+  }
+  function countdown(cb){
+    if(!state.count){ cb(); return; }
+    counting=true;
+    const el=$('#count'); let n=3; el.style.display='flex'; el.textContent=n;
+    countIv=setInterval(()=>{ n--; if(n<=0){ cancelCountdown(); cb(); } else el.textContent=n; },800);
+  }
+  function cancelCountdown(){ clearInterval(countIv); countIv=null; counting=false; $('#count').style.display='none'; }
+
+  /* ---------- KAMERA + KAYIT ---------- */
+  let stream=null, recorder=null, chunks=[], recStart=0, recStop=0, lastBlob=null, lastUrl=null;
+  async function toggleCam(){
+    if(stream){ stopCam(); return; }
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30},facingMode:'user'},audio:true});
+      cam.srcObject=stream; frame.classList.add('cam-on');
+      camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
+      recBtn.disabled=false; recBtn.style.opacity='1';
+      const vs=stream.getVideoTracks()[0].getSettings?.()||{};
+      toast('Kamera açık — '+(vs.width||'?')+'×'+(vs.height||'?')+
+            (stream.getAudioTracks().length?'':' · 🔇 MİKROFON YOK'));
+    }catch(e){
+      toast('Kameraya erişilemedi: '+(e.message||e.name));
+    }
+  }
+  function stopCam(){
+    if(recorder&&recorder.state!=='inactive') stopRec();
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+    cam.srcObject=null; frame.classList.remove('cam-on');
+    camBtn.textContent='📷 Kamera'; camBtn.classList.remove('primary');
+    recBtn.disabled=true; recBtn.style.opacity='.45';
+  }
+  function toggleRec(){
+    if(!stream){ toast('Önce kamerayı açın'); return; }
+    if(recorder&&recorder.state==='recording') stopRec(); else startRec();
+  }
+  /* mp4 destekleniyorsa onu seç — webm'i sonradan dönüştürmeye gerek kalmıyor */
+  function pickMime(){
+    // MP4 önce: galeriler ve Instagram webm kabul etmiyor
+    const list=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4',
+                'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    for(const x of list) if(window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x)) return x;
+    return '';
+  }
+  function startRec(){
+    chunks=[]; capTimes=new Array(words.length).fill(null);
+    if(!stream.getAudioTracks().length) toast('🔇 Mikrofon yok — video sessiz kaydedilecek');
+    const mime=pickMime();
+    const opts=Object.assign(mime?{mimeType:mime}:{},{videoBitsPerSecond:9000000,audioBitsPerSecond:128000});
+    const src=recSource();
+    if(src!==stream){ const [W,H]=cropSize(); toast('⧉ '+W+'×'+H+' olarak kaydediliyor ('+state.fmt+')'); }
+    else if(cropOn()) toast('⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor');
+    try{ recorder=new MediaRecorder(src,opts); }
+    catch(e){ try{ recorder=new MediaRecorder(src,mime?{mimeType:mime}:{}); }
+              catch(e2){ try{ recorder=new MediaRecorder(src); }
+                         catch(e3){ toast('Kayıt başlatılamadı: '+e3.message); return; } } }
+    recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
+    recorder.onstop=()=>{
+      // tür kaydedicinin gerçekte kullandığı türden alınır (eskiden webm'e sabitlenmişti)
+      lastBlob=new Blob(chunks,{type:(recorder.mimeType||'video/webm').split(';')[0]});
+      showResult();   // indirme yok — önce önbellekte tut ve oynat
+    };
+    recorder.start(1000);   // saniyelik parçalar: çökmede veri kaybı en aza iner
+    recStart=performance.now(); overWarned=false; showRecTime(); startAudioMonitor();
+    recBtn.textContent='■ Durdur'; recBtn.classList.add('active');
+    $('#recDot').classList.add('on');
+    if(!running) togglePlay(); // kayıtla birlikte sufle başlasın
+  }
+  function stopRec(){
+    recStop=performance.now();
+    setTimeout(stopCrop,400);
+    if(recorder&&recorder.state!=='inactive') recorder.stop();
+    stopAudioMonitor();
+    recBtn.textContent='● Kaydet'; recBtn.classList.remove('active');
+    $('#recDot').classList.remove('on');
+    if(running) stop();
+  }
+  /* ---------- ORANA KIRPARAK KAYIT ----------
+     Çerçeve şimdiye kadar yalnızca EKRANDAKİ önizleme kutusuydu; kayıt kameranın
+     ham (yatay) görüntüsünden alınıyordu. Yani 9:16 seçilse bile dosya 16:9 çıkıyordu.
+     Artık kare bir tuvale "cover" mantığıyla kırpılarak çiziliyor ve kayıt oradan alınıyor. */
+  let cropCv=null, cropCtx=null, cropRaf=0, cropStream=null;
+  // WebGL yolu: kırpma (cover) + chroma key aynı shader'da. Telefon sürümünde
+  // birim testten geçmiş shader'ın aynısı. WebGL yoksa 2D kırpmaya düşülür.
+  const VS_SRC='attribute vec2 p;varying vec2 uv;void main(){uv=vec2((p.x+1.0)/2.0,(1.0-p.y)/2.0);gl_Position=vec4(p,0.0,1.0);}';
+  const FS_SRC=
+  'precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform sampler2D bg;'+
+  'uniform vec2 sc;uniform vec2 of;uniform vec3 key;uniform float sim;uniform float smo;'+
+  'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
+  'uniform float spill;uniform float axis;'+
+  'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+
+  'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
+  'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
+  'if(spill>0.0){ if(axis<0.5){ float mx=max(c.r,c.b); if(c.g>mx) c.g=mix(c.g,mx,spill); }'+
+  'else if(axis<1.5){ float mx=max(c.r,c.g); if(c.b>mx) c.b=mix(c.b,mx,spill); } }'+
+  'vec3 b=useBg>0.5?texture2D(bg,uv).rgb:bgc;'+
+  'gl_FragColor=vec4(mix(b,c,a),1.0);}';
+  let gl=null, glPr=null, glTexV=null, glTexB=null, bgReady=false;
+  function hex2rgb(h){ h=(h||'#000000').replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]; }
+  function mkTex(){ const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR); return t; }
+  function initGL(cv){
+    try{
+      gl=cv.getContext('webgl',{alpha:false,preserveDrawingBuffer:false});
+      if(!gl) return false;
+      const sh=(t,src)=>{ const o=gl.createShader(t); gl.shaderSource(o,src); gl.compileShader(o);
+        return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null; };
+      const vs=sh(gl.VERTEX_SHADER,VS_SRC), fs=sh(gl.FRAGMENT_SHADER,FS_SRC);
+      if(!vs||!fs) return false;
+      glPr=gl.createProgram(); gl.attachShader(glPr,vs); gl.attachShader(glPr,fs); gl.linkProgram(glPr);
+      if(!gl.getProgramParameter(glPr,gl.LINK_STATUS)) return false;
+      gl.useProgram(glPr);
+      const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      const p=gl.getAttribLocation(glPr,'p'); gl.enableVertexAttribArray(p);
+      gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+      glTexV=mkTex(); glTexB=mkTex();
+      gl.viewport(0,0,cv.width,cv.height);
+      loadBg();
+      return true;
+    }catch(e){ gl=null; return false; }
+  }
+  /* Hazır arka planlar: dış dosya yok, tuvale çiziliyor */
+  function makeBgCanvas(kind,W,H){
+    const c=document.createElement('canvas'); c.width=W; c.height=H;
+    const x=c.getContext('2d');
+    if(kind==='studio'){
+      const g=x.createRadialGradient(W/2,H*0.42,W*0.05,W/2,H*0.42,W*0.95);
+      g.addColorStop(0,'#6b7076'); g.addColorStop(.55,'#3a3e44'); g.addColorStop(1,'#191b1e');
+      x.fillStyle=g; x.fillRect(0,0,W,H);
+    } else if(kind==='warm'){
+      const g=x.createLinearGradient(0,0,W,H);
+      g.addColorStop(0,'#3a2418'); g.addColorStop(.5,'#7a4a24'); g.addColorStop(1,'#c98a3e');
+      x.fillStyle=g; x.fillRect(0,0,W,H);
+      const v=x.createRadialGradient(W/2,H/2,W*0.2,W/2,H/2,W*0.9);
+      v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.45)');
+      x.fillStyle=v; x.fillRect(0,0,W,H);
+    } else if(kind==='cool'){
+      const g=x.createLinearGradient(0,H,W,0);
+      g.addColorStop(0,'#07202e'); g.addColorStop(.55,'#0d4a5c'); g.addColorStop(1,'#1b8a92');
+      x.fillStyle=g; x.fillRect(0,0,W,H);
+    } else if(kind==='bokeh'){
+      x.fillStyle='#0d1116'; x.fillRect(0,0,W,H);
+      let seed=7; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+      for(let i=0;i<42;i++){
+        const r=W*(0.03+rnd()*0.10), cx=rnd()*W, cy=rnd()*H;
+        const g=x.createRadialGradient(cx,cy,0,cx,cy,r);
+        const hue=['255,214,120','120,200,255','170,255,190','255,150,190'][i%4];
+        g.addColorStop(0,'rgba('+hue+',.30)'); g.addColorStop(1,'rgba('+hue+',0)');
+        x.fillStyle=g; x.beginPath(); x.arc(cx,cy,r,0,7); x.fill();
+      }
+    } else if(kind==='brand'){
+      const g=x.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#04210f'); g.addColorStop(.6,'#0b6b39'); g.addColorStop(1,'#00C853');
+      x.fillStyle=g; x.fillRect(0,0,W,H);
+    } else return null;
+    return c;
+  }
+  function loadBg(){
+    bgReady=false; if(!gl) return;
+    const kind=state.bgKind||'color', [W,H]=cropSize();
+    if(kind!=='color' && kind!=='image'){
+      const c=makeBgCanvas(kind,Math.min(1080,W),Math.min(1920,H));
+      if(c){ try{ gl.bindTexture(gl.TEXTURE_2D,glTexB);
+        gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); bgReady=true; }catch(e){} }
+      return;
+    }
+    if(kind==='image' && state.bgImg){
+      const img=new Image();
+      img.onload=()=>{ try{ gl.bindTexture(gl.TEXTURE_2D,glTexB);
+        gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); bgReady=true; }catch(e){} };
+      img.src=state.bgImg;
+    }
+  }
+  function drawGL(W,H){
+    const sw=cam.videoWidth, sh=cam.videoHeight; if(!sw||!sh) return;
+    const tA=W/H, sA=sw/sh; let scx=1,scy=1,ofx=0,ofy=0;
+    if(sA>tA){ scx=tA/sA; ofx=(1-scx)/2; } else { scy=sA/tA; ofy=(1-scy)/2; }
+    const U=n=>gl.getUniformLocation(glPr,n);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,glTexV);
+    try{ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,cam); }catch(e){ return; }
+    gl.uniform1i(U('tex'),0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,glTexB); gl.uniform1i(U('bg'),1);
+    gl.uniform2f(U('sc'),scx,scy); gl.uniform2f(U('of'),ofx,ofy);
+    const k=hex2rgb(state.keyColor||'#00b140'); gl.uniform3f(U('key'),k[0],k[1],k[2]);
+    gl.uniform1f(U('sim'),(state.keySim==null?30:state.keySim)/100);
+    gl.uniform1f(U('smo'),Math.max(0.01,(state.keySmooth==null?10:state.keySmooth)/100));
+    gl.uniform1f(U('useKey'),state.chroma?1:0);
+    gl.uniform1f(U('spill'),(state.spill==null?60:state.spill)/100);
+    gl.uniform1f(U('axis'), (k[2]>k[1])?1:0);   // mavi perde -> mavi kanal bastırılır
+    gl.uniform1f(U('useBg'),(state.chroma&&bgReady)?1:0);
+    const b=hex2rgb(state.bgColor||'#101820'); gl.uniform3f(U('bgc'),b[0],b[1],b[2]);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  }
+  const OUT={'9:16':[1080,1920],'16:9':[1920,1080],'1:1':[1080,1080],'4:5':[1080,1350]};
+  function cropOn(){ return state.crop!==false && state.fmt!=='free'; }
+  function cropSize(){
+    if(OUT[state.fmt]) return OUT[state.fmt];
+    const t=stream&&stream.getVideoTracks()[0], v=(t&&t.getSettings)?t.getSettings():{};
+    return [v.width||1280, v.height||720];
+  }
+  function startCrop(){
+    stopCrop();
+    if(!stream||!cropOn()) return false;
+    const [W,H]=cropSize();
+    cropCv=document.createElement('canvas'); cropCv.width=W; cropCv.height=H;
+    if(typeof cropCv.captureStream!=='function'){ cropCv=null; return false; }
+    const useGL=initGL(cropCv);
+    if(!useGL){ cropCtx=cropCv.getContext('2d'); if(state.chroma) toast('Yeşil ekran için WebGL yok — yalnız kırpma'); }
+    const loop=()=>{
+      if(!cropCv) return;
+      if(useGL) drawGL(W,H);
+      else {
+        const sw=cam.videoWidth, sh=cam.videoHeight;
+        if(sw&&sh){
+          const tA=W/H, sA=sw/sh;
+          let cw=sw, ch=sh;
+          if(sA>tA) cw=sh*tA; else ch=sw/tA;      // cover: fazlalığı kırp
+          const sx=(sw-cw)/2, sy=(sh-ch)/2;
+          try{ cropCtx.drawImage(cam, sx,sy,cw,ch, 0,0,W,H); }catch(e){}
+        }
+      }
+      if(burnOn()&&cropCv){
+        if(!capOut) capOut=document.createElement('canvas');
+        if(capOut.width!==W||capOut.height!==H){ capOut.width=W; capOut.height=H; }
+        const o=capOut.getContext('2d');
+        try{ o.drawImage(cropCv,0,0); drawCaption(o,W,H); }catch(e){ logErr('burn',e); }
+      }
+      cropRaf=requestAnimationFrame(loop);
+    };
+    loop();
+    return true;
+  }
+  /* ---- ALTYAZIYI VİDEOYA GÖMME (telefon sürümünden taşındı) ----
+     WebGL ve 2D aynı tuvalde olamaz: GL tuvali -> 2D çıktı tuvaline kopyalanır,
+     yazı onun üstüne çizilir, kayıt 2D tuvalden alınır. Yalnız bu ayar açıkken. */
+  let capOut=null;
+  function burnOn(){ return !!state.burnCaps; }
+  function liveCue(){
+    if(activeIdx<0||!words.length) return '';
+    let start=activeIdx;
+    for(let n=0;n<7&&start>0;n++){
+      const p=words[start-1]; if(!p) break;
+      if(/[.!?…:;]["')\]]?$/.test(p.textContent||'')) break;
+      start--;
+    }
+    const out=[];
+    for(let i=start;i<=activeIdx;i++) if(words[i]) out.push(words[i].textContent);
+    return out.join(' ').trim();
+  }
+  function wrapLines(measure,txt,maxW){
+    const out=[]; let cur='';
+    const pushWord=w=>{ while(measure(w)>maxW&&w.length>1){
+        let k=1; while(k<w.length&&measure(w.slice(0,k+1))<=maxW) k++;
+        out.push(w.slice(0,k)); w=w.slice(k); } cur=w; };
+    (txt||'').split(' ').filter(Boolean).forEach(w=>{
+      const t2=cur?cur+' '+w:w;
+      if(measure(t2)<=maxW){ cur=t2; return; }
+      if(cur){ out.push(cur); cur=''; }
+      pushWord(w);
+    });
+    if(cur) out.push(cur);
+    return out.length?out:[txt||''];
+  }
+  function drawCaption(ctx,W,Hh){
+    const txt=liveCue(); if(!txt) return;
+    const size=Math.round(42*(W/1080));
+    ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
+    const lh=size*1.25, blockH=lines.length*lh, baseY=Hh-Hh*0.16-blockH/2;
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,.45)';
+    ctx.fillRect(0, baseY-blockH/2-size*0.35, W, blockH+size*0.7);
+    ctx.lineWidth=Math.max(3,size*0.14); ctx.strokeStyle='rgba(0,0,0,.9)';
+    ctx.fillStyle='#fff'; ctx.lineJoin='round';
+    lines.forEach((ln,i)=>{ const y=baseY-blockH/2+lh*(i+0.5);
+      ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); });
+    ctx.restore();
+  }
+  function stopCrop(){
+    cancelAnimationFrame(cropRaf); cropRaf=0;
+    if(cropStream){
+      // DİKKAT: cropStream kameranın SES izini ödünç alıyor. Hepsini durdurmak
+      // mikrofonu kalıcı öldürüyordu (ilk kayıttan sonra tüm çekimler sessiz).
+      // Yalnız tuvalden gelen izleri durdur.
+      const camTracks = stream ? stream.getTracks() : [];
+      cropStream.getTracks().forEach(t=>{ if(camTracks.indexOf(t)<0) t.stop(); });
+      cropStream=null;
+    }
+    cropCv=null; cropCtx=null; capOut=null; gl=null; glPr=null;
+  }
+  function recSource(){
+    if(!cropOn()) return stream;
+    if(!startCrop()) return stream;
+    try{
+      const srcCv=(burnOn()&&capOut)?capOut:cropCv;
+      const cs=srcCv.captureStream(30);
+      if(!cs.getVideoTracks().length) return stream;
+      cropStream=new MediaStream([...cs.getVideoTracks(), ...stream.getAudioTracks()]);
+      return cropStream;
+    }catch(e){ return stream; }
+  }
+
+  /* ---------- KAYIT ÖNİZLEME (indirmeden oynat) ---------- */
+  /* ============ ÇEKİM ARŞİVİ (telefon sürümünden taşındı) ============
+     Mac'te çekim yalnız bellekte duruyordu: "İndir"e basmadan pencereyi
+     kapatan her şeyi kaybediyordu. IndexedDB telefon sürümüyle aynı desende. */
+  let mdb=null;
+  function openMDB(){
+    return new Promise(res=>{
+      if(mdb) return res(mdb);
+      try{
+        const r=indexedDB.open('teleprompter_pro',1);
+        r.onupgradeneeded=()=>{ const d=r.result;
+          if(!d.objectStoreNames.contains('takes')) d.createObjectStore('takes',{keyPath:'id'}); };
+        r.onsuccess=()=>{ mdb=r.result; res(mdb); };
+        r.onerror=()=>{ logErr('idb',r.error); res(null); };
+      }catch(e){ logErr('idb',e); res(null); }
+    });
+  }
+  async function mdbPut(rec){
+    const d=await openMDB(); if(!d) return false;
+    return new Promise(res=>{ try{
+      const tx=d.transaction('takes','readwrite'); tx.objectStore('takes').put(rec);
+      tx.oncomplete=()=>res(true); tx.onerror=()=>{ logErr('idbPut',tx.error); res(false); };
+    }catch(e){ logErr('idbPut',e); res(false); } });
+  }
+  async function mdbAll(){
+    const d=await openMDB(); if(!d) return [];
+    return new Promise(res=>{ try{
+      const q=d.transaction('takes').objectStore('takes').getAll();
+      q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.created-a.created));
+      q.onerror=()=>res([]);
+    }catch(e){ res([]); } });
+  }
+  async function mdbDel(id){
+    const d=await openMDB(); if(!d) return;
+    try{ d.transaction('takes','readwrite').objectStore('takes').delete(id); }catch(e){ logErr('idbDel',e); }
+  }
+  async function keepTake(){
+    if(!lastBlob){ toast('Kaydedilecek çekim yok'); return; }
+    const ok=await mdbPut({id:'t'+Date.now(), blob:lastBlob, type:lastBlob.type, size:lastBlob.size,
+      dur:(recStop-recStart)/1000, created:Date.now(),
+      title:(curScript()&&curScript().title)||'Çekim', srt:(typeof srtText==='function'?srtText():'')});
+    toast(ok?'⭐ Arşive alındı — 🎞 Çekimlerim\'den açabilirsin':'⚠️ Arşive yazılamadı (depo dolu olabilir)');
+  }
+  async function showTakes(){
+    const list=await mdbAll();
+    if(!list.length){ toast('Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de'); return; }
+    const sec=list.map((t,i)=>(i+1)+') '+new Date(t.created).toLocaleString()+' · '+
+      (t.size/1048576).toFixed(1)+' MB · '+t.title).join('\n');
+    const c=prompt('Arşivdeki çekimler:\n\n'+sec+'\n\nAçmak için numara yaz (silmek için: 3 sil)','1');
+    if(!c) return;
+    const sil=/sil/i.test(c);
+    const it=list[parseInt(c,10)-1];
+    if(!it){ toast('Numara bulunamadı'); return; }
+    if(sil){ await mdbDel(it.id); toast('Silindi'); return; }
+    lastBlob=it.blob; recStart=0; recStop=(it.dur||0)*1000; showResult();
+  }
+  function showResult(){
+    if(!lastBlob) return;
+    if(lastUrl) URL.revokeObjectURL(lastUrl);
+    lastUrl=URL.createObjectURL(lastBlob);
+    const v=$('#rrVideo'); v.src=lastUrl; v.load();
+    const ext=(lastBlob.type.indexOf('mp4')>=0)?'MP4':'WebM';
+    $('#rrSize').textContent='· '+ext+' · '+(lastBlob.size/1048576).toFixed(1)+' MB · '+fmtTime((recStop-recStart)/1000);
+    $('#rrDownload').textContent='⬇︎ İndir (.'+ext.toLowerCase()+')';
+    const ai=$('#audInfo'); if(ai) ai.textContent=audSummary();
+    $('#recResult').classList.add('open');
+    try{ v.play().catch(()=>{}); }catch(e){}
+  }
+  async function downloadRec(){
+    if(!lastBlob){ toast('Kaydedilecek çekim yok'); return; }
+    const isMp4=lastBlob.type.indexOf('mp4')>=0;
+    const ext=isMp4?'mp4':'webm';
+    const name='cekim_'+stamp()+'.'+ext;
+    const type=lastBlob.type||(isMp4?'video/mp4':'video/webm');
+    // 1) paylaşım (macOS Safari'de dosyayı doğrudan Finder/uygulamaya verir)
+    try{
+      const f=new File([lastBlob],name,{type});
+      if(navigator.canShare && navigator.canShare({files:[f]})){
+        await navigator.share({files:[f]}); return;
+      }
+    }catch(e){ if(e && e.name==='AbortError') return; }
+    // 2) klasik indirme
+    try{
+      const url=lastUrl||URL.createObjectURL(lastBlob);
+      const a=document.createElement('a');
+      a.href=url; a.download=name; a.rel='noopener';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('İndiriliyor: '+name);
+      return;
+    }catch(e){}
+    // 3) son çare: yeni sekmede aç, kullanıcı elle kaydetsin
+    try{ window.open(lastUrl||URL.createObjectURL(lastBlob),'_blank');
+      toast('Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet'); }
+    catch(e){ toast('Kaydedilemedi: '+(e.message||e)); }
+  }
+  function discardRec(){
+    const v=$('#rrVideo'); v.pause(); v.removeAttribute('src'); v.load();
+    if(lastUrl){ URL.revokeObjectURL(lastUrl); lastUrl=null; }
+    lastBlob=null;
+    $('#recResult').classList.remove('open');
+  }
+  function closeResult(){ $('#rrVideo').pause(); $('#recResult').classList.remove('open'); }
+
+  /* ---------- CANLI SES İZLEME ---------- */
+  let audMon=null, audStats=null, audWarned=false;
+  function startAudioMonitor(){
+    stopAudioMonitor();
+    audStats={clip:0,n:0,sum:0}; audWarned=false;
+    const at=stream&&stream.getAudioTracks()[0];
+    if(!at){ setAudBadge('none'); return; }
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      const ctx=new AC(); if(ctx.state==='suspended') ctx.resume().catch(()=>{});
+      const src=ctx.createMediaStreamSource(new MediaStream([at]));
+      const an=ctx.createAnalyser(); an.fftSize=512;
+      const buf=new Uint8Array(an.frequencyBinCount); src.connect(an);
+      let hot=0;
+      const iv=setInterval(()=>{
+        an.getByteTimeDomainData(buf);
+        let peak=0; for(let i=0;i<buf.length;i++){ const v=Math.abs(buf[i]-128); if(v>peak) peak=v; }
+        const lvl=peak/128;
+        audStats.n++; audStats.sum+=lvl;
+        if(lvl>0.96){ audStats.clip++; hot=12; }
+        if(hot>0){ hot--; setAudBadge('clip');
+          if(!audWarned){ audWarned=true; toast('⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş'); } }
+        else if(audStats.n>12 && audStats.sum/audStats.n<0.04) setAudBadge('low');
+        else setAudBadge('ok');
+      },100);
+      audMon={ctx,iv};
+    }catch(e){}
+  }
+  function stopAudioMonitor(){
+    if(audMon){ clearInterval(audMon.iv); try{ audMon.ctx.close(); }catch(e){} audMon=null; }
+    setAudBadge('off');
+  }
+  function setAudBadge(mode){
+    const el=$('#audBadge'); if(!el) return;
+    if(mode==='off'){ el.style.display='none'; return; }
+    el.style.display='block';
+    if(mode==='clip'){ el.textContent='⚠️ ses kırpıyor'; el.style.background='rgba(255,59,48,.85)'; }
+    else if(mode==='low'){ el.textContent='🔈 ses kısık'; el.style.background='rgba(255,179,0,.85)'; }
+    else if(mode==='none'){ el.textContent='🔇 mikrofon yok'; el.style.background='rgba(255,59,48,.85)'; }
+    else { el.textContent='🔊 ses iyi'; el.style.background='rgba(0,0,0,.6)'; }
+  }
+  function audSummary(){
+    if(!audStats||!audStats.n) return '';
+    const at=stream&&stream.getAudioTracks()[0];
+    if(!at) return '🔇 Ses yok';
+    const pct=audStats.clip/audStats.n*100, avg=audStats.sum/audStats.n;
+    if(pct>2) return '⚠️ Kaydın %'+Math.round(pct)+"'inde ses kırpmış";
+    if(avg<0.05) return '🔈 Ses çok kısık';
+    return '🔊 Ses seviyesi iyi';
+  }
+
+  /* ---------- ALTYAZI (.srt) — okuma zamanlamasından ----------
+     Konuşma tanıma yok: metin senaryonun kendisi, zamanlama da kelimenin
+     okuma çizgisinden geçtiği an. */
+  const CAP_MAXW=7, CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+  function sentenceEnd(s){ return /[.!?…:;]["')\]]?$/.test(s); }
+  function buildCues(){
+    const off=(state.capOffset||0), list=[];
+    for(let i=0;i<words.length;i++){
+      if(capTimes[i]==null) continue;
+      list.push({t:Math.max(0,capTimes[i]+off), s:words[i].textContent, ln:wordLine[i]});
+    }
+    if(!list.length) return [];
+    const cues=[]; let cur=null;
+    for(const w of list){
+      if(!cur){ cur={start:w.t,words:[w.s],ln:w.ln,chars:w.s.length}; continue; }
+      const brk = cur.words.length>=CAP_MAXW || cur.chars+1+w.s.length>CAP_MAXCH ||
+                  (w.t-cur.start)>=CAP_MAXSEC || w.ln!==cur.ln || sentenceEnd(cur.words[cur.words.length-1]);
+      if(brk){ cues.push(cur); cur={start:w.t,words:[w.s],ln:w.ln,chars:w.s.length}; }
+      else { cur.words.push(w.s); cur.chars+=1+w.s.length; }
+    }
+    if(cur) cues.push(cur);
+    cues.forEach((c,n)=>{ const nx=cues[n+1];
+      c.end = nx ? Math.max(c.start+0.4, nx.start-CAP_GAP) : c.start+1.4;
+      if(c.end-c.start>6) c.end=c.start+6;
+      c.text=c.words.join(' '); });
+    return cues;
+  }
+  function tc(s){ s=Math.max(0,s);
+    const h=Math.floor(s/3600),mi=Math.floor(s%3600/60),se=Math.floor(s%60),ms=Math.round((s-Math.floor(s))*1000);
+    const p=(n,l)=>String(n).padStart(l,'0');
+    return p(h,2)+':'+p(mi,2)+':'+p(se,2)+','+p(ms,3); }
+  function srtText(){ return buildCues().map((c,n)=>(n+1)+'\n'+tc(c.start)+' --> '+tc(c.end)+'\n'+c.text+'\n').join('\n'); }
+  function downloadSrt(){
+    const cues=buildCues();
+    if(!cues.length){ toast('Altyazı yok — kayıt sırasında sufle akmamış'); return; }
+    const b=new Blob([srtText()],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
+    const a=document.createElement('a'); a.href=u; a.download='altyazi_'+stamp()+'.srt';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+    toast(cues.length+' altyazı satırı indirildi');
+  }
+
+  /* ---------- CİHAZ UYUMLULUĞU ---------- */
+  function platformName(){
+    const u=navigator.userAgent;
+    if(/android/i.test(u)) return 'Android';
+    if(/mac/i.test(u)) return 'macOS · '+(/chrome/i.test(u)?'Chrome':(/safari/i.test(u)?'Safari':'tarayıcı'));
+    if(/win/i.test(u)) return 'Windows · '+(/edg/i.test(u)?'Edge':(/chrome/i.test(u)?'Chrome':'tarayıcı'));
+    if(/iphone|ipad/i.test(u)) return 'iOS';
+    return navigator.platform||'?';
+  }
+  /* ============ ÇEKİME HAZIRLIK KONTROLÜ (telefon sürümünden taşındı) ============
+     Kamera, mikrofon, metin süresi, göz teması ve kompozit hızı zaten ölçülüyor;
+     burada tek bir git/gitme kararına dönüşüyor. Mac'te hiç yoktu. */
+  function readyChecks(){
+    const out=[];
+    if(!stream) out.push(['bad','Kamera kapalı','Üstteki 🎥 Kamera düğmesine bas']);
+    else{
+      const v=stream.getVideoTracks()[0], sset=(v&&v.getSettings)?v.getSettings():{};
+      out.push(['ok','Kamera açık',(sset.width||'?')+'×'+(sset.height||'?')]);
+      if(!stream.getAudioTracks().length) out.push(['bad','Mikrofon yok','Video SESSİZ kaydedilecek — izinleri kontrol et']);
+      else out.push(['ok','Mikrofon hazır','']);
+    }
+    const wc=countWords($('#editor').value);
+    const secs=wc/Math.max(40,state.speed)*60;
+    if(!wc) out.push(['bad','Metin boş','Sol taraftaki editöre metnini yapıştır']);
+    else out.push(['ok','Metin hazır',wc+' kelime · ~'+fmtClock(secs)]);
+    const ga=gazeAngle();
+    if(ga>=9) out.push(['bad','Bakış sapması ≈'+Math.round(ga)+'°','İzleyici aşağı baktığını görür — okuma çizgisini yukarı al ya da geri çekil']);
+    else if(ga>=5) out.push(['warn','Bakış sapması ≈'+Math.round(ga)+'°','Sınırda — biraz geri çekilirsen düzelir']);
+    else out.push(['ok','Göz teması iyi','≈'+Math.round(ga)+'°']);
+    if(ERRLOG.length) out.push(['warn',ERRLOG.length+' hata kaydedildi','Durum çubuğundaki ⚠️ ile ayrıntıya bak']);
+    return out;
+  }
+  function fmtClock(s){ s=Math.max(0,Math.round(s));
+    return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  function showReady(){
+    const r=readyChecks();
+    const bad=r.filter(x=>x[0]==='bad').length, warn=r.filter(x=>x[0]==='warn').length;
+    const head = bad ? '⛔ '+bad+' engel var' : (warn ? '⚠️ '+warn+' uyarı — çekebilirsin' : '✅ Çekime hazırsın');
+    const ic={ok:'✓',warn:'~',bad:'✗'};
+    alert(head+'\n\n'+r.map(x=>ic[x[0]]+' '+x[1]+(x[2]?'\n    '+x[2]:'')).join('\n'));
+  }
+  function deviceLine(){
+    const MR=window.MediaRecorder, sup=x=>!!(MR&&MR.isTypeSupported&&MR.isTypeSupported(x));
+    const c=document.createElement('canvas');
+    const bits=[
+      'MP4 '+(sup('video/mp4')?'✓':'✕'),
+      'Kırpma '+(typeof c.captureStream==='function'?'✓':'✕'),
+      'Sesle takip '+((window.SpeechRecognition||window.webkitSpeechRecognition)?'✓':'✕'),
+      'Paylaşım '+(navigator.canShare?'✓':'✕')
+    ];
+    return platformName()+' · '+bits.join(' · ');
+  }
+
+  /* ---------- YARDIMCI ---------- */
+  function fmtTime(s){ s=Math.max(0,Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  /* kayıt süresi + platform sınırı: son 8 sn sarı, sınır aşılınca kırmızı */
+  let overWarned=false;
+  function showRecTime(){
+    const t=(performance.now()-recStart)/1000, lim=curMode().limit, el=$('#recTime'), dot=$('#recDot');
+    if(!lim){ el.textContent=fmtTime(t); dot.style.background=''; return; }
+    const left=lim-t;
+    el.textContent=fmtTime(t)+' / '+fmtTime(lim);
+    if(left<0){ dot.style.background='rgba(255,59,48,.85)';
+      if(!overWarned){ overWarned=true; toast('⚠️ '+curMode().name+' süre sınırı aşıldı'); } }
+    else if(left<8) dot.style.background='rgba(255,179,0,.85)';
+    else dot.style.background='';
+  }
+  // dosya adı zaman damgalı olsun (eskisi "00-00_1" gibi çakışan bir addı)
+  function stamp(){ const d=new Date(), p=n=>String(n).padStart(2,'0');
+    return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); }
+  function escapeHtml(s){ return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  function updateStats(){
+    const wc=countWords($('#editor').value);   // başlık ve notlar sayılmaz
+    $('#wc').textContent=wc+' kelime';
+    $('#rt').textContent='~'+fmtTime(wc/ state.speed *60);
+  }
+  let toastT;
+  function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
+
+  /* ---------- OLAYLAR ---------- */
+  playBtn.onclick=togglePlay;
+  $('#resetBtn').onclick=reset;
+  camBtn.onclick=toggleCam;
+  recBtn.onclick=toggleRec;
+  $('#tClean').onclick=()=>applyTool(cleanText,'Metin güncellendi');
+  $('#tJoin').onclick=()=>applyTool(joinLines,'Satırlar birleştirildi');
+  $('#tCase').onclick=()=>applyTool(sentenceCase,'Cümle düzenine çevrildi');
+  $('#tBreath').onclick=()=>applyTool(breathMarks,'Nefes işaretleri eklendi');
+  $('#tNum').onclick=()=>applyTool(numbersToWords,'Sayılar yazıya çevrildi');
+  $('#undoTool').onclick=()=>{ if(undoText==null) return;
+    $('#editor').value=undoText; undoText=null; syncEditorToState(); buildWords(); updateStats(); save();
+    $('#undoTool').style.display='none'; toast('↺ Geri alındı'); };
+  $('#newScript').onclick=newScript;
+  $('#fsBtn').onclick=()=>{ if(!document.fullscreenElement) stageWrap.requestFullscreen?.(); else document.exitFullscreen(); };
+  $('#hideBtn').onclick=()=>app.classList.toggle('full');
+  // kayıt önizleme butonları
+  $('#rrDownload').onclick=downloadRec;
+  $('#rrDiscard').onclick=discardRec;
+  $('#rrClose').onclick=closeResult;
+  // mobil panel açma/kapama
+  $('#leftToggle').onclick=()=>{ app.classList.remove('showRight'); app.classList.toggle('showLeft'); };
+  $('#rightToggle').onclick=()=>{ app.classList.remove('showLeft'); app.classList.toggle('showRight'); };
+  $('#backdrop').onclick=()=>app.classList.remove('showLeft','showRight');
+
+  $('#title').addEventListener('input',()=>{ syncEditorToState(); renderScripts(); save(); });
+  $('#editor').addEventListener('input',()=>{ syncEditorToState(); buildWords(); updateStats(); save(); });
+
+  // sürgüler
+  [['speed','speed'],['font','font'],['line','line'],['margin','margin'],['eyepos','eyePos']].forEach(([id,key])=>{
+    $('#'+id).addEventListener('input',e=>{ state[key]=+e.target.value; applyAll(); updateStats(); save(); });
+  });
+  // yazı tipi
+  $$('#famSel button').forEach(b=>b.onclick=()=>{ state.fam=b.dataset.fam; applyAll(); save(); });
+  // tema
+  $$('#themeSel .sw').forEach(b=>b.onclick=()=>setTheme(b.dataset.theme));
+  // özel renk
+  $('#cText').addEventListener('input',e=>{ state.cText=e.target.value; state.theme='custom'; applyAll(); save(); });
+  $('#cBg').addEventListener('input',e=>{ state.cBg=e.target.value; state.theme='custom'; applyAll(); save(); });
+  // toggle anahtarlar
+  $$('.sw2').forEach(t=>t.onclick=()=>{ const k=t.dataset.t; state[k]=!state[k];
+    /* ÖLÜ AYAR TUZAĞI (telefonda üç kez çıktı): altyazı gömme ve yeşil ekran YALNIZ
+       kırpma boru hattında çiziliyor. Kırpma kapalıyken bu anahtarlar hiçbir şey
+       yapmıyor, hiçbir şey de söylemiyordu. Artık gerekeni kendisi açıyor. */
+    if((k==='burnCaps'||k==='chroma') && state[k] && !cropOn()){
+      if(state.fmt==='free'){ state.fmt='9:16'; toast('Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor'); }
+      state.crop=true;
+      toast(k==='burnCaps'?'Kırpma açıldı — altyazı ancak kırpılmış görüntüye çizilebilir'
+                          :'Kırpma açıldı — yeşil ekran ancak kırpılmış görüntüde çalışır');
+    }
+    applyAll(); save(); });
+  // format
+  $$('#fmtPill button').forEach(b=>b.onclick=()=>{ state.fmt=b.dataset.fmt; applyAll(); drawSafe(); save(); });
+  // çekim modu
+  $$('#modeSel button').forEach(b=>b.onclick=()=>{ applyMode(b.dataset.mode,true); toast('🎯 '+curMode().name); });
+  // okuma şeridi + göz teması
+  $$('#bandSel button').forEach(b=>b.onclick=()=>{ state.band=+b.dataset.band; applyAll(); save(); });
+  $('#eyeRecipe').onclick=applyEyeRecipe;
+  $('#dist').addEventListener('input',e=>{ state.dist=+e.target.value; applyAll(); save(); });
+  $('#sch').addEventListener('input',e=>{ state.sch=+e.target.value; applyAll(); save(); });
+  $$('#caseSel button').forEach(b=>b.onclick=()=>{ state.textCase=b.dataset.c2; applyAll(); save(); });
+  $('#capOff').addEventListener('input',e=>{ state.capOffset=(+e.target.value)/10; applyAll(); save(); });
+  $$('#keySel button').forEach(b=>b.onclick=()=>{ state.keyColor=b.dataset.k; applyAll(); save(); });
+  $$('#bgcSel button').forEach(b=>b.onclick=()=>{ state.bgColor=b.dataset.b; applyAll(); save(); });
+  $$('#bgKindSel button').forEach(b=>b.onclick=()=>{ state.bgKind=b.dataset.bk;
+    if(state.bgKind==='image' && !state.bgImg) $('#bgFile').click();
+    applyAll(); save(); loadBg(); });
+  $('#spill').addEventListener('input',e=>{ state.spill=+e.target.value; applyAll(); save(); });
+  $('#keySim').addEventListener('input',e=>{ state.keySim=+e.target.value; applyAll(); save(); });
+  $('#keySmooth').addEventListener('input',e=>{ state.keySmooth=+e.target.value; applyAll(); save(); });
+  $('#bgPick').onclick=()=>$('#bgFile').click();
+  $('#bgClear').onclick=()=>{ state.bgImg=null; bgReady=false; save(); toast('Arka plan görseli kaldırıldı'); };
+  $('#bgFile').onchange=e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      // ham dataURL localStorage'ı doldurup TÜM ayarların kaydını bozabilir: küçült
+      const img=new Image();
+      img.onload=()=>{
+        const mx=1280, sc=Math.min(1,mx/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');
+        c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc));
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        let url; try{ url=c.toDataURL('image/jpeg',0.82); }catch(err){ toast('Görsel çok büyük'); return; }
+        if(url.length>1400000){ toast('Görsel çok büyük'); return; }
+        state.bgImg=url; state.bgKind='image'; save(); applyAll(); loadBg(); toast('Arka plan görseli yüklendi');
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(f); e.target.value='';
+  };
+  $('#rrSrt').onclick=downloadSrt;
+
+  // tekerlek ile manuel konum — çalışırken de olsun (cümle kaçınca geri sarmak için)
+  function setPos(p){
+    pos=Math.max(-eyeOff()*0.4,Math.min(maxPos+frameH()*0.2,p));
+    scroller.style.transform=`translateY(${-pos}px)`;
+    $('#progress').style.width=Math.min(100,Math.max(0,(pos/maxPos)*100))+'%';
+    highlightAt(pos+eyeOff());
+  }
+  let wheelT=null;
+  stageWrap.addEventListener('wheel',e=>{ setPos(pos+e.deltaY);
+    if(voiceOn){ clearTimeout(wheelT); wheelT=setTimeout(syncVoicePtr,180); } },{passive:true});
+
+  // fareyle sürükleyerek sar; sürüklemeden bırakınca başlat/durdur
+  let dragging=false,sy=0,startPos=0,moved=false;
+  prompt.addEventListener('pointerdown',e=>{
+    dragging=true; moved=false; sy=e.clientY; startPos=pos;
+    try{ prompt.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  prompt.addEventListener('pointermove',e=>{
+    if(!dragging) return;
+    if(!moved && Math.abs(e.clientY-sy)<8) return;
+    moved=true; setPos(startPos-(e.clientY-sy));
+  });
+  const endDrag=()=>{ if(!dragging) return; dragging=false;
+    if(moved){ if(voiceOn) syncVoicePtr(); } else togglePlay(); };
+  prompt.addEventListener('pointerup',endDrag);
+  prompt.addEventListener('pointercancel',endDrag);
+
+  // satır atlama (sunum kumandaları PageUp/PageDown gönderir)
+  function jumpLine(dir){
+    const lns=[...scroller.querySelectorAll('.ln')].filter(l=>l.querySelector('.w'));
+    if(!lns.length) return;
+    const cur=pos+eyeOff();
+    let target=null;
+    if(dir>0) target=lns.find(l=>l.offsetTop>cur+4);
+    else { const before=lns.filter(l=>l.offsetTop<cur-4); target=before[before.length-1]; }
+    if(target){ setPos(target.offsetTop-eyeOff()+target.offsetHeight/2); if(voiceOn) syncVoicePtr(); }
+  }
+
+  // klavye
+  document.addEventListener('keydown',e=>{
+    const tag=document.activeElement.tagName;
+    if(tag==='TEXTAREA'||tag==='INPUT') return;
+    switch(e.key){
+      case ' ': case 'Enter': e.preventDefault(); togglePlay(); break;
+      case 'ArrowUp': e.preventDefault(); state.speed=Math.min(320,state.speed+5); applyAll(); save(); break;
+      case 'ArrowDown': e.preventDefault(); state.speed=Math.max(0,state.speed-5); applyAll(); save(); break;
+      // sunum kumandası / pedal tuşları
+      case 'PageDown': e.preventDefault(); togglePlay(); break;
+      case 'PageUp': case 'ArrowLeft': e.preventDefault(); jumpLine(-1); break;
+      case 'ArrowRight': e.preventDefault(); jumpLine(1); break;
+      case 'Home': e.preventDefault(); reset(); break;
+      case 'k': case 'K': e.preventDefault(); toggleRec(); break;
+      case 'r': case 'R': reset(); break;
+      case 'h': case 'H': app.classList.toggle('full'); break;
+      case 'm': case 'M': state.mirror=!state.mirror; applyAll(); save(); break;
+      case 'f': case 'F': $('#fsBtn').click(); break;
+    }
+  });
+  // pencere/tam ekran değişince yalnız çerçeve yeniden boyutlanıyordu; metnin baş boşluğu
+  // ve bitiş konumu eski ölçüyle kalıyor, hizalama kayıyordu → yeniden ölç
+  function relayout(){ layoutFrame(); requestAnimationFrame(()=>{ measure(); setPos(pos); }); }
+  window.addEventListener('resize',relayout);
+  document.addEventListener('fullscreenchange',()=>setTimeout(relayout,120));
+  $('#voiceBtn').onclick=toggleVoice;
+
+  /* ---------- SESLE İLERLEYEN SUFLE (VoiceTrack) ---------- */
+  let voiceOn=false, rec=null, vptr=0, vTarget=0, vRaf=null, voicePaused=false;
+  let normWords=[], srIdx=-1, srSeen='';
+  // Türkçe duyarlı normalize: İ/I/ı doğru küçülür, ç ğ ş ö ü şapkalılar katlanır.
+  // (düz toLowerCase() "İstanbul"u noktalı i ile bırakıyor, tanıyıcının "istanbul"u ile eşleşmiyordu)
+  const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
+  function norm(s){ return (s||'').toLocaleLowerCase('tr')
+      .replace(/[^\p{L}\p{N}]/gu,'')
+      .replace(/[çğıİşöüâêîôûéáñ]/g,c=>FOLD[c]||c); }
+  function buildNorm(){
+    normWords=[]; words.forEach((w,i)=>{ const n=norm(w.textContent); if(n) normWords.push({n,i}); });
+  }
+  function toggleVoice(){ voiceOn ? stopVoice() : startVoice(); }
+  function startVoice(){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){ toast('Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın'); return; }
+    if(running) stop();
+    measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0;
+    vLast=performance.now(); vptr=0; syncVoicePtr();
+    rec=new SR(); rec.lang='tr-TR'; rec.continuous=true; rec.interimResults=true;
+    srIdx=-1; srSeen='';
+    rec.onresult=e=>{
+      const i=e.results.length-1, txt=(e.results[i][0].transcript||'');
+      // YALNIZ YENİ KISIM: ara sonuçlar büyüyerek geliyor; tamamını her seferinde eşleştirmek
+      // aynı kelimeleri tekrar aratıp metni ileri fırlatıyordu
+      let fresh;
+      if(i===srIdx && txt.startsWith(srSeen)) fresh=txt.slice(srSeen.length);
+      else if(i===srIdx) fresh=txt.split(/\s+/).slice(-3).join(' ');
+      else fresh=txt;
+      srIdx=i; srSeen=txt;
+      let spoken=fresh.split(/\s+/).map(norm).filter(Boolean);
+      spoken=takeCommands(spoken);   // "sufle başla" gibi komutları ayıkla
+      matchVoice(spoken);
+    };
+    rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') toast('Mikrofon izni gerekli'); };
+    rec.onend=()=>{ if(voiceOn){ try{rec.start();}catch(_){} } };
+    try{ rec.start(); }catch(_){}
+    voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceBtn').textContent='🎤 Ses: Açık';
+    $('#voiceBtn').title='Sesle takip + sesli komut: "sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"';
+    toast('Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"');
+    easeLoop();
+  }
+  function stopVoice(){
+    voiceOn=false; if(rec){ rec.onend=null; try{rec.stop();}catch(_){} }
+    cancelAnimationFrame(vRaf);
+    $('#voiceBtn').classList.remove('primary'); $('#voiceBtn').textContent='🎤 Sesle';
+  }
+  /* ---------- SESLİ KOMUT ("sufle" + komut) ---------- */
+  const WAKE={sufle:1,suffle:1,sufl:1,sufla:1,prompter:1,promter:1};
+  const VCMD={
+    basla:'play', baslat:'play', devam:'play', oku:'play',
+    dur:'pause', duraklat:'pause', bekle:'pause',
+    hizlan:'faster', hizli:'faster', yavasla:'slower', yavas:'slower',
+    basa:'reset', don:'reset', bastan:'reset',
+    kaydet:'rec', kayit:'rec', tam:'fullscreen',
+    start:'play', go:'play', resume:'play', stop:'pause', pause:'pause', wait:'pause',
+    faster:'faster', slower:'slower', rewind:'reset', restart:'reset', record:'rec'
+  };
+  const TAIL={basa:'don', bastan:'al', tam:'ekran'};
+  let lastCmdAt=0;
+  function takeCommands(toks){
+    const out=[];
+    for(let i=0;i<toks.length;i++){
+      if(WAKE[toks[i]] && i+1<toks.length){
+        const c=VCMD[toks[i+1]];
+        if(c){ runVoiceCmd(c);
+          i += (TAIL[toks[i+1]]===toks[i+2]) ? 2 : 1;   // iki kelimelik kalıbı da yut
+          continue; }
+      }
+      out.push(toks[i]);
+    }
+    return out;
+  }
+  const CMDNAME={play:'devam',pause:'durdu',faster:'hızlandı',slower:'yavaşladı',reset:'başa sarıldı',rec:'kayıt',fullscreen:'tam ekran'};
+  function runVoiceCmd(c){
+    const now=Date.now(); if(now-lastCmdAt<900) return; lastCmdAt=now;
+    // 🎤 açıkken "başla/dur" takibi sürdürür/dondurur — zamanlı kaydırmayı başlatmaz (iki döngü çakışırdı)
+    if(c==='play' && voiceOn){ voicePaused=false; vTarget=pos; }
+    else if(c==='pause' && voiceOn){ voicePaused=true; }
+    else if(c==='reset'){ handleRemote({type:'reset'}); vptr=0; vTarget=0; }
+    else handleRemote({type:c});
+    toast('🗣 '+(CMDNAME[c]||c));
+  }
+
+  /* Son konuşulan 5 kelimelik pencere metinde aranır; TEK kelime yetmez, en az iki kelime
+     tutmalı — yoksa "bir/ve/bu" gibi sık kelimeler metni ileri fırlatıyordu. Pencere geriye
+     de bakar ki kayma kendi kendini düzeltsin. */
+  const WIN_BACK=8, WIN_FWD=26, MAX_JUMP=14;
+  let recent=[], lastTokAt=0;
+  function wordEq(nw,tok){
+    if(nw===tok) return true;
+    if(tok.length>4 && nw.length>4 && (nw.indexOf(tok)===0 || tok.indexOf(nw)===0)) return true;
+    return false;
+  }
+  function matchVoice(spoken){
+    if(voicePaused||!normWords.length) return;
+    const now=performance.now();
+    if(now-lastTokAt>4000) recent.length=0;
+    if(spoken.length) lastTokAt=now;
+    for(const t of spoken) if(t.length>=2) recent.push(t);
+    if(recent.length>5) recent=recent.slice(-5);
+    if(recent.length<2) return;
+    const lo=Math.max(0,vptr-WIN_BACK), hi=Math.min(normWords.length,vptr+WIN_FWD);
+    let bestK=-1,best=0;
+    for(let k=lo;k<hi;k++){
+      let score=0;
+      for(let j=0;j<recent.length;j++){
+        const wi=k-(recent.length-1-j);
+        if(wi<0||wi>=normWords.length) continue;
+        if(wordEq(normWords[wi].n,recent[j])) score += (j===recent.length-1?1.6:1);
+      }
+      if(score>best){ best=score; bestK=k; }
+    }
+    if(bestK<0 || best<2.6) return;
+    if(bestK-vptr>MAX_JUMP) return;
+    vptr=bestK+1;
+    vTarget=Math.max(0, wordTops[normWords[bestK].i]-eyeOff());
+  }
+  /* kare hızından bağımsız yumuşatma + hız tavanı → ışınlanma yerine kayarak gider */
+  let vLast=0; const VOICE_MAX_PXS=1100;
+  function easeLoop(ts){
+    if(!voiceOn) return;
+    const dt=Math.min(0.05,(ts-vLast)/1000)||0.016; vLast=ts;
+    if(!voicePaused){
+      const d=vTarget-pos;
+      if(Math.abs(d)>0.6){
+        let step=d*(1-Math.exp(-dt/0.22));
+        const cap=VOICE_MAX_PXS*dt;
+        setPos(pos+Math.max(-cap,Math.min(cap,step)));
+      }
+    }
+    vRaf=requestAnimationFrame(easeLoop);
+  }
+  /* elle sardıktan sonra takip yeni konumdan devam etsin (eskiden eski hedefe geri çekiyordu) */
+  function syncVoicePtr(){
+    vTarget=pos; recent.length=0; srSeen=''; srIdx=-1;
+    const y=pos+eyeOff();
+    let lo=0,hi=wordTops.length-1,idx=0;
+    while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=y){idx=mid;lo=mid+1;}else hi=mid-1;}
+    let p=0; while(p<normWords.length && normWords[p].i<idx) p++;
+    vptr=p;
+  }
+
+  /* ---------- TELEFON UZAKTAN KUMANDA (yerel sunucu) ---------- */
+  async function setupRemote(){
+    if(!location.protocol.startsWith('http')) return; // file:// ise kapalı
+    $('#remoteOff').style.display='none'; $('#remoteOn').style.display='block';
+    // Mac'in Wi-Fi IP'sini sunucudan al — QR'da localhost olursa telefon ulaşamaz!
+    let host=location.host;
+    try{
+      const r=await fetch('/info'); const j=await r.json();
+      if(j.ip && j.ip!=='127.0.0.1') host=j.ip+':'+j.port;
+    }catch(_){}
+    const url=location.protocol+'//'+host+'/remote';
+    $('#remoteUrl').textContent=host+'/remote';
+    const img=$('#qrImg'); img.onload=()=>{img.style.display='block';};
+    img.onerror=()=>{img.style.display='none';};
+    img.src='/qr?d='+encodeURIComponent(url);
+    try{
+      const es=new EventSource('/events');
+      es.onopen=()=>$('#connDot').classList.add('on');
+      es.onerror=()=>$('#connDot').classList.remove('on');
+      es.onmessage=e=>{ try{ handleRemote(JSON.parse(e.data)); }catch(_){} };
+    }catch(_){}
+  }
+  function handleRemote(c){
+    switch(c.type){
+      case 'toggle': togglePlay(); break;
+      case 'play': if(!running) togglePlay(); break;
+      case 'pause': if(running) stop(); break;
+      case 'reset': reset(); break;
+      case 'faster': state.speed=Math.min(320,state.speed+5); applyAll(); save(); break;
+      case 'slower': state.speed=Math.max(0,state.speed-5); applyAll(); save(); break;
+      case 'speed': state.speed=Math.max(0,Math.min(320,c.value==null?state.speed:+c.value)); applyAll(); save(); break;
+      case 'font': state.font=Math.max(24,Math.min(160,+c.value||state.font)); applyAll(); save(); break;
+      case 'voice': toggleVoice(); break;
+      case 'rec': toggleRec(); break;
+      case 'cam': toggleCam(); break;
+      case 'nextLine': jumpLine(1); break;      // kumanda sayfasındaki ↓ Satır
+      case 'prevLine': jumpLine(-1); break;     // kumanda sayfasındaki ↑ Satır
+      case 'fullscreen': $('#fsBtn').click(); break;
+      default: logErr('remote','bilinmeyen komut: '+c.type);   // sessiz yutma yok
+    }
+  }
+
+  /* ---------- BAŞLAT ---------- */
+  load();
+  const s=curScript();
+  $('#title').value=s.title; $('#editor').value=s.text;
+  renderScripts(); applyAll(); applyMode(state.mode,false); buildWords(); updateStats();
+  $('#readyBtn').onclick=showReady;
+  $('#rrKeep').onclick=keepTake;
+  /* 12.10 Sunucusuz taşıma: telefonun JSON yedeğiyle AYNI biçim.
+     Aynı düğme hem dışa aktarıyor hem (shift ile) içe alıyor. */
+  $('#scExport').onclick=(e)=>{
+    if(e.shiftKey){ $('#scImport').click(); return; }
+    syncEditorToState();
+    const veri=JSON.stringify({sufle:1, scripts:state.scripts, activeId:state.current}, null, 1);
+    const u=URL.createObjectURL(new Blob([veri],{type:'application/json'}));
+    const a=document.createElement('a'); a.href=u; a.download='sufle-senaryolar.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),4000);
+    toast('Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)');
+  };
+  $('#scImport').onchange=(e)=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const j=JSON.parse(String(r.result));
+        if(!j.scripts||!j.scripts.length){ toast('Dosyada senaryo yok'); return; }
+        // MEVCUTLARI SİLME: üstüne ekle. Yanlış dosyayla her şeyi kaybetmek olmaz.
+        const gelen=j.scripts.map((x,i)=>({id:'i'+Date.now()+i, title:x.title||'İçe aktarılan', text:x.text||''}));
+        state.scripts=state.scripts.concat(gelen);
+        state.current=gelen[0].id;
+        $('#title').value=gelen[0].title; $('#editor').value=gelen[0].text;
+        renderScripts(); buildWords(); reset(); updateStats(); save();
+        toast(gelen.length+' senaryo eklendi');
+      }catch(err){ logErr('import',err); toast('Dosya okunamadı — Sufle yedeği mi?'); }
+    };
+    r.onerror=()=>toast('Dosya okunamadı');
+    r.readAsText(f,'utf-8'); e.target.value='';
+  };
+  $('#takesBtn').onclick=showTakes;
+  $('#sbDev').textContent=deviceLine();
+  $('#sbVer').textContent='v'+VER;
+  window.addEventListener('beforeunload',()=>{ try{ rememberPos(); }catch(e){ logErr('pos',e); } });
+  setupRemote();
+})();
+</script>
+</body>
+</html>
