@@ -889,7 +889,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='6.7';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1083,7 +1083,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1131,7 +1131,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1616,10 +1616,26 @@ async function openCam(){
         : Object.assign({facingMode:st.backCam?'environment':'user',frameRate:{ideal:30}},qConstraint());
       stream=await navigator.mediaDevices.getUserMedia({video:vCons, audio});
     }catch(e1){
-      // ses kısıtları bazı cihazlarda tüm isteği düşürüyor — sade sesle bir daha dene
-      stream=await navigator.mediaDevices.getUserMedia({
-        video:{facingMode:st.backCam?'environment':'user'}, audio:true});
-      toast(m('audioFallback'));
+      const vSade={facingMode:st.backCam?'environment':'user'};
+      // 1. AŞAMA — BAYAT MİKROFON SEÇİMİ: harici mikrofon çıkarıldığında
+      // deviceId:{exact} hata veriyordu. Eskiden doğrudan 'audio:true'ya
+      // düşülüyordu: kamera açılıyor ama st.micId olmayan cihazı göstermeye
+      // devam ediyor, HER açılışta bu yol koşuyor, ham ses ayarı da sessizce
+      // düşüyordu. Artık seçim temizleniyor ve sebebi söyleniyor.
+      if(st.micId){
+        st.micId=null; save();
+        const audio2 = st.rawAudio
+          ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false} : true;
+        try{
+          stream=await navigator.mediaDevices.getUserMedia({video:vSade, audio:audio2});
+          toast(m('micGone')); setTimeout(setupMics,300);
+        }catch(e2){ stream=null; }
+      }
+      // 2. AŞAMA — bilinen en sade istek (iOS'ta çalıştığı kanıtlanmış yol)
+      if(!stream){
+        stream=await navigator.mediaDevices.getUserMedia({video:vSade, audio:true});
+        toast(m('audioFallback'));
+      }
     }
     cam.srcObject=stream; body.classList.add('cam');
     body.classList.toggle('mirrorCam', !st.backCam);
