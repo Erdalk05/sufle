@@ -911,7 +911,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.2';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.3';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1494,10 +1494,25 @@ function tick(now){
   if(pos>=maxPos+H()*0.15){ stop(); toast(m('end')); return; }
   raf=requestAnimationFrame(tick);
 }
-function highlight(y){
-  if(!wordTops.length) return;
+/* Okuma çizgisine EN YAKIN satırı seç.
+   ESKİDEN: merkezi çizginin üstünde kalan SON kelime seçiliyordu. Bir satırdaki
+   tüm kelimeler aynı merkezi paylaştığı için bu, hep BİR SATIR YUKARISINI
+   vurgulamak demekti: vurgulanan kelime okuma şeridinin ortasına değil ÜST
+   KENARINA düşüyordu, yarısı şeridin dışında kalıyordu. Gerçek tarayıcıda
+   ölçüldü: çizgi 206 px'te, vurgu 139 px'te — tam bir satır sapma. */
+function yakinIdx(y){
   let lo=0,hi=wordTops.length-1,idx=-1;
   while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=y){idx=mid;lo=mid+1;}else hi=mid-1;}
+  const j=idx+1;                       // bir sonraki SATIRIN ilk kelimesi
+  if(j<wordTops.length){
+    const oncekiUzaklik = idx>=0 ? Math.abs(y-wordTops[idx]) : Infinity;
+    if(Math.abs(wordTops[j]-y) < oncekiUzaklik) return j;
+  }
+  return idx;
+}
+function highlight(y){
+  if(!wordTops.length) return;
+  const idx=yakinIdx(y);
   if(idx!==activeIdx){
     if(words[activeIdx]) words[activeIdx].classList.remove('active');
     if(idx>=0&&words[idx]) words[idx].classList.add('active');

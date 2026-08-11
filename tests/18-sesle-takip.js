@@ -72,3 +72,35 @@ function yutma(mesafeler){
 ok('normal ilerlemede yutma yok', yutma([3,4,2,5]).kabul===4);
 ok('sürekli büyük sıçramada kilitlenmiyor', yutma([20,20,20,20,20,20]).kabul>=2);
 ok('tek büyük sıçrama yutuluyor', yutma([20]).kabul===0);
+
+// ---------- OKUMA ÇİZGİSİ HİZASI (v8.3, gerçek tarayıcıda ölçüldü) ----------
+// Vurgulanan kelime şeridin ORTASINA değil ÜST KENARINA düşüyordu: bir satırdaki
+// tüm kelimeler aynı merkezi paylaştığı için "merkezi çizginin üstünde kalan son
+// kelime" seçimi hep bir satır yukarısını işaretliyordu. Ölçüm: çizgi 206 px,
+// vurgu 139 px — tam bir satır sapma.
+eval(cikar(jsHam,/function yakinIdx\(y\)\{[\s\S]*?\n\}/,'yakinIdx'));
+let wordTops=[];
+const kur = t => { wordTops=t; };
+
+kur([50,50,50, 120,120,120, 190,190,190, 260,260,260]);   // 4 satır, satır aralığı 70
+ok('çizgi satır merkezindeyse o satır', wordTops[yakinIdx(120)]===120);
+ok('çizgi satırın hemen altındaysa AYNI satır', wordTops[yakinIdx(130)]===120);
+ok('çizgi bir sonrakine daha yakınsa SONRAKİ satır', wordTops[yakinIdx(160)]===190);
+ok('tam ortada kalırsa aşağıyı seçmiyor (kararlı)', wordTops[yakinIdx(155)]===120);
+ok('ilk satırdan önce ilk satırı seçiyor', wordTops[yakinIdx(10)]===50);
+ok('son satırdan sonra son satırda kalıyor', wordIdxSon());
+function wordIdxSon(){ return wordTops[yakinIdx(9999)]===260; }
+ok('boş metinde -1 dönüyor', (kur([]), yakinIdx(100)===-1));
+
+// ESKİ davranışın gerçekten sapma ürettiğini göster
+function eskiIdx(y){
+  let lo=0,hi=wordTops.length-1,idx=-1;
+  while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=y){idx=mid;lo=mid+1;}else hi=mid-1;}
+  return idx;
+}
+kur([50,50,50, 120,120,120, 190,190,190, 260,260,260]);
+const cizgi=185;
+ok('ESKİ seçim bir satır yukarıda kalıyordu', wordTops[eskiIdx(cizgi)]===120);
+ok('YENİ seçim çizgiye oturuyor', wordTops[yakinIdx(cizgi)]===190);
+ok('yeni sapma eskisinden küçük',
+   Math.abs(wordTops[yakinIdx(cizgi)]-cizgi) < Math.abs(wordTops[eskiIdx(cizgi)]-cizgi));
