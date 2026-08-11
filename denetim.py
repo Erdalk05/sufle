@@ -59,6 +59,18 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     undef = sorted(c for c in calls - defs - BUILTIN if len(c) > 2)
     if undef: problems.append(("tanımsız olabilir (fonksiyon çağrısı)", undef))
 
+    # KÖR NOKTA (2026-08-11'de yakalandı): olay işleyicisi ATAMA biçiminde
+    # yazılınca parantez yok, üstteki kontrol göremiyor:
+    #     $('#x').onclick = benimFonksiyonum;      <-- tanımsız olsa bile sessiz
+    # Bu depoda gerçekten oldu: copGeriAl atanmıştı ama tanımlanmamıştı; ne
+    # denetim ne node --check yakaladı, yalnız düğmeye basınca patlardı.
+    handlers = set(re.findall(r"\.on[a-z]+\s*=\s*([A-Za-z_$][\w$]*)\s*[;,)\n]", code))
+    handlers |= set(re.findall(r"addEventListener\([^,]+,\s*([A-Za-z_$][\w$]*)\s*[,)]", code))
+    h_undef = sorted(h for h in handlers - defs - BUILTIN
+                     if len(h) > 2 and h not in ("null", "true", "false", "undefined"))
+    if h_undef:
+        problems.append(("olay işleyicisi tanımsız (parantezsiz atama)", h_undef))
+
     # ÖLÜ AYAR: HTML'de anahtarı var (data-t="x") ama JS onu hiç OKUMUYOR (st.x geçmiyor)
     # -> kullanıcı açıyor, hiçbir şey olmuyor, hiçbir şey de yazmıyor. Bu depoda 3 kez çıktı.
     onek = "state" if is_mac else "st"

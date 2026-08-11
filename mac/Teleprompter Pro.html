@@ -234,6 +234,7 @@
     <button class="btn" id="camBtn">📷 Kamera</button>
     <button class="btn" id="readyBtn" title="Çekime hazır mıyım?">✅ Hazır mıyım</button>
     <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
+    <button class="btn" id="undoDelBtn" title="Son silinen senaryoyu geri getir">↺ Geri getir</button>
     <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için">🪟 Yüzen Sufle</button>
     <button class="btn" id="takesBtn" title="Arşivdeki çekimler">🎞 Çekimlerim</button>
     <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)">⬆︎ Senaryolar</button>
@@ -488,7 +489,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='7.1';   // telefon sürümüyle aynı numaralama
+  const VER='7.2';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -539,7 +540,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       el.className='scriptItem'+(s.id===state.current?' on':'');
       el.innerHTML=`<span class="nm">${escapeHtml(s.title||'(başlıksız)')}</span>
         <span class="meta">${wc} kl</span>
-        <button class="x" title="Sil">×</button>`;
+        <button class="x" title="Sil">${silBekle===s.id?'⚠︎':'×'}</button>`;
       el.querySelector('.nm').onclick=()=>selectScript(s.id);
       el.onclick=(e)=>{ if(!e.target.classList.contains('x')) selectScript(s.id); };
       el.querySelector('.x').onclick=(e)=>{ e.stopPropagation(); delScript(s.id); };
@@ -547,6 +548,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     });
   }
   function selectScript(id){
+    // Kayit surerken senaryo degistirmek altyazi damgalarini eski kelime
+    // sayisinda birakiyor ve cekim yanlis baslikla arsivleniyordu.
+    if(recorder && recorder.state==='recording'){ toast('Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur'); return; }
     syncEditorToState();
     rememberPos();
     state.current=id; const s=curScript();
@@ -557,6 +561,15 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     renderScripts(); buildWords(); reset(); updateStats(); save();
     if(want>0){ setPos(Math.min(want,maxPos)); rememberPos(); toast('Kaldığın yerden'); }
   }
+  function copGeriAl(){
+    const r=(state.cop||[]).pop();
+    if(!r){ toast('Geri getirilecek senaryo yok'); return; }
+    r.id='g'+Date.now();
+    state.scripts.push(r); state.current=r.id;
+    $('#title').value=r.title; $('#editor').value=r.text;
+    renderScripts(); buildWords(); reset(); updateStats(); save();
+    toast('↺ Senaryo geri geldi');
+  }
   function newScript(){
     syncEditorToState();
     const id='s'+Math.max(0,...state.scripts.map(s=>+(s.id.slice(1))||0))+1;
@@ -564,8 +577,20 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     state.current=id; $('#title').value='Senaryo '+(state.scripts.length); $('#editor').value='';
     renderScripts(); buildWords(); reset(); updateStats(); save(); $('#title').select();
   }
+  /* Silme tek tikti: onay yok, geri donus yok. Telefonda v5.9'da duzeltildi,
+     Mac'te duruyordu. Iki asamali onay + son 5 silinen icin geri getirme. */
+  let silBekle=null, silT=null;
   function delScript(id){
     if(state.scripts.length<=1){ toast('En az bir senaryo kalmalı'); return; }
+    if(silBekle!==id){
+      silBekle=id; clearTimeout(silT);
+      silT=setTimeout(()=>{ silBekle=null; renderScripts(); },4000);
+      renderScripts(); toast('⚠️ Emin misin? Silmek için tekrar bas');
+      return;
+    }
+    silBekle=null; clearTimeout(silT);
+    const giden=state.scripts.find(s=>s.id===id);
+    if(giden) state.cop=(state.cop||[]).concat([JSON.parse(JSON.stringify(giden))]).slice(-5);
     state.scripts=state.scripts.filter(s=>s.id!==id);
     if(state.current===id) state.current=state.scripts[0].id;
     const s=curScript(); $('#title').value=s.title; $('#editor').value=s.text;
@@ -1010,9 +1035,14 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
               catch(e2){ try{ recorder=new MediaRecorder(src); }
                          catch(e3){ toast('Kayıt başlatılamadı: '+e3.message); return; } } }
     recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
+    // Kayit ortada olebilir (disk dolu, kamera koptu). Yakalanmazsa kirmizi nokta
+    // yanmaya devam ediyor ama kayit yok. Telefonda v5.8'de duzeltilmisti.
+    recorder.onerror=ev=>{ logErr('rec',(ev&&ev.error)||ev); toast('⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor'); };
     recorder.onstop=()=>{
       // tür kaydedicinin gerçekte kullandığı türden alınır (eskiden webm'e sabitlenmişti)
+      // Blob veriyi devraldi; diziyi tutmak ayni videoyu ikinci kez bellekte tutmakti
       lastBlob=new Blob(chunks,{type:(recorder.mimeType||'video/webm').split(';')[0]});
+      chunks=[];
       showResult();   // indirme yok — önce önbellekte tut ve oynat
     };
     recorder.start(1000);   // saniyelik parçalar: çökmede veri kaybı en aza iner
@@ -1959,6 +1989,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   $('#readyBtn').onclick=showReady;
   $('#rrKeep').onclick=keepTake;
   $('#pipBtn').onclick=pipAc;
+  $('#undoDelBtn').onclick=copGeriAl;
   if(!pipVar()){ $('#pipBtn').style.opacity='.45'; $('#pipBtn').title='Chrome ya da Edge gerekiyor (Safari desteklemiyor)'; }
   window.addEventListener('pagehide',()=>{ if(pipWin) pipKapat(); });
   /* 12.10 Sunucusuz taşıma: telefonun JSON yedeğiyle AYNI biçim.

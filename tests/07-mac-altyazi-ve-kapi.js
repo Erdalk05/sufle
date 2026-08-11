@@ -57,3 +57,26 @@ ok('otomatik kazanç açıkça isteniyor', /autoGainControl:true/.test(macSrc));
 // YANLIŞ POZİTİF olarak doğrulandı: editör her tuşta senkronlanıyor,
 // beforeunload'ın ayrıca syncEditorToState çağırmasına gerek yok.
 ok('editör her tuşta durumla senkron', /\$\('#editor'\)\.addEventListener\('input',\(\)=>\{ syncEditorToState\(\)/.test(macSrc));
+
+// ---------- MAC ESKİ KOD TARAMASI (v7.2) ----------
+// Dördü de telefonda düzeltilmiş ama Mac'e TAŞINMAMIŞ hatalardı.
+// Örüntü: bir platformdaki düzeltme diğerine kendiliğinden geçmiyor.
+const m2=oku(macYolu());
+ok('MediaRecorder.onerror bağlı', /recorder\.onerror=ev=>/.test(m2));
+ok('kayıt ölümü kullanıcıya söyleniyor', /Kayıt yarıda kesildi/.test(m2));
+ok('Blob üretilince chunks bırakılıyor', /lastBlob=new Blob\(chunks[\s\S]{0,90}?\n\s*chunks=\[\];/.test(m2));
+ok('senaryo silme iki aşamalı onay istiyor', /if\(silBekle!==id\)\{/.test(m2));
+ok('onay 4 sn sonra düşüyor', /setTimeout\(\(\)=>\{ silBekle=null; renderScripts\(\); \},4000\)/.test(m2));
+ok('silinen senaryo çöp kutusuna gidiyor', /state\.cop=\(state\.cop\|\|\[\]\)\.concat/.test(m2));
+ok('çöp kutusu 5 ile sınırlı', /\.slice\(-5\)/.test(m2));
+ok('geri getirme fonksiyonu TANIMLI', /function copGeriAl\(\)\{/.test(m2));
+ok('geri getirme düğmesi bağlı', /\$\('#undoDelBtn'\)\.onclick=copGeriAl/.test(m2));
+ok('onay beklerken düğme farklı görünüyor', /silBekle===s\.id\?'⚠︎':'×'/.test(m2));
+ok('kayıt sürerken senaryo değiştirilemiyor',
+   /if\(recorder && recorder\.state==='recording'\)\{ toast\('Kayıt sürerken senaryo değiştirilemez/.test(m2));
+
+// Denetimin kör noktası: parantezsiz olay işleyicisi ataması.
+// copGeriAl atanmıştı ama tanımlı değildi; ne denetim ne node --check gördü.
+const den=require('fs').readFileSync(require('path').join(__dirname,'..','denetim.py'),'utf8');
+ok('denetim artık işleyici atamasını da kontrol ediyor', /olay işleyicisi tanımsız/.test(den));
+ok('addEventListener biçimi de kapsanıyor', /addEventListener\\\(\[\^,\]\+/.test(den) || den.includes('addEventListener'));
