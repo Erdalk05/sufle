@@ -894,7 +894,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='7.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='7.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1090,7 +1090,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1138,7 +1138,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1412,6 +1412,7 @@ function updateStats(){
 }
 
 /* ============ KAYDIRMA MOTORU ============ */
+let tempoWords=0;
 let running=false, raf=null, pos=0, activeIdx=-1, lastT=0, holdUntil=0, lastParaIdx=-1, startedAt=0, elapsed=0, lastHud=0;
 function pxPerSec(){ return (st.wpm/60)*pxPerWord; }
 let curPPS=0;
@@ -1424,6 +1425,7 @@ function setPos(p){
     const y0=pos+eyeOff();
     holdPoints.forEach(h=>{ if(h.y>y0) h.used=false; });
     lastParaIdx=-1;
+    tempoWords=0; elapsed=0;   // geri sardın: ölçüm baştan, yoksa tempo yanlış çıkar
   }
   scroller.style.transform='translateY('+(-pos)+'px)';
   $('#progress').style.width=Math.min(100,Math.max(0,pos/maxPos*100))+'%';
@@ -1464,7 +1466,9 @@ function tick(now){
         }
       }
     }
+    const oncekiIdx=activeIdx;
     setPos(next);
+    if(activeIdx>oncekiIdx) tempoWords += (activeIdx-oncekiIdx);   // yalnız GERÇEKTEN okunan
   }
   if(now-lastHud>200){ lastHud=now;
     if(recT) showRecTime();
@@ -1506,7 +1510,7 @@ function stop(why){ running=false; $('#playBtn').textContent='▶︎'; $('#playB
 /* kaldığın yeri senaryoya yaz */
 function rememberPos(){ const s=active(); if(s){ s.pos=Math.round(pos); save(); } }
 function reset(){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing');
-  cancelAnimationFrame(raf); elapsed=0; startedAt=0; lastParaIdx=-1; holdPoints.forEach(h=>h.used=false);
+  cancelAnimationFrame(raf); elapsed=0; tempoWords=0; startedAt=0; lastParaIdx=-1; holdPoints.forEach(h=>h.used=false);
   words.forEach(w=>w.classList.remove('done','active')); activeIdx=-1; setPos(0);
   const s=active(); if(s){ s.pos=0; save(); }
   if(voiceOn) syncVoicePtr(); }
@@ -3136,7 +3140,7 @@ function renderReady(){
    · geri sardığın yerler (tekledin)
    · duraklattığın yerler
    Hepsi senaryoya birikiyor, provalar üst üste toplanıyor. */
-function diffMap(){ const s=active(); if(!s.diff) s.diff={}; return s.diff; }
+function diffMap(){ const s=active(); damgaKontrol(s); if(!s.diff) s.diff={}; return s.diff; }
 function markDiff(kind,idx){
   if(idx==null||idx<0||idx>=words.length) return;
   const d=diffMap(), k=String(idx);
@@ -3363,7 +3367,18 @@ function sectionAt(p){
   for(let i=0;i<sections.length;i++) if(sections[i].startPos<=p+2) idx=i;
   return idx;
 }
-function shotSet(){ const s=active(); if(!s.shot) s.shot={}; return s.shot; }
+/* Metin değişince indeks tabanlı işaretler anlamını yitiriyor. Kelime sayısını
+   damgalayıp değiştiğinde işaretleri düşürüyoruz: yanlış işaret, işaretsizden
+   daha kötü — kullanıcı ona güvenip bölümü tekrar çekmiyor. */
+function metinDamga(s){ return (s.text||'').length + '/' + countWords(s.text||''); }
+function damgaKontrol(s){
+  const d=metinDamga(s);
+  if(s.mark===d) return;
+  const vardi = (s.shot && Object.keys(s.shot).length) || (s.diff && Object.keys(s.diff).length);
+  s.shot={}; s.diff={}; s.mark=d;
+  if(vardi) setTimeout(()=>toast(m('marksReset')),600);
+}
+function shotSet(){ const s=active(); damgaKontrol(s); if(!s.shot) s.shot={}; return s.shot; }
 function renderSections(){
   measureSections();
   const wrap=$('#secWrap'), box=$('#secList');
@@ -3388,7 +3403,8 @@ function renderSections(){
 /* ============ ÖLÇÜLEN TEMPO (prova) ============ */
 let measuredWpm=0;
 function measureTempo(){
-  const done=activeIdx+1;
+  // done = activeIdx+1 DEĞİL: o, atlanan kelimeleri de sayıyordu.
+  const done=tempoWords;
   if(elapsed>12 && done>15){
     measuredWpm=Math.round(done/elapsed*60);
     if(measuredWpm<40||measuredWpm>320) measuredWpm=0;
