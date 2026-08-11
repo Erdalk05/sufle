@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 const src=oku(telefonYolu());
 const js=src.match(/<script>([\s\S]*)<\/script>/)[1];
 
@@ -66,3 +66,20 @@ ok('kelime eklenince damga değişiyor', damga('bir iki')!==damga('bir iki üç'
 ok('kelime silinince damga değişiyor', damga('bir iki üç')!==damga('bir iki'));
 ok('harf değişince de damga değişiyor', damga('bir iki')!==damga('bir ikii'));
 ok('yalnız boşluk eklenince de yakalanıyor', damga('bir iki')!==damga('bir  iki'));
+
+// ---------- MAC: SIFIRA BÖLME (v7.6) ----------
+// Telefon kumandasındaki hız kaydırıcısı 0'a inebiliyor ve handleRemote 0'ı
+// kabul ediyor. Mac okuma süresini "Infinity:NaN" gösteriyordu.
+const mac=oku(macYolu());
+ok('Mac fmtTime sonsuzu ekrana basmıyor', /if\(!isFinite\(s\)\) return '—:—';/.test(mac));
+ok('Mac süre hesabı sıfıra bölmüyor', /Math\.max\(20,state\.speed\|\|0\)/.test(mac));
+ok('kumanda hâlâ 0 gönderebiliyor (koruma alt katmanda)', /Math\.max\(0,Math\.min\(320/.test(mac));
+// davranış
+const fmt=s=>{ if(!isFinite(s)) return '—:—'; s=Math.max(0,Math.floor(s));
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
+const sure=(wc,hiz)=>fmt(wc/Math.max(20,hiz||0)*60);
+ok('hız 0 makul değer veriyor', sure(100,0)==='05:00');
+ok('hız normalken doğru', sure(140,140)==='01:00');
+ok('sonsuz girdi güvenli', fmt(Infinity)==='—:—');
+ok('NaN girdi güvenli', fmt(NaN)==='—:—');
+ok('negatif girdi güvenli', fmt(-5)==='00:00');

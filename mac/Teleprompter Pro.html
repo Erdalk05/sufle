@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='7.4';   // telefon sürümüyle aynı numaralama
+  const VER='7.6';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1763,7 +1763,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   }
 
   /* ---------- YARDIMCI ---------- */
-  function fmtTime(s){ s=Math.max(0,Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  function fmtTime(s){
+    // Sonlu olmayan degeri ekrana basma: 'Infinity:NaN' gorunuyordu
+    if(!isFinite(s)) return '—:—';
+    s=Math.max(0,Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   /* kayıt süresi + platform sınırı: son 8 sn sarı, sınır aşılınca kırmızı */
   let overWarned=false;
   function showRecTime(){
@@ -1783,7 +1786,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function updateStats(){
     const wc=countWords($('#editor').value);   // başlık ve notlar sayılmaz
     $('#wc').textContent=wc+' kelime';
-    $('#rt').textContent='~'+fmtTime(wc/ state.speed *60);
+    // Hiz 0 olabiliyor (kumandadan) — sifira bolme yerine anlamli taban
+    $('#rt').textContent='~'+fmtTime(wc/Math.max(20,state.speed||0)*60);
   }
   let toastT;
   function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
