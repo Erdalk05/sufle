@@ -696,6 +696,11 @@
       <button data-vl="ar-SA">العربية</button>
     </div>
 
+    <div class="row" style="margin-top:18px"><label data-i18n="vadL">🫁 Nefesle akış</label><span class="v" id="vadState">—</span></div>
+    <div class="tog"><span data-i18n="tgVad">Konuşmayı kesince sufle dursun</span><div class="sw" data-t="vad"></div></div>
+    <div class="row"><label data-i18n="vadSens">Duyarlılık</label><span class="v" id="vVad">—</span></div>
+    <input type="range" id="vadSens" min="5" max="60" value="20">
+    <div class="hint" id="vadHint"></div>
     <div class="sheetbtns"><button class="cancel" id="voiceTest" data-i18n="voiceTest">🎤 Mikrofonu ve tanımayı sına</button></div>
     <div class="hint" id="voiceTestOut"></div>
     <div class="tog"><span data-i18n="tgLock">🔒 Kayıtta ekranı kilitle</span><div class="sw" data-t="autoLock"></div></div>
@@ -889,7 +894,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='6.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='7.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -962,6 +967,7 @@ const I18N={
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   profL:'⚡ Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
+  vadL:'🫁 Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'💬 Altyazı dosyası',setFindPh:'🔎 Ayarlarda ara…',restoreBk:'🛟 Otomatik yedekten dön',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
   vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'🎚 Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
@@ -1040,6 +1046,7 @@ const I18N={
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   profL:'⚡ Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
+  vadL:'🫁 Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'💬 Caption file',setFindPh:'🔎 Search settings…',restoreBk:'🛟 Restore auto-backup',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
   vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'🎚 Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
@@ -1083,7 +1090,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1131,7 +1138,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -1192,7 +1199,7 @@ const DEF={
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
-  target:0, voiceLang:'tr-TR', zoom:100, eyeLine:false, hicon:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -2619,6 +2626,7 @@ function doStartRec(){
   body.classList.add('rec'); body.classList.remove('recpaused'); buzz(60);
   // iOS'ta mikrofon izini kayıt sırasında Web Audio'ya bağlamak sesi düşürebiliyor.
   // Ses kırpma uyarısı iyi bir şey ama SESİN KENDİSİ daha önemli.
+  if(IS_WK && st.vad && vad.ctx){ vadDurdur(); toast(m('vadOffRec')); }   // iOS: kaydı susturmasın
   if(!IS_WK){ micTouched=true; startAudioMonitor(); } else setAudBadge('off');
   $('#recLbl').textContent=m('recOn');
   if(canPauseRec()) $('#pauseBtn').classList.remove('hidden');
@@ -2631,6 +2639,7 @@ let lightWatch=0, lightWarned=false;
 function stopRec(){
   clearInterval(lightWatch); lightWatch=0; lightWarned=false;
   if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
+  if(st.vad) setTimeout(vadBaslat,400);           // kayıt bitti, nefesle akış geri gelsin
   setTimeout(stopAudioFx,300);          // son parçalar yazılsın diye kısa gecikme
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
@@ -3457,6 +3466,71 @@ function pullEditor(){ const s=active(); if(!s) return;
   s.title=$('#title').value.trim() || firstLineTitle($('#text').value) || (L==='tr'?'Başlıksız':'Untitled');
   s.text=stripInvisible($('#text').value); s.up=Date.now(); save(); }
 
+/* ============ NEFESLE AKIŞ (ses etkinliği algılama) ============
+   Sesle takip kelime eşleştiriyor: doğru dil, iyi mikrofon ve tanıma desteği ister.
+   Bu ondan daha basit ve daha sağlam: yalnız SES VAR MI diye bakıyor.
+   Konuşmayı kesince sufle duruyor, devam edince akıyor. Her dilde, tanıma
+   gerektirmeden, çevrimdışı çalışıyor.
+
+   ⚠️ iOS KISITI: kayıt SIRASINDA mikrofonu Web Audio'ya bağlamak Safari'de
+   kaydın sesini düşürüyor. O yüzden iPhone'da kayıt başlarken kapanıyor ve
+   sebebi yazılıyor — sessizce ölmüyor. Provada ve kayıtsız kullanımda çalışıyor. */
+let vad={ctx:null,an:null,buf:null,iv:0,sesli:false,bosluk:0};
+function vadCalisir(){ return !!st.vad && !(IS_WK && rec && rec.state==='recording'); }
+function vadEsik(){ return (st.vadSens==null?20:st.vadSens)/1000; }
+/* Karar ayrı fonksiyon: mikrofon olmadan test edilebilsin.
+   Histerezis şart — tek eşikle sufle her hecede duruyor/kalkıyor (titreme). */
+function vadKarar(rms, esik, suAn){
+  if(rms >= esik*1.5) return {sesli:true, bekle:0};       // net konuşma
+  if(rms >= esik)     return {sesli:suAn, bekle:0};       // sınırda: durumu koru
+  return {sesli:false, bekle:1};                          // sessizlik
+}
+function vadBaslat(){
+  vadDurdur();
+  if(!vadCalisir()) { renderVad(); return; }
+  const at=stream && stream.getAudioTracks()[0];
+  if(!at){ toast(m('noMic')); st.vad=false; apply(); save(); return; }
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    const ctx=new AC();
+    const src=ctx.createMediaStreamSource(new MediaStream([at]));
+    const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=120; // uğultuyu ses sanma
+    const an=ctx.createAnalyser(); an.fftSize=512;
+    src.connect(hp); hp.connect(an);
+    vad={ctx,an,buf:new Uint8Array(an.fftSize),iv:0,sesli:false,bosluk:0};
+    vad.iv=setInterval(()=>{
+      if(!vad.an) return;
+      vad.an.getByteTimeDomainData(vad.buf);
+      let t=0; for(let i=0;i<vad.buf.length;i++){ const v=(vad.buf[i]-128)/128; t+=v*v; }
+      const rms=Math.sqrt(t/vad.buf.length);
+      const k=vadKarar(rms, vadEsik(), vad.sesli);
+      // 500 ms sessizlikten sonra dur: cümle içi kısa duraklar sufleyi kesmesin
+      if(k.bekle) vad.bosluk++; else vad.bosluk=0;
+      vad.sesli=k.sesli;
+      if(vad.sesli && !running && !counting && !voiceOn) start();
+      else if(!vad.sesli && vad.bosluk>=5 && running && !voiceOn) stop();
+      const el=$('#vadState'); if(el) el.textContent = vad.sesli ? (L==='tr'?'konuşuyor':'speaking') : (L==='tr'?'sessiz':'silent');
+    },100);
+    renderVad();
+  }catch(e){ logErr('vad',e); st.vad=false; apply(); save(); }
+}
+function vadDurdur(){
+  if(vad.iv) clearInterval(vad.iv);
+  if(vad.ctx){ try{ vad.ctx.close(); }catch(e){ logErr('vadClose',e); } }
+  vad={ctx:null,an:null,buf:null,iv:0,sesli:false,bosluk:0};
+  const el=$('#vadState'); if(el) el.textContent='—';
+}
+function renderVad(){
+  const h=$('#vadHint'); const v=$('#vVad');
+  if(v) v.textContent=(st.vadSens==null?20:st.vadSens);
+  if(!h) return;
+  h.innerHTML = (IS_WK
+    ? '⚠️ <b>iPhone\'da kayıt sırasında çalışmaz.</b> Mikrofonu işleme hattına bağlamak Safari\'de kaydın sesini düşürüyor. Provada ve kayıtsız sunumda çalışır; kayıt başlayınca kendiliğinden kapanır.<br>'
+    : '')
+    + (L==='tr'
+      ? 'Kelime eşleştirmeye göre daha sağlam: yalnız ses var mı diye bakar, her dilde ve çevrimdışı çalışır. Cümle içi kısa duraklar sufleyi kesmez (yarım saniye beklenir). 🎤 sesle takip açıkken devre dışıdır.'
+      : 'Simpler than word matching: it only listens for speech, works in any language and offline. Short mid-sentence pauses do not stop the prompter.');
+}
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
 let srFails=0, srRetryT=null;
@@ -3793,7 +3867,8 @@ function apply(){
   $$('#capStyleSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cs===(st.capStyle||'clean')));
   if($('#capMaxW')){ $('#capMaxW').value=st.capMaxW||7; $('#vCapW').textContent=st.capMaxW||7; }
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
-  renderBitrate(); renderFx(); renderVfx(); gateSettings();
+  renderBitrate(); renderFx(); renderVfx(); renderVad(); gateSettings();
+  if($('#vadSens')) $('#vadSens').value=(st.vadSens==null?20:st.vadSens);
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
   $$('#vlSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vl===st.voiceLang));
@@ -4151,6 +4226,7 @@ $$('.sw').forEach(s=>s.onclick=async()=>{
   const k=s.dataset.t; st[k]=!st[k]; apply(); save();
   if(k==='backCam'){ st.zoom=100; st.torch=false; }   // yeni kameranın yetenekleri farklı — devretme
   if(k==='backCam'||k==='rawAudio'||k==='safeAudio'){ if(stream) await openCam(); }
+  if(k==='vad'){ if(st.vad) vadBaslat(); else vadDurdur(); }
   if(k==='torch') applyTorch();
   if(k==='wake'&&st.wake) requestWake();
   if(k==='bionic'){ buildContent(); }
@@ -4175,6 +4251,7 @@ $('#vidAmt').oninput=e=>{ st.vidAmt=+e.target.value; renderVfx(); save(); };
 $$('#fxSeg button').forEach(b=>b.onclick=()=>{ st.audioFx=b.dataset.fx;
   st.fxGate=null; st.fxPres=null; st.fxWarm=null;      // hazır ayara dönerken elle değerleri bırak
   apply(); save(); });
+$('#vadSens').oninput=e=>{ st.vadSens=+e.target.value; renderVad(); save(); };
 $('#fxGate').oninput=e=>{ st.fxGate=+e.target.value; renderFx(); save(); };
 $('#fxPres').oninput=e=>{ st.fxPres=+e.target.value; renderFx(); save(); };
 $('#fxWarm').oninput=e=>{ st.fxWarm=+e.target.value; renderFx(); save(); };

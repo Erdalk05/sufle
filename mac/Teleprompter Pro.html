@@ -234,6 +234,7 @@
     <button class="btn" id="camBtn">📷 Kamera</button>
     <button class="btn" id="readyBtn" title="Çekime hazır mıyım?">✅ Hazır mıyım</button>
     <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
+    <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için">🪟 Yüzen Sufle</button>
     <button class="btn" id="takesBtn" title="Arşivdeki çekimler">🎞 Çekimlerim</button>
     <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)">⬆︎ Senaryolar</button>
     <input type="file" id="scImport" accept="application/json,.json" style="display:none">
@@ -487,7 +488,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='6.8';   // telefon sürümüyle aynı numaralama
+  const VER='7.0';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1310,6 +1311,71 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(sil){ await mdbDel(it.id); toast('Silindi'); return; }
     lastBlob=it.blob; recStart=0; recStop=(it.dur||0)*1000; showResult();
   }
+  /* ============ YÜZEN SUFLE (overlay) ============
+     Rakiplerin (Speakflow, Vodium, FlowPrompter) hepsinde var, bizde yoktu:
+     Zoom/Teams/Meet görüşmesinde ya da OBS/başka bir kamera uygulaması
+     kullanırken metni okumanın yolu.
+
+     Document Picture-in-Picture API her zaman ÜSTTE duran gerçek bir pencere
+     veriyor. Chrome/Edge masaüstünde var; Safari'de YOK — orada sessizce
+     kaybolmak yerine sebebini söylüyoruz.
+
+     Aynı metni ikinci kez render etmiyoruz: ASIL #prompt düğümünü taşıyoruz.
+     Böylece kaydırma motoru, vurgu ve sesle takip olduğu gibi çalışmaya devam
+     ediyor — iki kopya arasında senkron tutmaya çalışmak kırılgan olurdu. */
+  let pipWin=null, pipYuva=null;
+  function pipVar(){ return !!(window.documentPictureInPicture && window.documentPictureInPicture.requestWindow); }
+  async function pipAc(){
+    if(pipWin){ pipKapat(); return; }
+    if(!pipVar()){
+      toast('Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)');
+      return;
+    }
+    try{
+      pipWin = await window.documentPictureInPicture.requestWindow({ width: 520, height: 300 });
+      // Sayfanın tüm stillerini kopyala; yoksa pencere biçimsiz açılıyor
+      [...document.styleSheets].forEach(ss=>{
+        try{
+          const kural=[...ss.cssRules].map(r=>r.cssText).join('');
+          const el=pipWin.document.createElement('style'); el.textContent=kural;
+          pipWin.document.head.appendChild(el);
+        }catch(e){ /* çapraz kaynak stil sayfası okunamaz, zararsız */ }
+      });
+      const d=pipWin.document;
+      d.body.style.cssText='margin:0;background:#000;overflow:hidden';
+      const prompt=$('#prompt');
+      pipYuva=document.createElement('div');            // asıl yerine iz bırak
+      prompt.parentNode.insertBefore(pipYuva, prompt);
+      d.body.appendChild(prompt);
+      // saydamlık: görüşmede arkadaki yüzü kapatmasın
+      const bar=d.createElement('div');
+      bar.style.cssText='position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;'+
+        'background:rgba(0,0,0,.65);padding:6px 10px;font:12px -apple-system,sans-serif;color:#aaa';
+      bar.innerHTML='<span>Saydamlık</span><input type="range" min="25" max="100" value="100" style="flex:1">'+
+        '<span>Boşluk = başlat/dur</span>';
+      bar.querySelector('input').oninput=e=>{ d.body.style.opacity=(+e.target.value/100); };
+      d.body.appendChild(bar);
+      // klavye pencerede de çalışsın (kumanda ve boşluk tuşu)
+      d.addEventListener('keydown',e=>window.dispatchEvent(new KeyboardEvent('keydown',{key:e.key})));
+      pipWin.addEventListener('pagehide', pipGeriAl);
+      $('#pipBtn').classList.add('primary');
+      toast('Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle');
+      setTimeout(()=>{ measure(); setPos(pos); },120);   // yeni genişlikte satırlar değişti
+    }catch(e){ logErr('pip',e); toast('Yüzen pencere açılamadı: '+(e.message||e)); pipGeriAl(); }
+  }
+  /* Pencere kapanınca #prompt'u ASIL yerine geri koy. Bu adım atlanırsa
+     sufle tümden kaybolur — kullanıcı uygulamayı bozuk sanır. */
+  function pipGeriAl(){
+    const prompt=$('#prompt');
+    if(pipYuva && prompt && pipYuva.parentNode){
+      pipYuva.parentNode.insertBefore(prompt, pipYuva);
+      pipYuva.remove();
+    }
+    pipYuva=null; pipWin=null;
+    const b=$('#pipBtn'); if(b) b.classList.remove('primary');
+    setTimeout(()=>{ measure(); setPos(pos); },120);
+  }
+  function pipKapat(){ if(pipWin){ try{ pipWin.close(); }catch(e){ logErr('pip',e); } } pipGeriAl(); }
   function showResult(){
     if(!lastBlob) return;
     if(lastUrl) URL.revokeObjectURL(lastUrl);
@@ -1878,6 +1944,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   renderScripts(); applyAll(); applyMode(state.mode,false); buildWords(); updateStats();
   $('#readyBtn').onclick=showReady;
   $('#rrKeep').onclick=keepTake;
+  $('#pipBtn').onclick=pipAc;
+  if(!pipVar()){ $('#pipBtn').style.opacity='.45'; $('#pipBtn').title='Chrome ya da Edge gerekiyor (Safari desteklemiyor)'; }
+  window.addEventListener('pagehide',()=>{ if(pipWin) pipKapat(); });
   /* 12.10 Sunucusuz taşıma: telefonun JSON yedeğiyle AYNI biçim.
      Aynı düğme hem dışa aktarıyor hem (shift ile) içe alıyor. */
   $('#scExport').onclick=(e)=>{
