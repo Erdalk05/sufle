@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 const src=oku(telefonYolu());
 const jsHam=src.match(/<script>([\s\S]*)<\/script>/)[1];
 const kod = t => t.replace(/\/\*[\s\S]*?\*\//g,'').replace(/(?<!:)\/\/[^\n]*/g,'');
@@ -111,3 +111,34 @@ ok('ESKİ seçim bir satır yukarıda kalıyordu', wordTops[eskiIdx(cizgi)]===12
 ok('YENİ seçim çizgiye oturuyor', wordTops[yakinIdx(cizgi)]===190);
 ok('yeni sapma eskisinden küçük',
    Math.abs(wordTops[yakinIdx(cizgi)]-cizgi) < Math.abs(wordTops[eskiIdx(cizgi)]-cizgi));
+
+// ---------- TEK KELİME AMA BENZERSİZ (v8.7) ----------
+// Erdal: "kelimenin okunuşuna göre bazen takip bazen bulamadım diyor".
+// Eşik 2.6 İKİ kelimenin birden tutmasını şart koşuyordu; önceki kelime
+// tanınmadığında tek kelime tutuyor ve reddediliyordu.
+// Ölçüm (önceki kelime tanınmamış senaryosu): kabul %66 → %93, ek yanlış 0.
+ok('benzersizlik kuralı kodda', /best>=1\.6 && best<2\.6 && ikinci<best\*0\.6/.test(mv));
+ok('ikinci en iyi skor izleniyor', /else if\(score>ikinci\) ikinci=score;/.test(mv));
+ok('ikinci skor doğru güncelleniyor', /if\(score>best\)\{ ikinci=best; best=score; bestK=k; \}/.test(mv));
+// davranış: benzersizlik gerçekten ayırt ediyor mu
+function kabul(best, ikinci){
+  if(best>=2.6) return 'eski-kural';
+  if(best>=1.6 && ikinci<best*0.6) return 'benzersiz';
+  return 'red';
+}
+ok('iki kelime tutarsa zaten kabul', kabul(2.6,0)==='eski-kural');
+ok('tek kelime + rakipsiz → kabul', kabul(1.6,0)==='benzersiz');
+ok('tek kelime + rakipsiz (zayıf rakip) → kabul', kabul(1.6,0.9)==='benzersiz');
+ok('tek kelime + GÜÇLÜ rakip → RED (belirsiz)', kabul(1.6,1.0)==='red');
+ok('tek kelime + eşit rakip → RED', kabul(1.6,1.6)==='red');
+ok('zayıf eşleşme yine reddediliyor', kabul(1.0,0)==='red');
+ok('hiç eşleşme yoksa red', kabul(0,0)==='red');
+
+// ---------- GÖRÜNÜR PENCERE GENİŞLETİLDİ ----------
+ok('telefon penceresi ~6 satır', /root\.style\.setProperty\('--bandOut',\(half\+26\)/.test(src));
+ok('eski dar pencere kalmadı (telefon)', !/\(half\+7\)\.toFixed/.test(src));
+const macSrc2=oku(macYolu());
+ok('Mac penceresi de genişletildi', /setProperty\('--bandOut',\(half\+26\)/.test(macSrc2));
+ok('eski dar pencere kalmadı (Mac)', !/\(half\+8\)\.toFixed/.test(macSrc2));
+ok('iki platform aynı genişlikte',
+   /\(half\+26\)/.test(src) && /\(half\+26\)/.test(macSrc2));

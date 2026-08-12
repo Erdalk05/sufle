@@ -8,7 +8,7 @@
   :root{
     --bg:#0a0a0c; --panel:#141418; --panel2:#1c1c22; --line:#2a2a32;
     --txt:#e8e8ee; --muted:#8a8a96; --accent:#00C853;
-    --pFont:64px; --pLine:1.5; --pMargin:6vw; --pFamily:system; --bandIn:5%; --bandOut:34%;
+    --pFont:64px; --pLine:1.5; --pMargin:6vw; --pFamily:system; --bandIn:5%; --bandOut:31%;
     --pText:#ffffff; --pBg:#000000; --eyeY:42%;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='8.6';   // telefon sürümüyle aynı numaralama
+  const VER='8.7';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -823,7 +823,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(state.band>0){
       const half=Math.max(2.5,(state.band*lhPx)/Hh*100/2);
       root.style.setProperty('--bandIn',half.toFixed(1)+'%');
-      root.style.setProperty('--bandOut',(half+8).toFixed(1)+'%');
+      // %8 yalnız ~2,6 satir gorunur birakiyordu: yukarida kameraya varmadan,
+      // asagida gelecek satirlari goremeden kayboluyordu. %26 ile ~6 satir.
+      root.style.setProperty('--bandOut',(half+26).toFixed(1)+'%');
     } else { root.style.setProperty('--bandIn','5%'); root.style.setProperty('--bandOut','34%'); }
     frame.classList.toggle('dim', state.dim || state.band>0);
     $$('#bandSel button').forEach(b=>b.classList.toggle('on',+b.dataset.band===state.band));

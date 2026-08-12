@@ -917,7 +917,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.7';
 
 /* ============ i18n ============ */
 const I18N={
@@ -3805,7 +3805,7 @@ function matchVoice(spoken){
   const genis = lastHitAt>0 && kayipSure>1200;   // 3 sn takılı kalmak fazla uzundu
   const lo = genis ? 0 : Math.max(0,vptr-WIN_BACK);
   const hi = genis ? normWords.length : Math.min(normWords.length,vptr+WIN_FWD);
-  let bestK=-1,best=0;
+  let bestK=-1,best=0,ikinci=0;
   for(let k=lo;k<hi;k++){
     let score=0;
     for(let j=0;j<recent.length;j++){
@@ -3815,9 +3815,18 @@ function matchVoice(spoken){
       if(wordEq(nw.n,recent[j]) || (nw.ph && wordEq(nw.ph,recent[j])))
         score += (j===recent.length-1?1.6:1);
     }
-    if(score>best){ best=score; bestK=k; }
+    if(score>best){ ikinci=best; best=score; bestK=k; }
+    else if(score>ikinci) ikinci=score;
   }
-  if(bestK<0 || best<2.6){
+  /* TEK KELİME AMA BENZERSİZ İSE KABUL ET.
+     Eşik 2.6 iki kelimenin birden tutmasını şart koşuyordu. Telaffuz kelimeden
+     kelimeye değişince (Erdal: "kelimenin okunuşuna göre bazen bulamadım diyor")
+     çoğu zaman yalnız son kelime tutuyor ve reddediliyordu.
+     Tek güçlü eşleşme, pencerede BAŞKA aday yoksa güvenilirdir: belirsizlik yok.
+     İkinci en iyi skoru da ölçüp benzersizlik arıyoruz — böylece eşiği düşürmeden
+     yakalama artıyor. */
+  if(bestK>=0 && best>=1.6 && best<2.6 && ikinci<best*0.6) { /* benzersiz: kabul */ }
+  else if(bestK<0 || best<2.6){
     // Eşleşme yok: eskiden sessizce duruyordu, kullanıcı "bozuk mu?" diye düşünüyordu.
     if(now-lastHitAt>1500) setVoiceBadge('lost');
     vHud('kayip', recent.slice(-3).join(' '), vptr, genis);
@@ -3961,7 +3970,9 @@ function apply(){
   if(st.band>0){
     const half=Math.max(2.5,(st.band*lhPx)/Hh*100/2);
     root.style.setProperty('--bandIn',half.toFixed(1)+'%');
-    root.style.setProperty('--bandOut',(half+7).toFixed(1)+'%');
+    // %7 yalnız ~2,6 satır görünür bırakıyordu: yukarıda kameraya varmadan,
+    // aşağıda gelecek satırları göremeden kayboluyordu. %26 ile ~6 satır.
+    root.style.setProperty('--bandOut',(half+26).toFixed(1)+'%');
   } else {
     root.style.setProperty('--bandIn','5%');
     root.style.setProperty('--bandOut','26%');
