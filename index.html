@@ -266,7 +266,8 @@
   #voiceBtn.lost{outline:2px solid #ffb300;outline-offset:-2px}
   /* Takip açıkken ne duyduğunu ve eşleşip eşleşmediğini göster: "çalışmıyor"
      şikâyeti ancak zincirin hangi halkasının koptuğu görülünce çözülebiliyor. */
-  #vHud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);
+  /* Ses şeridi durum çiplerinin (86px) TAM ÜSTÜNE geliyordu. Katman katman ayır. */
+  #vHud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);
     z-index:7;display:flex;gap:8px;align-items:center;pointer-events:none;
     background:rgba(0,0,0,.72);border-radius:10px;padding:7px 11px;font-size:12.5px;
     backdrop-filter:blur(6px)}
@@ -343,7 +344,8 @@
   /* İpucu ekranın ORTASINDAYDI (top:52%) ve senaryonun ilk satırlarını kapatıyordu:
    başlarken 'Merhaba! Bu' satırı ipucunun altında kalıyordu. Okuma alanından
    çıkarıp denetim çubuğunun hemen üstüne aldık. */
-.tapnote{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
+/* İpucu da aynı banda düşüyordu; hız hapının (bottom:22%) ÜSTÜNE alındı. */
+  .tapnote{position:absolute;bottom:calc(22% + 78px);left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
     font-size:13px;pointer-events:none;transition:opacity .4s;text-align:center;line-height:1.7;width:80%}
 
   @media (min-width:820px){
@@ -452,9 +454,9 @@
     <input type="range" id="wpm" min="40" max="320" step="5" value="140">
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
 
-    <div class="row"><label data-i18n="eyeLine">👁 Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">12</span></div>
+    <div class="row"><label data-i18n="eyeLine">👁 Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">18</span></div>
     <div class="hint hidden" id="eyeUyari"></div>
-    <input type="range" id="eye" min="4" max="60" value="12">
+    <input type="range" id="eye" min="4" max="60" value="18">
 
     <div class="row"><label data-i18n="dist">📏 Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
     <input type="range" id="dist" min="25" max="200" step="5" value="60">
@@ -915,7 +917,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.5';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.6';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1216,7 +1218,7 @@ function applyLang(){
 const LS='sufle_v2';
 const DEF={
   lang:null, wpm:140, fs:46, lh:145, mg:7, weight:700, ls:0, align:'center',
-  eyePos:12, eyeTasindi:0, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
+  eyePos:18, eyeTasindi:0, ilkAkis:0, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
@@ -1268,7 +1270,8 @@ function load(){
   if(!st.scripts.find(s=>s.id===st.activeId)) st.activeId=st.scripts[0].id;
   // Okuma çizgisi eski varsayılanda (%24) kalmışsa merceğe yaklaştır. Bilerek
   // seçilmiş bir değer değildi ve 4.8° bakış sapması üretiyordu. Bir kez.
-  if(st.eyePos===24 && !st.eyeTasindi){ st.eyePos=12; st.eyeTasindi=1; }
+  // %24 çok aşağıydı (göz aşağı bakıyor), %12 fazla yukarı kaçtı — %18 dengesi.
+  if((st.eyePos===24 || st.eyePos===12) && st.eyeTasindi<2){ st.eyePos=18; st.eyeTasindi=2; }
 }
 let saveT=null;
 /* 3.6 OTOMATİK YEDEK: ayarların TEK kopyası vardı. Bozulma ya da yanlış
@@ -1543,6 +1546,7 @@ function start(){
   if(!startedAt) startedAt=performance.now();
   $('#playBtn').textContent='⏸'; $('#playBtn').classList.add('playing');
   $('#tapnote').style.opacity='0';
+  if(!st.ilkAkis){ st.ilkAkis=1; save(); }   // bir kez başlattın: ipucu bir daha çıkmasın
   requestWake();
   raf=requestAnimationFrame(tick);
 }
@@ -3798,7 +3802,7 @@ function matchVoice(spoken){
   // (paragraf atlama, doğaçlama, baştan başlama). Eskiden pencere vptr'ye bağlıydı
   // ve dışına çıkınca bir daha asla bulunamıyordu.
   const kayipSure = now-lastHitAt;
-  const genis = lastHitAt>0 && kayipSure>3000;
+  const genis = lastHitAt>0 && kayipSure>1200;   // 3 sn takılı kalmak fazla uzundu
   const lo = genis ? 0 : Math.max(0,vptr-WIN_BACK);
   const hi = genis ? normWords.length : Math.min(normWords.length,vptr+WIN_FWD);
   let bestK=-1,best=0;
@@ -3815,7 +3819,7 @@ function matchVoice(spoken){
   }
   if(bestK<0 || best<2.6){
     // Eşleşme yok: eskiden sessizce duruyordu, kullanıcı "bozuk mu?" diye düşünüyordu.
-    if(now-lastHitAt>3500) setVoiceBadge('lost');
+    if(now-lastHitAt>1500) setVoiceBadge('lost');
     vHud('kayip', recent.slice(-3).join(' '), vptr, genis);
     return;                                        // en az iki kelime tutsun
   }
@@ -4773,7 +4777,9 @@ if(IS_IOS_ALT){
   setTimeout(()=>toast('⚠️ '+((navigator.language||'tr').toLowerCase().startsWith('tr')
     ?'Bu tarayıcıda ses kaydedilmiyor — Safari kullan':'This browser cannot record audio — use Safari')),900);
 }
-load(); fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
+load();
+if(st.ilkAkis && $('#tapnote')) $('#tapnote').style.display='none';
+fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
 firstRun();
 

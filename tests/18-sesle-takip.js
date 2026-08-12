@@ -50,7 +50,10 @@ ok('normal okumada dar pencere zaten yetiyor', ara(5,uc('altı','yedi','sekiz'),
 
 // ---- KODDA GERÇEKTEN VAR MI ----
 const mv=kod(cikar(jsHam,/function matchVoice\(spoken\)\{[\s\S]*?\n\}/,'matchVoice'));
-ok('3 sn kayıptan sonra geniş arama açılıyor', /kayipSure>3000/.test(mv));
+// v8.6: 3 sn takılı kalmak fazla uzundu (Erdal: 'okumama rağmen ilerlemiyor')
+ok('kısa süre sonra geniş arama açılıyor', /kayipSure>1200/.test(mv));
+ok('eşik 2 sn altında (takılma hissi olmasın)',
+   parseInt((mv.match(/kayipSure>(\d+)/)||[])[1],10) <= 2000);
 ok('geniş aramada pencere tüm metin', /genis \? 0 : Math\.max\(0,vptr-WIN_BACK\)/.test(mv));
 ok('geniş aramada sıçrama sınırı uygulanmıyor', /bestK-vptr>MAX_JUMP && !genis/.test(mv));
 ok('sıçrama yutma KALICI değil (3 denemede kabul)', /if\(\+\+jumpSwallow<3\) return;/.test(mv));

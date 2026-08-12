@@ -24,23 +24,16 @@ ok('çizgi yükseldikçe sapma artıyor', aci(8)<aci(24) && aci(24)<aci(45));
 ok('mesafe artınca sapma azalıyor', (st.dist=100, gazeAngle()) < (st.dist=40, gazeAngle()));
 
 // ---- VARSAYILAN MERCEĞE YAKLAŞTIRILDI ----
-ok('varsayılan çizgi %12', /eyePos:12,/.test(jsHam));
-ok('kaydırıcı da %12', /id="eye" min="4" max="60" value="12"/.test(src));
-ok('gösterge de %12', /id="vEye">12</.test(src));
+// v8.6: %12 fazla yukarı kaçtı (Erdal: 'çok üste kalmış') → %18 dengesi.
+// Bu satırlar aşağıdaki v8.6 bölümünde güncel hâliyle kontrol ediliyor.
+
+ok('gösterge kaydırıcıyla aynı', /id="vEye">18</.test(src));
 ok('kaydırıcı merceğe kadar inebiliyor (min 4)', /id="eye" min="4"/.test(src));
 
 // ---- ESKİ VARSAYILANDAN TAŞIMA ----
-ok('eski %24 bir kez %12ye taşınıyor', /st\.eyePos===24 && !st\.eyeTasindi/.test(jsHam));
-ok('taşıma yalnız bir kez', /st\.eyeTasindi=1/.test(jsHam));
-function tasi(kayitli, bayrak){
-  const o={eyePos:kayitli, eyeTasindi:bayrak};
-  if(o.eyePos===24 && !o.eyeTasindi){ o.eyePos=12; o.eyeTasindi=1; }
-  return o;
-}
-ok('eski varsayılan taşınıyor', tasi(24,undefined).eyePos===12);
-ok('ikinci kez taşınmıyor', tasi(24,1).eyePos===24);
-ok('BİLEREK seçilmiş değere dokunulmuyor', tasi(45,undefined).eyePos===45);
-ok('zaten iyi olan değere dokunulmuyor', tasi(8,undefined).eyePos===8);
+ok('eski değerler taşınıyor', /\(st\.eyePos===24 \|\| st\.eyePos===12\) && st\.eyeTasindi<2/.test(jsHam));
+ok('taşıma sürümlenmiş (tekrar koşmaz)', /st\.eyeTasindi=2/.test(jsHam));
+// Taşıma davranışı v8.6 bölümünde tasi2() ile sınanıyor.
 
 // ---- ÇOK AŞAĞIDAYSA CANLI UYARI ----
 ok('uyarı ögesi var', /id="eyeUyari"/.test(src));
@@ -51,5 +44,42 @@ ok('reçeteye yönlendiriyor', /Göz teması reçetesi/.test(jsHam));
 
 // ---- İPUCU ARTIK SENARYOYU KAPATMIYOR ----
 ok('ipucu okuma alanından çıkarıldı', !/\.tapnote\{position:absolute;top:52%/.test(src));
-ok('ipucu denetim çubuğunun üstünde', /\.tapnote\{position:absolute;bottom:150px/.test(src));
+ok('ipucu hız hapının üstünde', /\.tapnote\{position:absolute;bottom:calc\(22% \+ 78px\)/.test(src));
 ok('sebebi kodda yazılı', /senaryonun ilk satırlarını kapatıyordu/.test(src));
+
+// ---------- ALT BÖLGE YIĞILMASI (v8.6, ekran görüntüsünden) ----------
+// Dört öge aynı bandda üst üste biniyordu: durum çipleri 86px, ses şeridi 92px,
+// ipucu 150px, hız hapı bottom:22%. Ekranda hepsi birbirinin üstüne yazıyordu.
+const px = re => { const m=src.match(re); return m ? m[1] : null; };
+ok('ses şeridi çiplerin üstüne çıkarıldı', /#vHud\{[^}]*bottom:calc\(env\(safe-area-inset-bottom,0px\) \+ 130px\)/.test(src));
+ok('durum çipleri yerinde kaldı', /#hud\{[^}]*bottom:calc\(86px/.test(src));
+ok('şerit ile çipler arasında boşluk var (130 > 86)', 130-86>=40);
+ok('ipucu hız hapının üstüne alındı', /\.tapnote\{[^}]*bottom:calc\(22% \+ 78px\)/.test(src));
+ok('ipucu artık okuma alanında değil', !/\.tapnote\{[^}]*top:52%/.test(src));
+
+// İpucu bir kez başlattıktan sonra bir daha çıkmamalı
+ok('ilk akış bayrağı yazılıyor', /if\(!st\.ilkAkis\)\{ st\.ilkAkis=1; save\(\); \}/.test(jsHam));
+ok('sonraki açılışta ipucu gizleniyor', /if\(st\.ilkAkis && \$\('#tapnote'\)\) \$\('#tapnote'\)\.style\.display='none'/.test(jsHam));
+ok('ilkAkis varsayılanı var', /ilkAkis:0/.test(jsHam));
+
+// ---------- OKUMA ÇİZGİSİ DENGESİ ----------
+ok('varsayılan %18', /eyePos:18,/.test(jsHam));
+ok('kaydırıcı %18', /id="eye" min="4" max="60" value="18"/.test(src));
+st.dist=60; st.eyePos=18;
+ok('%18 bakış sapması iyi (<3°)', gazeAngle()<3);
+ok('%18 uyarı eşiğinin altında', gazeAngle()<6);
+function tasi2(kayitli, bayrak){
+  const o={eyePos:kayitli, eyeTasindi:bayrak||0};
+  if((o.eyePos===24||o.eyePos===12) && o.eyeTasindi<2){ o.eyePos=18; o.eyeTasindi=2; }
+  return o;
+}
+ok('eski %24 → %18', tasi2(24,0).eyePos===18);
+ok('aşırı düzeltilmiş %12 → %18', tasi2(12,1).eyePos===18);
+ok('taşıma bir kez daha koşmuyor', tasi2(18,2).eyePos===18);
+ok('BİLEREK seçilmiş değere dokunulmuyor', tasi2(35,0).eyePos===35);
+ok('reçetenin %8i korunuyor', tasi2(8,0).eyePos===8);
+
+// ---------- SESLE TAKİP DAHA HIZLI TOPARLIYOR ----------
+ok('geniş arama 1,2 sn sonra devrede', /kayipSure>1200/.test(jsHam));
+ok('kayıp rozeti 1,5 sn sonra', /now-lastHitAt>1500/.test(jsHam));
+ok('eski 3 sn eşiği kalmadı', !/kayipSure>3000/.test(jsHam));
