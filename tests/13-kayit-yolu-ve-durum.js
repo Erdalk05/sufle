@@ -108,3 +108,41 @@ ok('Blob üretilince chunks bırakılıyor (çift bellek yok)',
 ok('kayıt sürerken senaryo değiştirilemiyor',
    /if\(rec && rec\.state==='recording'\)\{ toast\(m\('recBusy'\)\); return; \}/.test(js));
 ok('engel mesajı iki dilde', (js.match(/recBusy:/g)||[]).length===2);
+
+// ---------- GÖRÜNTÜ DONMASI + YANLIŞ SES ALARMI (v9.0) ----------
+// Erdal: kayıt 41 sn, ses tam, GÖRÜNTÜ 19. saniyede donuyor. Ayrıca aynı
+// ekranda "✅ Ses kaydedildi" ile "⚠️ DOSYADA SES YOK" birlikte yazıyordu.
+
+// 1) YANLIŞ ALARM: ölçememek, yokluğun kanıtı değil
+ok('çözümleme başarısızsa BİLİNMİYOR dönüyor', /\? dec\.numberOfChannels : -1;/.test(js));
+ok('istisna da bilinmiyor dönüyor', /\}catch\(e\)\{ return -1; \}/.test(js));
+ok('"ses yok" yalnız kesin sıfırda yazılıyor', /else if\(n===0\) tag=/.test(js));
+ok('bilinmiyorda ayrı metin var', /okunamadı/.test(js));
+// davranış
+function etiket(n){ return n>0?'var':(n===0?'YOK':'okunamadı'); }
+ok('pozitif iz → var', etiket(2)==='var');
+ok('kesin sıfır → YOK', etiket(0)==='YOK');
+ok('-1 → okunamadı (alarm değil)', etiket(-1)==='okunamadı');
+
+// 2) VİDEO İZİ ÖLÜMÜ ANINDA GÖRÜLÜYOR
+ok('kayıtta video izi izleniyor', /vIz\.addEventListener\('ended'/.test(js));
+ok('ölüm anı kaydediliyor', /vidOldu=recElapsed\(\)/.test(js));
+ok('kullanıcıya anında söyleniyor', /toast\(m\('vidDied'\)\)/.test(js));
+ok('günlüğe yazılıyor', /logErr\('rec','video izi öldü/.test(js));
+ok('mesaj iki dilde', (js.match(/vidDied:/g)||[]).length===2);
+
+// 3) SONUÇTA SÜRE KARŞILAŞTIRMASI
+ok('dosya süresi ölçülüyor', /const dosyaSure=vv\.duration;/.test(js));
+ok('ses süresiyle karşılaştırılıyor', /const fark=\(lastDur\|\|0\)-dosyaSure;/.test(js));
+ok('1,5 sn üstü fark bildiriliyor', /fark>1\.5/.test(js));
+ok('donma anı gösteriliyor', /GÖRÜNTÜ '\+clock\(nerede\)\+' SANİYEDE DONMUŞ/.test(js));
+ok('ne yapılacağı yazılı', /720p yap, kompoziti kapat/.test(js));
+// karar mantığı
+function donduMu(vidOldu, lastDur, dosyaSure){
+  return vidOldu>0.5 || (isFinite(dosyaSure) && lastDur>3 && (lastDur-dosyaSure)>1.5);
+}
+ok('iz öldüyse bildiriliyor', donduMu(19, 41, 41)===true);
+ok('süre farkı varsa bildiriliyor', donduMu(0, 41, 19)===true);
+ok('normal kayıtta sessiz', donduMu(0, 41, 40.8)===false);
+ok('kısa kayıtta yanlış alarm yok', donduMu(0, 2, 1.2)===false);
+ok('süre okunamazsa alarm yok', donduMu(0, 41, Infinity)===false);

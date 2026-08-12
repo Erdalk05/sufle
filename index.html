@@ -917,7 +917,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.0';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1113,7 +1113,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1161,7 +1161,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -2588,7 +2588,7 @@ function renderFx(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
-let fxTrack=null, fxUsed=false;
+let fxTrack=null, fxUsed=false, vidOldu=0;
 let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
@@ -2699,6 +2699,16 @@ function doStartRec(){
     if(!rec || rec.state!=='recording'){ toast(m('recNoStart')); return; }
     if(!IS_WK && !chunks.length) toast(m('recNoData'));
   },2500);
+  // GÖRÜNTÜ DONMASI: video izi kayıt ortasında ölebiliyor (bellek baskısı,
+  // kamera kesintisi). Ses devam ettiği için kayıt sürüyor sanılıyor ama
+  // görüntü o saniyede donuyor. Sessiz kalma — anında söyle.
+  vidOldu=0;
+  const vIz=src.getVideoTracks()[0];
+  if(vIz) vIz.addEventListener('ended',()=>{
+    vidOldu=recElapsed();
+    logErr('rec','video izi öldü @'+vidOldu.toFixed(1)+'s');
+    toast(m('vidDied')); buzz([60,40,60]);
+  },{once:true});
   recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
   clearInterval(lightWatch);
   lightWatch=setInterval(()=>{
@@ -2783,8 +2793,12 @@ async function probeAudio(blob){
     const ctx=new AC(); const buf=await blob.arrayBuffer();
     const dec=await new Promise((ok,no)=>{ try{ ctx.decodeAudioData(buf.slice(0),ok,()=>no(0)); }catch(e){ no(0); } });
     try{ ctx.close(); }catch(e){}
-    return (dec && dec.duration>0 && dec.numberOfChannels>0) ? dec.numberOfChannels : 0;
-  }catch(e){ return byTracks; }
+    // Çözümleme başarısız ya da bozuk arabellek → BİLİNMİYOR (-1), "ses yok" DEĞİL.
+    // iOS'ta audioTracks yok ve MP4 çözümlemesi güvenilmez; eskiden burada 0
+    // dönüp "DOSYADA SES YOK" yazıyorduk — üstteki "✅ Ses kaydedildi" satırıyla
+    // çelişiyordu ve kullanıcı sesi duyduğu hâlde hata görüyordu.
+    return (dec && dec.duration>0 && dec.numberOfChannels>0) ? dec.numberOfChannels : -1;
+  }catch(e){ return -1; }
 }
 function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
@@ -2807,6 +2821,27 @@ function showResult(blob){
   }
   $('#shareDiag').textContent=diag;
   // dosyanın içini ölç ve satırı güncelle
+  // Görüntü, sesten kısa mı? Donma buradan kesin anlaşılır.
+  (function(){
+    const vv=document.createElement('video'); vv.preload='metadata'; vv.muted=true;
+    const uu=URL.createObjectURL(blob);
+    vv.addEventListener('loadedmetadata',()=>{
+      const dosyaSure=vv.duration;
+      try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); }
+      const fark=(lastDur||0)-dosyaSure;
+      if(vidOldu>0.5 || (isFinite(dosyaSure) && lastDur>3 && fark>1.5)){
+        const nerede = vidOldu>0.5 ? vidOldu : dosyaSure;
+        $('#audInfo').innerHTML='<b style="color:#ff5252">⛔ '+
+          (L==='tr' ? 'GÖRÜNTÜ '+clock(nerede)+' SANİYEDE DONMUŞ' : 'VIDEO FROZE AT '+clock(nerede))+
+          '</b><br><small>'+(L==='tr'
+            ? 'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor: '
+              +'çözünürlüğü 720p yap, kompoziti kapat ve çekimi kısa tut.'
+            : 'Audio is complete but video stopped early. Try 720p and shorter takes.')+'</small>';
+      }
+    },{once:true});
+    vv.addEventListener('error',()=>{ try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); } },{once:true});
+    vv.src=uu;
+  })();
   probeAudio(blob).then(n=>{
     let tag;
     if(n>0) tag=(L==='tr'?' · dosyada SES VAR ('+n+' iz)':' · file HAS AUDIO ('+n+')');

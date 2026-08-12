@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='8.9';   // telefon sürümüyle aynı numaralama
+  const VER='9.0';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1015,7 +1015,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function cancelCountdown(){ clearInterval(countIv); countIv=null; counting=false; $('#count').style.display='none'; }
 
   /* ---------- KAMERA + KAYIT ---------- */
-  let stream=null, recorder=null, chunks=[], recStart=0, recStop=0, lastBlob=null, lastUrl=null;
+  let stream=null, recorder=null, chunks=[], recStart=0, recStop=0, lastBlob=null, lastUrl=null, vidOldu=0;
   async function toggleCam(){
     if(stream){ stopCam(); return; }
     try{
@@ -1089,6 +1089,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       chunks=[];
       showResult();   // indirme yok — önce önbellekte tut ve oynat
     };
+    // GORUNTU DONMASI: video izi kayit ortasinda olebiliyor (bellek baskisi,
+    // kamera kesintisi). Ses devam ettigi icin kayit suruyor sanilir ama goruntu
+    // o saniyede donar. Telefonda v9.0'da eklendi, burada da olmali.
+    vidOldu=0;
+    const vIz=src.getVideoTracks()[0];
+    if(vIz) vIz.addEventListener('ended',()=>{
+      vidOldu=(performance.now()-recStart)/1000;
+      logErr('rec','video izi oldu @'+vidOldu.toFixed(1)+'s');
+      toast('⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir');
+    },{once:true});
     recorder.start(1000);   // saniyelik parçalar: çökmede veri kaybı en aza iner
     recStart=performance.now(); overWarned=false; showRecTime(); startAudioMonitor();
     recBtn.textContent='■ Durdur'; recBtn.classList.add('active');
@@ -1622,6 +1632,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     $('#rrSize').textContent='· '+ext+' · '+(lastBlob.size/1048576).toFixed(1)+' MB · '+fmtTime((recStop-recStart)/1000);
     $('#rrDownload').textContent='⬇︎ İndir (.'+ext.toLowerCase()+')';
     const ai=$('#audInfo'); if(ai) ai.textContent=audSummary();
+    // Goruntu sesten kisa mi? Donma buradan kesin anlasilir.
+    (function(){
+      const vv=document.createElement('video'); vv.preload='metadata'; vv.muted=true;
+      const uu=URL.createObjectURL(lastBlob);
+      vv.addEventListener('loadedmetadata',()=>{
+        const dosyaSure=vv.duration, kayitSure=(recStop-recStart)/1000;
+        try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); }
+        if(vidOldu>0.5 || (isFinite(dosyaSure) && kayitSure>3 && (kayitSure-dosyaSure)>1.5)){
+          const nerede = vidOldu>0.5 ? vidOldu : dosyaSure;
+          if(ai) ai.innerHTML='<b style="color:#ff5252">⛔ GÖRÜNTÜ '+fmtTime(nerede)+
+            ' SANİYEDE DONMUŞ</b><br><small>Ses tam ama görüntü erken kesilmiş. '+
+            'Çözünürlüğü düşür, kırpmayı kapat ve çekimi kısa tut.</small>';
+        }
+      },{once:true});
+      vv.addEventListener('error',()=>{ try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); } },{once:true});
+      vv.src=uu;
+    })();
     $('#recResult').classList.add('open');
     try{ v.play().catch(()=>{}); }catch(e){}
   }
