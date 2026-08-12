@@ -340,7 +340,10 @@
     padding:12px 18px;border-radius:14px;z-index:60;opacity:0;pointer-events:none;transition:.22s;max-width:86%;text-align:center}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
   .hidden{display:none!important}
-  .tapnote{position:absolute;top:52%;left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.55);
+  /* İpucu ekranın ORTASINDAYDI (top:52%) ve senaryonun ilk satırlarını kapatıyordu:
+   başlarken 'Merhaba! Bu' satırı ipucunun altında kalıyordu. Okuma alanından
+   çıkarıp denetim çubuğunun hemen üstüne aldık. */
+.tapnote{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
     font-size:13px;pointer-events:none;transition:opacity .4s;text-align:center;line-height:1.7;width:80%}
 
   @media (min-width:820px){
@@ -449,8 +452,9 @@
     <input type="range" id="wpm" min="40" max="320" step="5" value="140">
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
 
-    <div class="row"><label data-i18n="eyeLine">👁 Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">24</span></div>
-    <input type="range" id="eye" min="4" max="60" value="24">
+    <div class="row"><label data-i18n="eyeLine">👁 Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">12</span></div>
+    <div class="hint hidden" id="eyeUyari"></div>
+    <input type="range" id="eye" min="4" max="60" value="12">
 
     <div class="row"><label data-i18n="dist">📏 Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
     <input type="range" id="dist" min="25" max="200" step="5" value="60">
@@ -911,7 +915,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1212,7 +1216,7 @@ function applyLang(){
 const LS='sufle_v2';
 const DEF={
   lang:null, wpm:140, fs:46, lh:145, mg:7, weight:700, ls:0, align:'center',
-  eyePos:24, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
+  eyePos:12, eyeTasindi:0, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
   quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
@@ -1262,6 +1266,9 @@ function load(){
     st.activeId=st.scripts[0].id;
   }
   if(!st.scripts.find(s=>s.id===st.activeId)) st.activeId=st.scripts[0].id;
+  // Okuma çizgisi eski varsayılanda (%24) kalmışsa merceğe yaklaştır. Bilerek
+  // seçilmiş bir değer değildi ve 4.8° bakış sapması üretiyordu. Bir kez.
+  if(st.eyePos===24 && !st.eyeTasindi){ st.eyePos=12; st.eyeTasindi=1; }
 }
 let saveT=null;
 /* 3.6 OTOMATİK YEDEK: ayarların TEK kopyası vardı. Bozulma ya da yanlış
@@ -4010,6 +4017,17 @@ function apply(){
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===st.mode));
   $$('#bandSeg button').forEach(b=>b.classList.toggle('on',+b.dataset.band===st.band));
   $('#gazeHint').textContent=gazeLine();
+  // Çizgi çok aşağıdaysa gözün aşağı bakar ve izleyici bunu GÖRÜR. Sessiz kalma:
+  // sebebini söyle ve tek dokunuşla düzeltme yolu ver.
+  const u=$('#eyeUyari');
+  if(u){
+    const a=gazeAngle();
+    u.classList.toggle('hidden', a<6);
+    if(a>=6) u.innerHTML = (L==='tr'
+      ? '⚠️ <b>Okuma çizgisi çok aşağıda</b> — bakışın merceğe göre <b>'+Math.round(a)+'°</b> düşük, izleyici aşağı baktığını görür. '
+        +'Kaydırıcıyı <b>%8-15</b> arasına çek ya da <b>👁 Göz teması reçetesi</b>ne bas.'
+      : '⚠️ <b>Reading line is too low</b> — your gaze is <b>'+Math.round(a)+'°</b> below the lens. Move the slider to <b>8-15%</b>.');
+  }
   $$('.sw').forEach(s=>s.classList.toggle('on',!!st[s.dataset.t]));
   $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
   $('#modeHint').textContent=modeLine();
