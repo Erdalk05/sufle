@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='8.8';   // telefon sürümüyle aynı numaralama
+  const VER='8.9';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -526,13 +526,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     current:'s1',
     speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
-    eyePos:42,
+    eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
   };
   function load(){
     try{ state=Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(LS)||'{}')); }
     catch(e){ state=Object.assign({},DEFAULT); }
     if(!state.scripts||!state.scripts.length) state.scripts=DEFAULT.scripts.slice();
+    // Okuma cizgisi %42'deydi: Mac'te kamera ekranin EN USTUNDE, goz asagi
+    // bakiyordu. Telefonla ayni degere (%18) tasi. Bir kez.
+    if(state.eyePos===42 && !state.eyeTasindi){ state.eyePos=18; state.eyeTasindi=1; }
     // eski piksel-ölçekli hız (0.5–40) kayıtlıysa bir kez WPM'e çevir (bayrakla korunur)
     if(!state.speedScale){
       if(state.speed<55) state.speed=Math.max(60,Math.min(320,Math.round(state.speed*23)));
@@ -934,10 +937,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(pos>=maxPos+frameH()*0.15){ stop(); toast('Metin bitti'); }
     else raf=requestAnimationFrame(tick);
   }
+  /* Okuma cizgisine EN YAKIN satiri sec. Eskiden "merkezi cizginin ustunde kalan
+     SON kelime" seciliyordu; bir satirdaki tum kelimeler ayni merkezi paylastigi
+     icin bu hep BIR SATIR YUKARISINI vurguluyordu. Telefonda v8.3'te duzeltildi,
+     Mac'te duruyordu — vurgulanan kelime seridin ustune dusuyordu. */
+  function yakinIdx(y){
+    let lo=0,hi=wordTops.length-1,idx=-1;
+    while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=y){idx=mid;lo=mid+1;}else hi=mid-1;}
+    const j=idx+1;
+    if(j<wordTops.length){
+      const onceki = idx>=0 ? Math.abs(y-wordTops[idx]) : Infinity;
+      if(Math.abs(wordTops[j]-y) < onceki) return j;
+    }
+    return idx;
+  }
   function highlightAt(eyeY){
     if(!(state.hl && wordTops.length)) return;
-    let lo=0,hi=wordTops.length-1,idx=0;
-    while(lo<=hi){const mid=(lo+hi)>>1; if(wordTops[mid]<=eyeY){idx=mid;lo=mid+1;}else hi=mid-1;}
+    const idx=yakinIdx(eyeY);
     if(idx!==activeIdx){
       if(words[activeIdx]) words[activeIdx].classList.remove('active');
       if(words[idx]) words[idx].classList.add('active');
@@ -1336,9 +1352,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      Mantik ve sabitler telefonla BIREBIR ayni; ayrisirlarsa kapi yakalar. */
   const FXP={
     off:   null,
-    voice: {hp:80,  gate:18, pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
-    noisy: {hp:110, gate:34, pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
-    studio:{hp:70,  gate:10, pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
+    /* ESIKLER GERCEK WEB AUDIO ILE OLCULDU (v8.9). Oncekiler TAHMINDI ve sesin
+       kendisini kesiyordu: kapi noktasinda normal konusma 0.022, sakin konusma
+       0.009 RMS uretiyor; eski esik 0.018 idi. Mac'te "ses yok" bundandi. */
+    voice: {hp:80,  gate:2,  pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
+    noisy: {hp:110, gate:6,  pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
+    studio:{hp:70,  gate:1,  pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
   };
   var afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1}, fxTrack=null;
   function fxOn(){ return (state.audioFx||'voice')!=='off'; }
@@ -1348,7 +1367,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(!th) return 1;
     if(rms>=th*1.6) return 1;
     if(rms>=th)     return 0.55;
-    return 0.12;
+    return 0.35;   // %12 asiri sertti, -18 dB: yanlis kapanmada sesi yok ediyordu
   }
   /* Tarayici ses baglamini yalniz kullanici hareketiyle baslatir. Kamerayi acmak
      bir hareket: baglami orada isitiyoruz ki kayit aninda 'askida' olmasin —

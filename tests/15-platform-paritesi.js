@@ -83,8 +83,9 @@ const sabit = (src,ad) => (src.match(new RegExp(ad+':\\s*\\{[^}]*\\}'))||[''])[0
 });
 say('gürültü kapısı eşikleri aynı',
   /rms>=th\*1\.6\) return 1;/.test(tel) && /rms>=th\*1\.6\) return 1;/.test(mac));
+// v8.9: taban 0.12'den 0.35'e cikarildi (0.12 = -18 dB, sesi yok ediyordu)
 say('kapı asla tam sıfıra inmiyor (iki platformda)',
-  /return 0\.12;/.test(tel) && /return 0\.12;/.test(mac));
+  /return 0\.35;/.test(tel) && /return 0\.35;/.test(mac));
 say('VAD histerezisi aynı',
   /rms >= esik\*1\.5/.test(tel) && /rms >= esik\*1\.5/.test(mac));
 say('VAD 500 ms bekleme eşiği aynı',
@@ -135,3 +136,31 @@ say('Mac: kamera meşgul hatası ayrı', /NotReadableError/.test(jsM));
 say('Mac: kamera yok hatası ayrı', /NotFoundError/.test(jsM));
 say('iki platformda da GPU bırakma var',
     /deleteTexture/.test(jsT) && /deleteTexture/.test(jsM));
+
+/* ── v8.9: MANTIK PARİTESİ (logErr etiketleriyle yakalanamayan sınıf) ──
+   Otomatik tespit logErr izlerine bakıyor; ama "bir satır yukarısını vurgulama"
+   gibi MANTIK hataları iz bırakmıyor. Telefonda v8.3'te düzeltilmişti, Mac'te
+   iki tur daha yaşadı. Bu bölüm mantık paritesini de kilitliyor. */
+console.log('');
+say('en yakın satır seçimi iki platformda da var',
+    /function yakinIdx\(y\)\{/.test(tel) && /function yakinIdx\(y\)\{/.test(mac));
+say('Mac eski "son kelime" mantığını bırakmış',
+    !/function highlightAt\(eyeY\)\{\s*\n\s*if\(!\(state\.hl && wordTops\.length\)\) return;\s*\n\s*let lo=0/.test(mac));
+say('okuma çizgisi iki platformda aynı (%18)',
+    /eyePos:18,/.test(tel) && /eyePos:18,/.test(mac));
+say('Mac eski %42 değerinden taşınıyor', /state\.eyePos===42 && !state\.eyeTasindi/.test(mac));
+
+/* Gürültü kapısı eşikleri ÖLÇÜLEREK kalibre edildi — iki platformda birebir aynı
+   olmalı, yoksa aynı ortamda farklı ses çıkar. */
+const kapiEsik = d => {
+  const m=d.match(/voice:\s*\{hp:\d+,\s*gate:(\d+)/);
+  return m ? +m[1] : null;
+};
+say('konuşma eşiği iki platformda aynı', kapiEsik(tel)!==null && kapiEsik(tel)===kapiEsik(mac));
+say('eşik ölçülen konuşma aralığının ALTINDA (<3)', kapiEsik(tel)<3);
+say('eşik oda gürültüsünün ÜSTÜNDE (>0.8)', kapiEsik(tel)>0.8);
+const taban = d => { const m=d.match(/return (0\.\d+);\s*\n\s*\/\/ ortam gürültüsü|return (0\.\d+);\s*\/\/ %12/);
+  return m ? parseFloat(m[1]||m[2]) : null; };
+say('kapı tabanı iki platformda da yumuşak (>=0.3)',
+    /return 0\.35;/.test(tel) && /return 0\.35;/.test(mac));
+say('yıkıcı 0.12 tabanı kalmadı', !/return 0\.12;/.test(tel) && !/return 0\.12;/.test(mac));

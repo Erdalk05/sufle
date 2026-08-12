@@ -46,7 +46,10 @@ ok('kayıt gözcüsü 1-10 sn arasında', gozcu>=1000 && gozcu<=10000);
 // deseni yarı-açık eşiği (0.55) yakalıyordu — yanlış sabiti ölçüyordum.
 const gateWantSrc = cikar(js, /function gateWant\([\s\S]*?\n\}/, 'gateWant');
 const kapiTaban = parseFloat(gateWantSrc.match(/return (0\.\d+);\s*\n\}/)[1]);
-ok('gürültü kapısı tabanı 0 ile 0.3 arasında (ölü sessizlik yok)', kapiTaban>0 && kapiTaban<=0.3);
+// v8.9: taban ÖLÇÜLEREK 0.35'e çıkarıldı. Alt sınır 'sesi yok etmesin',
+// üst sınır 'gürültüyü yine de kıssın' demek.
+ok('kapı tabanı sesi yok etmiyor (>=0.3)', kapiTaban>=0.3);
+ok('kapı tabanı yine de gürültüyü kısıyor (<=0.5)', kapiTaban<=0.5);
 const vadBekle = sayi(/vad\.bosluk>=(\d+)/, 'VAD bekleme');
 ok('VAD bekleme 3-15 kare arası (0.3-1.5 sn)', vadBekle>=3 && vadBekle<=15);
 const vadHp = sayi(/hp\.frequency\.value=(\d+);\s*$/m, 'VAD uğultu kesme');

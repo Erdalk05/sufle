@@ -6,7 +6,8 @@ const src=oku(telefonYolu());
 eval(cikar(src,/function gateWant\(rms, gateVal\)\{[\s\S]*?\n\}/,'gateWant'));
 ok('kapı kapalıyken hep açık', gateWant(0.0001,0)===1);
 ok('net konuşma tam geçiyor', gateWant(0.09,22)===1);
-ok('ortam gürültüsü kısılıyor', gateWant(0.001,22)===0.12);
+// v8.9: taban 0.12 → 0.35 (0.12 = -18 dB, konuşmayı yok ediyordu)
+ok('ortam gürültüsü kısılıyor ama yok edilmiyor', gateWant(0.001,22)===0.35);
 ok('sınırdaki ses yarı geçiyor', gateWant(0.024,22)===0.55);
 ok('ASLA tam sıfır değil (ölü sessizlik olmasın)', gateWant(0,60)>0);
 ok('eşik yükseldikçe daha çok kısıyor', gateWant(0.02,10)>gateWant(0.02,50));

@@ -687,7 +687,7 @@
     <div class="hint" id="fxHint"></div>
     <div id="fxAdv" class="hidden">
       <div class="row"><label data-i18n="fxGate">Gürültü kapısı</label><span class="v" id="vGate">—</span></div>
-      <input type="range" id="fxGate" min="0" max="60" value="22">
+      <input type="range" id="fxGate" min="0" max="12" value="2">
       <div class="row"><label data-i18n="fxPres">Netlik (anlaşılırlık)</label><span class="v" id="vPres">—</span></div>
       <input type="range" id="fxPres" min="0" max="9" value="3">
       <div class="row"><label data-i18n="fxWarm">Tok ses (gövde)</label><span class="v" id="vWarm">—</span></div>
@@ -917,7 +917,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.8';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.9';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1272,6 +1272,8 @@ function load(){
   // seçilmiş bir değer değildi ve 4.8° bakış sapması üretiyordu. Bir kez.
   // %24 çok aşağıydı (göz aşağı bakıyor), %12 fazla yukarı kaçtı — %18 dengesi.
   if((st.eyePos===24 || st.eyePos===12) && st.eyeTasindi<2){ st.eyePos=18; st.eyeTasindi=2; }
+  // Eski kalibrasyondan kalan kapı değeri sesi kısıyordu; hazır ayara döndür.
+  if(st.fxGate!=null && st.fxGate>12){ st.fxGate=null; }
 }
 let saveT=null;
 /* 3.6 OTOMATİK YEDEK: ayarların TEK kopyası vardı. Bozulma ya da yanlış
@@ -2443,9 +2445,15 @@ async function runAudioTest(){
    ve kullanıcıya bunun neden böyle olduğu yazılıyor. Sessizce kapatmıyoruz. */
 const FXP={
   off:   null,
-  voice: {hp:80,  gate:18, pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
-  noisy: {hp:110, gate:34, pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
-  studio:{hp:70,  gate:10, pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
+  /* EŞİKLER GERÇEK WEB AUDIO İLE ÖLÇÜLDÜ (v8.9). Önceki değerler TAHMİNDİ ve
+     sesin kendisini kesiyordu: zincirin kapı noktasında normal konuşma 0.022,
+     sakin konuşma 0.009 RMS üretiyor; eski eşik 0.018 idi. Sonuç: normal
+     konuşma %55'e, sakin konuşma %12'ye kısılıyordu — "ses gelmiyor".
+     Ölçülen konuşma aralığı 0.003–0.065; oda gürültüsü ~0.0008. Eşikler
+     ikisinin ARASINA kondu. */
+  voice: {hp:80,  gate:2,  pres:3, warm:1, comp:-24, ratio:4,  lp:13000},
+  noisy: {hp:110, gate:6,  pres:5, warm:0, comp:-30, ratio:8,  lp:11000},
+  studio:{hp:70,  gate:1,  pres:2, warm:3, comp:-20, ratio:3,  lp:15000}
 };
 let afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1};
 function fxOn(){ return !IS_WK && !st.rawAudio && (st.audioFx||'voice')!=='off'; }
@@ -2547,7 +2555,8 @@ function gateWant(rms, gateVal){
   if(!th) return 1;
   if(rms>=th*1.6) return 1;            // net konuşma
   if(rms>=th)     return 0.55;         // sınırda: yarı kıs, cümle başını kesme
-  return 0.12;                         // ortam gürültüsü
+  return 0.35;                         // ortam gürültüsü — %12 çok sertti, yanlış
+                                       // kapanmada sesi yok ediyordu (-18 dB)
 }
 function fxLabel(){
   if(st.rawAudio) return L==='tr'?'ham (işleme yok)':'raw (no processing)';
