@@ -917,7 +917,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='8.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='8.8';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1711,6 +1711,7 @@ async function openCam(){
     if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
     $('#recBtn').disabled=false;
     setupCaps(); setupMics();
+    if(fxOn()) sesBaglamiIsit();   // kayıt anında 'askıda' yakalanmayalım
     if(st.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
     if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')){ startMeter(); startLight(); }
     autoLightCheck();
@@ -2456,6 +2457,18 @@ function fxParams(){
     warm: st.fxWarm==null?base.warm:st.fxWarm
   });
 }
+/* Tarayıcı ses bağlamını yalnız kullanıcı hareketiyle başlatır. Kamerayı açmak
+   bir hareket: bağlamı orada ısıtıyoruz ki kayıt anında 'askıda' olmasın —
+   askıdaki bağlam SESSİZLİK üretiyor ve kayıt sessiz çıkıyordu. */
+function sesBaglamiIsit(){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    const c=new AC();
+    if(c.state==='suspended') c.resume().catch(e=>logErr('audioWarm',e));
+    setTimeout(()=>{ try{ c.close(); }catch(e){ logErr('audioWarm',e); } },400);
+  }catch(e){ logErr('audioWarm',e); }
+}
 function stopAudioFx(){
   if(afx.iv) clearInterval(afx.iv);
   if(afx.ctx){ try{ afx.ctx.close(); }catch(e){ logErr('fxClose',e); } }
@@ -2472,6 +2485,15 @@ function makeFxTrack(){
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!AC) return null;
     const ctx=new AC();
+    // KRİTİK: Chrome'da yeni AudioContext ASKIDA doğar ve askıdaki bağlam
+    // SESSİZLİK üretir — kayıt sessiz çıkar. Başlatmayı dene; başlamadıysa
+    // işleme yapmadan HAM ize dön. İşleme kaybı, sesin tümden kaybından iyidir.
+    if(ctx.state==='suspended'){ try{ ctx.resume(); }catch(e){ logErr('audioFx',e); } }
+    if(ctx.state!=='running'){
+      logErr('audioFx','bağlam çalışmıyor: '+ctx.state);
+      try{ ctx.close(); }catch(e){ logErr('audioFx',e); }
+      return null;                       // ham ize düşülür — ses garanti
+    }
     const P=fxParams();
     const src=ctx.createMediaStreamSource(new MediaStream([at]));
 

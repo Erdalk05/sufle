@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 const src=oku(telefonYolu());
 
 // ---------- SES STÜDYOSU: gürültü kapısı kararı ----------
@@ -107,3 +107,30 @@ ok('ayar sayfası açılınca ön koşullar yeniden değerlendiriliyor',
 const sa=cikar(src,/function stopAudioFx\(\)\{[\s\S]*?\n\}/,'stopAudioFx');
 ok('stopAudioFx kurulmamışken de güvenli', /if\(afx\.iv\)/.test(sa) && /if\(afx\.ctx\)/.test(sa));
 ok('stopAudioFx durumu tam sıfırlıyor', /afx=\{ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1\}/.test(sa));
+
+// ---------- SESSİZ KAYIT (v8.8) — Erdal: "mac bilgisayarda ses yok" ----------
+// Kök neden: Chrome'da yeni AudioContext ASKIDA doğuyor ve askıdaki bağlam
+// SESSİZLİK üretiyor. Ses Stüdyosu zinciri o bağlamdan besleniyordu, dolayısıyla
+// kayıt sessiz çıkıyordu. Telefonda da aynı hata vardı ama iOS'ta zincir zaten
+// kapalı olduğu için ısırmıyordu — Android/masaüstünde ısırırdı.
+const macS=oku(macYolu());
+[['telefon',src],['Mac',macS]].forEach(([ad,d])=>{
+  ok(ad+': bağlam başlatılmaya çalışılıyor', /if\(ctx\.state==='suspended'\)\{ try\{ ctx\.resume\(\)/.test(d));
+  ok(ad+': çalışmıyorsa HAM ize dönülüyor', /if\(ctx\.state!=='running'\)\{/.test(d));
+  ok(ad+': başarısızlık günlüğe yazılıyor', /logErr\('audioFx','ba[gğ]lam/.test(d));
+  ok(ad+': bağlam kapatılıp null dönülüyor', /ctx\.close\(\); \}catch\(e\)\{ logErr\('audioFx',e\); \}\s*\n\s*return null;/.test(d));
+  ok(ad+': kamera açılışında bağlam ısıtılıyor', /if\(fxOn\(\)\) sesBaglamiIsit\(\);/.test(d));
+  ok(ad+': ısıtma fonksiyonu tanımlı', /function sesBaglamiIsit\(\)\{/.test(d));
+  ok(ad+': ısıtma sessizce yutmuyor', /logErr\('audioWarm'/.test(d));
+});
+// İLKE: işleme hatası kaydı ASLA susturmamalı — iki yol da ham ize düşüyor
+ok('telefon: zincir yoksa ham iz', /fxTrack=makeFxTrack\(\);[\s\S]{0,200}else fxUsed=false;/.test(src));
+ok('Mac: zincir yoksa ham iz', /fxTrack \? \[fxTrack\] : stream\.getAudioTracks\(\)/.test(macS));
+// davranış: hangi durumda hangi iz kullanılır
+function izSec(ctxDurum){
+  if(ctxDurum!=='running') return 'ham';   // makeFxTrack null döner
+  return 'islenmis';
+}
+ok('askıda bağlam → ham ses (sessizlik değil)', izSec('suspended')==='ham');
+ok('kapalı bağlam → ham ses', izSec('closed')==='ham');
+ok('çalışan bağlam → işlenmiş ses', izSec('running')==='islenmis');

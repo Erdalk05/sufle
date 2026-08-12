@@ -500,7 +500,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='8.7';   // telefon sürümüyle aynı numaralama
+  const VER='8.8';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1010,6 +1010,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         // değişiyordu. Telefon sürümüyle aynı davranış.
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
       cam.srcObject=stream; frame.classList.add('cam-on');
+      if(fxOn()) sesBaglamiIsit();   // kayit aninda 'askida' yakalanmayalim
       if(state.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
       camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
       recBtn.disabled=false; recBtn.style.opacity='1';
@@ -1349,6 +1350,18 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(rms>=th)     return 0.55;
     return 0.12;
   }
+  /* Tarayici ses baglamini yalniz kullanici hareketiyle baslatir. Kamerayi acmak
+     bir hareket: baglami orada isitiyoruz ki kayit aninda 'askida' olmasin —
+     askidaki baglam SESSIZLIK uretiyor ve Mac'te kayit sessiz cikiyordu. */
+  function sesBaglamiIsit(){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC) return;
+      const c=new AC();
+      if(c.state==='suspended') c.resume().catch(e=>logErr('audioWarm',e));
+      setTimeout(()=>{ try{ c.close(); }catch(e){ logErr('audioWarm',e); } },400);
+    }catch(e){ logErr('audioWarm',e); }
+  }
   function stopAudioFx(){
     if(afx.iv) clearInterval(afx.iv);
     if(afx.ctx){ try{ afx.ctx.close(); }catch(e){ logErr('fxClose',e); } }
@@ -1361,7 +1374,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     try{
       stopAudioFx();
       const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
-      const ctx=new AC(), P=fxParams();
+      const ctx=new AC();
+      // KRITIK: Chrome'da yeni AudioContext ASKIDA doğar ve askıdaki bağlam
+      // SESSİZLİK üretir — Mac'te kayıtta ses yoktu, sebebi buydu.
+      if(ctx.state==='suspended'){ try{ ctx.resume(); }catch(e){ logErr('audioFx',e); } }
+      if(ctx.state!=='running'){
+        logErr('audioFx','baglam calismiyor: '+ctx.state);
+        try{ ctx.close(); }catch(e){ logErr('audioFx',e); }
+        return null;                     // ham ize dusulur — ses garanti
+      }
+      const P=fxParams();
       const src=ctx.createMediaStreamSource(new MediaStream([at]));
       const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=P.hp; hp.Q.value=0.7;
       const n50=ctx.createBiquadFilter(); n50.type='notch'; n50.frequency.value=50; n50.Q.value=14;
