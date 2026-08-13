@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 22 P1 işlendi. **32 commit**, tamamı yerelde.
-Testler **732 → 1959**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından 23 P1 işlendi. **33 commit**, tamamı yerelde.
+Testler **732 → 1979**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -52,6 +52,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Yayın paketi yanlış senaryoyu koyabiliyordu** — çekimden sonra sürüm değiştirince paketteki metin ve yayın notu diğer sürümden üretiliyordu.
 - **Yazı boyutunu/okuma çizgisini değiştirince okuduğun yer kayıyordu** — 300 kelimelik metinde 113 kelime geriye kadar; döndürme düzeltmesi bu yolları kapsamıyormuş.
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
@@ -82,7 +83,7 @@ Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsi
 
 ## Sayılar
 
-- **32 commit**, hepsi yerelde, `claude` dalında
-- **1959 test** (gece başında 732) · yeni test dosyası: 39–63
-- Gece planı: 135 görevden **28'i** işlendi (bütün P0'lar + 22 P1)
+- **33 commit**, hepsi yerelde, `claude` dalında
+- **1979 test** (gece başında 732) · yeni test dosyası: 39–64
+- Gece planı: 135 görevden **29'u** işlendi (bütün P0'lar + 23 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
