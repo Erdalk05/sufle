@@ -12,6 +12,7 @@ fetch alert confirm prompt URL URLSearchParams Blob File FileReader FormData Ima
 MediaRecorder MediaStream MediaStreamTrack AudioContext EventSource Headers Response Request
 DataTransfer PointerEvent KeyboardEvent MouseEvent CustomEvent IntersectionObserver
 ResizeObserver MutationObserver TextDecoder TextEncoder Uint8Array Uint8ClampedArray
+Uint16Array Uint32Array Int8Array Int16Array Float64Array DataView
 Float32Array Int32Array ArrayBuffer DOMParser Notification Worker indexedDB localStorage
 sessionStorage document window navigator location history performance screen console
 speechSynthesis SpeechRecognition webkitSpeechRecognition""".split())

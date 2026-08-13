@@ -892,6 +892,7 @@
     <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
     <button class="cancel" id="editBtn" data-i18n="editBtn">✂️ Düzenle</button>
     <button class="cancel" id="capBtn" data-i18n="capBtnL">💬 Altyazı dosyası</button>
+    <button class="cancel" id="pkgBtn" data-i18n="pkgBtnL">📦 Yayın paketi</button>
   </div>
   <div class="sheetbtns">
     <button class="cancel" id="filesBtn" data-i18n="toFiles">📁 Dosyalar'a Kaydet</button>
@@ -994,7 +995,7 @@ const I18N={
   profL:'⚡ Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'🫁 Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
-  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'💬 Altyazı dosyası',setFindPh:'🔎 Ayarlarda ara…',restoreBk:'🛟 Otomatik yedekten dön',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
+  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'💬 Altyazı dosyası',pkgBtnL:'📦 Yayın paketi',setFindPh:'🔎 Ayarlarda ara…',restoreBk:'🛟 Otomatik yedekten dön',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
   vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'🎚 Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
@@ -1073,7 +1074,7 @@ const I18N={
   profL:'⚡ Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'🫁 Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
-  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'💬 Caption file',setFindPh:'🔎 Search settings…',restoreBk:'🛟 Restore auto-backup',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
+  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'💬 Caption file',pkgBtnL:'📦 Publish bundle',setFindPh:'🔎 Search settings…',restoreBk:'🛟 Restore auto-backup',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
   vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'🎚 Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
@@ -1099,6 +1100,7 @@ const MSG={
   takeFav:'Yıldızla', takeUnfav:'Yıldızı kaldır', takePlay:'Çekimi oynat',
   takeSrt:'Altyazı dosyasını indir', takeShare:'Çekimi paylaş veya kaydet',
   takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
+  pkgDone:'dosya tek pakette hazır', noTake:'Önce bir çekim yap',
   dlgBusy:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
@@ -1163,6 +1165,7 @@ const MSG={
   takeFav:'Star this take', takeUnfav:'Remove star', takePlay:'Play take',
   takeSrt:'Download subtitle file', takeShare:'Share or save take',
   takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
+  pkgDone:'files bundled', noTake:'Record a take first',
   dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -3070,6 +3073,132 @@ async function shareCaptions(fmt){
   toast(cues.length+' '+m('capsMade'));
 }
 
+/* ============ YAYIN PAKETİ ============
+   Çekimden sonra iş bitmiyor: video bir yere, altyazı başka yere, senaryo
+   metni ve başlık/açıklama taslağı elle hazırlanıyordu. Her video için
+   tekrarlanan iş. Artık hepsi tek dosyada.
+
+   Neden zip: iOS'ta bir paylaşım = bir dosya. Ayrı ayrı paylaşmak dört ayrı
+   kullanıcı hareketi demek. Sıkıştırmasız (store) zip yazmak ~50 satır ve
+   hiçbir bağımlılık gerektirmiyor — video zaten sıkışık, sıkıştırmanın
+   kazancı yok. */
+let crcTab=null;
+function crc32(buf){
+  if(!crcTab){
+    crcTab=new Uint32Array(256);
+    for(let n=0;n<256;n++){ let c=n;
+      for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+      crcTab[n]=c>>>0; }
+  }
+  let c=0xFFFFFFFF;
+  for(let i=0;i<buf.length;i++) c=crcTab[(c^buf[i])&0xFF]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0;
+}
+/* dosyalar: [{ad, veri:Uint8Array}] → Blob(application/zip) */
+function zipYap(dosyalar){
+  const enc=new TextEncoder(), yerel=[], merkez=[];
+  const y16=(a,v)=>a.push(v&255,(v>>8)&255);
+  const y32=(a,v)=>a.push(v&255,(v>>8)&255,(v>>16)&255,(v>>>24)&255);
+  // Sabit ve geçerli bir DOS tarih alanı: 2026-01-01. Değişken zaman damgası
+  // koysaydık aynı girdi her seferinde farklı zip üretirdi ve sınanamazdı.
+  const TARIH=23585;
+  let ofset=0;
+  for(const d of dosyalar){
+    const ad=enc.encode(d.ad), n=d.veri.length, crc=crc32(d.veri);
+    const h=[]; y32(h,0x04034b50); y16(h,20); y16(h,0x0800); y16(h,0); y16(h,0); y16(h,TARIH);
+    y32(h,crc); y32(h,n); y32(h,n); y16(h,ad.length); y16(h,0);
+    const hb=new Uint8Array(h);
+    yerel.push(hb,ad,d.veri);
+    const c=[]; y32(c,0x02014b50); y16(c,20); y16(c,20); y16(c,0x0800); y16(c,0); y16(c,0); y16(c,TARIH);
+    y32(c,crc); y32(c,n); y32(c,n); y16(c,ad.length); y16(c,0); y16(c,0); y16(c,0); y16(c,0);
+    y32(c,0); y32(c,ofset);
+    merkez.push(new Uint8Array(c),ad);
+    ofset += hb.length+ad.length+n;
+  }
+  let cdBoy=0; merkez.forEach(p=>cdBoy+=p.length);
+  const e=[]; y32(e,0x06054b50); y16(e,0); y16(e,0);
+  y16(e,dosyalar.length); y16(e,dosyalar.length); y32(e,cdBoy); y32(e,ofset); y16(e,0);
+  return new Blob([...yerel,...merkez,new Uint8Array(e)],{type:'application/zip'});
+}
+/* İşaretleme dilini ve yönerge notlarını atıp okunabilir düz metin bırakır. */
+function duzMetin(t){
+  return (t||'')
+    .replace(/^#{1,3}.*$/gm,'')            // bölüm başlıkları ayrı ele alınıyor
+    .replace(/^\[.*\]$/gm,'')              // [yönerge] okunmaz
+    .replace(/\{[^}]*\}/g,'')              // {telaffuz} ipucu
+    .replace(/\((?:\d+(?:[.,]\d+)?)s?\)/g,'')  // (2) bekleme
+    .replace(/(^|\s)\/\/?(?=\s|$)/g,'$1')  // / ve // duraklama
+    .replace(/\*/g,'')                     // *vurgu*
+    .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+}
+function yayinNotu(){
+  const s=active()||{}, ham=s.text||'';
+  const basliklar=ham.split(/\r?\n/).filter(l=>/^#{1,3}\s/.test(l))
+                     .map(l=>l.replace(/^#{1,3}\s*/,'').trim()).filter(Boolean);
+  const duz=duzMetin(ham);
+  const cumle=duz.split(/(?<=[.!?…])\s+/).map(x=>x.trim()).filter(Boolean);
+  const kelime=(duz.match(/\S+/g)||[]).length;
+  const sn=Math.max(1,Math.round(lastDur||0));
+  const wpm=Math.round(kelime/(sn/60));
+  /* Başlıklardaki bağlaç/soru sözcükleri etiket olarak işe yaramıyor:
+     "Nasıl Başlarız" başlığı #nasıl #başlarız üretiyordu — gürültü. */
+  const DURAK=new Set(('nasıl neden nedir hangi kimdir bunlar şunlar için ile ama fakat '+
+    'veya ya da ki de bu şu o bir birkaç çok az sonra önce kadar gibi hakkında üzerine '+
+    'what why how which when where about with from that this these those and the for our your')
+    .split(' '));
+  const kucult=w=>w.toLocaleLowerCase(L==='tr'?'tr-TR':'en-US');
+  const etiket=[...new Set(basliklar.join(' ').split(/\s+/)
+    .map(w=>w.replace(/[^\p{L}\p{N}]/gu,''))
+    .filter(w=>w.length>3 && !DURAK.has(kucult(w))))]
+    .slice(0,8).map(w=>'#'+kucult(w));
+  const T=L==='tr';
+  return [
+    T?'SUFLE YAYIN NOTU':'SUFLE PUBLISH NOTE',
+    new Date().toLocaleString(),
+    '',
+    (T?'Süre: ':'Duration: ')+clock(sn)+(T?' · Kelime: ':' · Words: ')+kelime+
+      (kelime?(T?' · Tempo: ':' · Pace: ')+wpm+' wpm':''),
+    '',
+    T?'BAŞLIK ADAYLARI':'TITLE OPTIONS',
+    ...(basliklar.length?basliklar.map((b,i)=>(i+1)+') '+b)
+                       :[(T?'(senaryoda # başlık yok)':'(no # headings in script)')]),
+    '',
+    T?'AÇIKLAMA (taslak)':'DESCRIPTION (draft)',
+    cumle.slice(0,3).join(' ')||(T?'(metin boş)':'(empty script)'),
+    '',
+    T?'ETİKET ADAYLARI':'TAG OPTIONS',
+    etiket.join(' ')||(T?'(başlık yok — etiket üretilemedi)':'(no headings — no tags)'),
+    '',
+    T?'— Bu taslak senaryodan üretildi, yapay zekâ kullanılmadı.'
+     :'— Draft generated from the script itself, no AI involved.'
+  ].join('\n');
+}
+async function paketPaylas(){
+  if(!lastBlob){ toast(m('noTake')); return; }
+  const enc=new TextEncoder();
+  const mp4=(lastBlob.type||'').indexOf('mp4')>=0;
+  const taban=fileName();
+  const dosyalar=[{ ad:taban+(mp4?'.mp4':'.webm'),
+                    veri:new Uint8Array(await lastBlob.arrayBuffer()) }];
+  const cues=buildCues();
+  if(cues.length) dosyalar.push({ad:'altyazi.srt', veri:enc.encode(srtText())});
+  const s=active();
+  if(s && (s.text||'').trim()) dosyalar.push({ad:'senaryo.txt', veri:enc.encode(s.text)});
+  dosyalar.push({ad:'yayin-notu.txt', veri:enc.encode(yayinNotu())});
+
+  const zip=zipYap(dosyalar), ad=taban+'_paket.zip';
+  const file=new File([zip],ad,{type:'application/zip'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title:ad}); toast(dosyalar.length+' '+m('pkgDone')); return; }
+    catch(e){ if(e.name==='AbortError'){ shareCancelled(); return; } }
+  }
+  const u=URL.createObjectURL(zip);
+  const a=document.createElement('a'); a.href=u; a.download=ad;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+  toast(dosyalar.length+' '+m('pkgDone'));
+}
+
 /* ============ ÇEKİM DEPOSU (IndexedDB) ============ */
 let db=null;
 function openDB(){
@@ -4485,6 +4614,7 @@ $('#eyeRecipe').onclick=applyEyeRecipe;
 bind('#weight','weight'); bind('#ls','ls'); bind('#scrimSl','scrim'); bind('#target','target');
 $('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
 $('#capBtn').onclick=()=>shareCaptions('srt');
+$('#pkgBtn').onclick=paketPaylas;
 /* 10.8 "Oynatıyorum ses yok" iki ayrı şey olabilir: dosyada ses YOK, ya da
    telefon sessiz moddadır. İkisini ayırt etmeden kullanıcı yanlış yeri arıyor. */
 $('#resultVid').addEventListener('play',()=>{
