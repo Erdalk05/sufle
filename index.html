@@ -1132,6 +1132,7 @@ const MSG={
   recDied:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',
   recNoStart:'⛔ Kayıt başlamadı — kamerayı kapatıp aç, sonra tekrar dene',
   recNoData:'⚠️ Kayıttan veri gelmiyor — durdurup tekrar başlat',
+  glLostRec:'⛔ Kompozit kayıt sırasında koptu — çekim burada bitirildi, o ana kadarki kısım arşivde',
   glLost:'⚠️ Kompozit koptu (bellek) — kompoziti kapatıp aç',
   glBack:'✅ Kompozit geri geldi',
   camBack:'✅ Kamera yeniden bağlandı',
@@ -1185,6 +1186,7 @@ const MSG={
   recDied:'⛔ Recording stopped early — what was captured is kept',
   recNoStart:'⛔ Recording did not start — close and reopen the camera, then retry',
   recNoData:'⚠️ No data coming from the recorder — stop and start again',
+  glLostRec:'⛔ Composite dropped mid-recording — the take was ended here; everything up to that point is archived',
   glLost:'⚠️ Composite dropped (memory) — turn composite off and on',
   glBack:'✅ Composite restored',
   camBack:'✅ Camera reconnected',
@@ -2096,8 +2098,21 @@ function startComp(){
     cv.dataset.glHooked='1';
     cv.addEventListener('webglcontextlost',ev=>{
       ev.preventDefault(); logErr('gl','context lost');
+      const kayitta = !!(rec && rec.state==='recording');
       comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
-      body.classList.remove('comp','burn'); toast(m('glLost'));
+      body.classList.remove('comp','burn');
+      /* KAYIT SÜRERKEN BAĞLAM KAYBI = ÇEKİM BOZULUR.
+         Kompozit açıkken kayıt TUVALDEN besleniyor (compRecStream). Bağlam
+         kaybolunca çizim döngüsü duruyor ama tuvalin iz'i "canlı" kalıyor —
+         MediaRecorder donmuş kareyi yazmaya DEVAM ediyor ve "video izi öldü"
+         gözcüsü hiç ateşlenmiyor, çünkü iz ölmedi, sadece beslenmiyor.
+         Eskiden yalnız "kompoziti kapatıp aç" deniyordu; kullanıcı bunu bir
+         görüntü sorunu sanıp konuşmaya devam ediyor, dakikalarca donmuş kare
+         kaydediyordu. Kaydı hemen bitiriyoruz: o ana kadarki kısım sağlam ve
+         arşive giriyor. */
+      if(kayitta){ logErr('gl','kayıt sırasında koptu @'+recElapsed().toFixed(1)+'s');
+                   toast(m('glLostRec')); buzz([60,40,60,40,60]); stopRec(); }
+      else toast(m('glLost'));
     });
     cv.addEventListener('webglcontextrestored',()=>{
       if(st.comp && stream && startComp()) toast(m('glBack'));

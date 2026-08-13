@@ -101,7 +101,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | # | Görev | Ö |
 |---|---|---|
 | G1 | Kompozit açıkken fps düşüşü ölçülüyor mu, eşik ne | P1 |
-| G2 | WebGL bağlam kaybı sonrası kayıt sürüyorsa ne oluyor | P0 |
+| G2 | WebGL bağlam kaybı sonrası kayıt sürüyorsa ne oluyor | P0 | ✅ **GERÇEK HATA** — kompozit kaydı TUVALDEN besleniyor; bağlam kopunca tuval izi 'canlı' kalıp donuyor, 'iz öldü' gözcüsü ateşlenmiyor ve donmuş kare dakikalarca yazılıyordu. Mesaj da 'kompoziti kapatıp aç' diyordu. Artık çekim hemen bitiriliyor + ayrı mesaj. |
 | G3 | Chroma eşiği uç değerlerde (0 ve 100) çökmüyor mu | P1 |
 | G4 | Arka plan görseli oran koruması testte kilitli mi | P1 |
 | G5 | `makeBgCanvas` büyük görselde bellek şişiriyor mu — M1-P1 dersi | P1 |
