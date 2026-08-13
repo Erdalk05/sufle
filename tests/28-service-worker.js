@@ -16,6 +16,11 @@ const src=fs.readFileSync(path.join(REPO,'sw.js'),'utf8');
    Burada sw.js gerçekten koşturuluyor: sahte self/caches/fetch verilip
    olay işleyicileri çağrılıyor. */
 
+/* Güncel önbellek adı kaynaktan okunuyor; sahte eski sürümler ondan türetiliyor. */
+const GUNCEL = (src.match(/const CACHE\s*=\s*'([^']+)'/) || [])[1];
+const N = parseInt((GUNCEL||'').replace(/\D+/g,''), 10);
+const ESKILER = [N-2, N-1].map(n => 'sufle-v'+n);
+
 function kurSW({ agCalisiyor = true, onbellekte = null } = {}){
   const iz = [];
   const olay = {};
@@ -25,7 +30,11 @@ function kurSW({ agCalisiyor = true, onbellekte = null } = {}){
   };
   const caches = {
     open: ad => { iz.push('open:'+ad); return Promise.resolve(onbellek); },
-    keys: () => Promise.resolve(['sufle-v71','sufle-v72','sufle-v73']),
+    /* SÜRÜM ADINI KAYNAKTAN AL, SABİT YAZMA. İlk yazımda 'sufle-v73' gömülüydü
+       ve v9.2 sürüm artışında test kendi kendini kırdı: kod doğru davranıp
+       v73'ü siliyordu ama test onu "güncel" sanıyordu. Sabit yazılmış sürüm,
+       her yayında patlayan bir test demek. */
+    keys: () => Promise.resolve([...ESKILER, GUNCEL]),
     delete: ad => { iz.push('sildi:'+ad); return Promise.resolve(true); },
     match: istek => { iz.push('match:'+(istek.url||istek));
                       return Promise.resolve(onbellekte); }
@@ -132,8 +141,9 @@ async function istekKos(sw, { url, mode='no-cors', method='GET' }){
   let bekle; sw.olay.activate({ waitUntil: p => { bekle = p; } });
   await bekle;
   const silinen = sw.iz.filter(x => x.startsWith('sildi:')).map(x => x.slice(6));
-  ok('eski sürüm önbellekleri siliniyor', silinen.includes('sufle-v71') && silinen.includes('sufle-v72'));
-  ok('GÜNCEL önbellek silinmiyor', !silinen.includes('sufle-v73'));
+  ok('eski sürüm önbellekleri siliniyor ('+ESKILER.join(', ')+')',
+     ESKILER.every(e => silinen.includes(e)));
+  ok('GÜNCEL önbellek ('+GUNCEL+') silinmiyor', !silinen.includes(GUNCEL));
   ok('etkinleşince açık sayfalar devralınıyor', sw.iz.includes('claim'));
 }
 

@@ -512,7 +512,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.1';   // telefon sürümüyle aynı numaralama
+  const VER='9.2';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1929,7 +1929,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
-   '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.'
+   '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
+   '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:
