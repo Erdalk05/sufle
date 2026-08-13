@@ -2336,7 +2336,7 @@ let sonTepeler=[];
 let audMon=null, audStats=null, audWarned=false;
 function startAudioMonitor(){
   stopAudioMonitor();
-  audStats={clip:0,n:0,sum:0,peak:0,maxTepe:0};  sonTepeler.length=0; audWarned=false;
+  audStats={clip:0,n:0,maxTepe:0}; sonTepeler.length=0; audWarned=false;
   if(!aTrack){ setAudBadge('none'); return; }
   try{
     const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
@@ -2350,8 +2350,8 @@ function startAudioMonitor(){
       an.getByteTimeDomainData(buf);
       let peak=0; for(let i=0;i<buf.length;i++){ const v=Math.abs(buf[i]-128); if(v>peak) peak=v; }
       const lvl=peak/128;
-      audStats.n++; audStats.sum+=lvl;
-    if(lvl>audStats.maxTepe) audStats.maxTepe=lvl; if(lvl>audStats.peak) audStats.peak=lvl;
+      audStats.n++;
+      if(lvl>audStats.maxTepe) audStats.maxTepe=lvl;
       if(lvl>0.96){ audStats.clip++; hot=12; }
       if(hot>0){ hot--; setAudBadge('clip');
         if(!audWarned){ audWarned=true; toast(m('audClip')); buzz([30,40,30]); } }
@@ -2386,7 +2386,7 @@ function setAudBadge(mode){
 function audSummary(){
   if(!audStats||!audStats.n) return '';
   if(!aTrack) return L==='tr'?'\ud83d\udd07 Ses yok':'\ud83d\udd07 No audio';
-  const pct=audStats.clip/audStats.n*100, avg=audStats.sum/audStats.n;
+  const pct=audStats.clip/audStats.n*100;
   if(pct>2) return (L==='tr'?'\u26a0\ufe0f Kaydin %'+Math.round(pct)+"'inde ses kirpmis \u2014 mikrofondan uzaklas ya da daha sakin konus"
                             :'\u26a0\ufe0f Audio clipped in '+Math.round(pct)+'% of the take \u2014 back off the mic');
   if((audStats.maxTepe||0)<0.12) return (L==='tr'?'\ud83d\udd08 Ses cok kisik \u2014 mikrofona yaklas':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');

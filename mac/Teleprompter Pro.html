@@ -1691,7 +1691,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   let audMon=null, audStats=null, audWarned=false, sonTepeler=[];
   function startAudioMonitor(){
     stopAudioMonitor();
-    audStats={clip:0,n:0,sum:0,maxTepe:0}; sonTepeler.length=0; audWarned=false;
+    audStats={clip:0,n:0,maxTepe:0}; sonTepeler.length=0; audWarned=false;
     const at=stream&&stream.getAudioTracks()[0];
     if(!at){ setAudBadge('none'); return; }
     try{
@@ -1705,7 +1705,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         an.getByteTimeDomainData(buf);
         let peak=0; for(let i=0;i<buf.length;i++){ const v=Math.abs(buf[i]-128); if(v>peak) peak=v; }
         const lvl=peak/128;
-        audStats.n++; audStats.sum+=lvl;
+        audStats.n++;
         if(lvl>audStats.maxTepe) audStats.maxTepe=lvl;
         if(lvl>0.96){ audStats.clip++; hot=12; }
         if(hot>0){ hot--; setAudBadge('clip');
@@ -1741,7 +1741,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(!audStats||!audStats.n) return '';
     const at=stream&&stream.getAudioTracks()[0];
     if(!at) return '🔇 Ses yok';
-    const pct=audStats.clip/audStats.n*100, avg=audStats.sum/audStats.n;
+    const pct=audStats.clip/audStats.n*100;
     if(pct>2) return '⚠️ Kaydın %'+Math.round(pct)+"'inde ses kırpmış";
     if((audStats.maxTepe||0)<0.12) return '🔈 Ses çok kısık';
     return '🔊 Ses seviyesi iyi';
