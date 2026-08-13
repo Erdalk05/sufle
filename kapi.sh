@@ -10,8 +10,10 @@ KOD=0
 say(){ printf '\n\033[1m== %s ==\033[0m\n' "$1"; }
 
 say "1/5 Statik denetim (telefon + Mac)"
-MACF="$HOME/Desktop/Teleprompter/Teleprompter Pro.html"
-[ -f "$MACF" ] || MACF="mac/Teleprompter Pro.html"
+# DEPO ÖNCE. Ters sıra 2026-08-13'te yanılttı: depodaki dosya düzenlendi,
+# masaüstü kopyası eski kaldı, kapı eski dosyayı denetleyip yeşil dedi.
+MACF="mac/Teleprompter Pro.html"
+[ -f "$MACF" ] || MACF="$HOME/Desktop/Teleprompter/Teleprompter Pro.html"
 if [ -f "$MACF" ]; then
   python3 denetim.py index.html "$MACF" || KOD=1
 else
@@ -76,18 +78,32 @@ if os.path.exists(mac):
         print("  ✗ sürüm sapması: telefon %s, Mac %s" % (tel_ver, mac_ver)); ok = False
     else:
         print("  ✓ telefon ve Mac aynı sürümde: %s" % tel_ver)
-    # Windows kopyasi Mac ile BIREBIR olmali; elle md5 karsilastiriyordum
-    win = os.path.expanduser("~/Desktop/Teleprompter-Windows/Teleprompter Pro.html")
-    if os.path.exists(win):
-        h = lambda p: hashlib.md5(open(p, 'rb').read()).hexdigest()
-        if h(win) != h(mac):
-            print("  ✗ Windows kopyası Mac ile aynı değil"); ok = False
-        else:
-            print("  ✓ Windows kopyası birebir")
-    else:
-        print("  — Windows kopyası bu makinede yok, atlandı")
 else:
     print("  — Mac dosyası yok, atlandı")
+
+# AYNA KOPYALARI BAYAT MI (2026-08-13'te bu boşluk kanıtlandı)
+# Depo kanondur; ama kullanıcının çift tıkladığı dosya masaüstündeki kopya.
+# Depo düzeltilip ayna eşitlenmezse kapı yeşil der, kullanıcı eski sürümü
+# kullanmaya devam eder. Yayın öncesi hepsi birebir olmalı.
+h = lambda p: hashlib.md5(open(p, 'rb').read()).hexdigest()
+AYNALAR = [
+    ("telefon master", "index.html", "~/Desktop/iPhone Teleprompter/index.html"),
+    ("Mac masaüstü",   mac,          "~/Desktop/Teleprompter/Teleprompter Pro.html"),
+    ("Windows kopyası", mac,         "~/Desktop/Teleprompter-Windows/Teleprompter Pro.html"),
+]
+for ad, kanon, ayna in AYNALAR:
+    ayna = os.path.expanduser(ayna)
+    if not os.path.exists(kanon):
+        continue
+    if not os.path.exists(ayna):
+        print("  — %s bu makinede yok, atlandı" % ad); continue
+    if os.path.abspath(ayna) == os.path.abspath(kanon):
+        continue
+    if h(ayna) != h(kanon):
+        print("  ✗ %s depodakiyle aynı değil (bayat ayna)" % ad); ok = False
+    else:
+        print("  ✓ %s birebir" % ad)
+
 sys.exit(0 if ok else 1)
 PY2
 

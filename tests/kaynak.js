@@ -21,10 +21,15 @@ const telefonYolu = () => ilkVarOlan([
   path.join(HOME, 'Desktop/iPhone Teleprompter/index.html'),
 ], 'telefon index.html');
 
+/* SIRA DEPODAN BAŞLAR — 2026-08-13'te bu sıra tersti ve gerçekten yanılttı.
+   Depodaki mac/ dosyası düzenlenip masaüstü kopyası eşitlenmeyince testler
+   ESKİ dosyayı sınayıp 766/0 verdi; düzenlemem hiç ölçülmemişti. Kapı neyi
+   yayınlıyorsa onu sınamalı, yayınlanan da depodaki kopya. Masaüstü
+   kopyalarının bayatlığı ayrı bir kontrol (kapi.sh 5. adım). */
 const macYolu = () => ilkVarOlan([
   process.env.SUFLE_MAC,
-  path.join(HOME, 'Desktop/Teleprompter/Teleprompter Pro.html'),
   path.join(REPO, 'mac/Teleprompter Pro.html'),
+  path.join(HOME, 'Desktop/Teleprompter/Teleprompter Pro.html'),
 ], 'Mac Teleprompter Pro.html');
 
 const oku = p => fs.readFileSync(p, 'utf8');
