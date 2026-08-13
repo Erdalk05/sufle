@@ -169,11 +169,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send(404, "text/plain", "yok")
 
 def lan_ip():
+    """Mac'in yerel ağ adresi. BULUNAMAZSA 127.0.0.1 döner ve bu adres telefon
+    için ÖLÜDÜR: telefonda 127.0.0.1 telefonun kendisini gösterir. Çağıranlar
+    bu değeri 'adres yok' diye ele almalı — yoksa çalışmayacak bir adres
+    çalışıyormuş gibi bildirilir."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80)); ip = s.getsockname()[0]; s.close(); return ip
     except Exception:
         return "127.0.0.1"
+
+
+def lan_yok(ip):
+    """Telefonun ulaşamayacağı adresler."""
+    return (not ip) or ip.startswith("127.") or ip == "::1" or ip == "localhost"
 
 class ThreadingServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
@@ -208,7 +217,14 @@ if __name__ == "__main__":
     if PORT != ilk:
         print("  ! %d doluydu, %d kullanılıyor." % (ilk, PORT))
     print("  Bu Mac (gösterim):  http://localhost:%d/" % PORT)
-    print("  Telefon (kumanda):  http://%s:%d/remote" % (ip, PORT))
+    # ÖLÜ ADRESİ ÇALIŞIYORMUŞ GİBİ YAZMA. lan_ip() başarısız olunca 127.0.0.1
+    # dönüyor; bu adres TELEFONDA telefonun kendisini gösterir, yani kumanda
+    # asla bağlanamaz. Eskiden banner bunu normal bir adres gibi basıyordu.
+    if lan_yok(ip):
+        print("  Telefon (kumanda):  ! Mac'in Wi-Fi adresi bulunamadı")
+        print("                      Mac'i Wi-Fi'ye bağla ve sunucuyu yeniden başlat")
+    else:
+        print("  Telefon (kumanda):  http://%s:%d/remote" % (ip, PORT))
     print("  Kapatmak için: Ctrl + C")
     print("=" * 48)
     try:

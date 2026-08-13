@@ -2465,9 +2465,22 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       const r=await fetch('/info'); const j=await r.json();
       if(j.ip && j.ip!=='127.0.0.1') host=j.ip+':'+j.port;
     }catch(_){}
+    /* CALISMAYACAK QR GOSTERME.
+       lan_ip() basarisiz olunca sunucu 127.0.0.1 donuyor ve burada
+       location.host'a dusuluyor — o da localhost. QR'a localhost yazilinca
+       TELEFON KENDISINE baglanmaya calisiyor: sayfa hic acilmiyor ve sebebi
+       hicbir yerde yazmiyor. Once adresin ulasilabilir oldugunu dogrula. */
+    const yerelMi = /^(localhost|127\.|\[?::1\]?)/i.test(host);
+    const img=$('#qrImg');
+    if(yerelMi){
+      $('#remoteUrl').textContent='Wi-Fi adresi bulunamadı';
+      img.style.display='none';
+      toast('📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.');
+      return;
+    }
     const url=location.protocol+'//'+host+'/remote';
     $('#remoteUrl').textContent=host+'/remote';
-    const img=$('#qrImg'); img.onload=()=>{img.style.display='block';};
+    img.onload=()=>{img.style.display='block';};
     img.onerror=()=>{img.style.display='none';};
     img.src='/qr?d='+encodeURIComponent(url);
     try{

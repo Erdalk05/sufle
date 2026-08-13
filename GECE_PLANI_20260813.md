@@ -81,7 +81,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | E6 | Öğrenilen tuş eşlemesi dışa/içe aktarımı bozuk dosyada çökmüyor mu | P1 |
 | E7 | Basılı tutma hızlanması üst sınıra takılıyor mu | P2 |
 | E8 | Kumanda sunucusu `/qr` qrcode yoksa net mesaj veriyor mu | P2 |
-| E9 | LAN IP bulunamazsa kumanda adresi ne gösteriyor | P1 |
+| E9 | ✅ LAN IP bulunamazsa kumanda adresi ne gösteriyor — **ÖLÜ ADRESİ ÇALIŞIYORMUŞ GİBİ gösteriyordu**. `lan_ip()` başarısız olunca `127.0.0.1` dönüyor; bu adres telefon için ölüdür (telefonda kendisini gösterir). İki yerde de sessizdi: sunucu banner'ı `http://127.0.0.1:PORT/remote` yazıyordu, Mac sayfası da `location.host`'a düşüp QR'a **localhost** basıyordu — telefon QR'ı okuyor, kendine bağlanmaya çalışıyor, sayfa hiç açılmıyor ve sebebi hiçbir yerde yazmıyor. `lan_yok()` eklendi (127.x, ::1, localhost, boş); banner ve sayfa artık sebebi + ne yapılacağını söylüyor, çalışmayacak QR hiç üretilmiyor. Port yedeğindeki (tests/29) aynı sınıf: mekanizma var, **bildirilen değer** yanlış. Test 57 (24 iddia) | P1 |
 | E10 | `iphone_server.py` için de entegrasyon testi (E3 deseniyle) | P1 |
 
 ## F. Kamera, çerçeve, ışık
