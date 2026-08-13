@@ -101,6 +101,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 ## G. Kompozit / yeşil ekran
 | # | Görev | Ö |
 |---|---|---|
+| G11 | ✅ **YENİ (F4 turunun devamı)** — kayıt sürerken kompozit anahtarı iki yönde de bozuyordu. Kaynak çekim başında BİR KEZ seçiliyor: **kapatmak** `stopComp()` ile MediaRecorder'ın beslendiği tuval izini öldürüyor; **açmak** kayda hiç yansımıyor ama önizleme yeşil ekranı gösteriyor — kullanıcı arka planın değiştiğini sanarak çekimi tamamlıyor ve **hiçbir uyarı yok**. `burnCaps`/`chroma` da kompozit kapalıyken sessizce kompozit başlatıyordu. Kayıt sürerken engellendi; kompozit zaten açıkken kırpma/gömülü altyazı serbest (kayda yansıyor, çalışan yetenek kapatılmadı). Test 54 (26 iddia) | P1 |
 | G1 | Kompozit açıkken fps düşüşü ölçülüyor mu, eşik ne | P1 |
 | G2 | WebGL bağlam kaybı sonrası kayıt sürüyorsa ne oluyor | P0 | ✅ **GERÇEK HATA** — kompozit kaydı TUVALDEN besleniyor; bağlam kopunca tuval izi 'canlı' kalıp donuyor, 'iz öldü' gözcüsü ateşlenmiyor ve donmuş kare dakikalarca yazılıyordu. Mesaj da 'kompoziti kapatıp aç' diyordu. Artık çekim hemen bitiriliyor + ayrı mesaj. |
 | G3 | Chroma eşiği uç değerlerde (0 ve 100) çökmüyor mu | P1 |
