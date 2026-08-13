@@ -86,6 +86,49 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     if empty_catch > taban:
         problems.append(("boş catch tabanın üstünde (yeni sessiz yutma?)", [empty_catch, "taban %d" % taban]))
 
+    # DURUM ZİNCİRİ (2026-08-13'te eklendi). Ölü ayar dedektörü "HTML'de anahtar
+    # var, JS okumuyor" diyor; bu ise durumun kendi zincirini iki yönde ölçüyor:
+    #   A) st.x OKUNUYOR ama ne varsayılanda var ne de bir yerde atanıyor
+    #      -> her zaman undefined; ona bağlı özellik kalıcı olarak KAPALI,
+    #         hiçbir hata da vermiyor
+    #   B) varsayılanda var ama hiçbir yerde OKUNMUYOR
+    #      -> diske yazılıp duran ama kimsenin bakmadığı alan (T8'de üç tane çıktı)
+    def durum_anahtarlari(kod):
+        m = re.search(r"\bDEF(?:AULT)?\s*=\s*\{", kod)
+        if not m:
+            return None
+        bas = kod.index("{", m.start())
+        derin, son = 0, None
+        for j in range(bas, len(kod)):
+            if kod[j] == "{": derin += 1
+            elif kod[j] == "}":
+                derin -= 1
+                if derin == 0:
+                    son = j; break
+        if son is None:
+            return None
+        govde = kod[bas + 1:son]
+        # YALNIZ 1. DÜZEY: scripts:[{id,title,text}] gibi iç içe nesnelerin
+        # anahtarları ayar sanılıyordu (ilk denememde üç yanlış pozitif verdi).
+        anahtar, d = set(), 0
+        for mm in re.finditer(r"[{\[\]}]|([A-Za-z_$][\w$]*)\s*:", govde):
+            g = mm.group(0)
+            if g in "{[": d += 1
+            elif g in "}]": d -= 1
+            elif d == 0 and mm.group(1): anahtar.add(mm.group(1))
+        return anahtar
+
+    varsayilan = durum_anahtarlari(code)
+    if varsayilan:
+        okunan = set(re.findall(r"\b%s\.([A-Za-z_$][\w$]*)" % onek, code))
+        yazilan = set(re.findall(r"\b%s\.([A-Za-z_$][\w$]*)\s*(?:=[^=]|\+\+|--|\+=|-=)" % onek, code))
+        hayalet = sorted(okunan - yazilan - varsayilan)
+        if hayalet:
+            problems.append(("durum alanı okunuyor ama hiç yazılmıyor", hayalet))
+        okunmayan = sorted(varsayilan - okunan)
+        if okunmayan:
+            problems.append(("kayıtlı ayar hiç okunmuyor", okunmayan))
+
     def keys(var):
         m = re.search(var + r"=\{(.*?)\n\};", js, re.S)
         if not m: return set(), set()
