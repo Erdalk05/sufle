@@ -4305,8 +4305,22 @@ const NEWS={
  '9.1':{tr:'🔊 <b>“Ses çok kısık” yanlış uyarısı düzeltildi</b>: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor — ses yokken yargılamıyor, gerçekten kısıkken uyarıyor.<br>⚡ <b>Biyonik okuma artık Mac’te de var</b> (kelime başları kalın).<br>♿ <b>Klavye ve ekran okuyucu</b>: ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor, adları ve açık/kapalı durumları sesli okunuyor. Liste satırlarındaki simge düğmeleri adlandırıldı.',
        en:'🔊 <b>False “audio very quiet” warning fixed</b>: it fired before you had even started speaking, and moving closer then triggered the clipping alarm. It now reads the peak of the last few seconds instead of the average.<br>⚡ <b>Bionic reading is now on Mac too</b>.<br>♿ <b>Keyboard and screen reader</b>: setting switches are reachable with Tab, toggled with Space/Enter, and their names and on/off states are announced.'}
 };
+/* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
+   Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'
+   karakteri '9'dan küçük. Bugün gizli — elimizde 6.4 ve 9.1 var, ikisinde de
+   doğru sonuç veriyor. Sürüm 10'a çıktığı gün kullanıcı yeni sürüm notu yerine
+   ESKİ sürümünkini görmeye başlardı ve kimse sebebini anlamazdı.
+   parseFloat da yetmez: parseFloat('9.10')=9.1 olur, 9.9'dan küçük sayılır.
+   Doğru yol parça parça sayısal karşılaştırma. */
+function verCmp(a,b){
+  const A=String(a).split('.').map(Number), B=String(b).split('.').map(Number);
+  for(let i=0;i<Math.max(A.length,B.length);i++){
+    const d=(A[i]||0)-(B[i]||0); if(d) return d;
+  }
+  return 0;
+}
 function showNews(){
-  const k=Object.keys(NEWS).sort().pop();
+  const k=Object.keys(NEWS).sort(verCmp).pop();
   $('#newsBody').innerHTML='<b>v'+k+'</b><br><br>'+(NEWS[k][L]||NEWS[k].tr);
   openSheet('#newsSheet');
 }
