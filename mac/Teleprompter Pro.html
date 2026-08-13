@@ -412,6 +412,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-c2="lower">küçük</button>
         </div>
         <div class="rb-note" style="margin-top:4px">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
+        <div class="toggle" style="margin-top:8px"><span>⚡ Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
+        <div class="rb-note">Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.</div>
         <div class="top" style="margin-top:10px"><label>💬 Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
         <input type="range" id="capOff" min="-20" max="20" value="0">
         <div class="rb-note">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
@@ -524,7 +526,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -692,7 +694,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       if(!r){ html+='<div class="ln br">&nbsp;</div>'; return; }
       if(/^#{1,3}\s*/.test(r)){ html+='<div class="ln h">'+escapeHtml(r.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
       if(/^\[.*\]$/.test(r)){ html+='<div class="ln note">'+escapeHtml(r)+'</div>'; return; }
-      html+='<div class="ln">'+escapeHtml(r).replace(/\S+/g,m=>'<span class="w">'+m+'</span>')+'</div>';
+      html+='<div class="ln">'+r.replace(/\S+/g,m=>'<span class="w">'+biyonik(m)+'</span>')+'</div>';
     });
     scroller.innerHTML=html;
     words=[...scroller.querySelectorAll('.w')];
@@ -1862,6 +1864,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function stamp(){ const d=new Date(), p=n=>String(n).padStart(2,'0');
     return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); }
   function escapeHtml(s){ return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  /* BİYONİK OKUMA — telefondan taşındı (parite).
+     Kelimenin ilk ~%42'si kalınlaşır; göz kelimeyi baştan yakalar.
+     Kaçırma tuzağı: kaçış (escape) ÖNCE uygulanıp sonra dilimlenirse
+     '&amp;' gibi bir varlık ortadan bölünebilir. O yüzden HAM kelime
+     dilimlenip her parça ayrı ayrı kaçırılıyor. */
+  function biyonik(w){
+    if(!state.bionic) return escapeHtml(w);
+    const mLead=w.match(/^[^\p{L}\p{N}]*/u)[0], core=w.slice(mLead.length);
+    const n=Math.max(1,Math.min(4,Math.round(core.replace(/[^\p{L}\p{N}]/gu,'').length*0.42)));
+    return escapeHtml(mLead)+'<b>'+escapeHtml(core.slice(0,n))+'</b>'+escapeHtml(core.slice(n));
+  }
   function updateStats(){
     const wc=countWords($('#editor').value);   // başlık ve notlar sayılmaz
     $('#wc').textContent=wc+' kelime';
@@ -1916,6 +1929,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
        kırpma boru hattında çiziliyor. Kırpma kapalıyken bu anahtarlar hiçbir şey
        yapmıyor, hiçbir şey de söylemiyordu. Artık gerekeni kendisi açıyor. */
     if(k==='vad'){ if(state.vad) vadBaslat(); else vadDurdur(); }
+    /* Biyonik okuma kelime HTML'ini değiştiriyor; applyAll yeniden inşa
+       etmiyor. Yeniden çizmezsek anahtar açılır ama HİÇBİR ŞEY olmaz —
+       bu deponun en sık hatası (ön koşulu/etkisi olmayan sessiz ayar). */
+    if(k==='bionic'){ buildWords(); }
     if((k==='burnCaps'||k==='chroma') && state[k] && !cropOn()){
       if(state.fmt==='free'){ state.fmt='9:16'; toast('Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor'); }
       state.crop=true;
