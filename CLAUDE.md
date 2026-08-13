@@ -69,6 +69,11 @@ kilitlemek değil.
 **Kabul edilmiş kusuru teste yazma.** tests/34 "bilinen sınır" diye kusurlu davranışı
 kilitlemişti; sınır kalkınca test düzeltmeyi engelledi.
 
+**Sürüm notunda KESME İŞARETİ KULLANMA.** Notlar tek tırnaklı JS dizeleri; `Mac'te`,
+`PDF'ten` gibi bir ifade dizeyi ortadan kırar ve **uygulama hiç açılmaz**. Bu gece
+altı kez oldu, her seferinde kapının 2. adımı yakaladı. Çözüm ekten kaçınmak:
+"masaüstünde", "PDF belgesinden". Aynı şey Mac dosyasındaki notlar için de geçerli.
+
 **Çıkarım çökerse adı olan iddia bassın.** `cikar()` bloğu bulamayınca test çöküyor ve
 ADI OLAN tek bir satır bile basmıyor; çıkış kodu doğru olsa da rapor okunmuyor.
 Kaynak düzeyi kontrolü simülasyondan ÖNCE koy, çıkarımı `match()` ile yap ve
