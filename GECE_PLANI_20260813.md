@@ -122,6 +122,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 ## H. Kayıt ve ses yolu
 | # | Görev | Ö |
 |---|---|---|
+| H11 | ✅ **YENİ (F4/G11 sınıfının kapanışı)** — Ses Stüdyosu ayarları ve bit hızı kayda ÇEKİM BAŞINDA giriyor (`fxParams()` yalnız `makeFxTrack`'te okunuyor). Çekim sürerken hazır ayarı ya da kapı/anlaşılırlık/gövde kaydırıcılarını değiştirmek arayüzü güncelliyor ama **kayda hiç yansımıyor** ve hiçbir şey söylenmiyordu — insanın en çok yapacağı şey tam da bu (sesini beğenmeyip çekim sırasında oynamak). Burada ENGELLEME yok, çünkü sonraki çekime hazırlık meşru: ne zaman geçerli olacağı söyleniyor, çekim başına bir kez. Test 55 (21 iddia) | P1 |
 | H1 | `pickMime` her platformda ilk desteklenen türü mü seçiyor — testle kilitle | P1 |
 | H2 | Duraklat/devam sonrası süre ve altyazı zamanları — testte var mı, genişlet | P1 |
 | H3 | Kayıt 2,5 sn gözcüsü yanlış alarm veriyor mu | P1 |
