@@ -1688,10 +1688,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function closeResult(){ $('#rrVideo').pause(); $('#recResult').classList.remove('open'); }
 
   /* ---------- CANLI SES İZLEME ---------- */
-  let audMon=null, audStats=null, audWarned=false;
+  let audMon=null, audStats=null, audWarned=false, sonTepeler=[];
   function startAudioMonitor(){
     stopAudioMonitor();
-    audStats={clip:0,n:0,sum:0}; audWarned=false;
+    audStats={clip:0,n:0,sum:0,maxTepe:0}; sonTepeler.length=0; audWarned=false;
     const at=stream&&stream.getAudioTracks()[0];
     if(!at){ setAudBadge('none'); return; }
     try{
@@ -1706,11 +1706,20 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         let peak=0; for(let i=0;i<buf.length;i++){ const v=Math.abs(buf[i]-128); if(v>peak) peak=v; }
         const lvl=peak/128;
         audStats.n++; audStats.sum+=lvl;
+        if(lvl>audStats.maxTepe) audStats.maxTepe=lvl;
         if(lvl>0.96){ audStats.clip++; hot=12; }
         if(hot>0){ hot--; setAudBadge('clip');
           if(!audWarned){ audWarned=true; toast('⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş'); } }
-        else if(audStats.n>12 && audStats.sum/audStats.n<0.04) setAudBadge('low');
-        else setAudBadge('ok');
+        else {
+          /* SESSIZLIK ORTALAMAYI ASAGI CEKIYORDU: kaydin basinda henuz
+             konusmamisken ortalama 0.015 cikip "ses kisik" yaziyordu.
+             Dogru olcut SON SANIYELERIN TEPESI. */
+          sonTepeler.push(lvl); if(sonTepeler.length>30) sonTepeler.shift();
+          const tepe=Math.max.apply(null,sonTepeler);
+          if(tepe<0.02) setAudBadge('ok');            // henuz ses yok — yargilama
+          else if(tepe<0.12) setAudBadge('low');      // ses var ama gercekten kisik
+          else setAudBadge('ok');
+        }
       },100);
       audMon={ctx,iv};
     }catch(e){}
@@ -1734,7 +1743,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(!at) return '🔇 Ses yok';
     const pct=audStats.clip/audStats.n*100, avg=audStats.sum/audStats.n;
     if(pct>2) return '⚠️ Kaydın %'+Math.round(pct)+"'inde ses kırpmış";
-    if(avg<0.05) return '🔈 Ses çok kısık';
+    if((audStats.maxTepe||0)<0.12) return '🔈 Ses çok kısık';
     return '🔊 Ses seviyesi iyi';
   }
 
