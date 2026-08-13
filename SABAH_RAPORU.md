@@ -65,7 +65,7 @@ Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsi
 - `realRes()` gerçek çözünürlüğü okuyor
 - Uyumluluk panelinde kompozit/duraklatma/paylaşma/MP4 satırları **doğru**
 - Kumanda yeniden bağlanması eksik değil (tarayıcı kendi yapıyor + nabız var)
-- **Sesle takip uzun metinde kaybolmuyor** — 5000 kelimede işaretçi sona 4999/5000 ulaşıyor; geniş arama 4734 adımda 3 kez gerekiyor
+- **Sesle takip uzun metinde kaybolmuyor** — 800/2000/5000 kelimede işaretçi sona tam ulaşıyor; ileri sıçrama 6, geriye dönüş 5 kelimede yakalanıyor
 
 **Ama beşinde, hipotez çürürken yanı başında gerçek bir kusur çıktı.** Doğru soruyu yanlış yere sormak da işe yaradı.
 
@@ -75,7 +75,7 @@ Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsi
 - **H6'daki koruma eksikti:** "Sesi düzelt" düğmesi izleri kendi durduruyor, kapıya hiç varmıyordu. F4 turunda yakaladım.
 - **Sürüm notundaki kesme işareti** iki kez JS dizesini kırdı — uygulama **hiç açılmayacaktı**. Her ikisini de kapının 2. adımı yakaladı.
 - **Testlerin koda birebir kilitlenmesi** kapıyı 5 kez gereksiz kırmızıya çevirdi. Kuralı `CLAUDE.md`'ye yazdım, süpürmeyi X1/X2 olarak P2'ye aldım.
-- **Bir yamayı geri almak zorunda kaldım:** sesle takipte "sapma" sandığım sayı aslında kurtarma öncesi geçici gecikmeymiş. Yazdığım yama sayıları hiç değiştirmedi — etkisini gösteremediğim değişikliği tutmadım.
+- **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 ## Sende karar bekleyenler
 

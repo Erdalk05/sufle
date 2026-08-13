@@ -4,27 +4,30 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* SESLE TAKİP UZUN METİNDE KAYBOLUYOR MU — ÖLÇÜLDÜ, HİPOTEZ ÇÜRÜDÜ.
    Gerçek matchVoice kaynaktan çıkarılıp sentetik okumayla koşturuldu:
-   5000 kelimelik metin, %5 kelime atlama, %8 tanıma hatası, %64 benzersiz
-   kelime (gerçek Türkçe metne yakın; kalanı ve/bir/bu gibi dolgu).
+   %5 kelime atlama, %8 tanıma hatası, gerçek Türkçe kelimelerden kurulu metin.
 
-   SONUÇ:
-     · okuma bittiğinde işaretçi 4999/5000 — metnin TAM sonunda
-     · geniş arama 4734 adımda yalnız 3 kez devreye girdi
-     · 200. kelimeden 800e sıçrayan kullanıcı 17 kelimede yakalanıyor
+   ÖLÇÜLEN SONUÇ:
+     · 800 / 2000 / 5000 kelimede işaretçi sona TAM ulaşıyor (sapma 0)
+     · geniş arama neredeyse hiç gerekmiyor
+     · 600 kelime ileri sıçrayan kullanıcı ~6 kelimede yakalanıyor
+     · 500 kelime geriye dönen kullanıcı ~5 kelimede yakalanıyor
 
-   İLK ÖLÇÜMÜM YANLIŞTI, iki kez:
-   1) Harness her adımda kelimeyi İKİ KEZ gönderiyordu; `recent` zaten son 5
-      kelimeyi biriktirdiği için yinelenen kelimeler oluşuyor ve benzersiz
-      kelimeli metinde hiç eşleşme çıkmıyordu.
-   2) Düzeltince "ortalama sapma 52, en büyük 732" çıktı ve bunu kusur sandım;
-      hatta geniş modda tek-kelime kabulünü kapatan bir yama yazdım. Yama
-      sayıları HİÇ DEĞİŞTİRMEDİ — çünkü sebep o değildi. Ölçünce görüldü:
-      o sapmalar, geniş aramanın devreye girmesi için gereken 1,2 saniye
-      boyunca yaşanan GEÇİCİ GECİKME; kurtarma sonrası kapanıyor. Yamayı geri
-      aldım: etkisini gösteremediğim bir değişikliği tutmak, düzeltme değil
-      gürültüdür.
+   BU ÖLÇÜMÜ ÜÇ KEZ YANLIŞ YAPTIM; üçü de HARNESS hatasıydı, üründe değil:
+   1) Her adımda kelimeyi İKİ KEZ gönderiyordum; `recent` zaten son 5 kelimeyi
+      biriktirdiği için yinelenen kelimeler oluşuyor ve hiç eşleşme çıkmıyordu.
+   2) Düzeltince "ortalama sapma 52" çıktı, kusur sandım ve geniş modda
+      tek-kelime kabulünü kapatan bir yama yazdım — yama sayıları HİÇ
+      değiştirmedi, çünkü sebep o değildi. Geri aldım.
+   3) Asıl kirlilik kelime üreticisindeydi: 'sozcuk0, sozcuk1, ...' 6 harflik
+      ORTAK ÖNEK paylaşıyor ve wordEq'in ortak-kök kuralı (ok>=kisa*0.7)
+      onları BİRBİRİNE eşliyor — 'sozcuk407' ile 'sozcuk58' eşleşiyordu.
+      Yani ölçüm metni değil, eşleştiricinin kendi kuralını sınıyordu. Bu
+      artefakt yüzünden "geriye dönüş 70 kelime sürüyor" diye YANLIŞ bir bulgu
+      kaydettim (D11); gerçek sözlükle ölçünce 5 kelime çıktı.
 
-   Bu dosya ölçümü kilitliyor: eşikler ya da pencere değişirse yakalanır. */
+   DERS: sentetik derlem, ölçtüğü sistemin DENKLİK KURALLARINA karşı da
+   doğrulanmalı — yoksa harness kendini ölçer. Aşağıda sözlüğün kendisi
+   wordEq ile sınanıyor ve bu artefakt kapıya bağlanıyor. */
 
 const parcalar=[
   cikar(kod,/const WIN_BACK=\d+, WIN_FWD=\d+, MAX_JUMP=\d+;/,'sabitler'),
@@ -54,17 +57,41 @@ ${parcalar}
       return {vptr, durum:__log.durum, genis:__log.genis}; }, get vptr(){return vptr;} };
   `)(kelimeler, log);
 }
-/* Gerçekçi metin: benzersiz sözcükler + gerçek metinlerdeki dolgu kelimeleri. */
+/* GERÇEKÇİ SÖZLÜK — HARNESS ARTEFAKTINDAN SONRA.
+   İlk üreticim 'sozcuk0, sozcuk1, ...' üretiyordu. Bunlar 6 harflik ORTAK ÖNEK
+   paylaşıyor ve wordEq'in ortak-kök kuralı (ok>=kisa*0.7) onları BİRBİRİNE
+   EŞLİYOR: 'sozcuk407' ile 'sozcuk58' eşleşiyordu. Yani ölçüm, eşleştiricinin
+   kendi kuralını sınıyordu, metni değil. Bu artefakt yüzünden "geriye dönüş 70
+   kelime sürüyor" diye YANLIŞ bir bulgu kaydettim ve düzeltmek için iki yama
+   yazdım; ikisi de hiçbir şeyi değiştirmedi, çünkü ortada sorun yoktu.
+   Ders: sentetik derlem, eşleştiricinin denklik kurallarına karşı da
+   doğrulanmalı — yoksa harness kendini ölçer. */
+const SOZLUK=('kamera isik ses kayit ekran metin okuma hizli yavas bugun yarin dun sabah aksam gece '+
+ 'insan cocuk kadin erkek arkadas komsu ogretmen ogrenci doktor muhendis yazar sanatci '+
+ 'masa sandalye pencere kapi duvar tavan zemin merdiven bahce sokak cadde meydan '+
+ 'kitap defter kalem silgi canta ayakkabi gomlek pantolon ceket sapka eldiven '+
+ 'elma armut uzum kiraz seftali kavun karpuz domates biber patlican havuc '+
+ 'kirmizi mavi yesil sari mor turuncu beyaz siyah gri pembe lacivert '+
+ 'gitmek gelmek almak vermek bakmak gormek duymak soylemek anlamak bilmek '+
+ 'buyuk kucuk uzun kisa genis dar yuksek alcak agir hafif sicak soguk').split(' ');
+const DOLGU=['ve','bir','bu','de','da','icin','ile','ama','cok','sonra'];
 function uret(n,tohum=3){
   let r=tohum; const R=()=>{ r=(r*1103515245+12345)&0x7fffffff; return r/0x7fffffff; };
-  const S=['ve','bir','bu','de','da','icin','ile','ama','cok','sonra'];
-  const o=[]; let i=0;
-  while(o.length<n){ if(R()<0.35) o.push(S[Math.floor(R()*S.length)]); else o.push('sozcuk'+(i++)); }
-  return o.slice(0,n);
+  const o=[];
+  while(o.length<n) o.push(R()<0.3 ? DOLGU[Math.floor(R()*DOLGU.length)] : SOZLUK[Math.floor(R()*SOZLUK.length)]);
+  return o;
 }
-ok('sentetik metin gerçekçi tekrar oranında (%50-80 benzersiz)', (()=>{
-  const k=uret(2000); const oran=new Set(k).size/k.length; return oran>0.5 && oran<0.8;
-})());
+/* Sözlüğün kendisi eşleştiriciyi yanıltmıyor mu — ARTEFAKTI KAPIYA BAĞLA. */
+{
+  const eq=new Function(
+    ['yumusat','ortakOnek','birHata','wordEq'].map(f=>cikar(kod,new RegExp('function '+f+'\\([\\s\\S]*?\\n\\}'),f)).join('\n')
+    +'; return wordEq;')();
+  let yanlis=0;
+  for(let i=0;i<SOZLUK.length;i++)
+    for(let j=i+1;j<SOZLUK.length;j++)
+      if(eq(SOZLUK[i],SOZLUK[j])) yanlis++;
+  ok('sözlükteki farklı kelimeler birbirine eşleşmiyor ('+yanlis+' çift)', yanlis===0);
+}
 
 /* ---------- UZUN METİNDE SONA KADAR TAKİP ---------- */
 function duzOku(n){
@@ -82,7 +109,7 @@ function duzOku(n){
 }
 for(const n of [800, 2000, 5000]){
   const r=duzOku(n);
-  ok(n+' kelimelik metinde işaretçi sona ulaşıyor (sapma ≤2)', Math.abs(r.son-(r.sonI+1)) <= 2);
+  ok(n+' kelimelik metinde işaretçi sona TAM ulaşıyor (ölçülen sapma 0)', Math.abs(r.son-(r.sonI+1)) === 0);
   ok(n+' kelimelik metinde geniş arama nadiren gerekiyor (<%1)', r.genisSayisi/n < 0.01);
 }
 
@@ -95,7 +122,7 @@ for(const n of [800, 2000, 5000]){
   let adim=0, son=once;
   for(let i=800;i<900;i++){ const r=t.konus(k[i],400); adim++; son=r.vptr; if(son>780) break; }
   ok('600 kelime ileri sıçrayan kullanıcı yakalanıyor', son>780);
-  ok('yakalama 30 kelimeden kısa sürüyor ('+adim+' kelime)', adim<30);
+  ok('ileri yakalama 15 kelimeden kısa ('+adim+' kelime, ölçülen 6)', adim<15);
 }
 
 /* ---------- GERİYE SIÇRAMA (baştan okumak) ---------- */
@@ -105,16 +132,9 @@ for(const n of [800, 2000, 5000]){
   let son=t.vptr, adim=0;
   for(let i=100;i<200;i++){ const r=t.konus(k[i],400); adim++; son=r.vptr; if(son<250) break; }
   ok('geriye dönen kullanıcı da yakalanıyor', son<250);
-  /* ÖLÇÜLEN ASİMETRİ: ileri sıçrama ~17 kelimede, GERİYE dönüş ~70 kelimede
-     yakalanıyor — dört kat yavaş. Sebebi tasarımda: pencere geriye 8, ileriye
-     26 kelime bakıyor (WIN_BACK<WIN_FWD) ve geniş arama ancak 1,2 saniye
-     HİÇ eşleşme olmayınca açılıyor; geride kalan dolgu kelimeleri zayıf
-     eşleşmeler üretip o sayacı sürekli sıfırlıyor.
-     Cümleyi baştan okumak sık yapılan bir şey, yani bu gerçek bir gecikme.
-     Eşiği UYDURMUYORUM: ölçülen değeri paylayla kilitliyorum. Bunu iyileştirmek
-     ayrı bir iş — bu gece bir kez, etkisini gösteremediğim bir yamayı geri
-     almak zorunda kaldım; aynı hatayı tekrarlamıyorum. */
-  ok('geriye yakalama ölçülen sınırda ('+adim+' kelime, tavan 90)', adim<90);
+  /* Gerçekçi sözlükle ölçülen: ileri ~6, geriye ~5 kelime. Asimetri YOK.
+     Önceki "geriye dönüş 4 kat yavaş" bulgusu üreticinin artefaktıydı. */
+ok('geriye yakalama 15 kelimeden kısa ('+adim+' kelime, ölçülen 5)', adim<15);
 }
 
 /* ---------- KURTARMA MEKANİZMASININ PARÇALARI DURUYOR MU ----------
