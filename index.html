@@ -740,6 +740,9 @@
     <div class="sheetbtns"><button class="cancel" id="devBtn" data-i18n="devBtn">📱 Cihaz uyumluluğu</button></div>
     <div id="devOut"></div>
     <div class="sheetbtns"><button class="cancel" id="helpBtn2" data-i18n="help">Nasıl kullanılır?</button></div>
+    <!-- Sürüm notlarının TEK girişi buydu: güncellemeden sonra kendiliğinden
+         açılan sayfa. Kapatan ya da kaçıran bir daha ulaşamıyordu. -->
+    <div class="sheetbtns"><button class="cancel" id="newsBtn" data-i18n="newsTitle">🆕 Ne değişti?</button></div>
     <div class="sheetbtns"><button class="danger" id="resetAll" data-i18n="resetAll">↺ Ayarları varsayılana döndür</button></div>
     <div class="hint" data-i18n="resetHint">Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.</div>
     <div class="hint" id="verLine" style="text-align:center;margin-top:14px">Sufle v2.0</div>
@@ -4347,6 +4350,9 @@ function firstRun(){
   },1400);
 }
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
+/* Sürüm notlarına elle giriş. Tek girişi güncellemeden sonra kendiliğinden
+   açılan sayfaydı; kapatan ya da kaçıran kullanıcı bir daha ulaşamıyordu. */
+$('#newsBtn').onclick=showNews;
 /* ayarları sıfırla — senaryolara ve çekimlere dokunmaz, iki basış ister */
 let resetArm=0;
 $('#resetAll').onclick=()=>{

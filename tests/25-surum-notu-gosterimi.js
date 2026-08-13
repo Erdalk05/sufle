@@ -74,6 +74,22 @@ ok('gecikme 0,5-3 sn arasında ('+guncelleme.gecikme+' ms)',
    görülmüş sayılır, diske yazılmaz, sonraki açılışta yine gösterilir. */
 ok('damga kaydediliyor (save çağrılıyor)', guncelleme.izler.includes('save'));
 
+/* ---------- ELLE GİRİŞ ----------
+   Sürüm notlarının tek girişi güncellemeden sonra kendiliğinden açılan
+   sayfaydı. Kapatan ya da o anı kaçıran kullanıcı bir daha ulaşamıyordu:
+   ekran kodda duruyor ama pratikte yok. Deponun "ulaşılamayan özellik =
+   olmayan özellik" sınıfı. */
+ok('ayarlarda "Ne değişti" düğmesi var', /id="newsBtn"/.test(tel));
+ok('düğme showNews\'e bağlı',
+   /\$\('#newsBtn'\)\.onclick\s*=\s*showNews/.test(tel));
+ok('düğmenin metni iki dilde de var (data-i18n)',
+   /id="newsBtn"[^>]*data-i18n="newsTitle"/.test(tel) &&
+   /newsTitle:'[^']+'/.test(tel));
+/* showNews yalnız otomatik açılıştan çağrılıyorsa özellik yine ulaşılamaz.
+   En az iki çağrı olmalı: otomatik + elle. */
+const cagriSayisi = (tel.match(/showNews\b/g) || []).length;
+ok('showNews birden fazla yerden erişilebilir ('+cagriSayisi+' geçiş)', cagriSayisi >= 3);
+
 /* ---------- KAYNAK DÜZEYİ KİLİT ----------
    Damganın setTimeout'un DIŞINA geri taşınması bu dosyadaki davranış
    testlerini kırar; yine de niyeti kaynakta da sabitliyoruz. */
