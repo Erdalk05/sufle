@@ -16,27 +16,30 @@ self.addEventListener('activate', e => {
   );
 });
 
-self.addEventListener('message', e => {
-  if (e.data === 'skipWaiting') self.skipWaiting();
-});
-
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
-  // gezinme (ve paylaşımdan gelen ?text=... istekleri): önce ağ, olmazsa önbellekten index
+  // GEZİNME: ÖNCE AĞ, olmazsa önbellekten index.
+  // ⚠️ BU SATIRI CACHE-FIRST YAPMAYIN. Uygulamanın tamamı tek index.html
+  // dosyası; gezinme önbellekten servis edilirse kullanıcı yayınlanan her
+  // yeni sürümü kaçırır ve bunu anlamasının hiçbir yolu olmaz — ne hata
+  // çıkar ne uyarı. tests/28 bu davranışı kilitliyor.
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).catch(() => caches.match('./index.html')));
     return;
   }
-  // diğerleri: önce önbellek, yoksa ağ (ve önbelleğe al)
+  // diğerleri (simgeler, manifest): önce önbellek, yoksa ağ (ve önbelleğe al)
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
       return res;
-    }).catch(() => hit))
+    // Eskiden burada `.catch(() => hit)` yazıyordu; bu noktada hit HER ZAMAN
+    // falsy (zaten önbellekte bulunmadığı için ağa gidiliyor), yani sözde
+    // çevrimdışı yedeği undefined döndürüp isteği sessizce bozuyordu.
+    }).catch(() => new Response('', { status: 504, statusText: 'cevrimdisi' })))
   );
 });
