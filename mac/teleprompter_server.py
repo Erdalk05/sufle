@@ -174,26 +174,37 @@ class ThreadingServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
 if __name__ == "__main__":
-    ip = lan_ip()
-    print("=" * 48)
-    print("  TELEPROMPTER PRO — SUNUCU ÇALIŞIYOR")
-    print("=" * 48)
-    print("  Bu Mac (gösterim):  http://localhost:%d/" % PORT)
-    print("  Telefon (kumanda):  http://%s:%d/remote" % (ip, PORT))
-    print("  Kapatmak için: Ctrl + C")
-    print("=" * 48)
+    # ÖNCE BAĞLAN, SONRA YAZDIR.
+    # Eskiden banner bağlanmadan önce basılıyordu ve /info sabit PORT'u
+    # döndürüyordu. 8080 doluysa sunucu 8081'e düşüyor ama HEM banner HEM
+    # /info hâlâ 8080 diyordu. Mac arayüzü QR adresini /info'daki porttan
+    # kuruyor (setupRemote), yani telefon boş bir porta gönderiliyor ve
+    # kumanda sessizce çalışmıyordu — üstelik port yedeği tam da bu durum
+    # için eklenmişti. GERÇEK KOŞUYLA ÖLÇÜLDÜ: 8080 meşgulken sunucu 8081'i
+    # dinliyor, /info {"port": 8080} döndürüyordu.
+    ilk = PORT
     srv = None
-    for p in range(PORT, PORT + 10):
+    for p in range(ilk, ilk + 10):
         try:
             srv = ThreadingServer(("0.0.0.0", p), Handler)
-            if p != PORT:
-                print("  ! %d doluydu, %d kullanılıyor. Adres: http://localhost:%d/" % (PORT, p, p))
+            PORT = p          # ← /info ve QR artık GERÇEK portu bildiriyor
             break
         except OSError:
             continue
     if srv is None:
-        print("  ! %d-%d arası tüm portlar dolu. Açık Teleprompter sunucusu var mı diye bak." % (PORT, PORT + 9))
+        print("  ! %d-%d arası tüm portlar dolu. Açık Teleprompter sunucusu var mı diye bak." % (ilk, ilk + 9))
         raise SystemExit(1)
+
+    ip = lan_ip()
+    print("=" * 48)
+    print("  TELEPROMPTER PRO — SUNUCU ÇALIŞIYOR")
+    print("=" * 48)
+    if PORT != ilk:
+        print("  ! %d doluydu, %d kullanılıyor." % (ilk, PORT))
+    print("  Bu Mac (gösterim):  http://localhost:%d/" % PORT)
+    print("  Telefon (kumanda):  http://%s:%d/remote" % (ip, PORT))
+    print("  Kapatmak için: Ctrl + C")
+    print("=" * 48)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
