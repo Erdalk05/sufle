@@ -88,6 +88,10 @@ else:
 h = lambda p: hashlib.md5(open(p, 'rb').read()).hexdigest()
 AYNALAR = [
     ("telefon master", "index.html", "~/Desktop/iPhone Teleprompter/index.html"),
+    # denetim.py de ikiye ayrılmıştı: master kopyası 41 satır geride kalmış,
+    # olay-işleyicisi dedektörü ve Mac desteği orada yoktu. Denetim betiği
+    # bayatlarsa kapı sessizce zayıflar — bulunmayan hata "yok" sanılır.
+    ("denetim.py",     "denetim.py", "~/Desktop/iPhone Teleprompter/denetim.py"),
     ("Mac masaüstü",   mac,          "~/Desktop/Teleprompter/Teleprompter Pro.html"),
     ("Windows kopyası", mac,         "~/Desktop/Teleprompter-Windows/Teleprompter Pro.html"),
 ]
