@@ -4328,7 +4328,14 @@ function showNews(){
 function firstRun(){
   if(st.seenVer===VER) return;
   const ilk=!st.seenVer;
-  st.seenVer=VER; save();
+  /* SEENVER'İ BURADA YAZMA — 1400 ms sonra, sayfa GERÇEKTEN açıldıktan sonra.
+     Eskiden yazım burada, gösterim ise setTimeout içindeydi. Kullanıcı o 1,4
+     saniye içinde uygulamayı kapatır, yeniler ya da PWA'yı arka plana atarsa
+     "görüldü" damgası çoktan basılmış oluyordu ve "Ne değişti" ekranı O SÜRÜM
+     İÇİN BİR DAHA HİÇ açılmıyordu. Ekranın tek girişi bu olduğu için özellik
+     tümden kayboluyordu — hata mesajı yok, kimse sebebini göremez.
+     (Deponun 3 numaralı tekrarlayan hatası: durumu okumadan/göstermeden önce
+     sıfırlayan kod, özelliği tümden ölü bırakır.) */
   setTimeout(()=>{
     if(ilk){
       $('#newsBody').innerHTML=(L==='tr'
@@ -4336,6 +4343,7 @@ function firstRun(){
         : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>📝 Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>✅ Ready?</b>, then hit <b>●</b>.');
       openSheet('#newsSheet');
     } else showNews();
+    st.seenVer=VER; save();     // gösterildi, artık damgalanabilir
   },1400);
 }
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
