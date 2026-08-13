@@ -144,7 +144,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 |---|---|---|
 | J1 | Arşive yazarken video KOPYALANIYOR mu — M1-P1 dersini burada da ölç | P1 |
 | J2 | ⭐/not değişikliğinde tüm kayıt (video dahil) yeniden yazılıyor mu — ölç | P1 |
-| J3 | IndexedDB kotası dolunca en eskiyi silme önerisi çalışıyor mu | P0 |
+| J3 | ✅ IndexedDB kotası dolunca en eskiyi silme önerisi çalışıyor mu — **öneri HİÇ YOKTU**: toplu silme özelliği vardı ama yalnız arşiv ekranında, yani kullanıcının bildiğini + geçici bildirimi okuduğunu + sonuç ekranını KAPATMADAN gidip bulduğunu varsayıyordu. Oysa yazılamayan çekim yalnızca bellekte; ekranı kapatınca gidiyor. Çıkış yolu artık kaybın yaşandığı yerde: sonuç ekranında düğme → yıldızsız çekimleri sil (iki aşamalı onay, yıldızlılara dokunmaz) → **aynı çekimi tekrar yaz**. Silme kendiliğinden yapılmıyor. Test 42 (42 iddia). Yan ürün: `denetim.py` satır sonu yorumlarını atmıyordu, bu gece 2 yalancı alarm verdi — düzeltildi | P0 |
 | J4 | Yayın paketi ikinci sürümü de içermeli mi (C1 ile aynı karar) | P1 |
 | J5 | Paylaşım iptalinde (AbortError) mesaj doğru mu — testle kilitle | P1 |
 | J6 | Arşiv 50 çekimde render maliyeti | P2 |

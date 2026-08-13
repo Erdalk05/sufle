@@ -52,7 +52,14 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     for prm in re.findall(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=>", js): defs.add(prm)
     # yorumları ve metinleri at — kaçışlı apostrof içeren metinler sızıyordu
     code = re.sub(r"/\*.*?\*/", "", js, flags=re.S)
-    code = re.sub(r"(?m)^\s*//.*$", "", code)
+    # SATIR SONU YORUMLARI DA AT. Eskiden yalnız satır BAŞINDAKİ // atılıyordu;
+    # `f();   // ... çıkış yolu burada duruyor` gibi bir satırın ardından
+    # `(function(){` gelince yorumun son kelimesi "duruyor(" diye okunup
+    # tanımsız fonksiyon çağrısı sanılıyordu. Bu gece iki kez yalancı alarm
+    # verdi ve kapıyı gereksiz yere kırmızıya çevirdi — yalancı alarm veren
+    # dedektör, gerçek bulguyu da inandırıcılıktan düşürür.
+    # (?<![:\w]) URL'leri koruyor: https:// içindeki // atılmıyor.
+    code = re.sub(r"(?m)(?<![:\w])//.*$", "", code)
     code = re.sub(r"'(?:\\.|[^'\\\n])*'", "''", code)
     code = re.sub(r'"(?:\\.|[^"\\\n])*"', "''", code)
     code = re.sub(r"`(?:\\.|[^`\\])*`", "''", code, flags=re.S)

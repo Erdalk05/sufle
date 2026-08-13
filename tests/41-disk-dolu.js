@@ -125,6 +125,13 @@ ok('sonsuz döngü yok: yeniden çizim yalnız değer YOKKEN tetikleniyor',
 
 /* ---------- ESKİ KORUMA DURUYOR MU ----------
    Arşivleme başarısız olsa bile çekim gösterilmeli (v9.4 düzeltmesi). */
+/* Desen KODUN METNİNE değil İDDİAYA bağlı olmalı: buraya sonradan bayrak
+   kurma gibi satırlar eklenebiliyor (J3'te eklendi) ve birebir metne kilitli
+   desen, davranış bozulmadığı hâlde kapıyı kırmızıya çeviriyor. Korunan iddia
+   şu: arşivleme hata verse bile showResult MUTLAKA çağrılıyor. */
+const zincir = cikar(kod, /autoSaveTake\(\)\s*\.catch\([\s\S]*?showResult\(lastBlob\)\);/, 'arşivleme zinciri');
 ok('arşivlenemeyen çekim yine de gösteriliyor',
-   /\.catch\(e=>\{ logErr\('autoSave',e\); curTakeId=null; toast\(m\('archFail'\)\); \}\)\s*\.then\(\(\)=>showResult\(lastBlob\)\);/.test(kod));
+   /\.catch\(/.test(zincir) && /\.then\(\(\)=>showResult\(lastBlob\)\);/.test(zincir));
+ok('hata yakalandığında arşiv kimliği bırakılıyor (ölü kimlikle devam edilmiyor)',
+   /curTakeId=null/.test(zincir));
 ok('arşiv hatası mesajı videonun elde olduğunu söylüyor', /archFail:'[^']*video elinde/.test(tel));
