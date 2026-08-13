@@ -1315,13 +1315,19 @@ function restoreBackup(){
   }catch(e){ logErr('restore',e); toast(m('noBackup')); }
 }
 let lsFullWarned=false;
-function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{
+/* HEMEN yazar. Kapanış yolunda bunu çağır — geciktirilmiş yazım orada ÇALIŞMAZ. */
+function saveNow(){
+  clearTimeout(saveT); saveT=null;
   try{ localStorage.setItem(LS,JSON.stringify(st)); lsFullWarned=false; autoBackup(); }
   catch(e){
     // KOTA DOLU: eskiden sessizce yutuluyordu → yazdığın senaryo kaydolmuyor ama uygulama
     // "kaydettim" gibi davranıyordu. Artık bir kez açıkça söylüyor.
     if(!lsFullWarned){ lsFullWarned=true; try{ toast(m('lsFull')); }catch(_){} }
-  } },120); }
+  }
+}
+/* Normal kullanımda 120 ms geciktirilir: hız düğmesine basılı tutmak ya da
+   yazarken her tuş için 1,4 MB'a varan durumu diske yazmak gereksiz. */
+function save(){ clearTimeout(saveT); saveT=setTimeout(saveNow,120); }
 function active(){ return st.scripts.find(s=>s.id===st.activeId)||st.scripts[0]; }
 
 /* ============ TOAST ============ */
@@ -4412,8 +4418,16 @@ $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
 $('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
 /* uygulama arka plana atılırsa/kapatılırsa da konumu yaz */
-window.addEventListener('pagehide',rememberPos);
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rememberPos(); });
+/* KAPANIŞTA GECİKTİRİLMİŞ YAZIM ÇALIŞMAZ.
+   rememberPos() içindeki save() 120 ms'lik bir zamanlayıcı kuruyordu; pagehide
+   anında sayfa dondurulur ya da sonlandırılır ve o zamanlayıcı hiç ateşlenmez.
+   iPhone'da uygulamayı yukarı kaydırıp kapatmak tam olarak bunu yapıyor —
+   yani "kaldığın yer" TAM DA VAR OLDUĞU senaryoda sessizce çalışmıyordu.
+   Aynı pencerede yapılmış senaryo düzenlemeleri de kayboluyordu.
+   Mac sürümünde save() senkron olduğu için orada bu hata hiç yoktu. */
+function kapanistaYaz(){ rememberPos(); saveNow(); }
+window.addEventListener('pagehide',kapanistaYaz);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') kapanistaYaz(); });
 $('#sheetX').onclick=closeSheets;
 $('#scriptsX').onclick=()=>{ pullEditor(); buildContent(); closeSheets(); };
 $('#takesX').onclick=closeSheets;
