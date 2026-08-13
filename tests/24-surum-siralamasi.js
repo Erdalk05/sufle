@@ -1,6 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 const tel=oku(telefonYolu());
+const mac=oku(macYolu());
 
 /* SÜRÜM SIRALAMASI
    showNews() en yeni sürüm notunu Object.keys(NEWS).sort().pop() ile
@@ -13,9 +14,16 @@ const tel=oku(telefonYolu());
    o günü beklemeden kilitliyor — testler gelecekteki sürüm numaralarını
    BUGÜN deneyebilir. */
 
-const verCmpSrc = cikar(tel, /function verCmp\(a,b\)\{[\s\S]*?\n\}/, 'verCmp');
-const verCmp = new Function(verCmpSrc + '; return verCmp;')();
+/* İki platformun karşılaştırıcısı da GERÇEK kaynaktan çıkarılıp koşuluyor.
+   Mac'e kopyalanan bir sürüm sessizce ayrışırsa parite listesi bunu göremez
+   (o yalnız "fonksiyon var mı" der) — aşağıdaki sapma testi görür. */
+const kurVerCmp = (src, girinti) =>
+  new Function(cikar(src, new RegExp('function verCmp\\(a,b\\)\\{[\\s\\S]*?\\n'+girinti+'\\}'), 'verCmp')
+               + '; return verCmp;')();
+const verCmp = kurVerCmp(tel, '');
+const macVerCmp = kurVerCmp(mac, '  ');
 const enYeni = liste => liste.slice().sort(verCmp).pop();
+const macEnYeni = liste => liste.slice().sort(macVerCmp).pop();
 
 // 1. BUGÜNKÜ DURUM bozulmamalı
 ok('bugünkü sürümlerde en yenisi doğru', enYeni(['6.4','9.1']) === '9.1');
@@ -63,3 +71,26 @@ ok('NEWS anahtarlarının hepsi sayısal sürüm biçiminde',
 //    "ne değişti" ekranında hâlâ 6.4'ü görürdü.
 const ver = tel.match(/VER='([\d.]+)'/)[1];
 ok('yayına giden sürümün ('+ver+') sürüm notu yazılmış', anahtarlar.includes(ver));
+
+/* ---------- MAC PARİTESİ ----------
+   Mac'e 2026-08-13'te taşındı. Parite listesi yalnız "fonksiyon var mı"
+   der; kopyanın AYNI davrandığını burada ölçüyoruz. */
+const ORNEK = [['6.4','9.1'], ['6.4','9.1','10.0'], ['9.1','10.0','11.2'], ['9.9','9.10'], ['9.1.0','9.1.3','9.1.10']];
+let macSapma = null;
+for (const liste of ORNEK) {
+  const t = enYeni(liste), m = macEnYeni(liste);
+  if (t !== m) { macSapma = '['+liste.join(',')+'] telefon='+t+' mac='+m; break; }
+}
+ok('Mac karşılaştırıcısı telefonla birebir aynı'+(macSapma?' — SAPMA: '+macSapma:''), !macSapma);
+ok('Mac: 10.0 gelince en yeni 10.0', macEnYeni(['6.4','9.1','10.0']) === '10.0');
+
+const macNews = cikar(mac, /const NEWS=\{[\s\S]*?\n  \};/, 'Mac NEWS');
+const macAnahtar = [...macNews.matchAll(/^\s*'([^']+)':/gm)].map(m => m[1]);
+ok('Mac NEWS anahtarları sayısal sürüm biçiminde ('+macAnahtar.join(', ')+')',
+   macAnahtar.length > 0 && macAnahtar.every(k => /^\d+(\.\d+)*$/.test(k)));
+const macVer = mac.match(/VER='([\d.]+)'/)[1];
+ok('Mac: yayına giden sürümün ('+macVer+') notu yazılmış', macAnahtar.includes(macVer));
+ok('Mac: showNews karşılaştırıcıyı kullanıyor',
+   /Object\.keys\(NEWS\)\.sort\(verCmp\)\.pop\(\)/.test(mac));
+ok('Mac: sürüm notlarına elle giriş var ve bağlı',
+   /id="sbVer"/.test(mac) && /\$\('#sbVer'\)\.onclick\s*=\s*showNews/.test(mac));

@@ -303,7 +303,11 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <span><kbd>H</kbd> sade</span>
       <span>WPM <b id="sbWpm">140</b> <b id="sbSpeed" style="display:none">140</b></span>
       <span id="sbDev" style="opacity:.6"></span>
-      <span id="sbVer" style="opacity:.6"></span>
+      <!-- Sürüm yazısı artık düğme: sürüm notlarının elle girişi bu.
+           Telefonda tek giriş otomatik açılıştı ve kaçıran bir daha
+           ulaşamıyordu; Mac'e o hata taşınmasın diye baştan düğme. -->
+      <button id="sbVer" title="🆕 Ne değişti? — sürüm notları"
+              style="opacity:.6;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0"></button>
       <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla"></span>
     </div>
   </div>
@@ -530,7 +534,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -1891,6 +1895,39 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   let toastT;
   function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
 
+  /* ---------- SÜRÜM NOTLARI (telefondan taşındı) ----------
+     Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
+     durum çubuğunda yalnız numara yazıyordu. */
+  const NEWS={
+   '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.'
+  };
+  /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
+     sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:
+     parseFloat('9.10')=9.1 olup 9.9'dan küçük çıkar. */
+  function verCmp(a,b){
+    const A=String(a).split('.').map(Number), B=String(b).split('.').map(Number);
+    for(let i=0;i<Math.max(A.length,B.length);i++){
+      const d=(A[i]||0)-(B[i]||0); if(d) return d;
+    }
+    return 0;
+  }
+  function showNews(){
+    const k=Object.keys(NEWS).sort(verCmp).pop();
+    alert('Sufle v'+k+' — ne değişti?\n\n'+NEWS[k]);
+  }
+  /* DAMGA GÖSTERİMDEN SONRA BASILIR. Telefonda tersi yapılmıştı: kullanıcı
+     gösterim gecikmesi dolmadan uygulamayı kapatınca "görüldü" damgası çoktan
+     basılmış oluyor ve not o sürüm için bir daha hiç görünmüyordu. */
+  function firstRun(){
+    if(state.seenVer===VER) return;
+    const ilk=!state.seenVer;
+    setTimeout(()=>{
+      if(ilk) alert('Sufle\'ye hoş geldin\n\n1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.');
+      else toast('🆕 v'+VER+' — ne değiştiğini görmek için alttaki sürüme tıkla');
+      state.seenVer=VER; save();
+    },1400);
+  }
+
   /* ---------- OLAYLAR ---------- */
   playBtn.onclick=togglePlay;
   $('#resetBtn').onclick=reset;
@@ -2280,6 +2317,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   $('#title').value=s.title; $('#editor').value=s.text;
   renderScripts(); applyAll(); applyMode(state.mode,false); buildWords(); updateStats();
   $('#readyBtn').onclick=showReady;
+  $('#sbVer').onclick=showNews;
+  firstRun();
   $('#rrKeep').onclick=keepTake;
   $('#pipBtn').onclick=pipAc;
   $('#undoDelBtn').onclick=copGeriAl;
