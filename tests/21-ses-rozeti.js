@@ -130,11 +130,17 @@ for (const [ad, fnSrc, macMi] of [['telefon', telFn, false], ['Mac', macFn, true
 function ozet(src, macMi, audStats){
   const re = macMi ? /function audSummary\(\)\{[\s\S]*?\n  \}/ : /function audSummary\(\)\{[\s\S]*?\n\}/;
   const fnSrc = cikar(src, re, 'audSummary');
+  /* Telefonda eşikler 2026-08-13'te sesKodu()'ya çıkarıldı (arşive de yazılan
+     değerlendirme aynı kaynaktan gelsin diye). audSummary artık onu çağırıyor,
+     dolayısıyla tezgâhta da bulunmalı — yoksa bu dosya sessizce çöker.
+     Mac'te böyle bir ayrım yok. */
+  const kodSrc = macMi ? '' : cikar(src, /function sesKodu\(\)\{[\s\S]*?\n\}/, 'sesKodu');
   const kur = new Function('__stats', `
     const audStats=__stats;
     let aTrack=1;
     const stream={ getAudioTracks:()=>[1] };
     const L='tr';
+    ${kodSrc}
     ${fnSrc}
     return audSummary();
   `);
@@ -174,7 +180,12 @@ ok('sessizlik eşiği kısıklık eşiğinin altında', eT.sessiz < eT.kisik);
 ok('telefon ve Mac aynı eşiklerde (parite)',
    eT.sessiz===eM.sessiz && eT.kisik===eM.kisik);
 
-const ozetEsik = s => parseFloat(s.match(/audStats\.maxTepe\|\|0\)<([\d.]+)\)/)[1]);
+/* Boşluğa toleranslı olmalı: eşik 2026-08-13'te sesKodu()'ya taşınırken
+   `) < 0.12` diye boşluklu yazıldı ve katı desen eşleşmeyince bu dosya
+   ISTISNA ATIP ÖLDÜ — hiç "HATA" satırı basmadan. Testin çökmesiyle
+   testin geçmesi dışarıdan aynı görünebiliyor; çıkış kodu bakılmazsa fark
+   edilmez. Desenler koda değil, koda dair İDDİAYA bağlı olmalı. */
+const ozetEsik = s => parseFloat(s.match(/audStats\.maxTepe\s*\|\|\s*0\)\s*<\s*([\d.]+)\)/)[1]);
 ok('özet eşiği rozet eşiğiyle aynı (telefon)', ozetEsik(tel) === eT.kisik);
 ok('özet eşiği rozet eşiğiyle aynı (Mac)', ozetEsik(mac) === eM.kisik);
 

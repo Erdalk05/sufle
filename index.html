@@ -1101,6 +1101,7 @@ const MSG={
   takeSrt:'Altyazı dosyasını indir', takeShare:'Çekimi paylaş veya kaydet',
   takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
   pkgDone:'dosya tek pakette hazır', noTake:'Önce bir çekim yap',
+  takeNote:'Çekim notu yaz', takeNotePrompt:'Bu çekim için not (neden iyi ya da kötü):',
   dlgBusy:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
@@ -1166,6 +1167,7 @@ const MSG={
   takeSrt:'Download subtitle file', takeShare:'Share or save take',
   takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
   pkgDone:'files bundled', noTake:'Record a take first',
+  takeNote:'Add take note', takeNotePrompt:'Note for this take (why it was good or bad):',
   dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -2408,14 +2410,29 @@ function setAudBadge(mode){
   else if(mode==='none'){ el.textContent='\ud83d\udd07 '+m('noMicShort'); el.style.background='rgba(255,59,48,.85)'; }
   else { el.textContent='\ud83d\udd0a '+m('audOkShort'); el.style.background='rgba(0,0,0,.55)'; }
 }
-function audSummary(){
+/* Ses de\u011ferlendirmesinin TEK kayna\u011f\u0131. Hem sonu\u00e7 ekran\u0131ndaki c\u00fcmle hem de
+   ar\u015five yaz\u0131lan kod buradan \u00e7\u0131k\u0131yor; e\u015fikler iki yerde tekrarlan\u0131rsa
+   biri de\u011fi\u015fip di\u011feri kal\u0131r ve ar\u015fiv sonu\u00e7 ekran\u0131yla \u00e7eli\u015fir. */
+function sesKodu(){
   if(!audStats||!audStats.n) return '';
-  if(!aTrack) return L==='tr'?'\ud83d\udd07 Ses yok':'\ud83d\udd07 No audio';
+  if(!aTrack) return 'none';
+  if(audStats.clip/audStats.n*100 > 2) return 'clip';
+  if((audStats.maxTepe||0) < 0.12) return 'low';
+  return 'ok';
+}
+function audSummary(){
+  const k=sesKodu(); if(!k) return '';
+  if(k==='none') return L==='tr'?'\ud83d\udd07 Ses yok':'\ud83d\udd07 No audio';
   const pct=audStats.clip/audStats.n*100;
-  if(pct>2) return (L==='tr'?'\u26a0\ufe0f Kaydin %'+Math.round(pct)+"'inde ses kirpmis \u2014 mikrofondan uzaklas ya da daha sakin konus"
-                            :'\u26a0\ufe0f Audio clipped in '+Math.round(pct)+'% of the take \u2014 back off the mic');
-  if((audStats.maxTepe||0)<0.12) return (L==='tr'?'\ud83d\udd08 Ses cok kisik \u2014 mikrofona yaklas':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');
+  if(k==='clip') return (L==='tr'?'\u26a0\ufe0f Kaydin %'+Math.round(pct)+"'inde ses kirpmis \u2014 mikrofondan uzaklas ya da daha sakin konus"
+                                 :'\u26a0\ufe0f Audio clipped in '+Math.round(pct)+'% of the take \u2014 back off the mic');
+  if(k==='low') return (L==='tr'?'\ud83d\udd08 Ses cok kisik \u2014 mikrofona yaklas':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');
   return (L==='tr'?'\ud83d\udd0a Ses seviyesi iyi':'\ud83d\udd0a Audio level good');
+}
+/* Ar\u015fiv listesinde k\u0131sa h\u00e2li. Kod saklan\u0131p burada \u00e7evriliyor \u2014 \u00e7ekim
+   s\u0131ras\u0131ndaki aray\u00fcz dili neyse o dilde donup kalmas\u0131n diye. */
+function sesRozeti(k){
+  return k==='ok'?'\ud83d\udd0a':k==='low'?'\ud83d\udd08':k==='clip'?'\u26a0\ufe0f':k==='none'?'\ud83d\udd07':'';
 }
 
 /* ============ SES TESTİ ============
@@ -3238,8 +3255,11 @@ async function dbDel(id){ const d=await openDB(); if(!d) return false;
 async function autoSaveTake(){
   if(!lastBlob) return;
   curTakeId=uid();
+  /* Ses değerlendirmesi zaten ölçülü — sonuç ekranında gösterilip atılıyordu.
+     Arşive de yazılınca "hangi çekimde ses iyiydi" sorusu sonradan yanıtlanabiliyor.
+     audStats stopAudioMonitor'de SIFIRLANMIYOR, o yüzden burada hâlâ dolu. */
   const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
-    created:Date.now(),title:active().title||'',srt:srtText()});
+    created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu()});
   if(!ok){ curTakeId=null; toast(m('archFail')); }   // depo dolu/kapalı — çekim ELDE, yalnız arşivlenemedi
 }
 let takeSort='new';
@@ -3255,16 +3275,32 @@ async function renderTakes(){
   box.innerHTML='';
   list.forEach(it=>{
     const d=document.createElement('div'); d.className='listitem';
+    /* ESKİ KAYITLAR: ses/not alanları 2026-08-13'te eklendi; onlardan önceki
+       çekimlerde bu alanlar YOK. Hepsi isteğe bağlı okunuyor, yoksa hiç
+       gösterilmiyor — eski arşiv olduğu gibi açılmalı. */
+    const sesR=sesRozeti(it.ses), notu=(it.not||'').trim();
     d.innerHTML='<div class="meta"><div class="t">'+(it.fav?'⭐ ':'')+esc(it.title||'—')+'</div><div class="s">'+
-      new Date(it.created).toLocaleString()+' · '+clock(it.dur||0)+' · '+((it.size||0)/1048576).toFixed(1)+' MB</div></div>'+
+      new Date(it.created).toLocaleString()+' · '+clock(it.dur||0)+' · '+((it.size||0)/1048576).toFixed(1)+' MB'+
+      (sesR?' · '+sesR:'')+'</div>'+
+      (notu?'<div class="s" style="opacity:.85">📝 '+esc(notu)+'</div>':'')+'</div>'+
       /* Bu düğmeler yalnız simge; adsız kalırsa ekran okuyucu "düğme" ya da
          emoji adını okur ve hangisi olduğu anlaşılmaz. Liste JS'le üretildiği
          için data-aria/applyLang yolu işlemiyor — etiket burada yazılıyor. */
       '<button class="iconbtn" data-a="fav" aria-label="'+(it.fav?m('takeUnfav'):m('takeFav'))+'">'+(it.fav?'⭐':'☆')+'</button>'+
       '<button class="iconbtn" data-a="play" aria-label="'+m('takePlay')+'">▶︎</button>'+
       (it.srt?'<button class="iconbtn" data-a="srt" aria-label="'+m('takeSrt')+'">💬</button>':'')+
+      '<button class="iconbtn" data-a="note" aria-label="'+m('takeNote')+'">📝</button>'+
       '<button class="iconbtn" data-a="share" aria-label="'+m('takeShare')+'">⬇︎</button>'+
       '<button class="iconbtn" data-a="del" aria-label="'+m('takeDel')+'">🗑</button>';
+    /* NEDEN NOT: aynı senaryodan beş çekim yapınca hangisinin neden iyi
+       olduğu unutuluyor ("3.'de ses iyiydi ama ışık kötüydü"). ⭐ "en iyi"yi
+       işaretliyor ama SEBEBİNİ tutmuyordu. */
+    d.querySelector('[data-a="note"]').onclick=async()=>{
+      if(rec && rec.state==='recording'){ toast(m('dlgBusy')); return; }
+      const n=prompt(m('takeNotePrompt'), it.not||'');
+      if(n==null) return;
+      it.not=n.trim().slice(0,140); await dbPut(it); renderTakes();
+    };
     d.querySelector('[data-a="fav"]').onclick=async()=>{ it.fav=!it.fav; await dbPut(it); renderTakes(); };
     // 10.3 Yeniden adlandırma: arşivde hepsi aynı senaryo adını taşıyordu, ayırt edilemiyordu
     d.querySelector('.t').onclick=async()=>{
