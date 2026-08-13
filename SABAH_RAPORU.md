@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 19 P1 işlendi. **29 commit**, tamamı yerelde.
-Testler **732 → 1895**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından 20 P1 işlendi. **30 commit**, tamamı yerelde.
+Testler **732 → 1914**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -49,6 +49,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Kumanda profili geri yüklenemiyordu** — dışa aktarma vardı, içe aktarma yoktu; özelliğin sözü verdiği "ikinci cihazda baştan öğretme" hiçbir zaman gerçekleşmiyordu.
 - **Word/PDF'ten yapıştırılan metin sessizce bozuluyordu** — görünmez karakterler kelime içinde kalıp sesle takibi kırıyor ve `.srt` dosyasına giriyordu; bazı kaynaklarda paragraflar tek satıra birleşiyordu.
 - **Tahmini süre duraklamaları saymıyordu** — nefes işaretli 20 cümlelik metinde 7 saniye sapma; uygulama "sınıra uygun" derken çekim sınırı aşıyordu.
+- **Yayın paketi yanlış senaryoyu koyabiliyordu** — çekimden sonra sürüm değiştirince paketteki metin ve yayın notu diğer sürümden üretiliyordu.
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
@@ -79,7 +80,7 @@ Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsi
 
 ## Sayılar
 
-- **29 commit**, hepsi yerelde, `claude` dalında
-- **1895 test** (gece başında 732) · yeni test dosyası: 39–60
-- Gece planı: 135 görevden **25'i** işlendi (bütün P0'lar + 19 P1)
+- **30 commit**, hepsi yerelde, `claude` dalında
+- **1914 test** (gece başında 732) · yeni test dosyası: 39–61
+- Gece planı: 135 görevden **26'sı** işlendi (bütün P0'lar + 20 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz

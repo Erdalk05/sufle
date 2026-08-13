@@ -45,7 +45,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 ## C. Senaryo yönetimi
 | # | Görev | Ö |
 |---|---|---|
-| C1 | İki sürümlü senaryo yayın paketine giriyor mu — ikinci sürüm de eklensin mi (karar) | P1 |
+| C1 | ✅ İki sürümlü senaryo yayın paketine giriyor mu — **sorunun altında sessiz bir sapma çıktı**: `paketPaylas` ve `yayinNotu` metni `active()` ile alıyordu, yani **çekimi yapılan senaryoyu değil o an açık olanı**. Çekimden sonra ⇄ ile geçmek paketi başka bir metinle dolduruyordu (video Türkçe, paketteki senaryo ve not İngilizce) ve yayın notu iki farklı şeyin karışımı oluyordu (başlık/etiket bir metinden, süre/tempo çekimden). Çekim başlarken senaryonun **kopyası** damgalanıyor (canlı nesne değil — sonradan düzenleme damgayı bozmasın). **KARAR**: pakete yalnız çekilen sürüm giriyor; ikinci sürüm başka bir videonun metni, bu videonun paketine koymak yanıltıcı olurdu. Test 61 (19 iddia) | P1 |
 | C2 | ✅ Senaryo arama iki sürümün ikisinde de arıyor mu — **ARAMIYORDU**: yalnız o an AÇIK sürümün metnine bakıyordu, aradığın cümle diğer sürümdeyse senaryo listede hiç çıkmıyordu. Kullanıcı o metni bu uygulamaya kendisi yazmış oluyor. Düzeltildi. **Aynı turda plan dışı bir kayıp daha bulundu**: çoğaltma (⧉) alan alan kopyalıyordu, ikinci sürüm sessizce düşüyordu — tek dokunuşla metnin yarısı gidiyor. Artık nesnenin tamamı derin kopyalanıyor, sonraki alanlar da kendiliğinden taşınacak. Test 43 (36 iddia) | P1 |
 | C3 | `localStorage` kotası: iki sürüm + arka plan görseli ile sınır nerede — ÖLÇ | P1 |
 | C4 | ⛔ Otomatik yedek ikinci sürümü de kapsıyor mu — **hipotez çürüdü**: `st.scripts` dizisini olduğu gibi yazıyor, bütün alanlar taşınıyor. Testle kilitlendi (43) ki ileride "alan alan" yazıma dönülürse yakalansın | P1 |
