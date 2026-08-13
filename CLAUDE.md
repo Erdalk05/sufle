@@ -50,6 +50,30 @@ Bu turda üç kez tökezlediğim yerler:
 - **Gevşek desen.** `/lsFull/` aramak yetmez, `lsFullWarned=false` de eşleşir. Kullanıcıya GÖSTERİLEN şeyi ara.
 - Desenler koda değil, koda dair **iddiaya** bağlı olsun: `) < 0.12` ile `)<0.12` aynı şeydir.
 
+**Bu kuralın bedeli ölçüldü (2026-08-14 gecesi, 5 vaka).** Davranış hiç bozulmadığı hâlde
+kapı 5 kez kırmızıya döndü; her biri kodun BİÇİMİNE kilitlenmiş bir desendi:
+
+| test | kilitlenen | kıran değişiklik |
+|---|---|---|
+| 41 | `.catch(e=>{ logErr('autoSave',e); curTakeId=null; toast(...) })` birebir | zincire bir satır eklendi |
+| 22 | `>'+bionic(clean)` | kelime span'ına noktalama eklendi |
+| 34 | "kısaltmadaki nokta böler" — **kusuru** kilitlemişti | kusur düzeltildi |
+| 22 | `class="w">'+biyonik(m)` | Mac'e işaretleme motoru eklendi |
+| 37 | `toast(m('camDenied'))` birebir | mesaja platform yolu eklendi |
+
+Ayırt edici soru: **desen bozulunca kullanıcı için ne değişir?** Cevap "hiçbir şey" ise
+desen yanlış yere bakıyor. Kullanıcının GÖRDÜĞÜ metni kilitlemek meşru
+(`'SES '+clock(sesOldu)+' SANİYEDE KESİLDİ'`); iç çağrıların birleştirme biçimini
+kilitlemek değil.
+
+**Kabul edilmiş kusuru teste yazma.** tests/34 "bilinen sınır" diye kusurlu davranışı
+kilitlemişti; sınır kalkınca test düzeltmeyi engelledi.
+
+**Çıkarım çökerse adı olan iddia bassın.** `cikar()` bloğu bulamayınca test çöküyor ve
+ADI OLAN tek bir satır bile basmıyor; çıkış kodu doğru olsa da rapor okunmuyor.
+Kaynak düzeyi kontrolü simülasyondan ÖNCE koy, çıkarımı `match()` ile yap ve
+bulunamazsa `ok(...,false)` ile bildir.
+
 Geçici kopyada bozarken `SUFLE_TELEFON` / `SUFLE_MAC` ortam değişkenlerini kullan.
 **Commit'siz işin üstünde `git checkout` yapma** — bugün öyle bir turda yazdığım Mac portunu sildim.
 

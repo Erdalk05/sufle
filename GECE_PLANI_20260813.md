@@ -112,6 +112,12 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | G9 | Maske önizlemesi kayıt sırasında kapatılıyor mu (maliyet) | P2 |
 | G10 | Kompozit + yayın paketi birlikte: video türü doğru mu | P1 |
 
+## X. Kapı hijyeni (gece bulgusu)
+| # | Görev | Ö |
+|---|---|---|
+| X1 | ⬜ **Testlerin koda birebir kilitlenmesi** — 2026-08-14 gecesi kapıyı 5 kez gereksiz kırmızıya çevirdi. Tarama yapıldı: 26 şüpheli desenden ~14'ü kod BİÇİMİNİ kilitliyor (07:59, 11:122, 12:89, 13:109, 14:71, 15:159, 17:41, 20:62, 36:108, 41:122, 43:115, 46:104/111/113/121, 50:79, 52:76). Kalanlar kullanıcının gördüğü metni kilitliyor — meşru, dokunulmayacak. Kural CLAUDE.md'ye yazıldı; süpürme ürün kusurlarından SONRA | P2 |
+| X2 | ⬜ Çıkarım (`cikar`) çökmesi hâlâ bazı testlerde adsız yığın izi bırakıyor — hepsinde `match()` + adlı iddia desenine geç | P2 |
+
 ## H. Kayıt ve ses yolu
 | # | Görev | Ö |
 |---|---|---|
