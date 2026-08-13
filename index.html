@@ -3106,19 +3106,38 @@ async function shareCaptions(fmt){
    hiçbir bağımlılık gerektirmiyor — video zaten sıkışık, sıkıştırmanın
    kazancı yok. */
 let crcTab=null;
+function crcHazirla(){
+  if(crcTab) return crcTab;
+  crcTab=new Uint32Array(256);
+  for(let n=0;n<256;n++){ let c=n;
+    for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+    crcTab[n]=c>>>0; }
+  return crcTab;
+}
 function crc32(buf){
-  if(!crcTab){
-    crcTab=new Uint32Array(256);
-    for(let n=0;n<256;n++){ let c=n;
-      for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
-      crcTab[n]=c>>>0; }
-  }
+  const t=crcHazirla();
   let c=0xFFFFFFFF;
-  for(let i=0;i<buf.length;i++) c=crcTab[(c^buf[i])&0xFF]^(c>>>8);
+  for(let i=0;i<buf.length;i++) c=t[(c^buf[i])&0xFF]^(c>>>8);
   return (c^0xFFFFFFFF)>>>0;
 }
-/* dosyalar: [{ad, veri:Uint8Array}] → Blob(application/zip) */
-function zipYap(dosyalar){
+/* Videoyu belleğe ALMADAN CRC hesaplar: akıştan parça parça okur, sabit bellek.
+   Eskiden video arrayBuffer() ile tümüyle belleğe alınıyordu; 10 dakikalık
+   1080p çekim 653 MB, paketleme anında tepe ~1,3 GB oluyordu ve iPhone
+   sekmeyi öldürüyordu — üstelik paket tam da UZUN çekimlerde gerekli. */
+async function crc32Akis(blob){
+  const t=crcHazirla();
+  const r=blob.stream().getReader();
+  let c=0xFFFFFFFF;
+  for(;;){
+    const {done,value}=await r.read(); if(done) break;
+    for(let i=0;i<value.length;i++) c=t[(c^value[i])&0xFF]^(c>>>8);
+  }
+  return (c^0xFFFFFFFF)>>>0;
+}
+/* dosyalar: [{ad, veri: Uint8Array | Blob}] → Blob(application/zip)
+   Blob verilirse KOPYALANMAZ: zip'in parçası olarak olduğu gibi geçer,
+   tarayıcı onu diskte tutmaya devam eder. */
+async function zipYap(dosyalar){
   const enc=new TextEncoder(), yerel=[], merkez=[];
   const y16=(a,v)=>a.push(v&255,(v>>8)&255);
   const y32=(a,v)=>a.push(v&255,(v>>8)&255,(v>>16)&255,(v>>>24)&255);
@@ -3127,7 +3146,10 @@ function zipYap(dosyalar){
   const TARIH=23585;
   let ofset=0;
   for(const d of dosyalar){
-    const ad=enc.encode(d.ad), n=d.veri.length, crc=crc32(d.veri);
+    const blobMu = (typeof Blob!=='undefined') && (d.veri instanceof Blob);
+    const ad=enc.encode(d.ad);
+    const n   = blobMu ? d.veri.size : d.veri.length;
+    const crc = blobMu ? await crc32Akis(d.veri) : crc32(d.veri);
     const h=[]; y32(h,0x04034b50); y16(h,20); y16(h,0x0800); y16(h,0); y16(h,0); y16(h,TARIH);
     y32(h,crc); y32(h,n); y32(h,n); y16(h,ad.length); y16(h,0);
     const hb=new Uint8Array(h);
@@ -3201,15 +3223,16 @@ async function paketPaylas(){
   const enc=new TextEncoder();
   const mp4=(lastBlob.type||'').indexOf('mp4')>=0;
   const taban=fileName();
-  const dosyalar=[{ ad:taban+(mp4?'.mp4':'.webm'),
-                    veri:new Uint8Array(await lastBlob.arrayBuffer()) }];
+  /* Blob'u OLDUĞU GİBİ ver — arrayBuffer() ile belleğe almak 10 dakikalık
+     1080p çekimde ~1,3 GB tepe yapıyordu. */
+  const dosyalar=[{ ad:taban+(mp4?'.mp4':'.webm'), veri:lastBlob }];
   const cues=buildCues();
   if(cues.length) dosyalar.push({ad:'altyazi.srt', veri:enc.encode(srtText())});
   const s=active();
   if(s && (s.text||'').trim()) dosyalar.push({ad:'senaryo.txt', veri:enc.encode(s.text)});
   dosyalar.push({ad:'yayin-notu.txt', veri:enc.encode(yayinNotu())});
 
-  const zip=zipYap(dosyalar), ad=taban+'_paket.zip';
+  const zip=await zipYap(dosyalar), ad=taban+'_paket.zip';
   const file=new File([zip],ad,{type:'application/zip'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
     try{ await navigator.share({files:[file],title:ad}); toast(dosyalar.length+' '+m('pkgDone')); return; }
