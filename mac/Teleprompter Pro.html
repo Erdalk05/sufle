@@ -2009,7 +2009,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
-   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.'
+   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.\n\nPencereyi yeniden boyutlandirinca ya da tam ekrana girip cikinca sufle metnin baska yerine atliyordu: satir sarmasi bastan hesaplandigi icin kayitli piksel konumu baska bir kelimeye denk geliyordu. Artik okudugun satir korunuyor.'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:
@@ -2220,7 +2220,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   });
   // pencere/tam ekran değişince yalnız çerçeve yeniden boyutlanıyordu; metnin baş boşluğu
   // ve bitiş konumu eski ölçüyle kalıyor, hizalama kayıyordu → yeniden ölç
-  function relayout(){ layoutFrame(); requestAnimationFrame(()=>{ measure(); setPos(pos); }); }
+  /* KONUM PIKSEL DEGIL KELIME OLARAK KORUNUR.
+     Pencere boyutu degisince (ve TAM EKRANA girip cikinca — Mac'te en sik
+     yapilan sey) satir sarmasi bastan hesaplaniyor: ayni piksel uzakligi baska
+     bir kelimeye denk geliyor. Eskiden measure() sonrasi setPos(pos) cagriliyor,
+     yani PIKSEL korunuyordu; kullanici metnin bambaska bir yerine atliyordu.
+     Olcum (telefon tarafinda, 300 kelime): 150. kelimede 149 kelime sapma.
+     Dogru davranis: olcumden ONCE hangi kelimedeysen, SONRA onu okuma
+     cizgisine getir. */
+  function relayout(){
+    layoutFrame();
+    const i = activeIdx>=0 ? activeIdx : yakinIdx(pos+eyeOff());
+    requestAnimationFrame(()=>{
+      measure();
+      if(i>=0 && wordTops[i]!=null) setPos(Math.max(0, Math.min(maxPos, wordTops[i]-eyeOff())));
+      else setPos(pos);
+    });
+  }
   window.addEventListener('resize',relayout);
   document.addEventListener('fullscreenchange',()=>setTimeout(relayout,120));
   $('#voiceBtn').onclick=toggleVoice;

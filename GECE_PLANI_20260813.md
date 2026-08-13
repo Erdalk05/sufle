@@ -20,7 +20,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | A2 | `setPos` kesirli piksel birikimi: 10 dk akışta sapma var mı, ölç | P2 |
 | A3 | Nefes durakları (`/`, `//`, `(2)`) toplam süreyi ne kadar uzatıyor — tahmini süreye yansıyor mu | P1 |
 | A4 | `maxPos` hesabı satır yüksekliği değişince güncelleniyor mu (font/satır aralığı ayarı) | P1 |
-| A5 | Ekran döndürmede konum korunuyor mu — testle kilitle | P1 |
+| A5 | ✅ Ekran döndürmede konum korunuyor mu — **KORUNMUYORDU**. `pos` bir PİKSEL uzaklığı; dönünce satır sarması baştan hesaplanıyor ve aynı piksel BAŞKA kelimeye denk geliyor. Eski kod `measure()` sonrası `setPos(pos)` çağırıyordu. Ölçüm (300 kelime, dikey 6 / yatay 12 kelime-satır): 50.→107. (57 sapma) · **150.→299. (149 sapma)** · 250.→299. (49 sapma). Kayıt sürerken olduğu için kullanıcı hangi cümleyi kaçırdığını ancak çekimi izlerken anlıyordu. Artık ölçümden ÖNCE kelime indeksi alınıp sonra o kelime okuma çizgisine getiriliyor — her vakada **aynı satıra** düşüyor. **Mac'te de vardı ve tetikleyicisi daha sık** (pencere boyutu + tam ekran); orada da düzeltildi. Test 46 (24 iddia) | P1 |
 | A6 | `tick()` delta tavanı (0,1 sn) aşırı yüklemede yeterli mi, 5 fps'te ölç | P2 |
 | A7 | Hız rampasının (200 ms) kayıt sırasında tempo ölçümünü bozup bozmadığı | P2 |
 | A8 | `jumpLine` bölüm sınırında takılıyor mu | P2 |
