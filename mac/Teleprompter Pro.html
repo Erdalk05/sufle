@@ -945,7 +945,6 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     return frame.clientHeight;
   }
   function eyeOff(){ return frameH()*(state.eyePos/100); }
-  function maxScroll(){ return Math.max(0, scroller.scrollHeight - eyeOff()); }
   // state.speed = WPM (dakikada kelime) → piksel/saniye. Kare hızından BAĞIMSIZ:
   // eskiden kare başına sabit piksel ekleniyordu ve 60 fps varsayılıyordu; 120 Hz
   // ProMotion ekranlı Mac'te metin iki kat hızlı akıyordu.

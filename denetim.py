@@ -156,6 +156,25 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     if nameless:
         problems.append(("adsız simge düğmesi (ekran okuyucu)", nameless))
 
+    # TANIMLI AMA HİÇ ANILMAYAN FONKSİYON (2026-08-13'te eklendi).
+    # "Tanımsız çağrı" kontrolünün tersi. Ölçüt ÇAĞRI DEĞİL, ANILMA: fonksiyon
+    # adı tanımı dışında hiçbir yerde geçmiyorsa ölüdür.
+    #   İlk yazımım iki kez yanlıştı ve ikisi de sessizce işe yaramaz kılıyordu:
+    #   1) `function ad(` deseninin kendisi "çağrı" sayılıyordu, yani her
+    #      fonksiyon kendini çağırmış görünüyor ve HİÇBİR ŞEY yakalanmıyordu.
+    #   2) Yalnız çağrı/atama sayınca ARGÜMAN olarak geçirilenler (tick,
+    #      verCmp, easeLoop…) ölü sanıldı — sekiz yanlış pozitif.
+    #   Üç senaryoda ölçüldü: gerçekten ölü → yakalanıyor · yalnız atanan →
+    #   yakalanmıyor · yalnız argüman olarak geçen → yakalanmıyor.
+    govde = re.sub(r"function\s+([A-Za-z_$][\w$]*)\s*\(", "function(", code)
+    olu_fn = []
+    for ad in sorted(defs & set(re.findall(r"function\s+([A-Za-z_$][\w$]*)\s*\(", code))):
+        desen = r"(?<![.\w$])" + re.escape(ad) + r"(?![\w$])"
+        if not re.search(desen, govde) and not re.search(desen, html):
+            olu_fn.append(ad)
+    if olu_fn:
+        problems.append(("tanımlı ama hiç anılmayan fonksiyon", olu_fn))
+
     if is_mac:
         return problems      # Mac tek dilli: yalnız sözlük ve data-i18n kontrolleri geçersiz
 
@@ -166,6 +185,7 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
     if mc - mt: problems.append(("MSG'de olmayan m() anahtarı", sorted(mc - mt)))
     if tc - it: problems.append(("I18N'de olmayan t() anahtarı", sorted(tc - it)))
+
     # SÖZLÜKTE VAR AMA HİÇ KULLANILMAYAN ANAHTAR (2026-08-13'te eklendi).
     # Üstteki kontroller tersini yakalıyordu: çağrılıp sözlükte olmayan anahtar.
     # Bu yön de aynı sınıfın parçası — yazılmış ama okunmayan metin. İlk
