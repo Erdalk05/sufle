@@ -119,7 +119,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | H3 | Kayıt 2,5 sn gözcüsü yanlış alarm veriyor mu | P1 |
 | H4 | Disk dolunca `MediaRecorder` hatası kullanıcıya net mi | P0 |
 | H5 | Ses Stüdyosu zinciri kayıt sırasında kopunca ham ize düşüyor mu | P0 |
-| H6 | Mikrofon değişiminde kayıt sürüyorsa ne oluyor | P0 |
+| H6 | ✅ Mikrofon değişiminde kayıt sürüyorsa ne oluyor — **GERÇEK P0**: `openCam`'in ilk işi bütün izleri durdurmak, MediaRecorder tam da onlardan kaydediyordu → çekimin sesi ölüyor, kayıt sessiz sürüyordu. 9 çağrı yolundan yalnız 1'i korumalıydı; boğaz noktasına (openCam) tek koruma kondu. Mac'te aynı hata yok (`stopCam` kaydı önce düzgün bitiriyor). Test 39 (16 iddia) | P0 |
 | H7 | Bit hızı ayarı iOS'ta yok sayılıyor — arayüzde açıkça yazıyor mu | P2 |
 | H8 | `recElapsed` duraklatmalarda birikimli doğru mu — testle kilitle | P1 |
 | H9 | Uzun kayıtta `chunks` bellek profili — 10 dk için ölç | P1 |

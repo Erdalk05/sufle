@@ -925,7 +925,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.4';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.5';
 
 /* ============ i18n ============ */
 const I18N={
@@ -1132,6 +1132,7 @@ const MSG={
   recDied:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',
   recNoStart:'⛔ Kayıt başlamadı — kamerayı kapatıp aç, sonra tekrar dene',
   recNoData:'⚠️ Kayıttan veri gelmiyor — durdurup tekrar başlat',
+  camBusyRec:'⛔ Kayıt sürerken kamera/mikrofon değiştirilemez — önce kaydı durdur',
   glLostRec:'⛔ Kompozit kayıt sırasında koptu — çekim burada bitirildi, o ana kadarki kısım arşivde',
   glLost:'⚠️ Kompozit koptu (bellek) — kompoziti kapatıp aç',
   glBack:'✅ Kompozit geri geldi',
@@ -1186,6 +1187,7 @@ const MSG={
   recDied:'⛔ Recording stopped early — what was captured is kept',
   recNoStart:'⛔ Recording did not start — close and reopen the camera, then retry',
   recNoData:'⚠️ No data coming from the recorder — stop and start again',
+  camBusyRec:'⛔ Cannot change camera or microphone while recording — stop the take first',
   glLostRec:'⛔ Composite dropped mid-recording — the take was ended here; everything up to that point is archived',
   glLost:'⚠️ Composite dropped (memory) — turn composite off and on',
   glBack:'✅ Composite restored',
@@ -1697,6 +1699,17 @@ function qConstraint(){
   return {width:{ideal:1920},height:{ideal:1080}};
 }
 async function openCam(){
+  /* KAYIT SÜRERKEN KAMERA/MİKROFON YENİDEN AÇILAMAZ.
+     openCam'in İLK İŞİ mevcut akışın bütün izlerini durdurmak — MediaRecorder
+     tam da o izlerden kaydediyor. Kayıt sürerken çağrılırsa çekimin sesi (ve
+     kompozit kapalıysa görüntüsü) o saniyede ölür; kayıt devam eder, kullanıcı
+     konuşmaya devam eder, sonuç sessiz çıkar. "Video izi öldü" gözcüsü de ses
+     izini izlemiyor.
+     Yedi çağrı yolu vardı ve YALNIZ BİRİ korumalıydı (arka plandan dönüşteki
+     yeniden bağlanma). Tek tek düğmeleri korumak yerine boğaz noktası burası:
+     mikrofon değiştirme, çözünürlük değiştirme, ön/arka kamera, ham ses ve
+     güvenli ses anahtarları — hepsi buradan geçiyor. */
+  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }
   try{
     if(stream) stream.getTracks().forEach(x=>x.stop());
     stopMeter();
@@ -4620,7 +4633,9 @@ const NEWS={
  '9.3':{tr:'📦 <b>Yayın paketi uzun çekimlerde çöküyordu</b>: paket hazırlanırken video tümüyle belleğe alınıyordu — 10 dakikalık 1080p çekimde bu ~1,3 GB demek ve iPhone sekmeyi kapatıyordu. Tam da paketin en gerekli olduğu yerde. Artık video belleğe alınmadan pakete giriyor; uzunluk fark etmiyor.',
        en:'📦 <b>Publish bundle crashed on long takes</b>: the whole video was pulled into memory while building the bundle — about 1.3 GB for a 10-minute 1080p take, enough for iPhone to kill the tab, exactly where the bundle is most useful. The video is now streamed into the bundle instead.'},
  '9.4':{tr:'🎬 <b>Çekim bitince ekranda hiçbir şey olmuyordu</b>: kayıt duruyor, sonuç ekranı hiç açılmıyor ve tek satır açıklama çıkmıyordu — çekim aslında elde olduğu hâlde. Sebep, cihazın arşiv deposunun bazen hiç cevap vermemesiydi; uygulama sonsuza kadar bekliyordu. Artık cevapsız kalan her depo işi kısa sürede düşüyor ve <b>arşivleme başarısız olsa bile çekimini görüyorsun</b> — sebebi de yazıyor.',
-       en:'🎬 <b>Nothing appeared after a take</b>: recording stopped but the result screen never opened and no reason was shown — even though the take was safe in memory. The device archive could stall forever with no error. Storage work now times out, and <b>you always get the result screen even if archiving fails</b>, with the reason shown.'}
+       en:'🎬 <b>Nothing appeared after a take</b>: recording stopped but the result screen never opened and no reason was shown — even though the take was safe in memory. The device archive could stall forever with no error. Storage work now times out, and <b>you always get the result screen even if archiving fails</b>, with the reason shown.'},
+ '9.5':{tr:'🎙 <b>Sesle takip kendini kilitliyordu</b>: telefon dinlemeyi kısa aralıklarla kestiğinde uygulama sonsuza kadar yeniden başlatıp duruyordu; bir süre sonra sufle sözü takip etmeyi tamamen bırakıyordu. Ayrıca sesle takibi kapatınca mikrofon açık kalabiliyordu.<br>🎥 <b>Kayıt sürerken kamera koparsa donmuş kare kaydediliyordu</b>: yeşil ekran/kırpma açıkken görüntü kilitleniyor ama kayıt sürüyordu — ancak çekimi izleyince anlıyordun. Artık çekim o anda bitiriliyor ve o ana kadarki kısım arşive giriyor.<br>🎚 <b>Çekim sırasında kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu</b>: kayıt sessiz devam ediyordu. Artık kayıt sürerken değiştirilemiyor ve sebebi söyleniyor.',
+       en:'🎙 <b>Voice follow could lock itself up</b>: when the phone cut listening short the app restarted it endlessly and eventually stopped following your speech altogether. Turning voice follow off could also leave the microphone open.<br>🎥 <b>A frozen frame kept being recorded</b> when the composite (green screen / crop) view lost the device graphics context mid-take — you only found out on playback. The take is now ended right there and what you recorded is kept.<br>🎚 <b>Changing camera or microphone mid-take killed the audio</b> and recording silently continued. It is now blocked during a take, with the reason shown.'}
 };
 /* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
    Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'
