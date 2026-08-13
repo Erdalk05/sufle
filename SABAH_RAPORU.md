@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 24 P1 işlendi. **34 commit**, tamamı yerelde.
-Testler **732 → 1998**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından 26 P1 işlendi. **36 commit**, tamamı yerelde.
+Testler **732 → 2018**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -56,7 +56,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
-Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
+Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
 
 - Mikrofon sızıntısı yok (sesle takip Web Audio'ya hiç dokunmuyor)
 - Kamera yeniden bağlanmasında sonsuz döngü yok
@@ -66,6 +66,8 @@ Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsi
 - Uyumluluk panelinde kompozit/duraklatma/paylaşma/MP4 satırları **doğru**
 - Kumanda yeniden bağlanması eksik değil (tarayıcı kendi yapıyor + nabız var)
 - **Sesle takip uzun metinde kaybolmuyor** — 800/2000/5000 kelimede işaretçi sona tam ulaşıyor; ileri sıçrama 6, geriye dönüş 5 kelimede yakalanıyor
+- **Uzun kelime (URL) hiçbir yüzeyde taşmıyor** — sufle kırıyor, liste kısaltıyor, gömülü altyazı harf harf bölüyor
+- **Türkçe telaffuz toleransı zaten kilitliydi** — 21 kabul + 16 ret çifti, 57 iddia
 
 **Ama beşinde, hipotez çürürken yanı başında gerçek bir kusur çıktı.** Doğru soruyu yanlış yere sormak da işe yaradı.
 
@@ -85,7 +87,7 @@ Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsi
 
 ## Sayılar
 
-- **34 commit**, hepsi yerelde, `claude` dalında
-- **1998 test** (gece başında 732) · yeni test dosyası: 39–65
-- Gece planı: 135 görevden **30'u** işlendi (bütün P0'lar + 24 P1)
+- **36 commit**, hepsi yerelde, `claude` dalında
+- **2018 test** (gece başında 732) · yeni test dosyası: 39–66
+- Gece planı: 135 görevden **33'ü** işlendi (bütün P0'lar + 26 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
