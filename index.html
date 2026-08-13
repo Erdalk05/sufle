@@ -2761,7 +2761,19 @@ function doStartRec(){
   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
   // MediaRecorder çekim ortasında ölebilir (disk dolu, kamera koptu, kodek düştü).
   // Eskiden hiçbir yerde yakalanmıyordu: kırmızı nokta yanıyor ama kayıt yok.
-  rec.onerror=ev=>{ logErr('rec',(ev&&ev.error)||ev); toast(m('recDied')); };
+  /* KAYIT ORTADA ÖLÜRSE ÇEKİMİ DÜZGÜN BİTİR.
+     Eskiden yalnızca uyarı veriliyordu: MediaRecorder ölüyor ama ARAYÜZ hâlâ
+     kayıtta kalıyordu — kırmızı nokta yanıyor, sufle akıyor, ekran kilitli,
+     sayaç ilerliyor. Kullanıcı hiçbir şey kaydedilmezken konuşmaya devam
+     ediyordu; tek satırlık uyarıyı da sufleye bakarken kaçırabiliyor.
+     En sık sebebi disk dolması. stopRec zaten 'inactive' kaydı korumalı
+     durduruyor; buradan çağırmak güvenli ve arayüzü normale döndürüyor. */
+  rec.onerror=ev=>{
+    pendingDur=recElapsed();        // süreyi ÖNCE ölç: onstop hangi sırada gelirse gelsin doğru olsun
+    logErr('rec',(ev&&ev.error)||ev);
+    toast(m('recDied')); buzz([60,40,60]);
+    if(body.classList.contains('rec')) stopRec();
+  };
   rec.onstop=()=>{
     // süre stopRec'te ölçülüp saklanıyor: burada recT çoktan sıfırlanmış oluyor
     lastDur=(pendingDur||recElapsed());
@@ -3522,6 +3534,26 @@ function renderDevice(){
 /* ============ ÇEKİME HAZIRLIK KONTROLÜ ============
    Işık, ses, çerçeve, süre ve eğimi tek yerde toplayıp git/gitme kararı verir.
    Hepsi zaten ölçülen değerler; burada tek karara dönüşüyor. */
+/* DEPODA KALAN YER — ÇEKİMDEN ÖNCE.
+   "Depo dolu" uyarısı çekim BİTTİKTEN sonra geliyordu; o noktada çekim zaten
+   arşivlenemedi ve kullanıcı paylaşmayı unutursa kaybediyor. Kalan yeri
+   dakikaya çevirip önden söylüyoruz — MB kimseye bir şey anlatmıyor, "≈4 dakika
+   çekim yeri kaldı" anlatıyor. Hesap mbPerMin() ile aynı kaynaktan: seçili
+   çözünürlük ve bit hızı değişince tahmin de değişiyor. */
+let kota={usage:0,quota:0,t:0};
+function kotaTazele(){
+  if(!(navigator.storage&&navigator.storage.estimate)) return Promise.resolve(false);
+  return navigator.storage.estimate().then(q=>{
+    kota={usage:q.usage||0,quota:q.quota||0,t:Date.now()}; return true;
+  }).catch(e=>{ logErr('quota',e); return false; });
+}
+function kalanDk(){
+  if(!kota.quota) return null;
+  const mb=(kota.quota-kota.usage)/1048576;
+  const perMin=mbPerMin();
+  if(!(perMin>0)) return null;
+  return Math.max(0, mb/perMin);
+}
 function readyChecks(){
   const out=[];
   if(IS_IOS_ALT) out.push({lv:'bad',t:(L==='tr'?'Bu tarayıcı ses kaydetmiyor':'This browser records no audio'),
@@ -3555,6 +3587,16 @@ function readyChecks(){
   if(ga>=9) out.push({lv:'warn',t:(L==='tr'?'Göz teması zayıf':'Weak eye contact'),
     d:(L==='tr'?'Bakış sapması ≈'+Math.round(ga)+'° — okuma çizgisini yukarı al ya da geri çekil':'≈'+Math.round(ga)+'° — raise the reading line or move back')});
   else out.push({lv:'ok',t:(L==='tr'?'Göz teması iyi':'Eye contact good'),d:'≈'+Math.round(ga)+'°'});
+  // depoda kalan yer
+  const kdk=kalanDk();
+  if(kdk!=null){
+    const sure=(L==='tr'?'≈'+Math.floor(kdk)+' dk çekim yeri':'≈'+Math.floor(kdk)+' min of recording');
+    if(kdk<3) out.push({lv:'bad',t:(L==='tr'?'Depoda yer kalmadı':'Storage is full'),
+      d:(L==='tr'?sure+' — arşivden çekim sil, yoksa bu çekim kaydedilemez':sure+' — delete takes from the archive or this one cannot be saved')});
+    else if(kdk<10) out.push({lv:'warn',t:(L==='tr'?'Depo yer azalıyor':'Storage is running low'),
+      d:(L==='tr'?sure+' — uzun çekim yapacaksan önce arşivi boşalt':sure+' — clear the archive before a long take')});
+    else out.push({lv:'ok',t:(L==='tr'?'Depoda yer var':'Storage is fine'),d:sure});
+  }
   // konum
   if(pos>2) out.push({lv:'warn',t:(L==='tr'?'Metin baştan başlamıyor':'Script is not at the start'),
     d:(L==='tr'?'Başa sarmak için ⟲ (Home) — ya da kaldığın yerden devam et':'Press Home to rewind, or continue where you left off')});
@@ -3562,6 +3604,11 @@ function readyChecks(){
 }
 function renderReady(){
   const box=$('#readyOut'); if(!box) return;
+  /* Kota ölçümü asenkron: ilk açılışta değer yok, satır hiç görünmezdi.
+     Değer gelince BİR KEZ yeniden çiziyoruz (kota.t artık dolu, döngü olmaz).
+     Sonraki açılışlarda sessizce tazeleniyor — arşivden silince rakam düşsün. */
+  if(!kota.t) kotaTazele().then(v=>{ if(v) renderReady(); });
+  else if(Date.now()-kota.t>10000) kotaTazele();
   const rows=readyChecks();
   const COL={bad:'#ff6b6b',warn:'#ffb300',info:'#9aa0a6',ok:'var(--accent)'};
   const bad=rows.filter(r=>r.lv==='bad').length, warn=rows.filter(r=>r.lv==='warn').length;
@@ -4679,8 +4726,8 @@ const NEWS={
        en:'📦 <b>Publish bundle crashed on long takes</b>: the whole video was pulled into memory while building the bundle — about 1.3 GB for a 10-minute 1080p take, enough for iPhone to kill the tab, exactly where the bundle is most useful. The video is now streamed into the bundle instead.'},
  '9.4':{tr:'🎬 <b>Çekim bitince ekranda hiçbir şey olmuyordu</b>: kayıt duruyor, sonuç ekranı hiç açılmıyor ve tek satır açıklama çıkmıyordu — çekim aslında elde olduğu hâlde. Sebep, cihazın arşiv deposunun bazen hiç cevap vermemesiydi; uygulama sonsuza kadar bekliyordu. Artık cevapsız kalan her depo işi kısa sürede düşüyor ve <b>arşivleme başarısız olsa bile çekimini görüyorsun</b> — sebebi de yazıyor.',
        en:'🎬 <b>Nothing appeared after a take</b>: recording stopped but the result screen never opened and no reason was shown — even though the take was safe in memory. The device archive could stall forever with no error. Storage work now times out, and <b>you always get the result screen even if archiving fails</b>, with the reason shown.'},
- '9.5':{tr:'🎙 <b>Sesle takip kendini kilitliyordu</b>: telefon dinlemeyi kısa aralıklarla kestiğinde uygulama sonsuza kadar yeniden başlatıp duruyordu; bir süre sonra sufle sözü takip etmeyi tamamen bırakıyordu. Ayrıca sesle takibi kapatınca mikrofon açık kalabiliyordu.<br>🎥 <b>Kayıt sürerken kamera koparsa donmuş kare kaydediliyordu</b>: yeşil ekran/kırpma açıkken görüntü kilitleniyor ama kayıt sürüyordu — ancak çekimi izleyince anlıyordun. Artık çekim o anda bitiriliyor ve o ana kadarki kısım arşive giriyor.<br>🎚 <b>Çekim sırasında kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu</b>: kayıt sessiz devam ediyordu. Artık kayıt sürerken değiştirilemiyor ve sebebi söyleniyor.<br>🔇 <b>Çekim ortasında ses kesilirse artık haber veriliyor</b>: Bluetooth kulaklık koptuğunda ya da mikrofon başka bir uygulamaya kapıldığında görüntü akmaya devam ettiği için kayıt sağlam görünüyor, ama o saniyeden sonrası sessiz kalıyordu — ancak çekimi izlerken anlıyordun. Görüntü için uyarı vardı, ses için yoktu.',
-       en:'🎙 <b>Voice follow could lock itself up</b>: when the phone cut listening short the app restarted it endlessly and eventually stopped following your speech altogether. Turning voice follow off could also leave the microphone open.<br>🎥 <b>A frozen frame kept being recorded</b> when the composite (green screen / crop) view lost the device graphics context mid-take — you only found out on playback. The take is now ended right there and what you recorded is kept.<br>🎚 <b>Changing camera or microphone mid-take killed the audio</b> and recording silently continued. It is now blocked during a take, with the reason shown.<br>🔇 <b>Losing audio mid-take is now reported</b>: when a Bluetooth headset disconnects or another app grabs the microphone, video keeps flowing so the take looks fine while the rest is silent — you only found out on playback. There was a warning for video, none for audio.'}
+ '9.5':{tr:'🎙 <b>Sesle takip kendini kilitliyordu</b>: telefon dinlemeyi kısa aralıklarla kestiğinde uygulama sonsuza kadar yeniden başlatıp duruyordu; bir süre sonra sufle sözü takip etmeyi tamamen bırakıyordu. Ayrıca sesle takibi kapatınca mikrofon açık kalabiliyordu.<br>🎥 <b>Kayıt sürerken kamera koparsa donmuş kare kaydediliyordu</b>: yeşil ekran/kırpma açıkken görüntü kilitleniyor ama kayıt sürüyordu — ancak çekimi izleyince anlıyordun. Artık çekim o anda bitiriliyor ve o ana kadarki kısım arşive giriyor.<br>🎚 <b>Çekim sırasında kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu</b>: kayıt sessiz devam ediyordu. Artık kayıt sürerken değiştirilemiyor ve sebebi söyleniyor.<br>🔇 <b>Çekim ortasında ses kesilirse artık haber veriliyor</b>: Bluetooth kulaklık koptuğunda ya da mikrofon başka bir uygulamaya kapıldığında görüntü akmaya devam ettiği için kayıt sağlam görünüyor, ama o saniyeden sonrası sessiz kalıyordu — ancak çekimi izlerken anlıyordun. Görüntü için uyarı vardı, ses için yoktu.<br>💾 <b>Depo dolunca artık ÖNCEDEN uyarılıyorsun</b>: hazırlık kontrolü kalan yeri dakikaya çevirip söylüyor ("≈4 dk çekim yeri"). Eskiden bunu ancak çekim bitip arşivlenemeyince öğreniyordun.<br>⛔ <b>Kayıt yarıda ölürse ekran artık kayıtta kalmıyor</b>: kırmızı nokta yanmaya, sufle akmaya devam ediyordu — hiçbir şey kaydedilmezken konuşmayı sürdürüyordun. Artık çekim düzgün bitiyor ve o ana kadarki kısım elinde kalıyor.',
+       en:'🎙 <b>Voice follow could lock itself up</b>: when the phone cut listening short the app restarted it endlessly and eventually stopped following your speech altogether. Turning voice follow off could also leave the microphone open.<br>🎥 <b>A frozen frame kept being recorded</b> when the composite (green screen / crop) view lost the device graphics context mid-take — you only found out on playback. The take is now ended right there and what you recorded is kept.<br>🎚 <b>Changing camera or microphone mid-take killed the audio</b> and recording silently continued. It is now blocked during a take, with the reason shown.<br>🔇 <b>Losing audio mid-take is now reported</b>: when a Bluetooth headset disconnects or another app grabs the microphone, video keeps flowing so the take looks fine while the rest is silent — you only found out on playback. There was a warning for video, none for audio.<br>💾 <b>You are now warned BEFORE storage runs out</b>: the readiness check turns free space into minutes ("≈4 min of recording"). You used to find out only when a finished take could not be archived.<br>⛔ <b>If recording dies mid-take the screen no longer stays in recording mode</b>: the red dot and prompter kept going while nothing was being captured. The take now ends properly and what was captured is kept.'}
 };
 /* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
    Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'
