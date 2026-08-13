@@ -522,7 +522,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(ERRLOG.length>30) ERRLOG.shift();
     const el=document.getElementById('sbErr');
     if(el){ el.style.display=''; el.textContent='⚠️ '+ERRLOG.length+' hata';
-      el.onclick=()=>alert(ERRLOG.slice(-8).reverse().map(x=>x.where+': '+x.msg).join('\n')); }
+      el.onclick=()=>{ if(diyalogKapisi()) return;
+        alert(ERRLOG.slice(-8).reverse().map(x=>x.where+': '+x.msg).join('\n')); }; }
   }
   window.addEventListener('error',e=>logErr('js',e.error||e.message));
   window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
@@ -1553,6 +1554,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     toast(ok?'⭐ Arşive alındı — 🎞 Çekimlerim\'den açabilirsin':'⚠️ Arşive yazılamadı (depo dolu olabilir)');
   }
   async function showTakes(){
+    if(diyalogKapisi()) return;
     const list=await mdbAll();
     if(!list.length){ toast('Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de'); return; }
     const sec=list.map((t,i)=>(i+1)+') '+new Date(t.created).toLocaleString()+' · '+
@@ -1836,6 +1838,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function fmtClock(s){ s=Math.max(0,Math.round(s));
     return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   function showReady(){
+    if(diyalogKapisi()) return;
     const r=readyChecks();
     const bad=r.filter(x=>x[0]==='bad').length, warn=r.filter(x=>x[0]==='warn').length;
     const head = bad ? '⛔ '+bad+' engel var' : (warn ? '⚠️ '+warn+' uyarı — çekebilirsin' : '✅ Çekime hazırsın');
@@ -1895,6 +1898,21 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   let toastT;
   function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
 
+  /* ---------- KAYIT SIRASINDA ENGELLEYİCİ PENCERE AÇILMAZ ----------
+     alert/prompt ana iş parçacığını durdurur. Bu uygulamada iki ayrı rAF
+     döngüsü buna bağlı: sufleyi kaydıran tick() ve KAYDI BESLEYEN kırpma
+     boru hattı. İkincisi durunca capOut beslenmez ve kaydedilen görüntü tek
+     karede DONAR — MediaRecorder ise yazmaya devam eder. Yani çekimin
+     ortasında "Çekimlerim"e basmak videoyu bozuyordu.
+     selectScript'teki kayıt koruması bu deyimin ilk örneğiydi; şimdi bütün
+     pencere girişleri aynı kapıdan geçiyor. */
+  function kayitSuruyor(){ return !!(recorder && recorder.state==='recording'); }
+  function diyalogKapisi(){
+    if(!kayitSuruyor()) return false;
+    toast('⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.');
+    return true;
+  }
+
   /* ---------- SÜRÜM NOTLARI (telefondan taşındı) ----------
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
@@ -1912,6 +1930,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     return 0;
   }
   function showNews(){
+    if(diyalogKapisi()) return;
     const k=Object.keys(NEWS).sort(verCmp).pop();
     alert('Sufle v'+k+' — ne değişti?\n\n'+NEWS[k]);
   }

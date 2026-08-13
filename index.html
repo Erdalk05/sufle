@@ -1099,6 +1099,7 @@ const MSG={
   takeFav:'Yıldızla', takeUnfav:'Yıldızı kaldır', takePlay:'Çekimi oynat',
   takeSrt:'Altyazı dosyasını indir', takeShare:'Çekimi paylaş veya kaydet',
   takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
+  dlgBusy:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
   recResumed:'⏺ Kayıt devam ediyor',pauseNo:'Bu cihazda kayıt duraklatılamıyor',
@@ -1162,6 +1163,7 @@ const MSG={
   takeFav:'Star this take', takeUnfav:'Remove star', takePlay:'Play take',
   takeSrt:'Download subtitle file', takeShare:'Share or save take',
   takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
+  dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
@@ -3131,6 +3133,10 @@ async function renderTakes(){
     d.querySelector('[data-a="fav"]').onclick=async()=>{ it.fav=!it.fav; await dbPut(it); renderTakes(); };
     // 10.3 Yeniden adlandırma: arşivde hepsi aynı senaryo adını taşıyordu, ayırt edilemiyordu
     d.querySelector('.t').onclick=async()=>{
+      /* prompt ana iş parçacığını durdurur; kompozit boru hattı da rAF ile
+         dönüyor. Kayıt sürerken açılırsa hem sufle hem KAYDEDİLEN görüntü
+         tek karede donar, MediaRecorder yazmaya devam eder. */
+      if(rec && rec.state==='recording'){ toast(m('dlgBusy')); return; }
       const ad=prompt(L==='tr'?'Çekimin adı:':'Take name:', it.title||'');
       if(ad==null) return;
       it.title=ad.trim().slice(0,60); await dbPut(it); renderTakes();
