@@ -121,7 +121,11 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     # Taban 23: hepsi tek tek gözden geçirildi (vibrate/close/revokeObjectURL gibi zararsız
     # temizlik çağrıları). ARTIŞ = gözden geçirilmemiş yeni sessiz yutma demektir.
     empty_catch = len(re.findall(r"catch\s*\([^)]*\)\s*\{\s*\}", js))
-    taban = 16 if is_mac else 23
+    # 2026-08-14: her iki tarafta da BİR artırıldı. Eklenen catch'ler toast
+    # çağrılarının etrafında (kota dolunca bildirim) — arayüz yıkılırken toast
+    # patlayabilir ve o an asıl iş kaydetmeyi bildirmek. Hemen altındaki
+    # mevcut catch(_){} ile aynı gerekçe.
+    taban = 17 if is_mac else 24
     if empty_catch > taban:
         problems.append(("boş catch tabanın üstünde (yeni sessiz yutma?)", [empty_catch, "taban %d" % taban]))
 

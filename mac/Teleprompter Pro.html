@@ -568,7 +568,22 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       state.speedScale='wpm';
     }
   }
-  function save(){ localStorage.setItem(LS,JSON.stringify(state)); }
+  /* KOTA DOLUNCA ISTISNA FIRLIYORDU. Telefon tarafinda bu durum yakalanip
+     kullaniciya soyleniyordu; Mac'te hic try/catch yoktu, yani setItem firlatinca
+     save()'i cagiran akis (senaryo secme, silme, ayar degistirme) ORTASINDA
+     kiriliyordu. Parite kapisi bu bosluğu C3 turunda yakaladi.
+     Mac'te cop (trash) yok, o yuzden telefondaki 'copu birak ve tekrar dene'
+     kurtarmasinin karsiligi da yok: yapilacak sey durumu SOYLEMEK. */
+  let lsDoluUyarildi=false;
+  function save(){
+    try{ localStorage.setItem(LS,JSON.stringify(state)); lsDoluUyarildi=false; }
+    catch(e){
+      logErr('lsFull',e);
+      if(!lsDoluUyarildi){ lsDoluUyarildi=true;
+        try{ toast('⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.'); }catch(_){}
+      }
+    }
+  }
 
   /* ---------- SENARYOLAR ---------- */
   function curScript(){ return state.scripts.find(s=>s.id===state.current)||state.scripts[0]; }
@@ -2049,7 +2064,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
-   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.\n\nPencereyi yeniden boyutlandirinca ya da tam ekrana girip cikinca sufle metnin baska yerine atliyordu: satir sarmasi bastan hesaplandigi icin kayitli piksel konumu baska bir kelimeye denk geliyordu. Artik okudugun satir korunuyor.\n\nISARETLEME MOTORU EKLENDI: *vurgu*, {telaffuz} ve / // (2) duraklama isaretleri Mac suflesinde harfi harfine goruniyordu — simdi telefondaki gibi cozuluyor ve duraklamalar gercekten bekletiyor. "Nefes isareti" aracinin ekledigi / isaretleri de artik duraklama olarak calisiyor.'
+   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.\n\nPencereyi yeniden boyutlandirinca ya da tam ekrana girip cikinca sufle metnin baska yerine atliyordu: satir sarmasi bastan hesaplandigi icin kayitli piksel konumu baska bir kelimeye denk geliyordu. Artik okudugun satir korunuyor.\n\nDepo dolunca kaydetme sessizce PATLIYORDU: setItem istisna firlatiyor, hicbir yerde yakalanmiyordu ve o sirada calisan is (senaryo secme, silme, ayar degistirme) ortasinda kiriliyordu. Artik yakalaniyor ve durum soyleniyor.\n\nISARETLEME MOTORU EKLENDI: *vurgu*, {telaffuz} ve / // (2) duraklama isaretleri Mac suflesinde harfi harfine goruniyordu — simdi telefondaki gibi cozuluyor ve duraklamalar gercekten bekletiyor. "Nefes isareti" aracinin ekledigi / isaretleri de artik duraklama olarak calisiyor.'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:

@@ -4,7 +4,7 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 27 P1 işlendi. **37 commit**, tamamı yerelde.
+Gecenin **bütün P0'ları** kapandı, ardından 27 P1 işlendi. **38 commit**, tamamı yerelde.
 Testler **732 → 2045**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
@@ -52,6 +52,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Yayın paketi yanlış senaryoyu koyabiliyordu** — çekimden sonra sürüm değiştirince paketteki metin ve yayın notu diğer sürümden üretiliyordu.
 - **Yazı boyutunu/okuma çizgisini değiştirince okuduğun yer kayıyordu** — 300 kelimelik metinde 113 kelime geriye kadar; döndürme düzeltmesi bu yolları kapsamıyormuş.
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
+- **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
 
@@ -88,7 +89,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **37 commit**, hepsi yerelde, `claude` dalında
-- **2045 test** (gece başında 732) · yeni test dosyası: 39–67
+- **38 commit**, hepsi yerelde, `claude` dalında
+- **2046 test** (gece başında 732) · yeni test dosyası: 39–67
 - Gece planı: 135 görevden **34'ü** işlendi (bütün P0'lar + 27 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz

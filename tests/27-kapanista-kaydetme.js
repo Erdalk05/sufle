@@ -100,8 +100,12 @@ ok('saveNow senkron: gövdesinde setTimeout yok',
    Mac'in save()'i senkron; oraya bir debounce eklenirse telefonun bu hatası
    Mac'e taşınmış olur. */
 const macKod = mac.replace(/\/\*[\s\S]*?\*\//g,'');
-const macSave = cikar(macKod, /function save\(\)\{[^\n]*\}/, 'Mac save');
+/* Mac save() artık tek satır değil: kota dolunca istisna fırlatıyordu, try/catch
+   eklendi (bkz. tests/67). Korunan iddia aynı — HEMEN yazıyor, geciktirmiyor;
+   çünkü kapanış yolunda geciktirilmiş yazım hiç koşmaz. */
+const macSave = cikar(macKod, /function save\(\)\{[\s\S]*?\n  \}/, 'Mac save');
 ok('Mac save() senkron (debounce eklenmemiş)', !/setTimeout/.test(macSave));
+ok('Mac save() kota hatasını yutmuyor, söylüyor', /Depo dolu/.test(macSave));
 ok('Mac kapanışta konumu yazıyor',
    /addEventListener\('beforeunload'[\s\S]{0,80}?rememberPos\(\)/.test(macKod));
 
