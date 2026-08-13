@@ -54,6 +54,13 @@ ok('baştaki tırnak kalınlaşmıyor, harften başlıyor', tirnakli === '"<b>se
    \p{L} kullanılmazsa İ/ş/ğ harf sayılmaz ve kalınlık yanlış hesaplanır. */
 ok('Türkçe büyük İ harf sayılıyor', calistir(true,'İstanbul').telefon === '<b>İst</b>anbul');
 ok('ş/ğ/ü harf sayılıyor', calistir(true,'şeftali').telefon === '<b>şef</b>tali');
+/* AYIRT EDİCİ ÖRNEK — bu satır olmadan Türkçe iddiası boştu.
+   "İstanbul" ve "şeftali" \p{L} kaldırılsa da AYNI sonucu veriyor
+   (8→7 ve 7→6 harf, ikisi de 3 harf kalın çıkıyor); yani o iki test
+   Türkçe desteğini hiç ölçmüyordu. "gözlüğümü"de 9 harften 5'i ASCII
+   dışı: \p{L} varken 4, yokken 2 harf kalınlaşır. */
+ok('Türkçe harf ağırlıklı kelimede kalınlık doğru (gözlüğümü)',
+   calistir(true,'gözlüğümü').telefon === '<b>gözl</b>üğümü');
 
 /* ---------- HTML ENJEKSİYONU ----------
    Senaryo kullanıcı metni. Dilimleme kaçıştan SONRA yapılırsa '&amp;'
@@ -72,7 +79,8 @@ for (const [ad, kaynak] of [['telefon', 'telefon'], ['Mac', 'mac']]) {
    "Mac'e de eklendi" demek yetmez; farklı davranan bir kopya paritenin
    kendisini yalanlar. */
 const ORNEKLER = ['merhaba','a','İstanbul','şeftali','"selam','<script>','A&B','&','...','2026',
-                  'kararlaştırılamayanlardan','x1','(parantez)','—tire'];
+                  'kararlaştırılamayanlardan','x1','(parantez)','—tire',
+                  'gözlüğümü','çğışöü','ÇİĞDEM'];
 let sapma = null;
 for (const w of ORNEKLER) {
   for (const acik of [true,false]) {
@@ -81,7 +89,7 @@ for (const w of ORNEKLER) {
   }
   if (sapma) break;
 }
-ok('telefon ve Mac 14 örnekte birebir aynı çıktıyı veriyor'+(sapma?' — SAPMA: '+sapma:''), !sapma);
+ok('telefon ve Mac '+ORNEKLER.length+' örnekte birebir aynı çıktıyı veriyor'+(sapma?' — SAPMA: '+sapma:''), !sapma);
 
 /* ---------- AYAR GERÇEKTEN BAĞLI MI (ölü ayar kilidi) ----------
    Anahtar açılıp hiçbir şey olmaması bu deponun en sık hatası. */
