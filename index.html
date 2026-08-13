@@ -773,7 +773,11 @@
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,text/plain,text/markdown" class="hidden">
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" placeholder="Senaryo başlığı">
-  <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label><span class="v" id="stats">—</span></div>
+  <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
+       değil sürüm numarası — uygulama metnin hangi dilde olduğunu bilmiyor. -->
+  <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label>
+    <span><button class="iconbtn" id="verBtn" aria-label="Sürüm değiştir">⇄ 1</button>
+    <span class="v" id="stats">—</span></span></div>
   <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
   <div class="seg" id="toolSeg" style="margin-top:10px">
     <button id="tClean" data-i18n="tClean">🧹 Temizle</button>
@@ -1102,6 +1106,7 @@ const MSG={
   takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
   pkgDone:'dosya tek pakette hazır', noTake:'Önce bir çekim yap',
   takeNote:'Çekim notu yaz', takeNotePrompt:'Bu çekim için not (neden iyi ya da kötü):',
+  verSwitch:'Senaryonun diğer sürümüne geç', verSwitched:'Sürüm', verEmpty:'Önce bu sürüme metin yaz',
   dlgBusy:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
@@ -1168,6 +1173,7 @@ const MSG={
   takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
   pkgDone:'files bundled', noTake:'Record a take first',
   takeNote:'Add take note', takeNotePrompt:'Note for this take (why it was good or bad):',
+  verSwitch:'Switch to the other script version', verSwitched:'Version', verEmpty:'Write something in this version first',
   dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
@@ -3775,7 +3781,46 @@ function selectScript(id){
     rememberPos(); if(voiceOn) syncVoicePtr(); toast(m('resumed'));
   }
 }
-function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||''; updateStats(); }
+/* ============ İKİ SÜRÜMLÜ SENARYO ============
+   Aynı içeriğin ikinci dildeki (ya da ikinci anlatımdaki) hâli. İki ayrı
+   senaryo tutulduğunda biri düzenlenip diğeri unutuluyordu.
+
+   NEDEN TAKAS: `active().text` kod tabanında altı yerden okunuyor ve
+   sufle motoru, altyazı, istatistik, hepsi ona bakıyor. İkinci sürümü ayrı
+   bir alandan OKUTMAYA kalksaydım o altı yeri de değiştirmem gerekirdi.
+   Bunun yerine iki sürüm YER DEĞİŞTİRİYOR; aktif olan hep `text`.
+
+   Beraberinde taşınması gerekenler: konum (kaldığın yer), bölüm çekim
+   işaretleri, zorlanma haritası ve metin damgası. Damga taşınmazsa
+   damgaKontrol() takası "metin değişti" sanıp diğer sürümün bütün bölüm
+   işaretlerini SİLER ve sebepsiz bir uyarı gösterir.
+
+   Arayüz dili (L) ile KARIŞTIRILMAMALI: bu senaryonun sürümü, uygulamanın
+   dili değil. Hangi dil olduğunu uygulama bilmiyor — o yüzden etiket
+   "1/2", dil adı değil. */
+function ikinciSurumVar(){ const s=active(); return !!(s && (s.text2||'').trim()); }
+function surumDegistir(){
+  const s=active(); if(!s) return;
+  if(rec && rec.state==='recording'){ toast(m('recBusy')); return; }
+  if(!ikinciSurumVar() && !(s.text||'').trim()){ toast(m('verEmpty')); return; }
+  rememberPos(); pullEditor();
+  const t=s.text, p=s.pos, sh=s.shot, df=s.diff, mk=s.mark;
+  s.text=s.text2||''; s.pos=s.pos2||0; s.shot=s.shot2||{}; s.diff=s.diff2||{}; s.mark=s.mark2;
+  s.text2=t;          s.pos2=p||0;    s.shot2=sh||{};      s.diff2=df||{};    s.mark2=mk;
+  s.surum2=!s.surum2; s.up=Date.now(); save();
+  const want=(s.pos||0);
+  fillEditor(); renderScripts(); buildContent(); reset();
+  if(want>0){ setPos(Math.min(want,maxPos)); rememberPos(); if(voiceOn) syncVoicePtr(); }
+  surumRozeti();
+  toast(m('verSwitched')+' '+(s.surum2?'2':'1'));
+}
+function surumRozeti(){
+  const b=$('#verBtn'); if(!b) return;
+  const s=active();
+  b.textContent='⇄ '+(s&&s.surum2?'2':'1');
+  b.setAttribute('aria-label', m('verSwitch')+' — '+(s&&s.surum2?'2':'1'));
+}
+function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||''; updateStats(); surumRozeti(); }
 function firstLineTitle(txt){
   const l=(txt||'').split(/\r?\n/).map(x=>x.replace(/^#{1,3}\s*/,'').trim()).find(x=>x.length>1);
   return l ? l.slice(0,40) : '';
@@ -4651,6 +4696,7 @@ bind('#weight','weight'); bind('#ls','ls'); bind('#scrimSl','scrim'); bind('#tar
 $('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
 $('#capBtn').onclick=()=>shareCaptions('srt');
 $('#pkgBtn').onclick=paketPaylas;
+$('#verBtn').onclick=surumDegistir;
 /* 10.8 "Oynatıyorum ses yok" iki ayrı şey olabilir: dosyada ses YOK, ya da
    telefon sessiz moddadır. İkisini ayırt etmeden kullanıcı yanlış yeri arıyor. */
 $('#resultVid').addEventListener('play',()=>{
