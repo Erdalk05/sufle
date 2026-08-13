@@ -63,6 +63,36 @@ for (const [ad, src, sinif] of PLATFORMLAR) {
 ok('telefon: anahtar adları dil uygulanırken yenileniyor',
    /function applyLang\(\)\{[\s\S]*?setAttribute\('aria-label',\s*et\.textContent[\s\S]*?\n\}/.test(tel));
 
+/* ---------- TÜRETİLEN ADLAR GERÇEKTEN İŞE YARIYOR MU ----------
+   aria-label yandaki <span>'den türetiliyor. "Kod aria-label yazıyor" demek
+   yetmez: span bulunamazsa ad BOŞ kalır, iki anahtarın etiketi aynıysa ekran
+   okuyucu ikisini de aynı adla okur ve ayırt edilemezler. Kaynaktan gerçek
+   etiketleri çıkarıp ölçüyoruz. */
+function anahtarAdlari(src, sinif){
+  const cikti = [];
+  const re = /<div class="(?:tog|toggle)"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/g;
+  let m;
+  while ((m = re.exec(src))) {
+    const blok = m[1];
+    const k = blok.match(new RegExp('class="'+sinif+'[^"]*"[^>]*data-t="([^"]+)"'));
+    if (!k) continue;
+    const sp = blok.match(/<span[^>]*>([\s\S]*?)<\/span>/);
+    cikti.push([k[1], sp ? sp[1].replace(/<[^>]+>/g,'').trim() : '']);
+  }
+  return cikti;
+}
+for (const [ad, src, sinif] of [['telefon', tel, 'sw'], ['Mac', mac, 'sw2']]) {
+  const adlar = anahtarAdlari(src, sinif);
+  ok(ad+': anahtarlar etiket kapsayıcısında bulundu ('+adlar.length+' adet)', adlar.length > 0);
+  const bos = adlar.filter(([,v]) => !v).map(([k]) => k);
+  ok(ad+': hiçbir anahtarın adı boş değil'+(bos.length ? ' — BOŞ: '+bos.join(', ') : ''), bos.length === 0);
+  const sayac = {};
+  adlar.forEach(([,v]) => { sayac[v] = (sayac[v]||0) + 1; });
+  const yinelenen = Object.keys(sayac).filter(v => sayac[v] > 1);
+  ok(ad+': iki anahtar aynı adı taşımıyor'+(yinelenen.length ? ' — YİNELENEN: '+yinelenen.join(' | ') : ''),
+     yinelenen.length === 0);
+}
+
 /* ---------- İKONLU DÜĞMELER ADSIZ KALMASIN ----------
    Yalnız emoji içeren düğme ekran okuyucuda ya hiç ya da emoji adıyla okunur.
    Kabul edilen adlandırma: aria-label, data-aria (telefonun i18n yolu) veya title. */
