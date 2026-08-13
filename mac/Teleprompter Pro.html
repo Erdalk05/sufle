@@ -698,10 +698,40 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(n) out+=tr3(n)+' ';
     return out.trim().replace(/\s+/g,' ');
   }
+  /* Bir sayi BELIRTECINI okunur hale getirir — binlik nokta ve ondalik virgul
+     dahil. Eskiden her rakam obegi AYRI AYRI cevriliyordu; olculen cikti:
+       "1.500"     -> "bir.beş yüz"              (bin beş yüz olmali)
+       "1.250.000" -> "bir.iki yüz elli.sıfır"   (bir milyon iki yüz elli bin)
+       "%12,5"     -> "yüzde on iki,beş"         (yüzde on iki virgül beş)
+       "12,5%"     -> "on iki,yüzde beş"   <-- yuzde YANLIS parcaya yapisiyor
+     Sonuncusu kameraya bambaska bir sayi okutuyor. Telefonla ayni duzeltme. */
+  function sayiOku(s){
+    const p=String(s).split(',');
+    const tam=p[0].replace(/\./g,''), kesir=p[1];
+    if(tam.length>9) return null;              // trNum milyarin ustunu cevirmiyor
+    let out=trNum(+tam);
+    if(kesir){
+      // Bastaki sifir anlamli: "0,05" -> "sıfır virgül sıfır beş". Sayi gibi
+      // okunursa "sıfır virgül beş" cikar ve DEGER on kat degisir.
+      out += ' virgül ' + (/^0/.test(kesir)
+        ? kesir.split('').map(d=>trNum(+d)).join(' ')
+        : trNum(+kesir));
+    }
+    return out;
+  }
+  const SAYI_DESEN = '\\d{1,3}(?:\\.\\d{3})+(?:,\\d+)?|\\d+(?:,\\d+)?';
   function numbersToWords(t){
-    return t.replace(/%\s?(\d{1,9})/g,(mm,d)=>'yüzde '+trNum(+d))
-            .replace(/(\d{1,9})\s?%/g,(mm,d)=>'yüzde '+trNum(+d))
-            .replace(/\b(\d{1,9})\b/g,(mm,d)=>trNum(+d));
+    const koru=(mm,ceviri)=> ceviri==null ? mm : ceviri;
+    return t
+      // Saat once: yoksa "14:30" iki ayri sayiya bolunup "on dört:otuz" oluyordu.
+      .replace(/\b(\d{1,2}):(\d{2})\b/g,(mm,h,d)=>{
+        const dk = /^0\d$/.test(d) ? 'sıfır '+trNum(+d) : trNum(+d);
+        return trNum(+h)+' '+dk;
+      })
+      // Yuzde isareti sayinin TAMAMINI kapsamali (ondalik dahil).
+      .replace(new RegExp('%\\s?('+SAYI_DESEN+')','g'),(mm,d)=>koru(mm,(x=>x&&'yüzde '+x)(sayiOku(d))))
+      .replace(new RegExp('('+SAYI_DESEN+')\\s?%','g'),(mm,d)=>koru(mm,(x=>x&&'yüzde '+x)(sayiOku(d))))
+      .replace(new RegExp(SAYI_DESEN,'g'),mm=>koru(mm,sayiOku(mm)));
   }
 
   /* ---------- KELİME İNŞASI (vurgu için) ---------- */
@@ -1963,7 +1993,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
-   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.'
+   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi.'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:

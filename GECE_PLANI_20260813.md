@@ -36,7 +36,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | B4 | Çok uzun tek kelime (>42 karakter) editörde ve suflede taşıyor mu | P1 |
 | B5 | RTL/Arapça metin akışı: karakter yönü ters mi | P2 |
 | B6 | `stripInvisible` hangi karakterleri atıyor — listeyi testle sabitle | P1 |
-| B7 | Rakam→yazı dönüşümü ondalık ve yüzdede doğru mu (`%12,5`) | P1 |
+| B7 | ✅ Rakam→yazı dönüşümü ondalık ve yüzdede doğru mu — **DEĞİLDİ, tahminden kötü**. Ölçülen gerçek çıktılar: `1.500`→"bir.beş yüz" · `1.250.000`→"bir.iki yüz elli.sıfır" · `%12,5`→"yüzde on iki,beş" · `14:30`→"on dört:otuz" · **`12,5%`→"on iki,yüzde beş"** (yüzde YANLIŞ parçaya yapışıyor → kameraya bambaşka bir sayı okutuyor). Her rakam öbeği ayrı ayrı çevriliyordu. Artık binlik ayracı/ondalık virgül/yüzde/saat tek belirteç olarak okunuyor; ondalıkta baştaki sıfır rakam rakam okunuyor (yoksa değer 10 kat değişirdi); 9 haneden büyük sayı yarım çevrilmiyor, olduğu gibi bırakılıyor. **Mac'te aynı hata birebir vardı**, o da düzeltildi. Test 44 (35 iddia) | P1 |
 | B8 | Konuşulabilirlik denetiminin eşikleri ölçülü mü, uydurma mı — kaynağını yaz | P2 |
 | B9 | Biyonik okuma + büyük harf dönüşümü birlikte doğru çalışıyor mu | P2 |
 | B10 | `sentenceEnd` kısaltmalarda yanlış bölüyor (`Sn.`, `vb.`) — düzelt ya da gerekçelendir | P1 |
