@@ -1,0 +1,14 @@
+# Bu depo GitHub Pages ile YAYINDA — içine giren her şey herkese açık olur.
+#
+# Yerel geliştirme sunucusu (iphone_server.py / teleprompter_server.py) HTTPS
+# için kendinden imzalı sertifika kullanıyor. Kamera ve mikrofon izinleri
+# yalnız güvenli bağlamda veriliyor, o yüzden sertifika gerekli — ama özel
+# anahtar asla depoya girmemeli. Geçmişte girmemiş (kontrol edildi), bundan
+# sonra da giremesin diye burada.
+*.pem
+*.key
+*.p12
+*.pfx
+
+# İşletim sistemi artıkları
+.DS_Store
