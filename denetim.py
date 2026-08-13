@@ -166,10 +166,27 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
     if mc - mt: problems.append(("MSG'de olmayan m() anahtarı", sorted(mc - mt)))
     if tc - it: problems.append(("I18N'de olmayan t() anahtarı", sorted(tc - it)))
+    # SÖZLÜKTE VAR AMA HİÇ KULLANILMAYAN ANAHTAR (2026-08-13'te eklendi).
+    # Üstteki kontroller tersini yakalıyordu: çağrılıp sözlükte olmayan anahtar.
+    # Bu yön de aynı sınıfın parçası — yazılmış ama okunmayan metin. İlk
+    # koşuşta dördü çıktı ve DÖRDÜ DE eskimiş kopyaydı: resultHint'in söylediğini
+    # saveHint, trimInPhotos'unkini trimSteps söylüyor (ikisi de bağlı).
+    # Ölü metin zararsız görünür ama çeviri yükü yaratır ve "bu neden
+    # görünmüyor?" diye aranan zamanı yer.
+    # Not: m()/t() yalnız sabit dizgeyle çağrılıyor (değişkenle çağrı yok,
+    # kontrol edildi) — olmasaydı bu denetim yanlış pozitif üretirdi.
+    if re.search(r"\bm\(\s*[A-Za-z_$][\w$]*\s*\)", code) or re.search(r"\bt\(\s*[A-Za-z_$][\w$]*\s*\)", code):
+        problems.append(("sözlük anahtarı değişkenle çağrılıyor — ölü anahtar denetimi güvenilmez", ["m()/t()"]))
+    else:
+        olu_msg = sorted(mt - mc)
+        if olu_msg: problems.append(("MSG'de tanımlı ama hiç kullanılmayan anahtar", olu_msg))
+
     d = set(re.findall(r'data-i18n="([^"]+)"', html))
     if d - it: problems.append(("I18N'de olmayan data-i18n", sorted(d - it)))
     dp = set(re.findall(r'data-i18n-ph="([^"]+)"', html))
     if dp - it: problems.append(("I18N'de olmayan data-i18n-ph", sorted(dp - it)))
+    olu_i18n = sorted(it - tc - d - dp)
+    if olu_i18n: problems.append(("I18N'de tanımlı ama hiç kullanılmayan anahtar", olu_i18n))
 
     return problems
 
