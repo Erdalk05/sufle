@@ -113,6 +113,11 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | G9 | Maske önizlemesi kayıt sırasında kapatılıyor mu (maliyet) | P2 |
 | G10 | Kompozit + yayın paketi birlikte: video türü doğru mu | P1 |
 
+## Y. Düzen ayarları (A4 turunda bulundu)
+| # | Görev | Ö |
+|---|---|---|
+| Y1 | ✅ **Kalınlık ve harf aralığı HİÇ ölçüm yapmıyordu** — `bind('#weight','weight'); bind('#ls','ls');` geri aramasız. Oysa `#scroller` ikisini de kullanıyor ve `word-wrap:break-word` ile sarıyor. Üç sonuç: `wordTops` bayat (vurgu yanlış satırda), **`maxPos` bayat** (harf aralığı artınca metnin SON SATIRLARI hiç görünmeden akış bitiyor — A4 hipotezi tam burada doğru), `pxPerWord` bayat (wpm hızı yanlış). Biyonik okuma da sarmayı değiştiriyordu; `buildContent` ölçüyor ama konum kayıyordu. Perde koyuluğu ve hedef süreye **kasten** dokunulmadı. Test 63 (23 iddia) | P1 |
+
 ## X. Kapı hijyeni (gece bulgusu)
 | # | Görev | Ö |
 |---|---|---|
