@@ -62,7 +62,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | D2 | Türkçe telaffuz toleransı hangi harf çiftlerini eşliyor — listeyi kilitle | P1 |
 | D3 | Sesle takip + ikinci sürüm: dil değişince tanıma dili de değişmeli mi (karar) | P1 |
 | D4 | Sesli komut uyandırma sözcüğü senaryoda geçerse — testte kanıtlı mı | P1 |
-| D5 | Tanıma koptuğunda yeniden başlatma sayacı sonsuz döngü yapıyor mu | P0 |
+| D5 | Tanıma koptuğunda yeniden başlatma sayacı sonsuz döngü yapıyor mu | P0 | ✅ **GERÇEK HATA** — sayaç `start()` dönünce sıfırlanıyordu, 5 sınırına hiç ulaşmıyordu (176 tur ölçüldü, srFails=0). Artık yalnız gerçekten çalışınca sıfırlanıyor. |
 | D6 | Desteklenmeyen tarayıcıda anahtar gerçekten gri mi | P2 |
 | D7 | `syncVoicePtr` konum atlamada doğru kelimeye gidiyor mu | P1 |
 | D8 | Sesle takip kapalıyken de mikrofon açık kalıyor mu — sızıntı kontrolü | P0 |

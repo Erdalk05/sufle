@@ -1,0 +1,99 @@
+const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
+const {telefonYolu,oku,cikar}=require('./kaynak');
+const tel=oku(telefonYolu());
+
+/* SESLE TAKİP — SONSUZ YENİDEN BAŞLATMA
+   SpeechRecognition kendiliğinden düşer, o yüzden v5.8'de otomatik yeniden
+   başlatma eklendi: en fazla 5 deneme, artan gecikmeyle. Koruma DURUYORDU
+   ama ÇALIŞMIYORDU.
+
+   Sebep: sayaç `sr.start()` istisna atmadan dönünce sıfırlanıyordu. Oysa
+   start()'ın başarılı dönmesi tanımanın çalıştığını göstermez — tanıyıcı
+   hemen onend verirse her turda sayaç sıfırlanır, 5 sınırına HİÇ ulaşılmaz.
+   Ölçüldü: 176 yeniden başlatma turundan sonra srFails hâlâ 0.
+
+   Sonuç: 250 ms'de bir sonsuz döngü. Mikrofon açık kalır, pil tükenir,
+   rozet "açık" görünür ama metin hiç takip etmez — kullanıcı sebebini
+   göremez. Sessiz ölüm sınıfının en pahalı hâli.
+
+   Düzeltme: sayaç yalnız GERÇEKTEN çalıştığında sıfırlanır — ya sonuç geldi
+   (onresult) ya da oturum kayda değer süre yaşadı (uzun sessizlik arıza değil). */
+
+const restart = cikar(tel, /function restartVoice\(\)\{[\s\S]*?\n\}/, 'restartVoice');
+
+/* Gerçek restartVoice'u sahte zamanlayıcıyla koşturur.
+   hemenOlur=true → tanıyıcı her başlatmada anında onend veriyor (arıza).
+   yasaMs      → oturumun yaşadığı süre; SR_SAGLIKLI_MS üstü sağlıklı sayılmalı.
+   NOT: saat start() içinde DEĞİL, start ile onend ARASINDA ilerlemeli — ilk
+   yazımda içeride ilerletmiştim ve sağlıklı oturum hiç sağlıklı sayılmadı.
+   Kodun değil simülasyonun kusuruydu. */
+function kos({hemenOlur=true, sonucGeliyor=false, yasaMs=0, tavan=400}={}){
+  const iz={tur:0, durdu:false, uyari:false};
+  new Function('__iz','__hemen','__sonuc','__yasa','__tavan', `
+    let voiceOn=true, sr={}, srFails=0, srRetryT=null, srBasladi=0;
+    const SR_SAGLIKLI_MS=3000;
+    let saat=0;
+    const performance={ now:()=>saat };
+    const clearTimeout=()=>{};
+    const setTimeout=(f)=>{ f(); return 1; };
+    const toast=()=>{ __iz.uyari=true; };
+    const m=k=>k;
+    const logErr=()=>{};
+    const stopVoice=()=>{ voiceOn=false; __iz.durdu=true; };
+    ${restart}
+    /* Tanıyıcı taklidi: start() HATA ATMIYOR (gerçek arızada da atmıyor),
+       ama oturum __yasa kadar yaşayıp bitiyor. */
+    sr.start=()=>{};
+    const onend=()=>{
+      saat+=__yasa;                       // oturum start ile onend ARASINDA yaşar
+      if(srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS) srFails=0;
+      if(__sonuc) srFails=0;
+      if(voiceOn && __iz.tur<__tavan){ __iz.tur++; restartVoice(); }
+    };
+    restartVoice();
+    while(voiceOn && __iz.tur<__tavan && __hemen) onend();
+    __iz.srFails=srFails;
+  `)(iz, hemenOlur, sonucGeliyor, yasaMs, tavan);
+  return iz;
+}
+
+/* ---------- ASIL HATA: HEMEN ÖLEN TANIYICI ---------- */
+{
+  const r = kos({hemenOlur:true, yasaMs:0});
+  ok('hemen ölen tanıyıcı sonsuza kadar denenmiyor', r.durdu === true);
+  ok('deneme sayısı sınırlı kalıyor ('+r.tur+' tur)', r.tur < 20);
+  ok('vazgeçince kullanıcıya söyleniyor', r.uyari === true);
+}
+
+/* ---------- SAĞLIKLI OTURUM SAYACI SIFIRLAMALI ----------
+   Uzun sessizlikte de onend gelir; bu bir arıza değil. Oturum kayda değer
+   süre yaşadıysa yeniden başlatma sonsuza kadar sürebilmeli. */
+{
+  const r = kos({hemenOlur:true, yasaMs:5000, tavan:60});
+  ok('sağlıklı oturumdan sonra yeniden başlatma sürüyor (sessizlik arıza değil)',
+     r.durdu === false && r.tur >= 60);
+}
+
+/* ---------- SONUÇ GELİYORSA DA SÜRMELİ ---------- */
+{
+  const r = kos({hemenOlur:true, sonucGeliyor:true, yasaMs:0, tavan:60});
+  ok('tanıma sonuç üretiyorsa sayaç sıfırlanıyor', r.durdu === false && r.tur >= 60);
+}
+
+/* ---------- KAYNAK DÜZEYİ: ESKİ HATA GERİ GELMESİN ---------- */
+const kod = tel.replace(/\/\*[\s\S]*?\*\//g,'');
+ok('sayaç start() döndüğünde SIFIRLANMIYOR (eski hata)',
+   !/sr\.start\(\);\s*srFails=0/.test(kod));
+ok('sayaç sonuç gelince sıfırlanıyor',
+   /sr\.onresult=e=>\{\s*\n?\s*srFails=0;/.test(kod));
+ok('sağlıklı oturum eşiği tanımlı', /const SR_SAGLIKLI_MS=\d+;/.test(kod));
+ok('onend sağlıklı oturumu sayaçtan düşüyor',
+   /performance\.now\(\)-srBasladi >= SR_SAGLIKLI_MS\) srFails=0/.test(kod));
+ok('deneme sınırı hâlâ var', /\+\+srFails>5/.test(kod));
+ok('artan gecikme hâlâ var', /250\*srFails/.test(kod));
+ok('vazgeçince özellik gerçekten kapatılıyor',
+   /toast\(m\('voiceDied'\)\); stopVoice\(\)/.test(kod));
+
+/* İlk başlatmada da damga kurulmalı, yoksa ilk oturum hep "hemen ölmüş" sayılır. */
+ok('ilk başlatmada oturum damgası kuruluyor',
+   /sr\.start\(\); srBasladi=performance\.now\(\);/.test(kod));

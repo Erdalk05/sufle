@@ -3958,13 +3958,24 @@ function renderVad(){
 }
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
-let srFails=0, srRetryT=null;
+let srFails=0, srRetryT=null, srBasladi=0;
+/* SAYAÇ NEYE GÖRE SIFIRLANIR — burası kritikti.
+   Eskiden sr.start() istisna atmadan dönünce srFails=0 yapılıyordu. Ama
+   start()'ın başarılı dönmesi tanımanın ÇALIŞTIĞINI göstermez: tanıyıcı
+   hemen onend verirse sayaç her turda sıfırlanır, 5 sınırına HİÇ ulaşılmaz
+   ve 250 ms'de bir sonsuza kadar yeniden başlatılır. Ölçüldü: 176 tur
+   döndükten sonra srFails hâlâ 0'dı. Sonuç: mikrofon açık kalır, pil
+   tükenir, rozet "açık" görünür ama metin hiç takip etmez.
+   Artık sayaç yalnız GERÇEKTEN ÇALIŞTIĞINDA sıfırlanıyor:
+   ya bir sonuç geldi (onresult) ya da oturum kayda değer süre yaşadı. */
+const SR_SAGLIKLI_MS=3000;
 function restartVoice(){
   if(!voiceOn||!sr) return;
   if(++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }
   clearTimeout(srRetryT);
   srRetryT=setTimeout(()=>{ if(!voiceOn||!sr) return;
-    try{ sr.start(); srFails=0; }catch(e){ logErr('voice',e); restartVoice(); } }, 250*srFails);
+    try{ sr.start(); srBasladi=performance.now(); }
+    catch(e){ logErr('voice',e); restartVoice(); } }, 250*srFails);
 }
 let srIdx=-1, srSeen='', vPrev={i:-1,t:0};
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
@@ -3989,6 +4000,7 @@ function startVoice(){
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
   srIdx=-1; srSeen='';
   sr.onresult=e=>{
+    srFails=0;                       // sonuç geldi: tanıma gerçekten çalışıyor
     const i=e.results.length-1, txt=(e.results[i][0].transcript||'');
     // YALNIZ YENİ EKLENEN KISMI işle. Ara sonuçlar büyüyerek geliyor; tamamını her seferinde
     // eşleştirmek aynı kelimeleri tekrar tekrar aratıp metni ileri fırlatıyordu.
@@ -4016,8 +4028,12 @@ function startVoice(){
     }
     if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
   };
-  sr.onend=()=>{ if(voiceOn) restartVoice(); };
-  try{ sr.start(); }catch(e){ logErr('voice',e); restartVoice(); }
+  sr.onend=()=>{
+    /* Uzun sessizlikte de onend gelir; o bir ARIZA değil. Oturum kayda değer
+       süre yaşadıysa sağlıklı sayılır, yoksa "hemen ölüyor" demektir. */
+    if(srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS) srFails=0;
+    if(voiceOn) restartVoice(); };
+  try{ sr.start(); srBasladi=performance.now(); }catch(e){ logErr('voice',e); restartVoice(); }
   voiceOn=true; $('#voiceBtn').classList.add('on');
   vHud('sessiz','',vptr,false);
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
