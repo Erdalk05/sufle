@@ -132,6 +132,11 @@ if (!unzipVar) {
 /* ---------- YAYIN NOTU METNİ ---------- */
 const notKur = (metin, sure, dil) => new Function('__metin','__sure','__L', `
   const L=__L, lastDur=__sure;
+  /* Yayın notu artık ÇEKİM BAŞINDA damgalanan senaryoyu tercih ediyor
+     (bkz. tests/61): çekimden sonra sürüm değiştirmek notu başka bir metinden
+     üretiyordu. Burada damga yok, yani "hiç çekim yapılmamış" hâli sınanıyor
+     ve active() yedeğine düşülüyor. */
+  const cekimSenaryo=null;
   const active=()=>({text:__metin});
   const clock=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
   ${cikar(tel, /function duzMetin\(t\)\{[\s\S]*?\n\}/, 'duzMetin')}
