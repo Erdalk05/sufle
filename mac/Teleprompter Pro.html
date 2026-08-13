@@ -440,7 +440,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       </div>
       <div class="field" style="margin-top:11px">
         <div class="top"><label>Tema</label></div>
-        <div class="swatches" id="themeSel">
+        <!-- Tek seçimli grup: anahtar değil, radyo. Klavye erişimi ve adları
+             JS'te veriliyor (title'dan türetiliyor). -->
+        <div class="swatches" id="themeSel" role="radiogroup" aria-label="Tema">
           <div class="sw on" data-theme="classic" style="background:#000" title="Klasik"></div>
           <div class="sw" data-theme="paper" style="background:#fff" title="Beyaz"></div>
           <div class="sw" data-theme="green" style="background:#0F3D2E" title="Yeşil"></div>
@@ -772,7 +774,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     $('#cText').value=state.cText; $('#cBg').value=state.cBg;
     // seçimler
     $$('#famSel button').forEach(b=>b.classList.toggle('on',b.dataset.fam===state.fam));
-    $$('#themeSel .sw').forEach(b=>b.classList.toggle('on',b.dataset.theme===state.theme));
+    /* aria-checked olmadan role="radio" hangisinin seçili olduğunu söylemez. */
+    $$('#themeSel .sw').forEach(b=>{ const s=b.dataset.theme===state.theme;
+      b.classList.toggle('on',s); b.setAttribute('aria-checked',s?'true':'false'); });
     /* aria-checked olmadan role="switch" durumunu söylemez: ekran okuyucu
        "anahtar" der ama açık mı kapalı mı belli olmaz. */
     $$('.sw2').forEach(t=>{ const a=!!state[t.dataset.t];
@@ -1990,7 +1994,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   // yazı tipi
   $$('#famSel button').forEach(b=>b.onclick=()=>{ state.fam=b.dataset.fam; applyAll(); save(); });
   // tema
-  $$('#themeSel .sw').forEach(b=>b.onclick=()=>setTheme(b.dataset.theme));
+  /* TEMA KUTUCUKLARI <div>; ayar anahtarları T6/T18'de klavyeye açılmıştı ama
+     bunlar atlanmıştı — klavyeyle gezen kullanıcı temayı HİÇ değiştiremiyordu.
+     Anahtar değil tek seçimli grup olduğu için rol "radio". Boşluk/Enter belge
+     düzeyinde togglePlay'e bağlı, stopPropagation şart. */
+  $$('#themeSel .sw').forEach(b=>{
+    b.setAttribute('tabindex','0'); b.setAttribute('role','radio');
+    if(!b.getAttribute('aria-label') && b.title) b.setAttribute('aria-label',b.title);
+    b.onclick=()=>setTheme(b.dataset.theme);
+    b.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){
+      e.preventDefault(); e.stopPropagation(); b.click(); } });
+  });
   // özel renk
   $('#cText').addEventListener('input',e=>{ state.cText=e.target.value; state.theme='custom'; applyAll(); save(); });
   $('#cBg').addEventListener('input',e=>{ state.cBg=e.target.value; state.theme='custom'; applyAll(); save(); });

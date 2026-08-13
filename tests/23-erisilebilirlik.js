@@ -93,6 +93,26 @@ for (const [ad, src, sinif] of [['telefon', tel, 'sw'], ['Mac', mac, 'sw2']]) {
      yinelenen.length === 0);
 }
 
+/* ---------- MAC TEMA SEÇİCİ ----------
+   Ayar anahtarları klavyeye açıldığında tema kutucukları atlanmıştı: onlar
+   ayrı bir sınıf (#themeSel .sw) ve ayrı bir işleyici kullanıyor. Klavyeyle
+   gezen kullanıcı temayı hiç değiştiremiyordu. Anahtar değil TEK SEÇİMLİ
+   grup olduğu için doğru rol "radio" — "switch" yanlış bilgi verirdi. */
+ok('Mac: tema seçici radyo grubu olarak işaretli',
+   /id="themeSel"[^>]*role="radiogroup"/.test(mac));
+ok('Mac: tema kutucukları odaklanabilir',
+   /\$\$\('#themeSel \.sw'\)[\s\S]{0,300}?setAttribute\('tabindex','0'\)/.test(mac));
+ok('Mac: tema kutucuklarının rolü radio (switch değil)',
+   /\$\$\('#themeSel \.sw'\)[\s\S]{0,300}?setAttribute\('role','radio'\)/.test(mac));
+ok('Mac: seçili tema aria-checked ile bildiriliyor',
+   /#themeSel \.sw'\)[\s\S]{0,200}?setAttribute\('aria-checked',s\?'true':'false'\)/.test(mac));
+ok('Mac: tema kutucukları Boşluk/Enter ile seçilebiliyor',
+   /\$\$\('#themeSel \.sw'\)[\s\S]{0,500}?e\.key===' '\|\|e\.key==='Enter'/.test(mac));
+ok('Mac: tema tuşu genel kısayola sızmıyor',
+   /\$\$\('#themeSel \.sw'\)[\s\S]{0,600}?stopPropagation\(\)/.test(mac));
+ok('Mac: her tema kutucuğunun adı var',
+   /#themeSel \.sw'\)[\s\S]{0,300}?setAttribute\('aria-label',b\.title\)/.test(mac));
+
 /* ---------- İKONLU DÜĞMELER ADSIZ KALMASIN ----------
    Yalnız emoji içeren düğme ekran okuyucuda ya hiç ya da emoji adıyla okunur.
    Kabul edilen adlandırma: aria-label, data-aria (telefonun i18n yolu) veya title. */
