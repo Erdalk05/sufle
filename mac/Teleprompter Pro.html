@@ -540,8 +540,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
   };
+  /* İLK KURULUM MU: kayıtlı durumun VARLIĞINDAN anlaşılır, seenVer alanından
+     değil. seenVer Mac'e 2026-08-13'te eklendi; mevcut kullanıcıların
+     kaydında bu alan hiç yok ve DEFAULT'tan '' gelir. Ölçüt seenVer olsaydı
+     her eski kullanıcı yükseltmede "yeni kullanıcı" sayılıp sürüm notu
+     yerine hoş geldin ekranı görürdü. */
+  let ilkKurulum=false;
   function load(){
-    try{ state=Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(LS)||'{}')); }
+    const ham=localStorage.getItem(LS);
+    ilkKurulum=!ham;
+    try{ state=Object.assign({},DEFAULT,JSON.parse(ham||'{}')); }
     catch(e){ state=Object.assign({},DEFAULT); }
     if(!state.scripts||!state.scripts.length) state.scripts=DEFAULT.scripts.slice();
     // Okuma cizgisi %42'deydi: Mac'te kamera ekranin EN USTUNDE, goz asagi
@@ -1939,7 +1947,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      basılmış oluyor ve not o sürüm için bir daha hiç görünmüyordu. */
   function firstRun(){
     if(state.seenVer===VER) return;
-    const ilk=!state.seenVer;
+    const ilk=ilkKurulum;
     setTimeout(()=>{
       if(ilk) alert('Sufle\'ye hoş geldin\n\n1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.');
       else toast('🆕 v'+VER+' — ne değiştiğini görmek için alttaki sürüme tıkla');

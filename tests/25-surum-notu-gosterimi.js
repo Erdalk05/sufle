@@ -96,11 +96,11 @@ ok('showNews birden fazla yerden erişilebilir ('+cagriSayisi+' geçiş)', cagri
    damga sırası hatası oraya da gitseydi aynı sessiz kayıp Mac'te de olurdu.
    Mac tek dilli ve sayfa altyapısı yok; alert/toast deyimini kullanıyor. */
 const macFirstRun = cikar(mac, /function firstRun\(\)\{[\s\S]*?\n  \}/, 'Mac firstRun');
-function macKos({seenVer, zamanlayiciCalissin}){
+function macKos({seenVer, zamanlayiciCalissin, ilkKurulum=!seenVer}){
   const izler = [];
   const state = { seenVer };
-  const kur = new Function('__st','__iz','__calissin', `
-    const state=__st, VER='9.1';
+  const kur = new Function('__st','__iz','__calissin','__ilk', `
+    const state=__st, VER='9.1', ilkKurulum=__ilk;
     let gecikme=null;
     const save=()=>__iz.push('save');
     const alert=()=>__iz.push('alert');
@@ -111,9 +111,35 @@ function macKos({seenVer, zamanlayiciCalissin}){
     firstRun();
     return gecikme;
   `);
-  const gecikme = kur(state, izler, zamanlayiciCalissin);
+  const gecikme = kur(state, izler, zamanlayiciCalissin, ilkKurulum);
   return { izler, state, gecikme };
 }
+
+/* MEVCUT KULLANICI YÜKSELTİYOR — bu oturumda benim eklediğim gerileme.
+   seenVer alanı Mac'e 2026-08-13'te eklendi; eski kullanıcıların kaydında
+   yok ve DEFAULT'tan '' geliyor. Ölçüt `!state.seenVer` olsaydı her eski
+   kullanıcı "yeni" sayılıp sürüm notu yerine hoş geldin ekranı görürdü.
+   Doğru ölçüt: localStorage'da kayıt VAR MI. */
+/* Mac'te güncelleme bildirimi bilerek TOAST: alert kullanıcıyı bloklar,
+   Mac'te sayfa altyapısı yok. Tam notlar sürüm düğmesinden açılıyor.
+   Ölçülen şey: eski kullanıcı HOŞ GELDİN alert'i GÖRMÜYOR. */
+const macEskiKullanici = macKos({seenVer:'', zamanlayiciCalissin:true, ilkKurulum:false});
+ok('Mac: kaydı olan eski kullanıcı hoş geldin ekranı GÖRMÜYOR',
+   !macEskiKullanici.izler.includes('alert'));
+ok('Mac: eski kullanıcı güncellemeden haberdar ediliyor',
+   macEskiKullanici.izler.includes('toast'));
+ok('Mac: eski kullanıcıda da damga en sonda basılıyor',
+   macEskiKullanici.izler.indexOf('save') === macEskiKullanici.izler.length - 1);
+
+const macGercektenYeni = macKos({seenVer:'', zamanlayiciCalissin:true, ilkKurulum:true});
+ok('Mac: hiç kaydı olmayan gerçek yeni kullanıcı HOŞ GELDİN görüyor',
+   macGercektenYeni.izler.includes('alert') && !macGercektenYeni.izler.includes('showNews'));
+
+/* Kaynak düzeyi: ölçüt artık olmayan bir alandan türetilmiyor. */
+ok('Mac: ilk kurulum sinyali kayıtlı verinin varlığından geliyor',
+   /ilkKurulum=!ham;/.test(mac) && /const ilk=ilkKurulum;/.test(mac));
+ok('Mac: ilk kurulum artık seenVer\'den türetilmiyor',
+   !/const ilk=!state\.seenVer;/.test(mac));
 
 const macKapandi = macKos({seenVer:'9.0', zamanlayiciCalissin:false});
 ok('Mac: 1,4 sn dolmadan kapanınca damga BASILMIYOR', macKapandi.state.seenVer === '9.0');
