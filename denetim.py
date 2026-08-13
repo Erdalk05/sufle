@@ -136,8 +136,27 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
         kk = lambda b: set(re.findall(r"""(?:^|[,{\s])([a-zA-Z][a-zA-Z0-9]*)\s*:\s*['"]""", b))
         return kk(parts[0]), (kk(parts[1]) if len(parts) > 1 else set())
 
+    # ERİŞİLEBİLİRLİK: yalnız simge içeren düğmenin adı yoksa ekran okuyucu "düğme" der
+    # "Adsız" = metninde HİÇBİR harf/rakam yok (yalnız emoji/simge). Her yazı sistemi sayılır:
+    # "1080p", "9:16", "العربية" adlıdır; "✕", "▶︎/⏸", "−" adsızdır.
+    # KÖR NOKTA (2026-08-13'te yakalandı): bu blok `if is_mac: return` satırının
+    # ALTINDAYDI, yani Mac dosyası erişilebilirlik denetiminden HİÇ geçmiyordu.
+    # Gerekçe "Mac tek dilli" idi ama bu kontrolün dille ilgisi yok — yanlış
+    # tarafa gruplanmıştı. Koşturulunca Mac'te 5 adsız düğme çıktı.
+    # title= sayılmıyor: dokunmatikte hiç okunmaz, ekran okuyucularda tutarsız.
+    nameless = []
+    for attrs, txt in re.findall(r'<button([^>]*)>(.*?)</button>', html, re.S):
+        if 'aria-label' in attrs:
+            continue
+        if any(ch.isalnum() for ch in re.sub(r'<[^>]+>', '', txt)):
+            continue
+        mid = re.search(r'id="([^"]+)"', attrs)
+        nameless.append(mid.group(1) if mid else attrs.strip()[:24])
+    if nameless:
+        problems.append(("adsız simge düğmesi (ekran okuyucu)", nameless))
+
     if is_mac:
-        return problems      # Mac tek dilli: sözlük ve data-i18n kontrolleri geçersiz
+        return problems      # Mac tek dilli: yalnız sözlük ve data-i18n kontrolleri geçersiz
 
     mt, me = keys(msg_var); it, ie = keys(i18n_var)
     if mt ^ me: problems.append(("MSG TR/EN farkı", sorted(mt ^ me)))
@@ -150,20 +169,6 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     if d - it: problems.append(("I18N'de olmayan data-i18n", sorted(d - it)))
     dp = set(re.findall(r'data-i18n-ph="([^"]+)"', html))
     if dp - it: problems.append(("I18N'de olmayan data-i18n-ph", sorted(dp - it)))
-
-    # ERİŞİLEBİLİRLİK: yalnız simge içeren düğmenin adı yoksa ekran okuyucu "düğme" der
-    # "Adsız" = metninde HİÇBİR harf/rakam yok (yalnız emoji/simge). Her yazı sistemi sayılır:
-    # "1080p", "9:16", "العربية" adlıdır; "✕", "▶︎/⏸", "−" adsızdır.
-    nameless = []
-    for attrs, txt in re.findall(r'<button([^>]*)>(.*?)</button>', html, re.S):
-        if 'aria-label' in attrs:
-            continue
-        if any(ch.isalnum() for ch in re.sub(r'<[^>]+>', '', txt)):
-            continue
-        mid = re.search(r'id="([^"]+)"', attrs)
-        nameless.append(mid.group(1) if mid else attrs.strip()[:24])
-    if nameless:
-        problems.append(("adsız simge düğmesi (ekran okuyucu)", nameless))
 
     return problems
 

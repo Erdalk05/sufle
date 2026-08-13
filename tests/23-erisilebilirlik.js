@@ -103,7 +103,11 @@ for (const [ad, src] of [['telefon', tel], ['Mac', mac]]) {
   const ikonlu = (src.match(/<button[^>]*>[^<]*<\/button>/g) || [])
     .filter(b => { const ic = b.replace(/^<button[^>]*>/,'').replace(/<\/button>$/,'').trim();
                    return ic && !/[\p{L}\p{N}]/u.test(ic); });
-  const adsiz = ikonlu.filter(b => !/aria-label=|data-aria=|title=/.test(b));
+  /* title= AD SAYILMIYOR (2026-08-13'te iki kapı çelişiyordu: bu test title'ı
+     kabul ediyordu, denetim.py etmiyordu). title dokunmatikte hiç okunmaz ve
+     ekran okuyucularda tutarsızdır; simge düğmesinin adı aria-label olmalı.
+     title fare ipucu olarak kalabilir, ama tek başına yeterli değil. */
+  const adsiz = ikonlu.filter(b => !/aria-label=|data-aria=/.test(b));
   ok(ad+': ikonlu düğmelerin hepsi adlandırılmış ('+ikonlu.length+' düğme'+
      (adsiz.length ? ', ADSIZ: '+adsiz.join(' ') : '')+')', adsiz.length === 0);
 }

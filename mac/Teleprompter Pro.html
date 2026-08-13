@@ -218,10 +218,10 @@
 
   <!-- ===== ÜST ÇUBUK ===== -->
   <div id="topbar">
-    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar">📝</button>
+    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar" aria-label="Senaryolar">📝</button>
     <div class="brand">Teleprompter <b>Pro</b></div>
     <button class="btn primary" id="playBtn">▶︎ Başlat</button>
-    <button class="btn" id="resetBtn" title="Başa sar (R)">⟲</button>
+    <button class="btn" id="resetBtn" title="Başa sar (R)" aria-label="Başa sar (R)">⟲</button>
     <span class="clock" id="clock">00:00</span>
 
     <span class="pill" id="fmtPill" title="Çekim formatı">
@@ -245,14 +245,14 @@
     <input type="file" id="scImport" accept="application/json,.json" style="display:none">
     <button class="btn" id="fsBtn" title="Tam ekran (F)">⛶ Tam Ekran</button>
     <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)">⇔ Sade</button>
-    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar">⚙︎</button>
+    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" aria-label="Ayarlar">⚙︎</button>
   </div>
   <div id="backdrop"></div>
 
   <!-- ===== SOL PANEL ===== -->
   <div id="left">
     <div class="sec">
-      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo">＋</button></h3>
+      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo" aria-label="Yeni senaryo">＋</button></h3>
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
@@ -306,7 +306,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <!-- Sürüm yazısı artık düğme: sürüm notlarının elle girişi bu.
            Telefonda tek giriş otomatik açılıştı ve kaçıran bir daha
            ulaşamıyordu; Mac'e o hata taşınmasın diye baştan düğme. -->
-      <button id="sbVer" title="🆕 Ne değişti? — sürüm notları"
+      <button id="sbVer" title="🆕 Ne değişti? — sürüm notları" aria-label="Ne değişti? Sürüm notları"
               style="opacity:.6;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0"></button>
       <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla"></span>
     </div>
