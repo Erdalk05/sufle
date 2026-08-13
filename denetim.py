@@ -17,6 +17,35 @@ Float32Array Int32Array ArrayBuffer DOMParser Notification Worker indexedDB loca
 sessionStorage document window navigator location history performance screen console
 speechSynthesis SpeechRecognition webkitSpeechRecognition""".split())
 
+def _satir_yorumunu_at(line):
+    """Satırdaki // yorumunu atar ama TIRNAK İÇİNDEKİNE dokunmaz.
+
+    Düz regex iki yönden de yanılıyordu:
+      · yalnız satır başındakini atmak  -> yorumun son kelimesi kod sanılıyor
+      · her // sonrasını atmak          -> metindeki "/ // (2)" dizeyi kesiyor
+    Soldan tarayıp tırnak durumunu izliyoruz; kaçışlı karakter atlanıyor,
+    "https://" gibi şema ayracı korunuyor.
+    """
+    tek = cift = False
+    i, n = 0, len(line)
+    while i < n:
+        ch = line[i]
+        if ch == "\\":
+            i += 2
+            continue
+        if ch == "'" and not cift:
+            tek = not tek
+        elif ch == '"' and not tek:
+            cift = not cift
+        elif ch == "/" and i + 1 < n and line[i+1] == "/" and not tek and not cift:
+            if i > 0 and line[i-1] == ":":      # https:// — yorum değil
+                i += 2
+                continue
+            return line[:i]
+        i += 1
+    return line
+
+
 def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     """Telefon (index.html) ve Mac (Teleprompter Pro.html) dosyalarını denetler.
     Mac sürümünde durum `state.x`, telefonda `st.x`; sözlük yok. Farkları burada
@@ -55,11 +84,13 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     # SATIR SONU YORUMLARI DA AT. Eskiden yalnız satır BAŞINDAKİ // atılıyordu;
     # `f();   // ... çıkış yolu burada duruyor` gibi bir satırın ardından
     # `(function(){` gelince yorumun son kelimesi "duruyor(" diye okunup
-    # tanımsız fonksiyon çağrısı sanılıyordu. Bu gece iki kez yalancı alarm
-    # verdi ve kapıyı gereksiz yere kırmızıya çevirdi — yalancı alarm veren
-    # dedektör, gerçek bulguyu da inandırıcılıktan düşürür.
-    # (?<![:\w]) URL'leri koruyor: https:// içindeki // atılmıyor.
-    code = re.sub(r"(?m)(?<![:\w])//.*$", "", code)
+    # tanımsız fonksiyon çağrısı sanılıyordu — iki kez yalancı alarm verdi.
+    # AMA düz regex de yetmiyor: METİN İÇİNDEKİ // yorum sanılıyor. Sürüm
+    # notundaki "/ // (2) duraklama işaretleri" ifadesi dizeyi ortadan kesti,
+    # tırnak dengesi bozuldu ve bu kez Türkçe cümleler koda karıştı. Yani
+    # dedektörü onarırken dedektöre yeni bir yalancı alarm ekledim.
+    # Çözüm: satırı soldan tarayıp yalnız TIRNAK DIŞINDAKİ // sonrasını at.
+    code = "\n".join(_satir_yorumunu_at(l) for l in code.split("\n"))
     code = re.sub(r"'(?:\\.|[^'\\\n])*'", "''", code)
     code = re.sub(r'"(?:\\.|[^"\\\n])*"', "''", code)
     code = re.sub(r"`(?:\\.|[^`\\])*`", "''", code, flags=re.S)

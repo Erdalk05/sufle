@@ -96,7 +96,13 @@ ok('telefon ve Mac '+ORNEKLER.length+' örnekte birebir aynı çıktıyı veriyo
 ok('Mac: anahtar arayüzde var', /data-t="bionic"/.test(mac));
 ok('Mac: durum varsayılanı tanımlı', /bionic:false/.test(mac));
 ok('Mac: anahtar değişince yeniden çiziliyor', /k==='bionic'\)\{\s*buildWords\(\)/.test(mac));
-ok('Mac: kelime inşası biyonik() üzerinden geçiyor', /class="w">'\+biyonik\(m\)/.test(mac));
+/* Desen KODUN METNİNE değil İDDİAYA bağlı: Mac'e işaretleme motoru eklenince
+   (bkz. tests/48) kelime artık isaretle() içinde kuruluyor ve birebir desen,
+   davranış bozulmadığı hâlde kapıyı kırmızıya çevirdi.
+   Korunan iddia: okunan kelime biyonik()'ten geçiyor ve span'ın içinde. */
+ok('Mac: kelime inşası biyonik() üzerinden geçiyor', /biyonik\(clean\)|biyonik\(m\)/.test(mac));
+ok('Mac: biyonik çıktısı kelime span\'ının içinde',
+   /class="w[\s\S]{0,120}?biyonik\((?:clean|m)\)[\s\S]{0,60}?<\/span>/.test(mac));
 /* Desen KODUN METNİNE değil İDDİAYA bağlı olmalı: kelime span'ının içeriğine
    sonradan noktalama eklendi (bkz. tests/47) ve ">'+bionic(clean)" birebir
    deseni, davranış bozulmadığı hâlde kapıyı kırmızıya çevirdi.
