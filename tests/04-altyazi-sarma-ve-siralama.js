@@ -43,6 +43,8 @@ eval(C.replace('const ','var '));
 var st={capMaxW:null};
 eval(grab(/function capMaxW\(\)\{[\s\S]*?\}/).replace('function','var _cmw=function').replace('_cmw=function capMaxW','capMaxW=function'));
 var CAP_MAXW=capMaxW();
+// sentenceEnd artık Türkçe kısaltma listesine dayanıyor — onu da yükle.
+eval(grab(/const KISALTMA=new Set\(\[[\s\S]*?\]\);/).replace('const ','var '));
 eval(grab(/function sentenceEnd\(s\)\{[\s\S]*?\n\}/));
 ok('nokta cümle sonu', sentenceEnd('bitti.')===true);
 ok('tırnaklı nokta da', sentenceEnd('bitti."')===true);

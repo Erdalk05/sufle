@@ -1838,7 +1838,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      Konuşma tanıma yok: metin senaryonun kendisi, zamanlama da kelimenin
      okuma çizgisinden geçtiği an. */
   const CAP_MAXW=7, CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
-  function sentenceEnd(s){ return /[.!?…:;]["')\]]?$/.test(s); }
+  /* TURKCEDE NOKTA CUMLEYI BITIRMEK ZORUNDA DEGIL: kisaltmalar (vb. Dr. Sn.),
+     sira sayilari (3. 12.) ve noktali kisaltmalar (T.C. A.Ş.) da noktayla
+     yazilir. Altyazi bunlari cumle sonu sayinca kuyruk tam ortasindan kesiliyor
+     ve ekranda tek kelimelik "vb." kutucugu beliriyordu. Olcum: tek ornek
+     cumlede 6 yanlis kirilma. Telefonla ayni duzeltme. */
+  const KISALTMA=new Set(['vb','vs','vd','bkz','bk','örn','dr','doç','prof','yrd','av','sn','sy',
+    'no','nu','tel','cad','sok','mah','apt','şb','müh','çev','ed','age','yy','mö','ms','tr','krş']);
+  function sentenceEnd(s){
+    if(!/[.!?…:;]["')\]]?$/.test(s)) return false;
+    const c=String(s).replace(/["')\]]$/,'');
+    if(!c.endsWith('.')) return true;              // ! ? … : ; kesin bitirir
+    const g=c.slice(0,-1);
+    if(/^\d+$/.test(g)) return false;              // sira sayisi
+    if(KISALTMA.has(g.toLocaleLowerCase('tr'))) return false;
+    if(/^(\p{Lu}\.)+\p{Lu}$/u.test(g)) return false;   // T.C. · A.Ş.
+    return true;
+  }
   function buildCues(){
     const off=(state.capOffset||0), list=[];
     for(let i=0;i<words.length;i++){
@@ -1993,7 +2009,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
-   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi.'
+   '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:

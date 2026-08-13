@@ -19,7 +19,10 @@ const mac=oku(macYolu());
 function kur(src, macMi){
   const onek = macMi ? 'state' : 'st';
   const re = macMi ? /function buildCues\(\)\{[\s\S]*?\n  \}/ : /function buildCues\(\)\{[\s\S]*?\n\}/;
-  const seRe = macMi ? /function sentenceEnd\(s\)\{[^\n]*\}/ : /function sentenceEnd\(s\)\{[^\n]*\}/;
+  /* sentenceEnd artık tek satır değil: Türkçe kısaltmaları ve sıra sayılarını
+     ayırt ediyor ve KISALTMA kümesine dayanıyor — ikisini de taşı. */
+  const seRe = macMi ? /function sentenceEnd\(s\)\{[\s\S]*?\n  \}/ : /function sentenceEnd\(s\)\{[\s\S]*?\n\}/;
+  const kisaltma = cikar(src, /const KISALTMA=new Set\(\[[\s\S]*?\]\);/, 'KISALTMA');
   const sabit = cikar(src, /const CAP_MAXW?[\s\S]{0,140}?CAP_GAP\s*=\s*[\d.]+;/, 'CAP sabitleri');
   const capMaxW = macMi ? '' : cikar(src, /function capMaxW\(\)\{[^\n]*\}/, 'capMaxW');
   return (kelimeler, zamanlar, satirlar, opt={}) => new Function('__k','__z','__s','__opt', `
@@ -28,6 +31,7 @@ function kur(src, macMi){
     const capTimes = __z, wordLine = __s;
     ${sabit}
     ${capMaxW}
+    ${kisaltma}
     ${cikar(src, seRe, 'sentenceEnd')}
     ${cikar(src, re, 'buildCues')}
     return buildCues();
@@ -94,8 +98,13 @@ ok('zamanı olmayan kelimeler atlanıyor',
   ok('ünlem de cümle sonu sayılıyor', c2.length === 2);
   const c3=telCues(K('Dedi: şunu'), Z(2,0.1), S(2));
   ok('iki nokta da cümle sonu sayılıyor', c3.length === 2);
+  /* BU SATIR ESKİDEN "bilinen sınır" diye KUSURU kilitliyordu: kısaltmadaki
+     nokta kuyruğu bölüyordu ve ekranda tek kelimelik "Sn." kutucuğu çıkıyordu.
+     Sınır kaldırıldı (bkz. tests/45) — artık doğru davranış kilitleniyor. */
   const c4=telCues(K('Sn. Ahmet'), Z(2,0.1), S(2));
-  ok('kısaltmadaki nokta da bölüyor (bilinen sınır)', c4.length === 2);
+  ok('kısaltmadaki nokta ARTIK bölmüyor', c4.length === 1 && c4[0].text === 'Sn. Ahmet');
+  const c5=telCues(K('3. bölüm'), Z(2,0.1), S(2));
+  ok('sıra sayısındaki nokta da bölmüyor', c5.length === 1);
 }
 
 /* ---------- BİTİŞ ZAMANLARI ----------
