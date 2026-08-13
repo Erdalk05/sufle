@@ -45,11 +45,11 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | # | Görev | Ö |
 |---|---|---|
 | C1 | İki sürümlü senaryo yayın paketine giriyor mu — ikinci sürüm de eklensin mi (karar) | P1 |
-| C2 | Senaryo arama iki sürümün ikisinde de arıyor mu | P1 |
+| C2 | ✅ Senaryo arama iki sürümün ikisinde de arıyor mu — **ARAMIYORDU**: yalnız o an AÇIK sürümün metnine bakıyordu, aradığın cümle diğer sürümdeyse senaryo listede hiç çıkmıyordu. Kullanıcı o metni bu uygulamaya kendisi yazmış oluyor. Düzeltildi. **Aynı turda plan dışı bir kayıp daha bulundu**: çoğaltma (⧉) alan alan kopyalıyordu, ikinci sürüm sessizce düşüyordu — tek dokunuşla metnin yarısı gidiyor. Artık nesnenin tamamı derin kopyalanıyor, sonraki alanlar da kendiliğinden taşınacak. Test 43 (36 iddia) | P1 |
 | C3 | `localStorage` kotası: iki sürüm + arka plan görseli ile sınır nerede — ÖLÇ | P1 |
-| C4 | Otomatik yedek ikinci sürümü de kapsıyor mu | P1 |
-| C5 | JSON dışa/içe aktarım ikinci sürümü taşıyor mu | P1 |
-| C6 | Silinen senaryo geri gelince ikinci sürüm de dönüyor mu | P1 |
+| C4 | ⛔ Otomatik yedek ikinci sürümü de kapsıyor mu — **hipotez çürüdü**: `st.scripts` dizisini olduğu gibi yazıyor, bütün alanlar taşınıyor. Testle kilitlendi (43) ki ileride "alan alan" yazıma dönülürse yakalansın | P1 |
+| C5 | ⛔ JSON dışa/içe aktarım ikinci sürümü taşıyor mu — **hipotez çürüdü**: dışa aktarma `scripts:st.scripts`, içe aktarma `st.scripts=j.scripts` — tümüyle taşıyor. Testle kilitlendi (43) | P1 |
+| C6 | ⛔ Silinen senaryo geri gelince ikinci sürüm de dönüyor mu — **hipotez çürüdü**: çöpe atarken `JSON.parse(JSON.stringify(gone))` derin kopya alınıyor, her şey dönüyor. Testle kilitlendi (43) | P1 |
 | C7 | `.srt` içe aktarımı çok uzun dosyada ne kadar sürüyor — ölç | P2 |
 | C8 | Senaryo sıralaması "son kullanım"da iki sürüm geçişini sayıyor mu | P2 |
 | C9 | Başlıktan ad üretimi ikinci sürümde de çalışıyor mu | P2 |
