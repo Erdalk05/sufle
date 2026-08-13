@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 23 P1 işlendi. **33 commit**, tamamı yerelde.
-Testler **732 → 1979**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından 24 P1 işlendi. **34 commit**, tamamı yerelde.
+Testler **732 → 1998**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -56,7 +56,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
-Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
+Planda "şu bozuktur" diye yazdığım 8 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
 
 - Mikrofon sızıntısı yok (sesle takip Web Audio'ya hiç dokunmuyor)
 - Kamera yeniden bağlanmasında sonsuz döngü yok
@@ -65,6 +65,7 @@ Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsi
 - `realRes()` gerçek çözünürlüğü okuyor
 - Uyumluluk panelinde kompozit/duraklatma/paylaşma/MP4 satırları **doğru**
 - Kumanda yeniden bağlanması eksik değil (tarayıcı kendi yapıyor + nabız var)
+- **Sesle takip uzun metinde kaybolmuyor** — 5000 kelimede işaretçi sona 4999/5000 ulaşıyor; geniş arama 4734 adımda 3 kez gerekiyor
 
 **Ama beşinde, hipotez çürürken yanı başında gerçek bir kusur çıktı.** Doğru soruyu yanlış yere sormak da işe yaradı.
 
@@ -74,6 +75,7 @@ Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsi
 - **H6'daki koruma eksikti:** "Sesi düzelt" düğmesi izleri kendi durduruyor, kapıya hiç varmıyordu. F4 turunda yakaladım.
 - **Sürüm notundaki kesme işareti** iki kez JS dizesini kırdı — uygulama **hiç açılmayacaktı**. Her ikisini de kapının 2. adımı yakaladı.
 - **Testlerin koda birebir kilitlenmesi** kapıyı 5 kez gereksiz kırmızıya çevirdi. Kuralı `CLAUDE.md`'ye yazdım, süpürmeyi X1/X2 olarak P2'ye aldım.
+- **Bir yamayı geri almak zorunda kaldım:** sesle takipte "sapma" sandığım sayı aslında kurtarma öncesi geçici gecikmeymiş. Yazdığım yama sayıları hiç değiştirmedi — etkisini gösteremediğim değişikliği tutmadım.
 
 ## Sende karar bekleyenler
 
@@ -83,7 +85,7 @@ Planda "şu bozuktur" diye yazdığım 7 madde **doğru çalışıyordu**. Hepsi
 
 ## Sayılar
 
-- **33 commit**, hepsi yerelde, `claude` dalında
-- **1979 test** (gece başında 732) · yeni test dosyası: 39–64
-- Gece planı: 135 görevden **29'u** işlendi (bütün P0'lar + 23 P1)
+- **34 commit**, hepsi yerelde, `claude` dalında
+- **1998 test** (gece başında 732) · yeni test dosyası: 39–65
+- Gece planı: 135 görevden **30'u** işlendi (bütün P0'lar + 24 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
