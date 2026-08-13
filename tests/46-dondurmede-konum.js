@@ -50,6 +50,9 @@ function dondur({baslangicKelime, aktifBiliniyor, eski=false, kelimeVar=true}){
     let activeIdx = __aktif;
     const eyeOff=()=>${EYE};
     const drawAspect=()=>{}, drawSafe=()=>{};
+    /* Sesli takip kapalı: yeniden ölçüm artık takibin PİKSEL hedefini de
+       tazeliyor (bkz. tests/64), burada o yol sınanmıyor. */
+    const voiceOn=false, syncVoicePtr=()=>{};
     const setPos=p=>{ pos=Math.max(0,Math.min(maxPos,p)); };
     // Döndürme: yeni satır sarması ölçülür.
     const measure=()=>{ wordTops = __var ? __yeni : []; maxPos = wordTops.length ? wordTops[wordTops.length-1]-${EYE} : 1; };
