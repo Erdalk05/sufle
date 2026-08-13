@@ -74,7 +74,12 @@ function kos({gorunur=true, akisVar=true, izDurumu='ended', kayitta=false, camAc
    "Kamera açılamadı: NotAllowedError" hiçbir şey anlatmıyordu. Üç sebep üç
    ayrı mesaj almalı; kullanıcı ne yapacağını ancak böyle bilir. */
 const openCam = cikar(kod, /async function openCam\(\)\{[\s\S]*?\n\}/, 'openCam');
-ok('izin reddi ayrı mesaj', /NotAllowedError'\|\|n==='SecurityError'\)\s*toast\(m\('camDenied'\)\)/.test(openCam));
+/* Desen KODUN METNİNE değil İDDİAYA bağlı olmalı: mesaja sonradan platforma
+   göre yol tarifi eklendi (bkz. tests/52) ve birebir desen, davranış
+   bozulmadığı hâlde kapıyı kırmızıya çevirdi.
+   Korunan iddia: izin reddi KENDİ mesajını alıyor. */
+ok('izin reddi ayrı mesaj',
+   /NotAllowedError'\|\|n==='SecurityError'\)\s*toast\(m\('camDenied'\)/.test(openCam));
 ok('kamera meşgul ayrı mesaj', /NotReadableError'\|\|n==='AbortError'\)\s*toast\(m\('camBusy'\)\)/.test(openCam));
 ok('kamera bulunamadı ayrı mesaj', /NotFoundError'\|\|n==='OverconstrainedError'\)\s*toast\(m\('camNone'\)\)/.test(openCam));
 for (const k of ['camDenied','camBusy','camNone','camBack'])
