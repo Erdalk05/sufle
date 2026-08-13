@@ -88,7 +88,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 |---|---|---|
 | F1 | Işık denetçisi 32×48 örnekleme maliyeti kayıt sırasında ne kadar — ölç | P1 |
 | F2 | Ön/arka geçişte zoom+fener sızıntısı testte kilitli mi | P1 |
-| F3 | Kamera akışı koparsa yeniden bağlanma kaç deneme yapıyor — sonsuz mu | P0 |
+| F3 | Kamera akışı koparsa yeniden bağlanma kaç deneme yapıyor — sonsuz mu | P0 | ⛔ sonsuz döngü YOK (yalnız visibilitychange ile bir kez tetikleniyor, hata yolları ayrı mesajlı) → ama ✅ **KAPSAM BOŞLUĞU**: telefonun kamera korumaları hiç test edilmiyordu (Mac'inki kilitliydi). tests/37 ile kilitlendi. |
 | F4 | 4K istenip düşülünce gerçek çözünürlük gösteriliyor mu — testle kilitle | P1 |
 | F5 | Eğim (tilt) izni reddedilince rozet gizleniyor mu | P2 |
 | F6 | Göz hattı kılavuzu farklı oranlarda doğru yerde mi | P2 |
