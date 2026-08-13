@@ -96,7 +96,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | F7 | ✅ Uyumluluk özeti yanlış söylüyor mu — **plandaki `deviceLine()` adı kodda YOK** (gerçek ad `deviceReport()`); ad üzerinden değil davranış üzerinden bakıldı. **Bir sapma bulundu**: kesme satırı panelin KENDİ kuralını yazıyordu (`video.captureStream`), oysa gerçek kapı `canTrim()` ve o `mozCaptureStream`'i de kabul ediyor. Ölçüm — Chrome/Safari: panel=true kapı=true · **Firefox: panel=FALSE kapı=TRUE** · desteksiz: ikisi de false. Yani Firefox'ta çalışan özelliğe “yok” deniyor, kullanıcı daha zahmetli yola gönderiliyordu. Panel artık kapının kendisini çağırıyor. Kompozit/duraklatma/paylaşma/MP4 satırları denetlendi — **ayrışma yok** (hipotezin geri kalanı çürüdü) ve testle kilitlendi. Test 50 (20 iddia) | P1 |
 | F8 | Kamera izni reddedilince kurtarma metni platforma göre doğru mu | P1 |
 | F9 | Işık uyarısı kayıt sırasında kaç kez tekrarlıyor — bunaltıyor mu | P2 |
-| F10 | `lightCheck` boş/siyah karede NaN üretiyor mu | P1 |
+| F10 | ⛔+✅ `lightCheck` boş/siyah karede NaN üretiyor mu — **NaN hipotezi ÇÜRÜDÜ**: örnekleme ızgarası sabit 32×48, bölenler derlenme anında belli, sıfır olamıyor (tam siyah/orta gri/tam beyaz karelerde ölçüldü, hiçbir alan NaN değil; yine de testle kilitlendi). **Ama aynı ölçümde gerçek kusur çıktı**: siyah karede panel “Yüzün karanlık — ışığı yüzünün önüne al” diyordu. Mercek kapalıysa ya da iOS arka plandan dönerken boş kare veriyorsa kullanıcı ışık ekliyor, hiçbir şey değişmiyor. **Ölçüm zaten vardı**: `darkPct` hesaplanıp hiç okunmuyordu — ölü ölçüm. Artık ayrı teşhis veriyor ve yanıltıcı ışık öğüdü yığılmıyor. Test 51 (28 iddia) | P1 |
 
 ## G. Kompozit / yeşil ekran
 | # | Görev | Ö |
