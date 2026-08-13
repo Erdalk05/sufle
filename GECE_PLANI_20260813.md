@@ -93,7 +93,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | F4 | 4K istenip düşülünce gerçek çözünürlük gösteriliyor mu — testle kilitle | P1 |
 | F5 | Eğim (tilt) izni reddedilince rozet gizleniyor mu | P2 |
 | F6 | Göz hattı kılavuzu farklı oranlarda doğru yerde mi | P2 |
-| F7 | `deviceLine()` uyumluluk özeti yanlış pozitif veriyor mu | P1 |
+| F7 | ✅ Uyumluluk özeti yanlış söylüyor mu — **plandaki `deviceLine()` adı kodda YOK** (gerçek ad `deviceReport()`); ad üzerinden değil davranış üzerinden bakıldı. **Bir sapma bulundu**: kesme satırı panelin KENDİ kuralını yazıyordu (`video.captureStream`), oysa gerçek kapı `canTrim()` ve o `mozCaptureStream`'i de kabul ediyor. Ölçüm — Chrome/Safari: panel=true kapı=true · **Firefox: panel=FALSE kapı=TRUE** · desteksiz: ikisi de false. Yani Firefox'ta çalışan özelliğe “yok” deniyor, kullanıcı daha zahmetli yola gönderiliyordu. Panel artık kapının kendisini çağırıyor. Kompozit/duraklatma/paylaşma/MP4 satırları denetlendi — **ayrışma yok** (hipotezin geri kalanı çürüdü) ve testle kilitlendi. Test 50 (20 iddia) | P1 |
 | F8 | Kamera izni reddedilince kurtarma metni platforma göre doğru mu | P1 |
 | F9 | Işık uyarısı kayıt sırasında kaç kez tekrarlıyor — bunaltıyor mu | P2 |
 | F10 | `lightCheck` boş/siyah karede NaN üretiyor mu | P1 |
