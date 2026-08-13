@@ -127,7 +127,12 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    zincirin sonunda açılıyor — arşivleme patlarsa ekran hiç gelmesin diye
    ayrı bir hata yolu var. Mac'te arşivleme ELLE (keepTake); recorder.onstop
    doğrudan showResult() çağırıyor, araya giren bir zincir yok. Ölçüldü. */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave']);
+/* mapIn: ÖĞRENİLEN TUŞ EŞLEMESİ TELEFONA ÖZGÜ. Telefon bir Bluetooth/HID
+   kumandanın tuşlarını öğrenip eyleme bağlıyor (remoteMap/keyMap/learnKey);
+   Mac'te bu kavram HİÇ YOK — ölçüldü, ilgili adlar Mac dosyasında sıfır kez
+   geçiyor. Mac'in kumandası ayrı bir şey: telefondan açılan QR web sayfası.
+   Dolayısıyla profil içe aktarmanın (tests/58) Mac karşılığı da yok. */
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn']);
 const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));
