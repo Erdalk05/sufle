@@ -41,6 +41,9 @@ const KORUMALAR = [
   // BOŞLUK: "uygulanmaz" değil. Mac Web Audio için EN İYİ platform (iOS kısıtı yok).
   // Bunları muafiyet gibi etiketlemek boşluğu görünmez kılardı; ayrı kategori.
   ['Biyonik okuma',                 /function bionic\(/,                      /function biyonik\(/],
+  ['Anahtarlar klavyeyle açılır',   /setAttribute\('role','switch'\)/,        /setAttribute\('role','switch'\)/],
+  ['Anahtar durumu duyurulur',      /setAttribute\('aria-checked'/,           /setAttribute\('aria-checked'/],
+  ['Klavye odak halkası',           /:focus-visible\{[^}]*outline:/,          /:focus-visible\{[^}]*outline:/],
   ['Ses Stüdyosu zinciri',          /function makeFxTrack/,                   /function makeFxTrack/],
   ['Nefesle akış (VAD)',            /function vadKarar/,                      /function vadKarar/],
   ['Yüzen sufle (PiP)',             'uygulanmaz: Document PiP yalnız masaüstü tarayıcılarında',

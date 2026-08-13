@@ -1093,6 +1093,9 @@ const MSG={
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
   micIosOff:'iPhone\'da kapalı (kaydı sessizleştiriyordu)',audTesting:'Deneniyor… (15 sn)',audTestWin:'✓ Sesli kaydeden biçim bulundu ve seçildi',audTestNone:'⚠️ Hiçbir biçimde ses yazılamadı',micRefresh:'🔊 Mikrofon tazeleniyor…',micFixed:'🔊 Mikrofon yenilendi — tekrar çek',
   audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',
+  takeFav:'Yıldızla', takeUnfav:'Yıldızı kaldır', takePlay:'Çekimi oynat',
+  takeSrt:'Altyazı dosyasını indir', takeShare:'Çekimi paylaş veya kaydet',
+  takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
   audClipShort:'ses kırpıyor',audLowShort:'ses kısık',audOkShort:'ses iyi',
   recOn:'KAYITTA',recPaused:'DURAKLADI',recPausedInfo:'⏸ Kayıt duraklatıldı — ⏺ ile aynı videoya devam edersin',
   recResumed:'⏺ Kayıt devam ediyor',pauseNo:'Bu cihazda kayıt duraklatılamıyor',
@@ -1153,6 +1156,9 @@ const MSG={
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   micIosOff:'off on iPhone (it was silencing recordings)',audTesting:'Testing… (15s)',audTestWin:'✓ Found a format that records audio',audTestNone:'⚠️ No format produced audio',micRefresh:'🔊 Refreshing microphone…',micFixed:'🔊 Microphone refreshed — record again',
   audClip:'⚠️ Audio is clipping — back off the mic or speak softer',
+  takeFav:'Star this take', takeUnfav:'Remove star', takePlay:'Play take',
+  takeSrt:'Download subtitle file', takeShare:'Share or save take',
+  takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
   noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
@@ -1206,6 +1212,11 @@ function applyLang(){
     // içinde etiket varsa innerHTML: eskiden <b> ham metin olarak görünüyordu
     if(/<[a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v; });
   $$('[data-i18n-ph]').forEach(el=>{ const v=I18N[L][el.dataset.i18nPh]; if(v) el.placeholder=v; });
+  /* Anahtarların adı yanındaki <span>'de duruyor; ekran okuyucu <div> anahtarı
+     adsız okuyordu. Etiket dille değiştiği için BURADA türetiliyor — dil
+     değişince yenilenmezse İngilizceye geçen kullanıcı Türkçe etiket duyardı. */
+  $$('.sw').forEach(s=>{ const et=s.parentElement && s.parentElement.querySelector('span');
+    if(et) s.setAttribute('aria-label',et.textContent.trim()); });
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
   $('#verLine').textContent='Sufle v'+VER;
@@ -3106,9 +3117,14 @@ async function renderTakes(){
     const d=document.createElement('div'); d.className='listitem';
     d.innerHTML='<div class="meta"><div class="t">'+(it.fav?'⭐ ':'')+esc(it.title||'—')+'</div><div class="s">'+
       new Date(it.created).toLocaleString()+' · '+clock(it.dur||0)+' · '+((it.size||0)/1048576).toFixed(1)+' MB</div></div>'+
-      '<button class="iconbtn" data-a="fav">'+(it.fav?'⭐':'☆')+'</button>'+
-      '<button class="iconbtn" data-a="play">▶︎</button>'+(it.srt?'<button class="iconbtn" data-a="srt">💬</button>':'')+
-      '<button class="iconbtn" data-a="share">⬇︎</button><button class="iconbtn" data-a="del">🗑</button>';
+      /* Bu düğmeler yalnız simge; adsız kalırsa ekran okuyucu "düğme" ya da
+         emoji adını okur ve hangisi olduğu anlaşılmaz. Liste JS'le üretildiği
+         için data-aria/applyLang yolu işlemiyor — etiket burada yazılıyor. */
+      '<button class="iconbtn" data-a="fav" aria-label="'+(it.fav?m('takeUnfav'):m('takeFav'))+'">'+(it.fav?'⭐':'☆')+'</button>'+
+      '<button class="iconbtn" data-a="play" aria-label="'+m('takePlay')+'">▶︎</button>'+
+      (it.srt?'<button class="iconbtn" data-a="srt" aria-label="'+m('takeSrt')+'">💬</button>':'')+
+      '<button class="iconbtn" data-a="share" aria-label="'+m('takeShare')+'">⬇︎</button>'+
+      '<button class="iconbtn" data-a="del" aria-label="'+m('takeDel')+'">🗑</button>';
     d.querySelector('[data-a="fav"]').onclick=async()=>{ it.fav=!it.fav; await dbPut(it); renderTakes(); };
     // 10.3 Yeniden adlandırma: arşivde hepsi aynı senaryo adını taşıyordu, ayırt edilemiyordu
     d.querySelector('.t').onclick=async()=>{
@@ -3558,7 +3574,7 @@ function renderScripts(){
   list.forEach(s=>{
     const d=document.createElement('div'); d.className='listitem'+(s.id===st.activeId?' on':'');
     d.innerHTML='<div class="meta"><div class="t">'+esc(s.title||'—')+'</div><div class="s">'+
-      statLine(countWords(s.text))+'</div></div><button class="iconbtn" data-a="dup">⧉</button>';
+      statLine(countWords(s.text))+'</div></div><button class="iconbtn" data-a="dup" aria-label="'+m('scDup')+'">⧉</button>';
     d.querySelector('.meta').onclick=()=>{ selectScript(s.id); };
     d.querySelector('[data-a="dup"]').onclick=e=>{ e.stopPropagation();
       const c={id:uid(),title:(s.title||'')+' ·',text:s.text,up:Date.now()};
@@ -3976,14 +3992,14 @@ function renderMap(){
   Object.keys(mp2).filter(k=>mp2[k]&&mp2[k]!=='none').sort().forEach(k=>{
     const d=document.createElement('div'); d.className='listitem';
     d.innerHTML='<div class="meta"><div class="t">'+esc(keyLabel(k))+' ×2</div><div class="s">'+actName(mp2[k])+'</div></div>'+
-      '<button class="iconbtn" data-a="x" aria-label="Sil">🗑</button>';
+      '<button class="iconbtn" data-a="x" aria-label="'+m('mapDel')+'">🗑</button>';
     d.querySelector('[data-a="x"]').onclick=()=>{ st.remoteMap2=Object.assign({},keyMap2()); delete st.remoteMap2[k]; save(); renderMap(); };
     box.appendChild(d);
   });
   Object.keys(mp).filter(k=>mp[k]&&mp[k]!=='none').sort().forEach(k=>{
     const d=document.createElement('div'); d.className='listitem';
     d.innerHTML='<div class="meta"><div class="t">'+esc(keyLabel(k))+'</div><div class="s">'+actName(mp[k])+'</div></div>'+
-      '<button class="iconbtn" data-a="x">🗑</button>';
+      '<button class="iconbtn" data-a="x" aria-label="'+m('mapDel')+'">🗑</button>';
     d.querySelector('[data-a="x"]').onclick=()=>{
       st.remoteMap=Object.assign({},keyMap()); st.remoteMap[k]='none'; save(); renderMap();
     };
@@ -4120,7 +4136,10 @@ function apply(){
         +'Kaydırıcıyı <b>%8-15</b> arasına çek ya da <b>👁 Göz teması reçetesi</b>ne bas.'
       : '⚠️ <b>Reading line is too low</b> — your gaze is <b>'+Math.round(a)+'°</b> below the lens. Move the slider to <b>8-15%</b>.');
   }
-  $$('.sw').forEach(s=>s.classList.toggle('on',!!st[s.dataset.t]));
+  /* aria-checked olmadan role="switch" durumunu söylemez: ekran okuyucu
+     "anahtar" der ama açık mı kapalı mı belli olmaz. */
+  $$('.sw').forEach(s=>{ const a=!!st[s.dataset.t];
+    s.classList.toggle('on',a); s.setAttribute('aria-checked',a?'true':'false'); });
   $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
   $('#modeHint').textContent=modeLine();
   updateHud();

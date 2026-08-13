@@ -89,6 +89,10 @@
   .sw2::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#777;transition:.15s}
   .sw2.on{background:var(--accent)}
   .sw2.on::after{left:21px;background:#fff}
+  /* ODAK HALKASI — telefonda vardı, Mac'te hiç yoktu. :focus-visible sayesinde
+     fareyle tıklayanda çıkmıyor, yalnız klavyeyle gezerken çıkıyor. */
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible,
+  .sw2:focus-visible, [tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
   .colorRow{display:flex;align-items:center;gap:10px}
   .colorRow input[type=color]{width:40px;height:30px;border:1px solid var(--line);border-radius:8px;background:none;padding:2px}
 
@@ -756,7 +760,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     // seçimler
     $$('#famSel button').forEach(b=>b.classList.toggle('on',b.dataset.fam===state.fam));
     $$('#themeSel .sw').forEach(b=>b.classList.toggle('on',b.dataset.theme===state.theme));
-    $$('.sw2').forEach(t=>t.classList.toggle('on',state[t.dataset.t]));
+    /* aria-checked olmadan role="switch" durumunu söylemez: ekran okuyucu
+       "anahtar" der ama açık mı kapalı mı belli olmaz. */
+    $$('.sw2').forEach(t=>{ const a=!!state[t.dataset.t];
+      t.classList.toggle('on',a); t.setAttribute('aria-checked',a?'true':'false'); });
     $$('#fxSeg button').forEach(b=>b.classList.toggle('on',b.dataset.fx===(state.audioFx||'voice')));
     const fs=$('#fxState'); if(fs) fs.textContent=(state.audioFx||'voice')==='off'?'kapalı':'açık';
     $$('#fmtPill button').forEach(b=>b.classList.toggle('on',b.dataset.fmt===state.fmt));
@@ -1924,6 +1931,19 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   $('#cText').addEventListener('input',e=>{ state.cText=e.target.value; state.theme='custom'; applyAll(); save(); });
   $('#cBg').addEventListener('input',e=>{ state.cBg=e.target.value; state.theme='custom'; applyAll(); save(); });
   // toggle anahtarlar
+  /* ERİŞİLEBİLİRLİK — anahtarlar <div> olduğu için klavyeyle ne odaklanabiliyor
+     ne de açılabiliyordu; ekran okuyucu da adını ve durumunu söylemiyordu.
+     Etiket metni yanındaki <span>'de duruyor, oradan alınıyor. */
+  $$('.sw2').forEach(s=>{
+    s.setAttribute('tabindex','0'); s.setAttribute('role','switch');
+    const et=s.parentElement && s.parentElement.querySelector('span');
+    if(et && !s.getAttribute('aria-label')) s.setAttribute('aria-label',et.textContent.trim());
+    s.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){
+      /* Boşluk ve Enter belge düzeyinde togglePlay'e bağlı. stopPropagation
+         olmazsa ayar açarken sufle de akmaya başlar — telefonda gerçek
+         tarayıcıda bulunan hatanın Mac'teki karşılığı. */
+      e.preventDefault(); e.stopPropagation(); s.click(); } });
+  });
   $$('.sw2').forEach(t=>t.onclick=()=>{ const k=t.dataset.t; state[k]=!state[k];
     /* ÖLÜ AYAR TUZAĞI (telefonda üç kez çıktı): altyazı gömme ve yeşil ekran YALNIZ
        kırpma boru hattında çiziliyor. Kırpma kapalıyken bu anahtarlar hiçbir şey
