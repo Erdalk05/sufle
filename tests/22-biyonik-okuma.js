@@ -97,4 +97,10 @@ ok('Mac: anahtar arayüzde var', /data-t="bionic"/.test(mac));
 ok('Mac: durum varsayılanı tanımlı', /bionic:false/.test(mac));
 ok('Mac: anahtar değişince yeniden çiziliyor', /k==='bionic'\)\{\s*buildWords\(\)/.test(mac));
 ok('Mac: kelime inşası biyonik() üzerinden geçiyor', /class="w">'\+biyonik\(m\)/.test(mac));
-ok('telefon: kelime inşası bionic() üzerinden geçiyor', />'\+bionic\(clean\)/.test(tel));
+/* Desen KODUN METNİNE değil İDDİAYA bağlı olmalı: kelime span'ının içeriğine
+   sonradan noktalama eklendi (bkz. tests/47) ve ">'+bionic(clean)" birebir
+   deseni, davranış bozulmadığı hâlde kapıyı kırmızıya çevirdi.
+   Korunan iddia: okunan kelime bionic()'ten geçiyor. */
+ok('telefon: kelime inşası bionic() üzerinden geçiyor', /bionic\(clean\)/.test(tel));
+ok('telefon: bionic çıktısı kelime span\'ının içinde',
+   /class="w[^']*'[^;]*bionic\(clean\)[\s\S]{0,40}<\/span>/.test(tel));

@@ -32,7 +32,8 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 |---|---|---|
 | B1 | `markup()` iç içe `*a *b* c*` durumunda ne üretiyor — sınırları testle kilitle | P1 |
 | B2 | `{telaffuz}` ipucu satır sarmasını bozuyor mu | P2 |
-| B3 | `duzMetin()` (yayın paketi) ile `markup()` aynı işaretleri tanıyor mu — sapma testi | P1 |
+| B3 | ✅ `duzMetin()` ile `markup()` aynı işaretleri tanıyor mu — **TANIMIYORDU, ikisi ayrışıyordu**. (1) Noktalama işarete yapışınca vurgu çalışmıyordu: `*harika*!` ve `(*vurgu*)` ekranda **ve yayımlanan altyazı dosyasında** yıldızlarıyla duruyordu, paket ise temizliyordu. (2) Telaffuz ipucu `{…}` markup'ta yalnız belirtecin SONUNDA aranıyordu, duzMetin her yerdekini siliyordu; uzunluk sınırları da farklıydı (24 / sınırsız). Artık okunan kelimelerde sapma **sıfır**. Duraklama simgeleri (⏸ | ‖) okunan kelime olmadığı için paketten çıkarılmaları doğru davranış — testte ayrıldı. Test 47 (43 iddia) | P1 |
+| B11 | ⬜ **YENİ (B3 turunda bulundu)** — Mac'te işaretleme motoru HİÇ YOK: `buildWords` her belirteci olduğu gibi `.w` içine sarıyor. Vurgu `*…*`, telaffuz `{…}` ve duraklama `/ // (2)` Mac suflesinde **harfi harfine görünüyor** ve altyazıya giriyor. Üstelik Mac'te “🫁 Nefes işareti” düğmesi metne `/` işaretleri EKLİYOR — yani araç, sufleyi kendi bozuyor. Telefondaki `markup()` Mac'e taşınmalı | P1 |
 | B4 | Çok uzun tek kelime (>42 karakter) editörde ve suflede taşıyor mu | P1 |
 | B5 | RTL/Arapça metin akışı: karakter yönü ters mi | P2 |
 | B6 | `stripInvisible` hangi karakterleri atıyor — listeyi testle sabitle | P1 |
