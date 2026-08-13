@@ -1124,7 +1124,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
+  restored:'↺ Senaryo geri geldi',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Çekimlerim\'den eski çekimleri sil.',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -1179,7 +1179,7 @@ const MSG={
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
+  restored:'↺ Script restored',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Delete old takes in My takes.',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -2669,7 +2669,7 @@ function renderFx(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
-let fxTrack=null, fxUsed=false, vidOldu=0;
+let fxTrack=null, fxUsed=false, vidOldu=0, sesOldu=0, fxWatch=0, fxWarned=false;
 let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
@@ -2799,6 +2799,39 @@ function doStartRec(){
     logErr('rec','video izi öldü @'+vidOldu.toFixed(1)+'s');
     toast(m('vidDied')); buzz([60,40,60]);
   },{once:true});
+  /* SES ÖLÜMÜ: görüntü için gözcü vardı, SES İÇİN YOKTU — oysa aynı hata sınıfı.
+     Mikrofon izi çekim ortasında bitebiliyor: Bluetooth kulaklık kopması,
+     mikrofonun gelen aramaya kapılması, USB mikrofonun çıkması. Görüntü akmaya
+     devam ettiği için kayıt sapasağlam görünüyor ama o saniyeden sonrası SESSİZ
+     ve bunu ancak çekimi izlerken anlıyorsun.
+     RAW mikrofon izini izliyoruz, kayda giden izi değil: Ses Stüdyosu açıkken
+     kayda giden iz bir MediaStreamDestination izi ve mikrofon ölse bile o
+     "bitmiyor" — sadece sessizlik akıtıyor. */
+  sesOldu=0;
+  const aIz=stream.getAudioTracks()[0];
+  if(aIz) aIz.addEventListener('ended',()=>{
+    sesOldu=recElapsed();
+    logErr('rec','ses izi öldü @'+sesOldu.toFixed(1)+'s');
+    toast(m('audDied')); buzz([60,40,60]);
+  },{once:true});
+  /* SES STÜDYOSU ZİNCİRİ KAYIT ORTASINDA ASKIYA ALINABİLİR.
+     Kurulum anında kontrol ediliyordu (askıdaysa ham ize düşülüyor) ama çekim
+     BAŞLADIKTAN sonra bir daha bakılmıyordu. Askıdaki AudioContext sessizlik
+     üretir; kayıt sessiz gider. Kayıt başladıktan sonra izleri değiştirmek
+     mümkün değil — yapılabilecek tek şey bağlamı geri getirmeyi denemek,
+     olmazsa kullanıcıya SÖYLEMEK. */
+  clearInterval(fxWatch); fxWatch=0; fxWarned=false;
+  if(fxUsed) fxWatch=setInterval(()=>{
+    if(!rec || rec.state!=='recording' || recPaused || !afx.ctx) return;
+    if(afx.ctx.state==='running'){ fxWarned=false; return; }
+    if(fxWarned) return;
+    fxWarned=true;
+    logErr('audioFx','bağlam kayıt sırasında '+afx.ctx.state+' @'+recElapsed().toFixed(1)+'s');
+    Promise.resolve().then(()=>afx.ctx.resume()).then(()=>{
+      if(afx.ctx && afx.ctx.state==='running') toast(m('fxBack'));
+      else { toast(m('fxDead')); buzz([60,40,60]); }
+    }).catch(e=>{ logErr('audioFx',e); toast(m('fxDead')); buzz([60,40,60]); });
+  },1000);
   recT=performance.now(); recPausedMs=0; recPaused=false; overWarned=false; showRecTime();
   clearInterval(lightWatch);
   lightWatch=setInterval(()=>{
@@ -2821,6 +2854,7 @@ function doStartRec(){
 let lightWatch=0, lightWarned=false;
 function stopRec(){
   clearInterval(lightWatch); lightWatch=0; lightWarned=false;
+  clearInterval(fxWatch); fxWatch=0; fxWarned=false;
   if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
   if(st.vad) setTimeout(vadBaslat,400);           // kayıt bitti, nefesle akış geri gelsin
   setTimeout(stopAudioFx,300);          // son parçalar yazılsın diye kısa gecikme
@@ -2927,6 +2961,17 @@ function showResult(blob){
             ? 'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor: '
               +'çözünürlüğü 720p yap, kompoziti kapat ve çekimi kısa tut.'
             : 'Audio is complete but video stopped early. Try 720p and shorter takes.')+'</small>';
+      }
+      /* Sesin kesildiğini de SÖYLE. Kayıt sırasında uyarı çıkıyor ama kullanıcı
+         suflenin akışına bakıyor olabilir; sonuç ekranı son şans. */
+      else if(sesOldu>0.5){
+        $('#audInfo').innerHTML='<b style="color:#ff5252">⛔ '+
+          (L==='tr' ? 'SES '+clock(sesOldu)+' SANİYEDE KESİLDİ' : 'AUDIO STOPPED AT '+clock(sesOldu))+
+          '</b><br><small>'+(L==='tr'
+            ? 'Görüntü tam ama mikrofon çekim ortasında gitti (Bluetooth kulaklık kopması ya da '
+              +'mikrofonun başka bir uygulamaya kapılması). Kulaklığı kontrol et ve tekrar çek.'
+            : 'Video is complete but the microphone was lost mid-take (Bluetooth disconnect or another app '
+              +'taking the microphone). Check your headset and shoot again.')+'</small>';
       }
     },{once:true});
     vv.addEventListener('error',()=>{ try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); } },{once:true});
@@ -4634,8 +4679,8 @@ const NEWS={
        en:'📦 <b>Publish bundle crashed on long takes</b>: the whole video was pulled into memory while building the bundle — about 1.3 GB for a 10-minute 1080p take, enough for iPhone to kill the tab, exactly where the bundle is most useful. The video is now streamed into the bundle instead.'},
  '9.4':{tr:'🎬 <b>Çekim bitince ekranda hiçbir şey olmuyordu</b>: kayıt duruyor, sonuç ekranı hiç açılmıyor ve tek satır açıklama çıkmıyordu — çekim aslında elde olduğu hâlde. Sebep, cihazın arşiv deposunun bazen hiç cevap vermemesiydi; uygulama sonsuza kadar bekliyordu. Artık cevapsız kalan her depo işi kısa sürede düşüyor ve <b>arşivleme başarısız olsa bile çekimini görüyorsun</b> — sebebi de yazıyor.',
        en:'🎬 <b>Nothing appeared after a take</b>: recording stopped but the result screen never opened and no reason was shown — even though the take was safe in memory. The device archive could stall forever with no error. Storage work now times out, and <b>you always get the result screen even if archiving fails</b>, with the reason shown.'},
- '9.5':{tr:'🎙 <b>Sesle takip kendini kilitliyordu</b>: telefon dinlemeyi kısa aralıklarla kestiğinde uygulama sonsuza kadar yeniden başlatıp duruyordu; bir süre sonra sufle sözü takip etmeyi tamamen bırakıyordu. Ayrıca sesle takibi kapatınca mikrofon açık kalabiliyordu.<br>🎥 <b>Kayıt sürerken kamera koparsa donmuş kare kaydediliyordu</b>: yeşil ekran/kırpma açıkken görüntü kilitleniyor ama kayıt sürüyordu — ancak çekimi izleyince anlıyordun. Artık çekim o anda bitiriliyor ve o ana kadarki kısım arşive giriyor.<br>🎚 <b>Çekim sırasında kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu</b>: kayıt sessiz devam ediyordu. Artık kayıt sürerken değiştirilemiyor ve sebebi söyleniyor.',
-       en:'🎙 <b>Voice follow could lock itself up</b>: when the phone cut listening short the app restarted it endlessly and eventually stopped following your speech altogether. Turning voice follow off could also leave the microphone open.<br>🎥 <b>A frozen frame kept being recorded</b> when the composite (green screen / crop) view lost the device graphics context mid-take — you only found out on playback. The take is now ended right there and what you recorded is kept.<br>🎚 <b>Changing camera or microphone mid-take killed the audio</b> and recording silently continued. It is now blocked during a take, with the reason shown.'}
+ '9.5':{tr:'🎙 <b>Sesle takip kendini kilitliyordu</b>: telefon dinlemeyi kısa aralıklarla kestiğinde uygulama sonsuza kadar yeniden başlatıp duruyordu; bir süre sonra sufle sözü takip etmeyi tamamen bırakıyordu. Ayrıca sesle takibi kapatınca mikrofon açık kalabiliyordu.<br>🎥 <b>Kayıt sürerken kamera koparsa donmuş kare kaydediliyordu</b>: yeşil ekran/kırpma açıkken görüntü kilitleniyor ama kayıt sürüyordu — ancak çekimi izleyince anlıyordun. Artık çekim o anda bitiriliyor ve o ana kadarki kısım arşive giriyor.<br>🎚 <b>Çekim sırasında kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu</b>: kayıt sessiz devam ediyordu. Artık kayıt sürerken değiştirilemiyor ve sebebi söyleniyor.<br>🔇 <b>Çekim ortasında ses kesilirse artık haber veriliyor</b>: Bluetooth kulaklık koptuğunda ya da mikrofon başka bir uygulamaya kapıldığında görüntü akmaya devam ettiği için kayıt sağlam görünüyor, ama o saniyeden sonrası sessiz kalıyordu — ancak çekimi izlerken anlıyordun. Görüntü için uyarı vardı, ses için yoktu.',
+       en:'🎙 <b>Voice follow could lock itself up</b>: when the phone cut listening short the app restarted it endlessly and eventually stopped following your speech altogether. Turning voice follow off could also leave the microphone open.<br>🎥 <b>A frozen frame kept being recorded</b> when the composite (green screen / crop) view lost the device graphics context mid-take — you only found out on playback. The take is now ended right there and what you recorded is kept.<br>🎚 <b>Changing camera or microphone mid-take killed the audio</b> and recording silently continued. It is now blocked during a take, with the reason shown.<br>🔇 <b>Losing audio mid-take is now reported</b>: when a Bluetooth headset disconnects or another app grabs the microphone, video keeps flowing so the take looks fine while the rest is silent — you only found out on playback. There was a warning for video, none for audio.'}
 };
 /* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
    Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'
