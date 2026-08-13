@@ -27,7 +27,7 @@ const KORUMALAR = [
   ['Açık ses kısıtları',            /noiseSuppression/,                       /noiseSuppression/],
   ['Kaldığın yer hatırlanır',       /function rememberPos/,                   /function rememberPos/],
   ['Çekim arşivi',                  /indexedDB\.open\('sufle'/,               /indexedDB\.open\('teleprompter_pro'/],
-  ['Arşiv yazımı doğrulanır',       /tx\.oncomplete=\(\)=>res\(true\)/,       /tx\.oncomplete=\(\)=>res\(true\)/],
+  ['Arşiv yazımı doğrulanır',       /tx\.oncomplete=\(\)=>\w+\(true\)/,      /tx\.oncomplete=\(\)=>\w+\(true\)/],
   ['Çekime hazırlık kontrolü',      /function readyChecks/,                   /function readyChecks/],
   ['Altyazı videoya gömme',         /function drawCaption/,                   /function drawCaption/],
   ['Uzun kelime satıra sığdırılır', /function wrapLines/,                     /function wrapLines/],
@@ -123,7 +123,11 @@ const norm = (set) => new Set([...set].map(x => ESDEGER[x] || x));
 
 const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
 /* Platforma özgü olduğu kanıtlanmış etiketler — her biri gerekçeli. */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg']);
+/* autoSave: telefon her çekimi KENDİLİĞİNDEN arşivliyor ve sonuç ekranı o
+   zincirin sonunda açılıyor — arşivleme patlarsa ekran hiç gelmesin diye
+   ayrı bir hata yolu var. Mac'te arşivleme ELLE (keepTake); recorder.onstop
+   doğrudan showResult() çağırıyor, araya giren bir zincir yok. Ölçüldü. */
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave']);
 const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));

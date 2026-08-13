@@ -925,7 +925,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.3';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.4';
 
 /* ============ i18n ============ */
 const I18N={
@@ -2739,7 +2739,16 @@ function doStartRec(){
     lastDur=(pendingDur||recElapsed());
     lastBlob=new Blob(chunks,{type:(rec.mimeType||'video/mp4').split(';')[0]});
     chunks=[];   // Blob veriyi devraldı; diziyi tutmak aynı videoyu ikinci kez bellekte tutmak demekti
-    autoSaveTake().then(()=>showResult(lastBlob));
+    /* SONUÇ EKRANI HER HÂLÜKÂRDA AÇILMALI.
+       Eskiden zincirde .catch yoktu: arşivleme herhangi bir sebeple hata
+       verirse (depo dolu, IndexedDB kapalı, srtText patlaması) söz verilen
+       showResult HİÇ çağrılmıyordu. Kullanıcı kaydı bitiriyor, ekranda
+       hiçbir şey olmuyor, sebebini söyleyen tek satır bile çıkmıyordu —
+       çekim aslında elde (lastBlob) olduğu hâlde. Arşivleme AYRI bir iş;
+       başarısız olması çekimi görmene engel olmamalı. */
+    autoSaveTake()
+      .catch(e=>{ logErr('autoSave',e); curTakeId=null; toast(m('archFail')); })
+      .then(()=>showResult(lastBlob));
   };
   recSection=(curSec>=0?curSec:sectionAt(pos));
   // iOS: timeslice vermek parçalı MP4 üretiyor ve Fotoğraflar onu kabul etmiyor
@@ -3241,34 +3250,51 @@ async function paketPaylas(){
 
 /* ============ ÇEKİM DEPOSU (IndexedDB) ============ */
 let db=null;
-function openDB(){
+/* ⏱ ASKIDA KALMAYA KARŞI: IndexedDB'nin üçüncü hâli "hiç cevap vermemek".
+   iOS Safari'de indexedDB.open() ve işlemler bazen NE onsuccess NE onerror
+   üretiyor (PWA'da, arka plandan dönüşte, depo baskısında). Zaman aşımı
+   olmadan söz hiç çözülmez; kayıt biter, autoSaveTake askıda kalır,
+   showResult HİÇ ÇAĞRILMAZ. Kullanıcı çekimi bitirir, ekranda hiçbir şey
+   olmaz ve tek satır açıklama çıkmaz — üstelik çekim elde (lastBlob) durur.
+   try/catch bunu yakalamaz: ortada hata yok, cevapsızlık var. */
+function sozZamanAsimi(kur, ms, dusus, nerede){
   return new Promise(res=>{
-    if(db) return res(db);
-    try{
-      const r=indexedDB.open('sufle',1);
-      r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains('takes')) d.createObjectStore('takes',{keyPath:'id'}); };
-      r.onsuccess=()=>{ db=r.result; res(db); };
-      r.onerror=()=>res(null);
-    }catch(e){ res(null); }
+    let bitti=false;
+    const bitir=v=>{ if(bitti) return; bitti=true; clearTimeout(t); res(v); };
+    const t=setTimeout(()=>{ logErr(nerede,'zaman asimi ('+ms+' ms)'); bitir(dusus); }, ms);
+    try{ kur(bitir); }catch(e){ logErr(nerede,e); bitir(dusus); }
   });
+}
+function openDB(){
+  if(db) return Promise.resolve(db);
+  return sozZamanAsimi(bitir=>{
+    const r=indexedDB.open('sufle',1);
+    r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains('takes')) d.createObjectStore('takes',{keyPath:'id'}); };
+    r.onsuccess=()=>{ db=r.result; bitir(db); };
+    r.onerror=()=>bitir(null);
+    r.onblocked=()=>bitir(null);   // başka sekme eski sürümü tutuyor
+  }, 4000, null, 'dbOpen');
 }
 /* Eskiden yazma hatası sessizce yutuluyordu: çekim arşive GİRMİYOR ama uygulama girmiş gibi
    davranıyordu. Artık başarıyı bekliyor ve sonucu döndürüyor. */
 async function dbPut(rec){
   const d=await openDB(); if(!d) return false;
-  return new Promise(res=>{
-    try{
-      const tx=d.transaction('takes','readwrite');
-      tx.objectStore('takes').put(rec);
-      tx.oncomplete=()=>res(true);
-      tx.onerror=()=>{ logErr('dbPut',tx.error); res(false); };
-      tx.onabort=()=>{ logErr('dbPut',tx.error); res(false); };
-    }catch(e){ logErr('dbPut',e); res(false); }
-  });
+  /* Yazma da askıda kalabilir: büyük video + depo baskısında tx hiçbir olay
+     üretmeden duruyor. 15 sn: gerçek bir yazma bundan uzun sürmemeli, ama
+     askıda kalırsa kullanıcı sonuç ekranını kaybetmemeli. */
+  return sozZamanAsimi(bitir=>{
+    const tx=d.transaction('takes','readwrite');
+    tx.objectStore('takes').put(rec);
+    tx.oncomplete=()=>bitir(true);
+    tx.onerror=()=>{ logErr('dbPut',tx.error); bitir(false); };
+    tx.onabort=()=>{ logErr('dbPut',tx.error); bitir(false); };
+  }, 15000, false, 'dbPut');
 }
 async function dbAll(){ const d=await openDB(); if(!d) return [];
-  return new Promise(res=>{ try{ const q=d.transaction('takes').objectStore('takes').getAll();
-    q.onsuccess=()=>res((q.result||[]).sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.created-a.created)); q.onerror=()=>res([]); }catch(e){res([]);} }); }
+  /* Okuma askıda kalırsa arşiv sayfası sonsuza kadar boş kalırdı. */
+  return sozZamanAsimi(bitir=>{ const q=d.transaction('takes').objectStore('takes').getAll();
+    q.onsuccess=()=>bitir((q.result||[]).sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.created-a.created));
+    q.onerror=()=>bitir([]); }, 10000, [], 'dbAll'); }
 async function dbDel(id){ const d=await openDB(); if(!d) return false;
   return new Promise(res=>{ try{ const tx=d.transaction('takes','readwrite');
     tx.objectStore('takes').delete(id);
@@ -4549,7 +4575,9 @@ const NEWS={
  '9.2':{tr:'📦 <b>Yayın paketi</b>: çekimden sonra tek düğme, tek dosya — video, altyazı (.srt), senaryo metni ve <b>yayın notu</b> birlikte. Yayın notunda başlık adayları, açıklama taslağı, etiketler ve süre/tempo var; hepsi senaryonun kendisinden üretiliyor, yapay zekâ yok.<br>📝 <b>Çekim notu</b>: arşivde her çekime kendi cümlenle not düşebilirsin ("ışık kötüydü, tekrar çek"). Ayrıca uygulamanın zaten ölçtüğü ses değerlendirmesi (🔊/🔈/⚠️) artık arşivde de görünüyor — beş çekim arasından hangisinin iyi olduğunu aramakla uğraşmazsın.<br>⇄ <b>İki sürümlü senaryo</b>: aynı içeriğin ikinci dildeki hâlini aynı senaryoda tut, metin alanının yanındaki ⇄ düğmesiyle geç. Her sürümün kendi kaldığın yeri ve bölüm işaretleri korunuyor.',
        en:'📦 <b>Publish bundle</b>: one button after a take gives you one file — video, subtitles (.srt), the script text and a <b>publish note</b> with title options, a description draft, tags and duration/pace. All generated from the script itself, no AI.<br>📝 <b>Take notes</b>: add your own note to any take in the archive, and the audio verdict the app already measures (🔊/🔈/⚠️) is now stored with it.<br>⇄ <b>Two script versions</b>: keep the second-language version inside the same script and switch with the ⇄ button. Each version keeps its own resume position and section marks.'},
  '9.3':{tr:'📦 <b>Yayın paketi uzun çekimlerde çöküyordu</b>: paket hazırlanırken video tümüyle belleğe alınıyordu — 10 dakikalık 1080p çekimde bu ~1,3 GB demek ve iPhone sekmeyi kapatıyordu. Tam da paketin en gerekli olduğu yerde. Artık video belleğe alınmadan pakete giriyor; uzunluk fark etmiyor.',
-       en:'📦 <b>Publish bundle crashed on long takes</b>: the whole video was pulled into memory while building the bundle — about 1.3 GB for a 10-minute 1080p take, enough for iPhone to kill the tab, exactly where the bundle is most useful. The video is now streamed into the bundle instead.'}
+       en:'📦 <b>Publish bundle crashed on long takes</b>: the whole video was pulled into memory while building the bundle — about 1.3 GB for a 10-minute 1080p take, enough for iPhone to kill the tab, exactly where the bundle is most useful. The video is now streamed into the bundle instead.'},
+ '9.4':{tr:'🎬 <b>Çekim bitince ekranda hiçbir şey olmuyordu</b>: kayıt duruyor, sonuç ekranı hiç açılmıyor ve tek satır açıklama çıkmıyordu — çekim aslında elde olduğu hâlde. Sebep, cihazın arşiv deposunun bazen hiç cevap vermemesiydi; uygulama sonsuza kadar bekliyordu. Artık cevapsız kalan her depo işi kısa sürede düşüyor ve <b>arşivleme başarısız olsa bile çekimini görüyorsun</b> — sebebi de yazıyor.',
+       en:'🎬 <b>Nothing appeared after a take</b>: recording stopped but the result screen never opened and no reason was shown — even though the take was safe in memory. The device archive could stall forever with no error. Storage work now times out, and <b>you always get the result screen even if archiving fails</b>, with the reason shown.'}
 };
 /* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
    Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'

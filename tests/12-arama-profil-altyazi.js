@@ -64,7 +64,10 @@ ok('geri yükleme mevcut hâli çöpe atıyor', /st\.trash=\(st\.trash\|\|\[\]\)
 
 // ---------- 12.2 / 12.10 Mac ----------
 ok('Mac çekim arşivi IndexedDB kullanıyor', /indexedDB\.open\('teleprompter_pro'/.test(mac));
-ok('Mac arşiv yazımı başarıyı bekliyor', /tx\.oncomplete=\(\)=>res\(true\)/.test(mac));
+/* Desen ADA bağlı olmamalı: zaman aşımı koruması eklenirken çözücünün adı
+   res→bitir olunca bu iddia kırıldı — kod doğruydu, test adı kilitliyordu.
+   Kilitlenmesi gereken GARANTİ: yazım tamamlanmayı BEKLİYOR, varsaymıyor. */
+ok('Mac arşiv yazımı başarıyı bekliyor', /tx\.oncomplete=\(\)=>\w+\(true\)/.test(mac));
 ok('Mac arşiv hatası sessiz değil', /Arşive yazılamadı/.test(mac));
 ok('Mac senaryo dışa aktarımı telefon biçiminde', /sufle:1, scripts:state\.scripts/.test(mac));
 ok('Mac içe aktarma MEVCUTLARI SİLMİYOR', /state\.scripts=state\.scripts\.concat\(gelen\)/.test(mac));

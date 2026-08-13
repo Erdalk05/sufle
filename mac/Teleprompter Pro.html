@@ -512,7 +512,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.3';   // telefon sürümüyle aynı numaralama
+  const VER='9.4';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1526,32 +1526,44 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      Mac'te çekim yalnız bellekte duruyordu: "İndir"e basmadan pencereyi
      kapatan her şeyi kaybediyordu. IndexedDB telefon sürümüyle aynı desende. */
   let mdb=null;
-  function openMDB(){
+  /* ⏱ ASKIDA KALMAYA KARŞI (telefondan taşındı, 2026-08-13).
+     IndexedDB'nin üçüncü hâli "hiç cevap vermemek": ne onsuccess ne onerror
+     geliyor. Zaman aşımı olmadan söz hiç çözülmez ve onu bekleyen akış
+     sessizce durur. try/catch bunu yakalamaz — ortada hata yok. */
+  function sozZamanAsimi(kur, ms, dusus, nerede){
     return new Promise(res=>{
-      if(mdb) return res(mdb);
-      try{
-        const r=indexedDB.open('teleprompter_pro',1);
-        r.onupgradeneeded=()=>{ const d=r.result;
-          if(!d.objectStoreNames.contains('takes')) d.createObjectStore('takes',{keyPath:'id'}); };
-        r.onsuccess=()=>{ mdb=r.result; res(mdb); };
-        r.onerror=()=>{ logErr('idb',r.error); res(null); };
-      }catch(e){ logErr('idb',e); res(null); }
+      let bitti=false;
+      const bitir=v=>{ if(bitti) return; bitti=true; clearTimeout(t); res(v); };
+      const t=setTimeout(()=>{ logErr(nerede,'zaman asimi ('+ms+' ms)'); bitir(dusus); }, ms);
+      try{ kur(bitir); }catch(e){ logErr(nerede,e); bitir(dusus); }
     });
+  }
+  function openMDB(){
+    if(mdb) return Promise.resolve(mdb);
+    return sozZamanAsimi(bitir=>{
+      const r=indexedDB.open('teleprompter_pro',1);
+      r.onupgradeneeded=()=>{ const d=r.result;
+        if(!d.objectStoreNames.contains('takes')) d.createObjectStore('takes',{keyPath:'id'}); };
+      r.onsuccess=()=>{ mdb=r.result; bitir(mdb); };
+      r.onerror=()=>{ logErr('idb',r.error); bitir(null); };
+      r.onblocked=()=>bitir(null);
+    }, 4000, null, 'idbOpen');
   }
   async function mdbPut(rec){
     const d=await openMDB(); if(!d) return false;
-    return new Promise(res=>{ try{
+    return sozZamanAsimi(bitir=>{
       const tx=d.transaction('takes','readwrite'); tx.objectStore('takes').put(rec);
-      tx.oncomplete=()=>res(true); tx.onerror=()=>{ logErr('idbPut',tx.error); res(false); };
-    }catch(e){ logErr('idbPut',e); res(false); } });
+      tx.oncomplete=()=>bitir(true); tx.onerror=()=>{ logErr('idbPut',tx.error); bitir(false); };
+      tx.onabort=()=>{ logErr('idbPut',tx.error); bitir(false); };
+    }, 15000, false, 'idbPut');
   }
   async function mdbAll(){
     const d=await openMDB(); if(!d) return [];
-    return new Promise(res=>{ try{
+    return sozZamanAsimi(bitir=>{
       const q=d.transaction('takes').objectStore('takes').getAll();
-      q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.created-a.created));
-      q.onerror=()=>res([]);
-    }catch(e){ res([]); } });
+      q.onsuccess=()=>bitir((q.result||[]).sort((a,b)=>b.created-a.created));
+      q.onerror=()=>bitir([]);
+    }, 10000, [], 'idbAll');
   }
   async function mdbDel(id){
     const d=await openMDB(); if(!d) return;
@@ -1930,7 +1942,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const NEWS={
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
-   '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.'
+   '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
+   '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)'
   };
   /* Metin sıralaması '10.0'ı '9.1'den küçük sayar ('1' < '9'). Bugün gizli,
      sürüm 10'a çıktığı gün kullanıcı ESKİ notu görürdü. parseFloat de yetmez:
