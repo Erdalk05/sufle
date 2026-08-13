@@ -4038,7 +4038,19 @@ function startVoice(){
   vHud('sessiz','',vptr,false);
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
 }
-function stopVoice(){ voiceOn=false; if(sr){ sr.onend=null; try{sr.stop();}catch(e){} }
+function stopVoice(){ voiceOn=false;
+  /* BEKLEYEN YENİDEN BAŞLATMA DA İPTAL EDİLMELİ.
+     Eskiden yalnız restartVoice içinde temizleniyordu. Kullanıcı sesle takibi
+     kapatıp HEMEN tekrar açarsa, eski zamanlayıcı yepyeni ve sağlıklı oturumun
+     üstünde ateşliyor: sr.start() zaten çalışan tanıyıcıda InvalidStateError
+     atıyor, istisna yakalanıp restartVoice'a düşüyor ve sayacı şişiriyor.
+     ÖLÇÜLDÜ: tek kapat-aç turunda taze oturumun srFails değeri 4'e çıktı —
+     bir arıza daha ve özellik kendini kapatırdı. Sebebi de görünmezdi.
+     sr=null: geri kalan tüm korumalar `!sr` kontrolüne bakıyor, böylece
+     bekleyen her iş kendiliğinden etkisiz kalıyor. */
+  clearTimeout(srRetryT); srRetryT=null;
+  if(sr){ sr.onend=null; sr.onresult=null; sr.onerror=null; try{sr.stop();}catch(e){} sr=null; }
+  srFails=0; srBasladi=0;
   cancelAnimationFrame(vRaf); $('#voiceBtn').classList.remove('on','lost'); vBadge='';
   clearTimeout(vHudT); $('#vHud') && $('#vHud').classList.add('hidden'); toast(m('voiceOff')); }
 /* "sufle <komut>" kalıbını yakala, komut kelimelerini akıştan çıkar */

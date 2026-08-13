@@ -97,3 +97,45 @@ ok('vazgeçince özellik gerçekten kapatılıyor',
 /* İlk başlatmada da damga kurulmalı, yoksa ilk oturum hep "hemen ölmüş" sayılır. */
 ok('ilk başlatmada oturum damgası kuruluyor',
    /sr\.start\(\); srBasladi=performance\.now\(\);/.test(kod));
+
+/* ---------- KAPATMA: BEKLEYEN İŞ DE İPTAL EDİLMELİ ----------
+   Kullanıcı sesle takibi kapatıp HEMEN tekrar açarsa, eski yeniden başlatma
+   zamanlayıcısı yepyeni ve SAĞLIKLI oturumun üstünde ateşliyordu:
+   sr.start() zaten çalışan tanıyıcıda InvalidStateError atıyor, istisna
+   restartVoice'a düşüyor ve taze oturumun sayacını şişiriyor.
+   ÖLÇÜLDÜ (düzeltmeden önce): tek kapat-aç turunda srFails 4'e çıktı —
+   bir arıza daha ve özellik kendini kapatırdı, sebebi de görünmezdi. */
+const stopSrc = cikar(tel, /function stopVoice\(\)\{[\s\S]*?vHud'\)\.classList\.add\('hidden'\); toast\(m\('voiceOff'\)\); \}/, 'stopVoice');
+
+function kapatAcTuru(){
+  const f = new Function(`
+    let voiceOn=false, sr=null, srFails=0, srRetryT=null, srBasladi=0, vRaf=0, vBadge='', vHudT=0;
+    const SR_SAGLIKLI_MS=3000;
+    const cancelAnimationFrame=()=>{};
+    const $=()=>({classList:{remove(){},add(){}}});
+    const toast=()=>{}; const m=k=>k; const logErr=()=>{}; const performance={now:()=>0};
+    ${restart}
+    ${stopSrc}
+    function startVoice(){ sr={ start(){ if(this.c) throw new Error('InvalidStateError'); this.c=true; } };
+      srFails=0; voiceOn=true; sr.start(); }
+    startVoice();      // aç
+    restartVoice();    // tanıyıcı düştü, yeniden başlatma zamanlandı
+    stopVoice();       // KAPAT (zamanlayıcı hâlâ bekliyor olabilir)
+    const kapaliDurum = { sr, srRetryT, voiceOn, srFails };
+    startVoice();      // hemen tekrar AÇ — bu oturum sağlıklı
+    return ()=>({ srFails, kapaliDurum });
+  `);
+  return f();
+}
+{
+  const oku2 = kapatAcTuru();
+  const r = oku2();
+  ok('kapat-aç turundan sonra taze oturumun sayacı bozulmuyor', r.srFails === 0);
+  ok('kapatınca tanıyıcı bırakılıyor (sr=null)', r.kapaliDurum.sr === null);
+  ok('kapatınca bekleyen yeniden başlatma iptal ediliyor', r.kapaliDurum.srRetryT === null);
+  ok('kapatınca sayaç sıfırlanıyor', r.kapaliDurum.srFails === 0);
+}
+const kodStop = stopSrc.replace(/\/\*[\s\S]*?\*\//g,'');
+ok('stopVoice zamanlayıcıyı temizliyor', /clearTimeout\(srRetryT\)/.test(kodStop));
+ok('stopVoice olay işleyicilerini de bırakıyor',
+   /sr\.onresult=null/.test(kodStop) && /sr\.onerror=null/.test(kodStop));

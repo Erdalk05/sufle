@@ -65,7 +65,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | D5 | Tanıma koptuğunda yeniden başlatma sayacı sonsuz döngü yapıyor mu | P0 | ✅ **GERÇEK HATA** — sayaç `start()` dönünce sıfırlanıyordu, 5 sınırına hiç ulaşmıyordu (176 tur ölçüldü, srFails=0). Artık yalnız gerçekten çalışınca sıfırlanıyor. |
 | D6 | Desteklenmeyen tarayıcıda anahtar gerçekten gri mi | P2 |
 | D7 | `syncVoicePtr` konum atlamada doğru kelimeye gidiyor mu | P1 |
-| D8 | Sesle takip kapalıyken de mikrofon açık kalıyor mu — sızıntı kontrolü | P0 |
+| D8 | Sesle takip kapalıyken de mikrofon açık kalıyor mu — sızıntı kontrolü | P0 | ⛔ mikrofon sızıntısı YOK (sesle takip Web Audio'ya hiç dokunmuyor, mikrofonu SpeechRecognition yönetiyor) → ama ✅ **BAŞKA HATA**: `stopVoice` bekleyen yeniden başlatmayı iptal etmiyordu; kapat-aç turunda taze oturumun sayacı 4'e çıkıyordu. |
 | D9 | Komut sözlüğü kullanıcı düzenlemesi bozuk girdide çökmüyor mu | P1 |
 | D10 | DE/AR komutları gerçekten sözlükte mi (v6.2 iddiası) — doğrula | P2 |
 
