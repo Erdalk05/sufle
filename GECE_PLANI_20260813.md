@@ -75,7 +75,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 |---|---|---|
 | E1 | `/cmd` erişim kararı (T23) uygulanır — Erdal seçimine göre | 🔒 |
 | E2 | Kumanda sayfası hız/font kaydırıcıları sunucuya kaç istek atıyor — kısıtla | P2 |
-| E3 | SSE bağlantısı koptuğunda kumanda sayfası yeniden bağlanıyor mu | P1 |
+| E3 | ⛔+✅ SSE koptuğunda kumanda yeniden bağlanıyor mu — **hipotezin yarısı çürüdü**: masaüstü tarafında EventSource'u tarayıcı kendi yeniden bağlıyor, elde tutulan kumanda sayfasında da 4 sn'de bir nabız var ve kopmayı söylüyor. **Ama eksik olan KOMUTUN KENDİSİNİN sonucuydu**: `send()` `.catch(()=>{})` ile hatayı tümüyle yutuyordu — düğmeye basıyorsun, sufle kıpırdamıyor ve durum satırı hâlâ “✅ Bağlı” diyor (nabız 4 sn'de bir). Çekim sırasında kumandanın öldüğünü 4 saniye boyunca bilmiyorsun. Artık sonuç anında bildiriliyor; HTTP hata kodu da başarısızlık sayılıyor; durum yazımı tek yardımcıdan geçiyor. Test 56 (22 iddia) | P1 |
 | E4 | Aynı anda iki kumanda bağlıysa komutlar çakışıyor mu | P2 |
 | E5 | Telefon HID kumanda: 6 sn tanı paneli hâlâ doğru çalışıyor mu | P1 |
 | E6 | Öğrenilen tuş eşlemesi dışa/içe aktarımı bozuk dosyada çökmüyor mu | P1 |

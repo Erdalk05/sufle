@@ -70,15 +70,21 @@ REMOTE_PAGE = """<!DOCTYPE html>
  </div>
  <div class="hint" id="st">Aynı Wi-Fi ağında olmalısınız.</div>
 <script>
- function send(o){fetch('/cmd',{method:'POST',body:JSON.stringify(o)}).catch(()=>{});}
+ function durum(t){document.getElementById('st').textContent=t;}
+ // SESSIZCE YUTULAN KOMUT en can sikici hali: cekim sirasinda dugmeye basiyorsun,
+ // sufle kipirdamiyor ve durum satiri hala 'Bagli' diyor — cunku nabiz 4 saniyede
+ // bir. Eskiden .catch(()=>{}) ile hata tumuyle yutuluyordu. Sonucu ANINDA soyle.
+ function send(o){return fetch('/cmd',{method:'POST',body:JSON.stringify(o)})
+   .then(r=>{if(!r.ok)throw 0; durum('\u2705 Bagli');})
+   .catch(()=>durum('\u26a0\ufe0f Komut gecmedi \u2014 baglantiyi kontrol et'));}
  document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>send(JSON.parse(b.dataset.cmd)));
  const sp=document.getElementById('speed'),fo=document.getElementById('font');
  sp.oninput=()=>{document.getElementById('sv').textContent=sp.value;send({type:'speed',value:+sp.value});};
  fo.oninput=()=>{document.getElementById('fv').textContent=fo.value;send({type:'font',value:+fo.value});};
  // bağlantı gerçekten kurulu mu: sessizce kopmuş kumanda en can sıkıcı hâli
  setInterval(()=>{ fetch('/info').then(r=>r.json())
-   .then(()=>document.getElementById('st').textContent='✅ Bağlı')
-   .catch(()=>document.getElementById('st').textContent='⚠️ Bağlantı koptu — Mac uyandı mı?'); },4000);
+   .then(()=>durum('✅ Bağlı'))
+   .catch(()=>durum('⚠️ Bağlantı koptu — Mac uyandı mı?')); },4000);
 </script></body></html>"""
 
 def make_qr(data):
