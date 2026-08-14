@@ -85,12 +85,15 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 ### Kapının kendi kör noktası (gece sonunda kapatıldı)
 
+**Üçüncü kör nokta, bu turda bulundu:** test koşturucusu **üç haneli dosya adlarını hiç görmüyordu**. Süzgeç tam iki rakam istiyordu, yani 100, 101 ve 102 numaralı testler yazıldıkları hâlde hiç koşmadı ve kapı yine de yeşil dedi — dosya listeye girmediği için ne çıkış kodu ne iddia sayacı ateşleniyor. Düzeltince kapı 3140 testten **3263 teste** çıktı. Artık koşturucunun depodaki her test dosyasını gördüğü ayrıca iddia ediliyor.
+
 Test koşturucusu **sıfır iddialı bir testi yeşil geçiriyordu** ve bir testin iddia sayısı düşerse susuyordu. Ölçtüm: 0 iddialı dosya eklendim, kapı yeşil kaldı; 29 iddialı testi 2ye indirdim, yine yeşil. Bu gece dört test tam da böyle boşalmıştı — yalnız çöktükleri için yakalandılar. Artık dosya başına iddia sayısı tutuluyor; sıfır ya da düşüş kırmızı.
 
 İkinci kör nokta: **tek bir asılı test kapıyı süresiz bekletiyordu** — kırmızı vermek değil, hiç cevap vermemek. Gözetimsiz gece koşusunda en kötü hâli. Artık test başına 60 saniye tavan var (en yavaş testin 11 katı) ve aşım kırmızı.
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
+- **Uzun kayıtta bellek profili sağlıklı** — hipotez çürüdü. 10 dakikalık çekim varsayılan ayarda 0,64 GB, en yüksek ayarda 2,24 GB; video verisinin ikinci bir kopyası hiçbir aşamada tutulmuyor ve önizleme adresi her yerde bırakılıyor. Depoda kalan yer zaten çekimden önce dakikaya çevrilip söyleniyor.
 - **Işık denetçisi kayıt sırasında pahalı değil** — hipotez çürüdü. Örnek boyu kamera 4K olsa da sabit 1536 piksel, döngü 4 µs, kayıt sırasında 20 saniyede bir örnek: 10 dakikalık çekimde toplam 0,12 milisaniye. Bütçe teste kilitlendi (örnek boyu, aralık ya da geri okuma bayrağı sessizce değişirse kapı kırmızıya döner). Aynı ölçümde **ışık uyarısının çekim başına en fazla bir kez** çıktığı da doğrulandı.
 Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
 
@@ -139,7 +142,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **77 commit**, hepsi yerelde, `claude` dalında
-- **3140 test** (gece başında 732) · yeni test dosyası: 39–101
-- Gece planı: 138 görevden **70'i** işlendi (bütün P0'lar + 62 P1 + F9)
+- **78 commit**, hepsi yerelde, `claude` dalında
+- **3278 test** (gece başında 732) · yeni test dosyası: 39–102
+- Gece planı: 138 görevden **71'i** işlendi (bütün P0'lar + 63 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz

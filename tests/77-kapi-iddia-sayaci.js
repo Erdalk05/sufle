@@ -178,7 +178,7 @@ const ATLAYAN = 'console.log("ATLANDI: ortam eksik");\n'+
 /* ---------- GERÇEK TABAN SAĞLIKLI MI ---------- */
 {
   const t=JSON.parse(fs.readFileSync(path.join(REPO,'tests','beklenen.json'),'utf8'));
-  const dosyalar=fs.readdirSync(path.join(REPO,'tests')).filter(f=>/^\d\d-.*\.js$/.test(f));
+  const dosyalar=fs.readdirSync(path.join(REPO,'tests')).filter(f=>/^\d{2,}-.*\.js$/.test(f));
   /* KAPI BOŞUNA KURT BAĞIRMAMALI. Önce "taban her dosyayı kapsıyor" diye
      ölçüyordum; taban koşunun SONUNDA yazıldığı için yeni bir test eklendiği
      tur bu iddia bir kez kırmızı veriyor, sonra kendiliğinden yeşile dönüyor.
@@ -192,4 +192,33 @@ const ATLAYAN = 'console.log("ATLANDI: ortam eksik");\n'+
   ok('geçici fark makul (en çok 2 dosya)', eksik.length+fazla.length<=2);
   ok('hiçbir testin tabanı sıfır değil', Object.values(t).every(v=>v>0));
   ok('taban boş değil', Object.keys(t).length>50);
+}
+
+/* ---------- KOŞTURUCU HANGİ DOSYALARI GÖRÜYOR (KAPININ KÖR NOKTASI) ---------- */
+{
+  /* ÜÇ HANEDE KÖRLEŞİYORDU. Süzgeç tam İKİ rakam istiyordu; 100, 101 ve 102
+     numaralı testler eklendikleri hâlde HİÇ KOŞMUYORDU. Kapı yeşil kalıyordu
+     çünkü dosya listeye hiç girmiyor: ne çıkış kodu, ne iddia sayacı, hiçbiri
+     ateşlenmiyor. "Hiçbir şey ölçmeyen kapı" sınıfı. */
+  const kosKaynak=fs.readFileSync(path.join(REPO,'tests','kos.js'),'utf8');
+  const mSuzgec=kosKaynak.match(/\.filter\(f => (\/\^[^\/]+\/)\.test\(f\)\)/);
+  ok('koşturucunun süzgeci çıkarılabildi', !!mSuzgec);
+  if(mSuzgec){
+    const re=new RegExp(mSuzgec[1].slice(1,-1));
+    for(const ad of ['01-a.js','09-b.js','10-c.js','99-d.js','100-e.js','101-f.js','999-g.js'])
+      ok('koşturucu görüyor: '+ad, re.test(ad));
+    for(const ad of ['kos.js','kaynak.js','beklenen.json','1-tek-hane.js','not-a-test.js'])
+      ok('koşturucu almıyor: '+ad, !re.test(ad));
+  }
+  /* Depodaki HER test dosyası gerçekten listeye giriyor mu — asıl iddia bu. */
+  const hepsi=fs.readdirSync(path.join(REPO,'tests'))
+                .filter(f=>f.endsWith('.js') && f!=='kos.js' && f!=='kaynak.js');
+  const gorulen=hepsi.filter(f=>/^\d{2,}-.*\.js$/.test(f));
+  const disarida=hepsi.filter(f=>!gorulen.includes(f));
+  ok('depodaki her test dosyası koşturucuya giriyor'+
+     (disarida.length?' — dışarıda: '+disarida.join(', '):'')+' ('+gorulen.length+' dosya)',
+     disarida.length===0);
+  /* Sıralama sayısal olmalı: metin sıralaması 100ü 10un yanına koyar ve
+     rapor okunamaz hâle gelir. */
+  ok('koşturucu sayısal sıralıyor', /parseInt\(a,10\)-parseInt\(b,10\)/.test(kosKaynak));
 }

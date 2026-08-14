@@ -75,7 +75,7 @@
  "74-kaydirma-altin-test.js": 29,
  "75-iphone-sunucu.js": 31,
  "76-kumanda-tani-paneli.js": 29,
- "77-kapi-iddia-sayaci.js": 44,
+ "77-kapi-iddia-sayaci.js": 59,
  "78-kayit-suresi-ve-cift-dongu.js": 32,
  "79-arsiv-ustveri-video.js": 32,
  "80-srt-zaman-damgasi.js": 45,
@@ -97,5 +97,8 @@
  "96-isik-ornekleme-maliyeti.js": 32,
  "97-kompozit-fps-olcumu.js": 29,
  "98-arka-plan-orani.js": 57,
- "99-arka-plan-bellek.js": 43
+ "99-arka-plan-bellek.js": 43,
+ "100-kompozit-kaynak-birakma.js": 44,
+ "101-kompozit-paket-video-turu.js": 36,
+ "102-uzun-kayit-bellek.js": 43
 }

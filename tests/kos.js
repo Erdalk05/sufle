@@ -24,9 +24,15 @@ const path = require('path');
    en yavaş testin 11 katı — yavaş bir makinede bile yanlış alarm vermez. */
 const SURE_TAVANI = +(process.env.SUFLE_TEST_TAVAN || 60000);
 const dizin = __dirname;
+/* SÜZGEÇ ÜÇ HANEDE KÖRLEŞİYORDU. Desen tam İKİ rakam istiyordu: 100, 101 ve
+   102 numaralı test dosyaları eklendikleri hâlde HİÇ KOŞMUYORDU ve kimse
+   fark etmiyordu — kapı yeşil, dosyalar orada, iddia sayacı bile susuyor
+   çünkü dosya listeye hiç girmiyor. Bu gecenin "hiçbir şey ölçmeyen kapı"
+   sınıfı (sıfır iddialı test, asılan test, argümansız denetim.py) ile aynı.
+   Sıralama da sayısal olmalı: metin sıralaması 100ü 10un yanına koyuyor. */
 const dosyalar = fs.readdirSync(dizin)
-  .filter(f => /^\d\d-.*\.js$/.test(f))
-  .sort();
+  .filter(f => /^\d{2,}-.*\.js$/.test(f))
+  .sort((a,b) => (parseInt(a,10)-parseInt(b,10)) || a.localeCompare(b));
 
 /* İDDİA SAYISI DA BİR KAPI (M2).
    Koşturucu çıkış kodunu zaten alıyordu ama İDDİA SAYISI ölçülmüyordu ve iki
