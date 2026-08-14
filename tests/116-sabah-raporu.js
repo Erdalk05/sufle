@@ -49,7 +49,12 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
   ok('raporda yayınlanmamış commit sayısı yazıyor', yazan!==null);
   if(gercek!==null && yazan!==null){
     console.log('   commit: rapor '+yazan+' · gerçek '+gercek);
-    ok('rapordaki commit sayısı GÜNCEL ('+yazan+' vs '+gercek+')', yazan===gercek);
+    /* TAM EŞİTLİK İMKÂNSIZ ve ilk yazışımda bunu göremedim: doğru sayıyı
+       rapora yazıp commit edince sayı bir artıyor, yani iddia hiçbir zaman
+       sağlanamıyor. Sayının işi Erdala ÖLÇEĞİ vermek; birkaç commitlik
+       kayma kararı değiştirmez, on kat sapma değiştirir. */
+    ok('rapordaki commit sayısı gerçekçi ('+yazan+' vs '+gercek+', pay ±3)',
+       Math.abs(yazan-gercek)<=3);
   }
   /* Dal adı da doğru olmalı — yanlış dal yanlış komut demek. */
   let dal=null;

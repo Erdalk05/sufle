@@ -6,7 +6,7 @@
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
 kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma turu eklendi).
-**122 commit yayınlanmamış**, kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+**123 commit yayınlanmamış**, kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -187,7 +187,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **122 commit yayınlanmamış** (`main` dalında, `origin/main` ilerisinde) — 112si bugün, 10u dün akşam
+- **123 commit yayınlanmamış** (`main` dalında, `origin/main` ilerisinde) — 113ü bugün, 10u dün akşam
 - **3835 test** (gece başında 732) · yeni test dosyası: 39–116
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
