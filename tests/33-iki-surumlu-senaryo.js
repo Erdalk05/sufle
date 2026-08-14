@@ -35,6 +35,9 @@ function calistir(senaryo, {kayitta=false}={}){
     const setPos=p=>__iz.push('konum:'+p);
     const syncVoicePtr=()=>{};
     const surumRozeti=()=>__iz.push('rozet');
+    /* Sürüm başına tanıma dili (bkz. tests/68). Buradaki iddia yalnız
+       KANCANIN ÇAĞRILDIĞI: dilin doğru takas edildiği orada ölçülüyor. */
+    const sesDiliUygula=(d)=>__iz.push('dil:'+(d||''));
     const $=()=>null;
     ${cikar(tel, /function ikinciSurumVar\(\)\{[^\n]*\}/, 'ikinciSurumVar')}
     ${surumSrc}
@@ -60,6 +63,9 @@ function calistir(senaryo, {kayitta=false}={}){
   ok('METİN DAMGASI da taşınıyor (işaretleri koruyan şey bu)',
      s.mark === 'en-damga' && s.mark2 === 'tr-damga');
   ok('hangi sürümde olduğumuz işaretleniyor', s.surum2 === true);
+  /* İkinci sürüm genelde başka dilde; tanıma dili taşınmazsa sesle takip
+     o sürümde sessizce çalışmaz. Takasın doğruluğu tests/68'de ölçülüyor. */
+  ok('tanıma dili de sürümle birlikte uygulanıyor', r.iz.some(x=>/^dil:/.test(x)));
   ok('değişiklik diske yazılıyor', r.iz.includes('kaydedildi'));
   /* indexOf TUZAĞI: çağrı hiç yoksa -1 döner ve "-1 < n" DOĞRU çıkar —
      yani eksikliği "sıra doğru" diye geçirir. Kasıtlı bozma turunda bu
