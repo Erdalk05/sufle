@@ -45,7 +45,33 @@ Model tutarlı, yani analizin aritmetiği güvenilir. Tek düzeltme:
 Yani yol haritası sağlam — yanlışlar özelliklerdeydi, teşhiste değil. Analizi daha fazla
 sorgulamaya tur harcamıyorum; sıradaki iş gerçek eksikler.
 
-**T0.2** *(açık)* İki dosyanın özellik farkını makineyle çıkar: telefon-var/Mac-yok ve tersi. FAZ A'nın girdisi.
+### ✅ T0.2 — platform farkı makineyle çıkarıldı (`fark.py`)
+
+Ölçüt **fonksiyon adı değil DOM yüzeyi**: iki dosya aynı işi farklı adlandırıyor
+(`st.` / `state.`), ad karşılaştırması yüzlerce sahte fark üretirdi. Etkileşimli ögelerin
+id'si + görünür etiketi karşılaştırılıyor; id değişmiş ama etiket karşıda duruyorsa fark sayılmıyor.
+
+| Ölçüm | Değer |
+|---|---|
+| telefon etkileşimli yüzey | **106** |
+| Mac etkileşimli yüzey | **50** |
+| ortak id | **22** |
+| telefonda var, Mac'te yok | **76** |
+| Mac'te var, telefonda yok | **23** |
+| yalnız ad farkı (özellik iki tarafta da var) | **13** |
+
+**Mac'in telefonda olmayan gerçek özellikleri:** `pipBtn` "🪟 Yüzen Sufle" (Zoom/Teams üstünde
+okuma — analizdeki **Tip B rakip paritesi**), `undoDelBtn` "Geri getir", `scImport`, `fsBtn`, `resetBtn`.
+
+**Araç iki kez kendi kendini yalanladı, ikisi de kayda değer:**
+1. İlk kurtarma ölçütü **yapısal olarak ateşlenemiyordu** — id'ler İngilizce (`pipBtn`), etiketler
+   Türkçe; `normal("pipBtn")` bir etikete asla eşleşmez. Araç "0 şüpheli" deyip doğru görünüyordu.
+   Düzeltince 0 → **22** kurtarma. Artık `--kanit` iki vakayla ayırt ettiğini kanıtlıyor.
+2. `rrDownload` etiketi "İndir (.webm)" görünüyor → "Mac hâlâ webm veriyor" sanılırdı.
+   **Yanlış:** satır 1875 etiketi çalışma zamanında gerçek uzantıyla yeniden yazıyor.
+   Araç belgesine "çıktısı hipotezdir" uyarısı eklendi.
+
+`fark.py` kapıya **bağlanmadı** — tabanı yok, raporlama aracı. Taban gerekirse FAZ A sonunda eklenir.
 
 ---
 
@@ -139,3 +165,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 |---|---|---|---|---|
 | — | 2026-08-14 | Yol haritası kuruldu, başlangıç VER=9.7, 126 test | — | — |
 | 0 | 2026-08-14 | T0.1 + T0.3: analizin 10 iddiası kaynaktan sınandı | 4 çürüdü · 3 doğrulandı · 3 kısmen; skor 53,6 → **54,5** | ⬜ kod değişmedi |
+| 1 | 2026-08-14 | T0.2: `fark.py` — platform yüzey farkı çıkarıcı | telefon 106 / Mac 50 etkileşimli yüzey; 76 telefon-özel, 23 Mac-özel, 13 yalnız-ad; ölçüt `--kanit` ile ayırt ediyor | 6/7 yeşil (VER doğru kırmızı) |
