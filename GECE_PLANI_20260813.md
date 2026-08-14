@@ -147,7 +147,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | I1 | `wrapLines` çok uzun kelimede testte kilitli mi — genişlet | P1 |
 | I2 | Gömülü altyazı çizimi kompozit fps'ini ne kadar düşürüyor | P1 |
 | I3 | Altyazı kayması uç değerlerde (±2 sn) kuyrukları negatife düşürüyor mu | P1 |
-| I4 | `.srt` zaman biçimi 1 saati aşan çekimde doğru mu | P1 |
+| I4 | `.srt` zaman biçimi 1 saati aşan çekimde doğru mu ⛔+✅ **Saat hipotezi çürüdü** (3600 → 01:00:00,000, 86399,999 → 23:59:59,999 hepsi doğru). **Ama aynı fonksiyonda gerçek kusur vardı**: saniye ve milisaniye ayrı hesaplandığı için ondalık 0,9995i aşınca `ms=1000` çıkıyor ve saniyeye devretmiyordu → `00:00:05,1000` — dört haneli milisaniye, geçersiz .srt; katı ayrıştırıcılar kuyruğu ya da dosyayı reddeder. **Sıklık ölçüldü: binde 0,5 (49/100.000); 100 damgalık videoda %4,8 risk** — nadir değil. Damga tam milisaniyeden türetiliyor, Mac'te de aynı kusur vardı, 12 değerde iki platform birebir. **Kendi sondam yanlıştı** (ürettiğim ondalıklar kırılma bölgesine düşmüyordu, "0 vaka" çıktı); düzeltildi. tests/80 (43 iddia), 5 bozma. `7f05d27` | P1 |
 | I5 | Sosyal biçem (yanan altyazı) satır sayısı sınırı var mı | P2 |
 | I6 | Altyazı üretimi ikinci sürümde doğru metni alıyor mu | P1 |
 | I7 | `capTimes` kelime atlamada boşluk bırakıyor mu | P1 |
