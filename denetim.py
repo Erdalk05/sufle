@@ -125,7 +125,10 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     # çağrılarının etrafında (kota dolunca bildirim) — arayüz yıkılırken toast
     # patlayabilir ve o an asıl iş kaydetmeyi bildirmek. Hemen altındaki
     # mevcut catch(_){} ile aynı gerekçe.
-    taban = 17 if is_mac else 24
+    # 25 (telefon): L7de eklenen `eskiHatalariGeriYukle` bozuk kaydı sessizce
+    # atlıyor — günlüğün kendisi yüzünden uygulama açılmamasından iyidir.
+    # 18 (Mac): aynı işlev oraya da taşındı (parite).
+    taban = 18 if is_mac else 25
     if empty_catch > taban:
         problems.append(("boş catch tabanın üstünde (yeni sessiz yutma?)", [empty_catch, "taban %d" % taban]))
 

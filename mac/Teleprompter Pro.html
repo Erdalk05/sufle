@@ -528,11 +528,27 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
      yarıda kesiyor, kullanıcı özelliğin YOK olduğunu sanıyor. Artık durum çubuğunda görünüyor. */
+  /* HATA GÜNLÜĞÜ SAYFA YENİLENİNCE TÜMÜYLE GİDİYORDU (telefonla parite).
+     Günlüğün asıl işe yaradığı an sayfanın çöküp yeniden açıldığı andır;
+     masaüstünde hiç saklanmadığı için tam o anda boşalıyordu. Son 10 hata
+     yazılıyor ve açılışta geri okunuyor; geri okunanlar `eski:true` ile
+     işaretleniyor ki bu oturumun hatalarıyla karışmasın. */
   const ERRLOG=[];
+  function eskiHatalariGeriYukle(){
+    try{
+      const ham=localStorage.getItem(LS+'_err'); if(!ham) return;
+      const a=JSON.parse(ham);
+      if(Array.isArray(a)) a.slice(-10).forEach(x=>{
+        if(x && x.where) ERRLOG.push({t:x.t||0, where:x.where, msg:(x.msg||'')+'', eski:true});
+      });
+    }catch(_){}
+  }
+  eskiHatalariGeriYukle();
   function logErr(where,e){
     const msg=((e&&(e.message||e.reason||e))+'').slice(0,180);
     ERRLOG.push({t:Date.now(),where,msg});
     if(ERRLOG.length>30) ERRLOG.shift();
+    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}
     const el=document.getElementById('sbErr');
     if(el){ el.style.display=''; el.textContent='⚠️ '+ERRLOG.length+' hata';
       el.onclick=()=>{ if(diyalogKapisi()) return;

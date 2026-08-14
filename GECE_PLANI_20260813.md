@@ -197,7 +197,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | L4 | Mac'te altyazı kelime sınırı ayarı yok — ekle ya da gerekçelendir | P2 |
 | L5 | Mac `buildCues` telefonla birebir — testte kilitli ✅, sabitleri de kilitle | P1 |
 | L6 | Windows kopyası md5 kapıda ✅ — zip paketi de eşit mi | P2 |
-| L7 | Mac hata günlüğü telefondaki kadar kapsamlı mı (etiket sayısı) | P1 |
+| L7 | Mac hata günlüğü telefondaki kadar kapsamlı mı (etiket sayısı) | P1  ⛔+✅ **ETİKET SAYISI SORUN DEĞİLDİ** (telefon 31, Mac 23; aradaki her etiket Macte OLMAYAN bir özelliğe ait ve parite kapısında zaten gerekçeli). Hipotez çürüdü. **Asıl fark KALICILIKTAYDI ve iki platformda da ters yönde kusur çıktı**: telefon son 10 hatayı diske yazıyordu ama kaynakta o anahtarı OKUYAN tek satır yoktu (**ölü yazma**); Mac ise hiç yazmıyordu, sayfa yenilenince günlük tümüyle gidiyordu. Oysa günlüğün asıl işe yaradığı an çöküp yeniden açıldığı andır. İkisi de kapatıldı, geri okunanlar `eski:true` ile işaretleniyor, bozuk kayıt açılışı engellemiyor. Boş catch tabanı gerekçesiyle 24→25 / 17→18. tests/110 (47 iddia), 9 bozma |
 | L8 | Mac'te kalıcı depo isteği gerçekten gereksiz mi — ölç | P2 |
 | L9 | Mac sunucusu olmadan açılınca kumanda paneli net mi | P1 |
 | L10 | Mac fonksiyon kapsamı %47 — en riskli 5'ini testle kilitle | P1 |
