@@ -51,6 +51,7 @@ Bu turda üç kez tökezlediğim yerler:
 - **Şablon dizesi (`` ` ``) içindeki yoruma ters tırnak koyma — BU GECE ÜÇ KEZ.** Kuralı yazdıktan sonra bile iki kez daha düştüm. Tezgâhı kesip `SyntaxError: missing ) after argument list` verir; hata satırı da yanıltıcı yeri gösterir. tests/81, tests/86, tests/72.
 - **`$?` okumadan önce BAŞKA KOMUT ÇALIŞTIRMA.** `echo "$(basename $f) -> $?"` yalan söyler: komut ikamesi `$?` genişlemeden önce koşar ve kodu sıfırlar. Bu yüzden 6 kasıtlı bozmanın 6'sı da "geçti" göründü; testler aslında doğru çalışıyordu. Önce `c=$?`, sonra gerisi.
 - **`indexOf` ile sıra ölçme.** Çağrı hiç yoksa `-1` döner ve `-1 < n` DOĞRU çıkar; eksikliği "sıra doğru" diye geçirir. Varlığı ayrıca sına.
+- **Satır yorumu ayıklayıcısı dizeyi kesiyor.** `replace(/\/\/[^\n]*/g,'')` kaba bir araç: kaynakta `location.protocol+'//'+host` gibi bir dize varsa satırı ORTADAN KESİYOR ve çıkarılan kod `SyntaxError` veriyor. Kaynak düzeyi desenler için sorun değil, ama **koşturulacak kodu ham biçimden** (yalnız blok yorumları atılmış) çıkar. tests/111de oldu.
 - **Gevşek desen.** `/lsFull/` aramak yetmez, `lsFullWarned=false` de eşleşir. Kullanıcıya GÖSTERİLEN şeyi ara.
 - Desenler koda değil, koda dair **iddiaya** bağlı olsun: `) < 0.12` ile `)<0.12` aynı şeydir.
 

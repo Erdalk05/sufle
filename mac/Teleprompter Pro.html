@@ -2645,13 +2645,32 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   /* ---------- TELEFON UZAKTAN KUMANDA (yerel sunucu) ---------- */
   async function setupRemote(){
     if(!location.protocol.startsWith('http')) return; // file:// ise kapalı
+    /* SAYFA http İLE AÇILMIŞ AMA SUFLE SUNUCUSU CEVAP VERMİYOR OLABİLİR.
+       `file://` durumu zaten anlatılıyordu, ama tersi anlatılmıyordu: sayfa
+       başka bir sunucudan (ya da sunucu öldükten sonra önbellekten) açılırsa
+       `/info` cevapsız kalıyor, kod sessizce `location.host`a düşüyor ve
+       panel ÇALIŞMAYACAK bir adres gösteriyordu. QR de 404 alıp sessizce
+       kayboluyordu — kullanıcı adresi telefona elle yazıyor, sayfa açılmıyor
+       ve sebebi hiçbir yerde yazmıyor. Windows kopyasında bu en olası durum:
+       orada `.command` sunucusu yok.
+       E9/E10 ile aynı sınıf: ölü adresi çalışıyormuş gibi göstermek. */
+    let bilgi=null;
+    try{
+      const r=await fetch('/info');
+      if(r.ok) bilgi=await r.json();
+    }catch(_){}
+    if(!bilgi){
+      $('#remoteOff').innerHTML='📴 <b>Sufle sunucusu cevap vermiyor.</b> Sayfa açıldı ama kumanda '+
+        'sunucusu çalışmıyor, bu yüzden telefon bağlanamaz.<br>Aynı klasördeki '+
+        '<b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla ve sayfayı yenile.';
+      $('#remoteOff').style.display='';
+      $('#remoteOn').style.display='none';
+      return;
+    }
     $('#remoteOff').style.display='none'; $('#remoteOn').style.display='block';
     // Mac'in Wi-Fi IP'sini sunucudan al — QR'da localhost olursa telefon ulaşamaz!
     let host=location.host;
-    try{
-      const r=await fetch('/info'); const j=await r.json();
-      if(j.ip && j.ip!=='127.0.0.1') host=j.ip+':'+j.port;
-    }catch(_){}
+    if(bilgi.ip && bilgi.ip!=='127.0.0.1') host=bilgi.ip+':'+bilgi.port;
     /* CALISMAYACAK QR GOSTERME.
        lan_ip() basarisiz olunca sunucu 127.0.0.1 donuyor ve burada
        location.host'a dusuluyor — o da localhost. QR'a localhost yazilinca
