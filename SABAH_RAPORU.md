@@ -6,8 +6,8 @@
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
 kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma turu eklendi).
-Kapı yeşil. **v9.5 sabah yayınlandı ve canlıdan doğrulandı**; bana bıraktığın üç karar
-da verildi ve **v9.6** olarak hazır bekliyor.
+Kapı yeşil. **v9.5 sabah yayınlandı**, bana bıraktığın üç karar verildi ve **v9.6 olarak yayınlandı**.
+İkisi de canlıdan doğrulandı. Yayınlanmamış iş kalmadı.
 
 ## ✅ v9.5 YAYINLANDI
 
@@ -24,7 +24,7 @@ Ancak ondan sonra `.son-yayin` yazıldı.
 | **K11** dokunma hedefleri | **Hedef 44 piksele çıktı, görünüm hiç değişmedi** | Sana "büyütmek görünümü değiştirir" demiştim; doğru ama eksikti. Görünmez bir örtüyle paint büyümeden hedef büyütülebiliyor — K8de anahtar satırında yaptığımın aynısı. |
 | **K9** kenarlık kontrastı | **Temaya dokunmadım; işletim sistemi tercihi devralınıyor** | Ölçtüm: normal tema 1,17:1, yüksek kontrast 16,58:1. Erişilebilir yol zaten var ve çalışıyor; asıl boşluk bulunabilirlikti. Artık cihazında yüksek kontrast açıksa uygulama da açık başlıyor. Temayı değiştirmek uygulamanın kimliğini değiştirirdi — o senin kararın, benim değil. |
 
-Üçü de **v9.6** olarak hazır; yayın için tek kelimen yeter.
+Üçü de **v9.6 olarak yayınlandı ve canlıdan doğrulandı** (md5 birebir, iki düzeltmenin izi canlı dosyada sayıldı).
 
 ## Ne bozuktu — kullanıcıya değen sırayla
 
@@ -197,7 +197,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.5 canlıda** · v9.6 hazır ve yayınlanmamış (yalnız bu sabahki üç karar)
+- **v9.6 canlıda** (v9.5 sabah, v9.6 kararlardan sonra) · yayınlanmamış iş yok
 - **3885 test** (gece başında 732) · yeni test dosyası: 39–118
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
