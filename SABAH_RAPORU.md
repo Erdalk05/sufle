@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Kaydı hemen duraklatınca yanlış uyarı çıkıyordu** — uygulama kaydın başladığını 2,5 sn sonra denetliyor; o sürede duraklattığında bunu "hiç başlamadı" sanıp korkutucu bir uyarı veriyordu.
 - **Silme askıda kalırsa ekran sonsuza kadar bekliyordu** — arşiv işlemleri arasında yalnız silmenin süre koruması yoktu; depo cevap vermezse toplu silme hiç bitmiyor ve arşiv ekranında düğme kapalı olduğu için çıkış da kalmıyordu.
 - **Toplu silme onayı sayfayı kapatınca açık kalıyordu** — silme geri alınamaz; vazgeçmek için sayfayı kapatsan bile onay duruyordu ve birkaç saniye içinde geri açıp bir dokunuş yıldızsız çekimlerin hepsini siliyordu.
 - **Ekran okuyucu bildirimlerin hiçbirini duyurmuyordu** — uygulamanın sana sebep söylediği tek kanal alt bildirimler (154 çağrı yeri) ve hiçbiri ekran okuyucuya iletilmiyordu; masaüstünde tek bir canlı bölge bile yoktu.
@@ -125,7 +126,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **61 commit**, hepsi yerelde, `claude` dalında
-- **2778 test** (gece başında 732) · yeni test dosyası: 39–87
-- Gece planı: 138 görevden **55'i** işlendi (bütün P0'lar + 48 P1)
+- **62 commit**, hepsi yerelde, `claude` dalında
+- **2798 test** (gece başında 732) · yeni test dosyası: 39–88
+- Gece planı: 138 görevden **56'sı** işlendi (bütün P0'lar + 49 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
