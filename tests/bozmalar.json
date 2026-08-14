@@ -194,5 +194,12 @@
   "kaynak": "telefon",
   "bul": "  if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */\n",
   "koy": ""
+ },
+ {
+  "ad": "B4 Mac panelleri kayıttan sonra geri gelmiyor",
+  "test": "124-odak-modu.js",
+  "kaynak": "mac",
+  "bul": "    /* Kayıt öncesi düzene dön (bkz. startRec'teki not). */\n    if(!fullOncesi) app.classList.remove('full');\n",
+  "koy": ""
  }
 ]

@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, oku, cikar}=require('./kaynak.js');
+const {telefonYolu, macYolu, oku, cikar}=require('./kaynak.js');
 
 /* B.4 — ODAK MODU: kayıtta kabuk kaybolur, DOKUNUŞLA GERİ GELİR.
 
@@ -56,4 +56,22 @@ const kod = (tel.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
      /body\.hideUI #hud,body\.hideUI #bar,body\.hideUI #progress\{opacity:0;pointer-events:none\}/.test(tel));
   ok('kayıt göstergesi gizlenMİYOR (kayıtta olduğun belli olmalı)',
      /body\.hideUI #recDot,body\.hideUI #recFrame\{opacity:1\}/.test(tel));
+}
+
+/* ---------- MAC: KAYITTA PANELLER KENDİLİĞİNDEN KAPANIR ---------- */
+{
+  const mac = oku(macYolu());
+  const mkod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  const basla = cikar(mkod, /recorder\.start\(1000\);[\s\S]*?togglePlay\(\);/, 'startRec kuyruğu');
+  /* SIRA da iddia: önce ESKİ durum saklanır, SONRA full eklenir. Ters sıra
+     fullOncesi'yi hep true yapar ve geri dönüş hiç çalışmaz — özellik
+     sessizce yarım kalır. */
+  const iSakla = basla.indexOf("fullOncesi=app.classList.contains('full')");
+  const iEkle  = basla.indexOf("app.classList.add('full')");
+  ok('Mac: kayıt başlarken önceki düzen saklanıyor', iSakla >= 0);
+  ok('Mac: kayıt başlarken paneller kapanıyor', iEkle >= 0);
+  ok('Mac: sıra doğru (önce sakla, sonra kapat)', iSakla >= 0 && iEkle > iSakla);
+  const dur = cikar(mkod, /function stopRec\(\)\{[\s\S]*?\n  \}/, 'stopRec');
+  ok('Mac: kayıt bitince yalnız GEREKİYORSA geri açılıyor',
+     /if\(!fullOncesi\) app\.classList\.remove\('full'\)/.test(dur));
 }

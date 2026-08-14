@@ -921,6 +921,7 @@ const I18N={
   window.addEventListener('error',e=>logErr('js',e.error||e.message));
   window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
   let state, running=false, raf=null, pos=0, speed=6;
+  let fullOncesi=false;   // B.4: kayıt öncesi panel düzeni (geri dönmek için)
   let startTime=0, elapsed=0, words=[], wordTops=[], activeIdx=-1, pxPerWord=40;
   let holdPoints=[], holdUntil=0;   // metindeki / // (2) duraklama isaretleri
   let lastTs=0, maxPos=1, wordLine=[], capTimes=[];
@@ -1638,6 +1639,13 @@ const I18N={
     recStart=performance.now(); overWarned=false; showRecTime(); startAudioMonitor();
     recBtn.textContent='■ Durdur'; recBtn.classList.add('active');
     $('#recDot').classList.add('on');
+    /* ODAK MODU (B.4, telefonla aynı kalıp): kayıt başlayınca paneller
+       kendiliğinden kapanır — çekimde sahne temiz. Kullanıcının H ile
+       AÇTIĞI düzen kayıttan sonra AYNEN geri gelsin diye önceki durum
+       saklanıyor; koşulsuz kaldırmak, kaydı hep 'full'de çalışan
+       kullanıcının düzenini her seferinde bozardı. */
+    fullOncesi=app.classList.contains('full');
+    app.classList.add('full');
     if(!running) togglePlay(); // kayıtla birlikte sufle başlasın
   }
   function stopRec(){
@@ -1647,6 +1655,8 @@ const I18N={
     stopAudioMonitor();
     recBtn.textContent='● Kaydet'; recBtn.classList.remove('active');
     $('#recDot').classList.remove('on');
+    /* Kayıt öncesi düzene dön (bkz. startRec'teki not). */
+    if(!fullOncesi) app.classList.remove('full');
     if(running) stop();
   }
   /* ---------- ORANA KIRPARAK KAYIT ----------
