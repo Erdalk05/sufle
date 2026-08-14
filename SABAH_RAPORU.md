@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Yeşil ekran kapalıyken onun ayarları yine de sürükleniyordu** — perde rengi, eşik, kenar yumuşaklığı, saçak temizliği, arka plan seçimi: hepsi görünür, oynatılabilir ve tamamen etkisiz; sebebi de yazmıyordu. Altyazı gömme kapalıyken altyazı ayarları için de aynıydı.
 - **Fener sessizce sönüyordu** — mikrofonu/çözünürlüğü değiştirince, kamerayı yeniden açınca veya uygulama arka plandan dönüp kamerayı kurtarınca ışık gidiyor, anahtar açık görünmeye devam ediyordu.
 - **İki kelimeyi birden vurgulamak hiç çalışmıyordu** — `*çok önemli*` yazınca vurgu uygulanmıyor, yıldızlar suflede ve gömülü altyazıda kalıyordu; yayın paketi ise siliyordu. Okuduğun metinle yayımladığın metin ayrışıyordu. Masaüstünde de aynıydı.
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
@@ -97,7 +98,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **44 commit**, hepsi yerelde, `claude` dalında
-- **2192 test** (gece başında 732) · yeni test dosyası: 39–71
-- Gece planı: 135 görevden **38'i** işlendi (bütün P0'lar + 31 P1)
+- **45 commit**, hepsi yerelde, `claude` dalında
+- **2236 test** (gece başında 732) · yeni test dosyası: 39–72
+- Gece planı: 135 görevden **39'u** işlendi (bütün P0'lar + 32 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
