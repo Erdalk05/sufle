@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Sesle takiple çekim yaparken metin konuştuğunun önüne geçiyordu** — kaydı başlatmak zamanlı akışı da açıyordu, iki sistem aynı anda metni sürüyordu; ölçülen kayma dakikada 140 kelimede yarım kelime, 300de bir kelimeden fazla. Bölüm sonunda çekim kendiliğinden de durabiliyordu.
 - **Kumanda tanı paneli yanlış suçlu gösterebiliyordu** — aynı paneldeki tetik kelimesi kutusuna dokunduktan sonra kumandaya basınca tuş kutuya gidiyor, panel ise 6 saniye sonra kumandayı ve işletim sistemini suçluyordu; çalışan bir kumandayı attırabilirdi.
 - **iPhone sunucusu telefonun ulaşamayacağı adresi QR olarak basıyordu** — Wi-Fi adresi bulunamayınca `127.0.0.1` yazıp QR üretiyordu; telefon okuyor, sayfa hiç açılmıyordu. Ayrıca 8443 doluysa yığın izi basıp çıkıyordu. İkisi de Mac tarafında zaten düzeltilmişti, buraya taşınmamış.
 - **Kendi tetik kelimen sessizce çalışmayabiliyordu** — boşluk içeren tetik (iki kelimelik ifade) hiçbir zaman tanınmıyor, yalnız noktalama/emojiden oluşan tetik hiç denenmiyordu; alan dolu göründüğü için kurduğunu sanıyordun.
@@ -96,6 +97,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Kendi tezgâhımda kopya-test tuzağına düştüm**: duraklama muhasebesini kaynaktan çıkarmak yerine elle yazmıştım; iki kasıtlı bozma yakalanmadı. Üç satırın üçü de kaynaktan çıkarılır hâle getirildi.
 - **Kanıtlanmamış bir koruma yazdım**: asılı testin tabanı düşürmesin diye ayrı bir dal ekledim; kasıtlı bozma turu o dalın hiçbir şeyi değiştirmediğini gösterdi (`Math.max` zaten koruyordu). Kaldırdım.
 - **Gevşek desen bir bozmayı kaçırdı**: "ölü adreste QR üretilmiyor" iddiam, QR ölü dalın içine eklendiğinde bile ilerideki `else` dalı sayesinde eşleşmeye devam ediyordu. İddiayı dala daralttım.
 - **Altın testte kendi iddiam yanlış çıktı**: kaydırma motorunun metnin sonunu hiç geçmemesi gerektiğini varsaydım; kod doğruydu — son satırın okuma çizgisini geçebilmesi için taşma bilinçli ve sınırlı.
@@ -110,7 +112,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **51 commit**, hepsi yerelde, `claude` dalında
-- **2399 test** (gece başında 732) · yeni test dosyası: 39–77
-- Gece planı: 136 görevden **45'i** işlendi (bütün P0'lar + 38 P1)
+- **52 commit**, hepsi yerelde, `claude` dalında
+- **2429 test** (gece başında 732) · yeni test dosyası: 39–78
+- Gece planı: 136 görevden **46'sı** işlendi (bütün P0'lar + 39 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
