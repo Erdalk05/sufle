@@ -137,6 +137,9 @@ const notKur = (metin, sure, dil) => new Function('__metin','__sure','__L', `
      üretiyordu. Burada damga yok, yani "hiç çekim yapılmamış" hâli sınanıyor
      ve active() yedeğine düşülüyor. */
   const cekimSenaryo=null;
+  /* G10: not artık gömülü altyazı damgasını da okuyor. Burada çekim yok,
+     yani damga da yok — çift altyazı uyarısı çıkmamalı. */
+  const lastPath=null;
   const active=()=>({text:__metin});
   const clock=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
   ${cikar(tel, /function duzMetin\(t\)\{[\s\S]*?\n\}/, 'duzMetin')}
