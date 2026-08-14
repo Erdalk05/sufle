@@ -1442,6 +1442,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const out=[]; let cur='';
     const pushWord=w=>{ while(measure(w)>maxW&&w.length>1){
         let k=1; while(k<w.length&&measure(w.slice(0,k+1))<=maxW) k++;
+        /* VEKİL ÇİFTİNİN ORTASINDAN BÖLME (telefonla aynı kural). Bölme
+           UTF-16 birimiyle yapılıyor ama emoji iki birim tutuyor; kesim
+           araya düşünce yarım vekil çıkıyor ve ekranda kutu, altyazı
+           dosyasında U+FFFD görünüyordu. */
+        const yuksekVekil=c=>c>=0xD800&&c<=0xDBFF;
+        if(k<w.length&&yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);
         out.push(w.slice(0,k)); w=w.slice(k); } cur=w; };
     (txt||'').split(' ').filter(Boolean).forEach(w=>{
       const t2=cur?cur+' '+w:w;

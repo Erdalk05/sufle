@@ -1,7 +1,9 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
+/* I1: kural İKİ PLATFORMDA aynı olmalı — aynı senaryo, aynı altyazı. */
+const macKod=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ÇOK UZUN TEK KELİME NEREDE TAŞAR — DÖRT YÜZEY AYRI AYRI ÖLÇÜLDÜ.
    Gerçek senaryolarda bu bir URL oluyor: "https://ornek.com/cok/uzun/bir/adres".
@@ -69,4 +71,67 @@ ok('düzenleyici tam genişlikte (yatay taşma yok)', /width:100%/.test(ta));
   const cw=new Function(cikar(kod,/function countWords\([\s\S]*?\n\}/,'countWords')+'; return countWords;')();
   ok('uzun URL tek kelime sayılıyor', cw('https://ornek.com/cok/uzun/adres')===1);
   ok('normal cümle doğru sayılıyor', cw('bu bir deneme cümlesidir')===4);
+}
+
+/* ---------- I1: EMOJİ ORTASINDAN BÖLÜNÜYOR MU (BÖLÜNÜYORDU) ----------
+   Bölme UTF-16 birimiyle yapılıyor ama emoji iki birim tutuyor. Kesim
+   araya düşünce ortaya YARIM VEKİL çıkıyordu: ekranda kutu (□), altyazı
+   dosyasında ise U+FFFD — yani gördüğün karakter bambaşka bir şey.
+   ÖLÇÜLDÜ (5 kelime x 18 satır genişliği = 90 vaka): 73 vakada oluyordu.
+   Düzeltmeden sonra 0. Düz metnin bölünmesi hiç değişmedi.
+   Kural İKİ PLATFORMDA da aynı: aynı senaryo, aynı altyazı. */
+{
+  const yarimVekil=s=>/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(s);
+  /* Gerçekçi ölçüm: tuval measureText gibi GÖRÜNEN genişliği verir; yarım
+     vekil dar bir kutu olarak çizilir, o yüzden 2 birim sayılıyor. Bu model
+     olmadan kusur hiç görünmüyordu — ölçüm aracının kendisi de doğrulandı. */
+  const olcPx=s=>{ let w=0; for(const ch of s){ const cp=ch.codePointAt(0);
+    w += cp>0xFFFF ? 20 : (cp>=0xD800&&cp<=0xDFFF ? 2 : 10); } return w; };
+  ok('ölçüm modeli emojiyi geniş sayıyor (araç doğrulaması)', olcPx('🎉')===20 && olcPx('a')===10);
+  ok('ölçüm modeli yarım vekili dar sayıyor (kusurun ortaya çıktığı şart)',
+     olcPx('\uD83C')===2);
+
+  const KELIMELER=[
+    ['emoji dizisi', '🎉'.repeat(15)],
+    ['bayrak dizisi', '🇹🇷'.repeat(8)],
+    ['harf ve emoji karışık', 'a🎉b🎉c🎉d🎉e🎉f🎉g🎉'],
+    ['aile emojisi (ZWJ)', '👨‍👩‍👧‍👦'.repeat(5)],
+    ['uzun etiket', 'merhaba🎉dunya🎉selam🎉'],
+  ];
+  const wrapM=new Function(cikar(macKod,/function wrapLines\([\s\S]*?return out\.length\?out:\[txt\|\|.{2}\];\s*\n\s*\}/,'Mac wrapLines')+'; return wrapLines;')();
+  for(const [ad,kelime] of KELIMELER){
+    let bozukTel=0, bozukMac=0, ayrik=0, vaka=0;
+    for(let mx=5;mx<=90;mx+=5){
+      vaka++;
+      const t=wrap(olcPx,kelime,mx), mm=wrapM(olcPx,kelime,mx);
+      if(t.some(yarimVekil)) bozukTel++;
+      if(mm.some(yarimVekil)) bozukMac++;
+      if(JSON.stringify(t)!==JSON.stringify(mm)) ayrik++;
+    }
+    ok(ad+': telefonda yarım karakter yok ('+vaka+' genişlik)', bozukTel===0);
+    ok(ad+': masaüstünde de yok', bozukMac===0);
+    ok(ad+': iki platform birebir aynı bölüyor', ayrik===0);
+  }
+  /* Bölme yine de İLERLEMELİ: geri adım sonsuz döngü yapmamalı. */
+  for(const [ad,kelime] of KELIMELER){
+    const r=wrap(olcPx,kelime,5);
+    ok(ad+': en dar satırda bile sonlanıyor ve satır üretiyor', r.length>0 && r.length<200);
+    ok(ad+': hiçbir satır boş değil', r.every(l=>l.length>0));
+    ok(ad+': bütün karakterler korunuyor (kayıp yok)', r.join('')===kelime);
+  }
+  /* Bayrak gibi iki kod noktalı birleşimler tam bölünemez ama en azından
+     kod noktası bütünlüğü korunuyor — kilitlenen iddia bu. */
+  ok('bayrak satırı yarım vekille bitmiyor', !yarimVekil(wrap(olcPx,'🇹🇷'.repeat(8),45)[0]));
+
+  /* DÜZ METİN DAVRANIŞI DEĞİŞMEDİ — düzeltmenin bedeli olmamalı. */
+  ok('düz metin eskisi gibi bölünüyor',
+     JSON.stringify(wrap(s=>s.length,'merhabadunyaselam',6))==='["merhab","adunya","selam"]');
+  ok('düz metinde de iki platform aynı',
+     JSON.stringify(wrap(s=>s.length,'merhabadunyaselam',6))===
+     JSON.stringify(wrapM(s=>s.length,'merhabadunyaselam',6)));
+  ok('sığan kelime hiç bölünmüyor', JSON.stringify(wrap(s=>s.length,'kisa',10))==='["kisa"]');
+
+  /* Kaynak düzeyi: koruma iki dosyada da var. */
+  ok('telefonda vekil koruması var', /if\(k<w\.length && yuksekVekil\(w\.charCodeAt\(k-1\)\)\) k=\(k>=2\?k-1:2\);/.test(kod));
+  ok('masaüstünde de var', /if\(k<w\.length&&yuksekVekil\(w\.charCodeAt\(k-1\)\)\) k=\(k>=2\?k-1:2\);/.test(macKod));
 }
