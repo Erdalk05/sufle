@@ -191,7 +191,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 ## L. Masaüstü parite
 | # | Görev | Ö |
 |---|---|---|
-| L1 | Mac'e yayın paketi taşınsın mı (karar + maliyet) | P1 |
+| L1 | Mac'e yayın paketi taşınsın mı (karar + maliyet) | P1  ⛔+✅ **KISMEN — yayın notu taşındı, ZIP KASTEN TAŞINMADI.** Ölçüldü: paketin dört parçasından **üçü masaüstünde zaten elde** (video ⬇︎ İndir, altyazı 💬 Altyazı, senaryo kullanıcının kendi metni); tek gerçek boşluk yayın notuydu. **Maliyet**: zip 54 satır İKİLİ BİÇİM kodu (zipYap 28 + crc32 16 + crc32Akis 10), not 70 satır düz metin. Masaüstünde dosya sistemi zaten var ve iki dosya ayrı iniyor; tek dosyaya paketlemenin kazancı ince bir ikili biçimi iki yerde tutmanın riskini karşılamıyor — bu depoda kopya sürüklenmesi bilinen sınıf. Not taşındı ve iki platformun **birebir aynı** çıktı ürettiği 8 örnek + 4 sürede kilitlendi. tests/108 (45 iddia), 10 bozma |
 | L2 | Mac'e çekim notu taşınsın mı | P1 |
 | L3 | Mac'e iki sürümlü senaryo taşınsın mı | P1 |
 | L4 | Mac'te altyazı kelime sınırı ayarı yok — ekle ya da gerekçelendir | P2 |

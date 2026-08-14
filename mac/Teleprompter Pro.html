@@ -501,6 +501,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <button class="btn danger" id="rrDiscard">🗑 Sil / Yeniden</button>
       <button class="btn" id="rrClose">Kapat</button>
       <button class="btn" id="rrSrt">💬 Altyazı</button>
+      <button class="btn" id="rrNote">📝 Yayın notu</button>
       <button class="btn" id="rrKeep">⭐ Arşive al</button>
       <button class="btn primary" id="rrDownload">⬇︎ İndir (.webm)</button>
     </div>
@@ -1996,6 +1997,76 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const p=(n,l)=>String(n).padStart(l,'0');
     return p(h,2)+':'+p(mi,2)+':'+p(se,2)+','+p(ms,3); }
   function srtText(){ return buildCues().map((c,n)=>(n+1)+'\n'+tc(c.start)+' --> '+tc(c.end)+'\n'+c.text+'\n').join('\n'); }
+  /* YAYIN NOTU — telefondan taşındı (L1 kararı).
+     ÖLÇÜLDÜ: paketin dört parçasından üçü masaüstünde ZATEN elde —
+     video (⬇︎ İndir), altyazı (💬 Altyazı) ve senaryo (metin zaten
+     kullanıcının kendi dosyası). Eksik olan tek parça yayın notuydu.
+     ZIP KASTEN TAŞINMADI. Maliyet ölçüldü: zipYap 28 + crc32 16 +
+     crc32Akis 10 = 54 satır İKİLİ BİÇİM kodu, ikinci bir dosyaya
+     kopyalanacaktı. Masaüstünde dosya sistemi zaten var ve iki dosya
+     ayrı ayrı iniyor; tek dosyaya paketlemenin kazancı, ince bir ikili
+     biçimi iki yerde tutmanın riskini karşılamıyor. Telefonda durum
+     tersiydi: iOS çok dosyayı zor taşıyor, orada zip gerçek bir ihtiyaç.
+     Not düz METİN: kopyası sürüklense bile sessizce bozulamaz. */
+  /* Telefondaki `duzMetin` ile BİREBİR aynı — kurallar tek tek taşındı.
+     İlk yazışımda ezberden yazdım ve iki yerde ayrıştı: başlık satırını
+     tümüyle atmak yerine yalnız `#` işaretini siliyordum, bu yüzden
+     başlık metni hem kelime sayısına hem açıklama taslağına giriyordu
+     (5 kelime yerine 7, açıklamanın ilk cümlesi başlığın kendisi).
+     Bu depoda bilinen tuzak: fonksiyonu dökümden yeniden yazmak. */
+  function duzMetin(t){
+    return (t||'')
+      .replace(/^#{1,3}.*$/gm,'')            // bölüm başlıkları ayrı ele alınıyor
+      .replace(/^\[.*\]$/gm,'')              // [yönerge] okunmaz
+      .replace(/\{[^}]{1,24}\}/g,'')         // {telaffuz} ipucu
+      .replace(/\((?:\d+(?:[.,]\d+)?)s?\)/g,'')  // (2) bekleme
+      .replace(/(^|\s)\/\/?(?=\s|$)/g,'$1')  // / ve // duraklama
+      .replace(/\*/g,'')                     // *vurgu*
+      .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  }
+  function yayinNotu(){
+    const s=curScript()||{}, ham=s.text||'';
+    const basliklar=ham.split(/\r?\n/).filter(l=>/^#{1,3}\s/.test(l))
+                       .map(l=>l.replace(/^#{1,3}\s*/,'').trim()).filter(Boolean);
+    const duz=duzMetin(ham);
+    const cumle=duz.split(/(?<=[.!?…])\s+/).map(x=>x.trim()).filter(Boolean);
+    const kelime=(duz.match(/\S+/g)||[]).length;
+    const sn=Math.max(1,Math.round((recStop-recStart)/1000||0));
+    const wpm=Math.round(kelime/(sn/60));
+    /* Bağlaç ve soru sözcükleri etiket olarak işe yaramıyor — telefonla aynı liste. */
+    const DURAK=new Set(('nasıl neden nedir hangi kimdir bunlar şunlar için ile ama fakat '+
+      'veya ya da ki de bu şu o bir birkaç çok az sonra önce kadar gibi hakkında üzerine '+
+      'what why how which when where about with from that this these those and the for our your')
+      .split(' '));
+    const kucult=w=>w.toLocaleLowerCase('tr-TR');
+    const etiket=[...new Set(basliklar.join(' ').split(/\s+/)
+      .map(w=>w.replace(/[^\p{L}\p{N}]/gu,''))
+      .filter(w=>w.length>3 && !DURAK.has(kucult(w))))]
+      .slice(0,8).map(w=>'#'+kucult(w));
+    return [
+      'SUFLE YAYIN NOTU',
+      new Date().toLocaleString(),
+      '',
+      'Süre: '+fmtTime(sn)+' · Kelime: '+kelime+(kelime?' · Tempo: '+wpm+' wpm':''),
+      '',
+      'BAŞLIK ADAYLARI',
+      ...(basliklar.length?basliklar.map((b,i)=>(i+1)+') '+b):['(senaryoda # başlık yok)']),
+      '',
+      'AÇIKLAMA (taslak)',
+      cumle.slice(0,3).join(' ')||'(metin boş)',
+      '',
+      'ETİKET ADAYLARI',
+      etiket.join(' ')||'(başlık yok — etiket üretilemedi)',
+      '',
+      '— Bu taslak senaryodan üretildi, yapay zekâ kullanılmadı.'
+    ].join('\n');
+  }
+  function downloadNote(){
+    const b=new Blob([yayinNotu()],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
+    const a=document.createElement('a'); a.href=u; a.download='yayin-notu_'+stamp()+'.txt';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+    toast('📝 Yayın notu indirildi');
+  }
   function downloadSrt(){
     const cues=buildCues();
     if(!cues.length){ toast('Altyazı yok — kayıt sırasında sufle akmamış'); return; }
@@ -2274,6 +2345,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     r.readAsDataURL(f); e.target.value='';
   };
   $('#rrSrt').onclick=downloadSrt;
+  $('#rrNote').onclick=downloadNote;
 
   // tekerlek ile manuel konum — çalışırken de olsun (cümle kaçınca geri sarmak için)
   function setPos(p){
