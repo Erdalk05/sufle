@@ -103,7 +103,10 @@ function macKos({seenVer, zamanlayiciCalissin, ilkKurulum=!seenVer}){
     const state=__st, VER='9.1', ilkKurulum=__ilk;
     let gecikme=null;
     const save=()=>__iz.push('save');
+    /* Mac artık engelleyici alert kullanmıyor; hoş geldin ekranı da
+       sayfayı durdurmayan panelden geçiyor. Tezgâh ikisini de tanımalı. */
     const alert=()=>__iz.push('alert');
+    const bilgiGoster=()=>__iz.push('bilgiGoster');
     const toast=()=>__iz.push('toast');
     const showNews=()=>__iz.push('showNews');
     const setTimeout=(f,ms)=>{ gecikme=ms; if(__calissin){ f(); } return 1; };
@@ -133,7 +136,11 @@ ok('Mac: eski kullanıcıda da damga en sonda basılıyor',
 
 const macGercektenYeni = macKos({seenVer:'', zamanlayiciCalissin:true, ilkKurulum:true});
 ok('Mac: hiç kaydı olmayan gerçek yeni kullanıcı HOŞ GELDİN görüyor',
-   macGercektenYeni.izler.includes('alert') && !macGercektenYeni.izler.includes('showNews'));
+   /* İDDİA: hoş geldin GÖSTERİLİYOR ve sürüm notu gösterilmiyor. Hangi
+      yolla gösterildiği (alert mi kendi panelimiz mi) iddianın parçası
+      değil — engelleyici alert kalktığında bu desen boşuna kırılmıştı. */
+   (macGercektenYeni.izler.includes('bilgiGoster')||macGercektenYeni.izler.includes('alert'))
+   && !macGercektenYeni.izler.includes('showNews'));
 
 /* Kaynak düzeyi: ölçüt artık olmayan bir alandan türetilmiyor. */
 ok('Mac: ilk kurulum sinyali kayıtlı verinin varlığından geliyor',
@@ -153,7 +160,7 @@ ok('Mac: damga bilgilendirmeden SONRA basılıyor',
 ok('Mac: gösterildikten sonra damga basılıyor', macGuncelleme.state.seenVer === '9.1');
 
 const macIlk = macKos({seenVer:'', zamanlayiciCalissin:true});
-ok('Mac: ilk kurulumda tanıtım gösteriliyor', macIlk.izler.includes('alert'));
+ok('Mac: ilk kurulumda tanıtım gösteriliyor', (macIlk.izler.includes('bilgiGoster')||macIlk.izler.includes('alert')));
 ok('Mac: ilk kurulumda damga en sonda basılıyor',
    macIlk.izler.indexOf('save') === macIlk.izler.length - 1);
 

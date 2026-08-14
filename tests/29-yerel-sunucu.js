@@ -77,7 +77,13 @@ async function sunucuBekle(port, deneme=40){
 
     /* ---------- 8080'İ MEŞGUL ET: YEDEK PORT YOLUNU ZORLA ---------- */
     try { tikaci = await portTut(8080); }
-    catch(_) { console.log('✓ (atlandı: 8080 zaten başka bir şeyce tutulu)'); temizle(); return; }
+    /* `ATLANDI:` öneki şart: koşturucu bunu görünce taban karşılaştırmasını
+       atlıyor. Öneksiz hâlde 1 iddia basıyordu ve sayaç "17 -> 1 düştü"
+       diye KIRMIZI veriyordu — makine durumu yüzünden yayın bloke oluyordu.
+       M11de 8081 için çözülen sorunun ikizi; 8080 gözden kaçmıştı.
+       Gerçekten oldu: Erdalın kendi kumanda sunucusu 8080i tutuyordu. */
+    catch(_) { ok('ATLANDI: 8080 portunu başka bir uygulama tutuyor (makine durumu)', true);
+               temizle(); return; }
 
     proc = spawn(python, ['-u', 'teleprompter_server.py'], {cwd: dizin, stdio:['ignore','pipe','pipe']});
     let banner = '';

@@ -984,7 +984,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.6';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.7';
 
 /* ============ i18n ============ */
 const I18N={
@@ -5463,7 +5463,9 @@ const NEWS={
        +'<br>🔒 <b>Masaüstü kumanda sunucusu güvenlik düzeltmesi</b>: tarayıcında açık duran başka bir sayfa sufleyi sürebiliyor, hatta çekimi durdurabiliyordu. Artık yalnız kendi kumanda sayfan komut gönderebiliyor.',
        en:'👆 <b>Small buttons are easier to hit</b>: the tap area of the top-bar icons, segment and tab buttons is now 44 pixels — the look is unchanged, only the touchable area grew.'
        +'<br>◐ <b>Your device high contrast setting is honoured</b>: if the operating system asks for more contrast, the app starts with it on. If you turn it off later, that choice is kept.'
-       +'<br>🔒 <b>Security fix in the desktop remote server</b>: another page open in your browser could drive the prompter and even stop a take. Only your own remote page can send commands now.'}
+       +'<br>🔒 <b>Security fix in the desktop remote server</b>: another page open in your browser could drive the prompter and even stop a take. Only your own remote page can send commands now.'},
+ '9.7':{tr:'🖥 <b>Masaüstü sürümünde sufle donuyordu</b>: sürüm notu, hazırlık raporu ve hoş geldin ekranı tarayıcının kendi diyaloğuyla açılıyordu ve o diyalog açıkken sayfa tümüyle duruyor — metin akmıyor, kamera görüntüsü donuyor, geri sayım takılıyordu. Telefonda bu kaldırılmıştı, masaüstüne taşınmamış. Artık kendi panelimizle açılıyor ve sufle akmaya devam ediyor.',
+       en:'🖥 <b>The desktop prompter froze</b>: the release note, readiness report and welcome screen used the browser native dialog, and while such a dialog is open the page stops completely — the text does not scroll, the camera preview freezes and the countdown stutters. This was removed on the phone but never carried to the desktop. They now open in our own panel and the prompter keeps running.'},
 };
 /* SÜRÜM SIRALAMASI METİNLE YAPILAMAZ.
    Object.keys(NEWS).sort() alfabetik sıralar: '10.0' < '9.1' çıkar, çünkü '1'

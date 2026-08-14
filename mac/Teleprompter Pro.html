@@ -201,6 +201,20 @@
   #connDot.on{color:var(--accent)}
   #voiceBtn.primary{background:var(--accent);color:#04210f;border-color:transparent}
   /* kayıt önizleme penceresi */
+  /* ENGELLEYİCİ DİYALOG SUFLEYİ DONDURUYOR (masaüstünde kalmış T15).
+     alert/confirm/prompt açıkken tarayıcı SAYFAYI TÜMÜYLE DURDURUR: sufle
+     akmaz, kamera önizlemesi donar, sesle takip çalışmaz, hatta 3-2-1
+     geri sayımı takılı takılı görünür. Telefonda bu kaldırılmıştı, Mac
+     tarafına taşınmamış — bir platformda düzeltilen kusurun diğerine
+     taşınmaması bu depoda tekrarlayan sınıf.
+     Yerine kendi panelimiz: sayfayı hiç durdurmuyor, Escape ile kapanıyor. */
+  #bilgi{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.55);padding:24px}
+  #bilgi.open{display:flex}
+  #bilgi .bx{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    max-width:760px;max-height:80vh;overflow:auto;padding:18px 20px;box-shadow:0 18px 60px rgba(0,0,0,.6)}
+  #bilgi h3{margin:0 0 10px;font-size:15px}
+  #bilgi pre{white-space:pre-wrap;font:13px/1.55 inherit;color:#cfd0d4;margin:0 0 14px}
   #recResult{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.78);backdrop-filter:blur(6px);padding:24px}
   #recResult.open{display:flex}
@@ -512,6 +526,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 <!-- Telefonla ayni: uygulamanin sebep soyledigi tek kanal. Mac tarafinda
      hic aria-live yoktu, yani ekran okuyucu bu bildirimlerin hicbirini
      duyurmuyordu. -->
+<div id="bilgi" role="dialog" aria-modal="true" aria-labelledby="bilgiBas">
+  <div class="bx"><h3 id="bilgiBas"></h3><pre id="bilgiMetin"></pre>
+    <button class="btn primary" id="bilgiKapat">Kapat</button></div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
@@ -523,7 +541,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.6';   // telefon sürümüyle aynı numaralama
+  const VER='9.7';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -552,7 +570,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const el=document.getElementById('sbErr');
     if(el){ el.style.display=''; el.textContent='⚠️ '+ERRLOG.length+' hata';
       el.onclick=()=>{ if(diyalogKapisi()) return;
-        alert(ERRLOG.slice(-8).reverse().map(x=>x.where+': '+x.msg).join('\n')); }; }
+        bilgiGoster('Son hatalar', ERRLOG.slice(-8).reverse().map(x=>x.where+': '+x.msg).join('\n')); }; }
   }
   window.addEventListener('error',e=>logErr('js',e.error||e.message));
   window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
@@ -2171,7 +2189,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const bad=r.filter(x=>x[0]==='bad').length, warn=r.filter(x=>x[0]==='warn').length;
     const head = bad ? '⛔ '+bad+' engel var' : (warn ? '⚠️ '+warn+' uyarı — çekebilirsin' : '✅ Çekime hazırsın');
     const ic={ok:'✓',warn:'~',bad:'✗'};
-    alert(head+'\n\n'+r.map(x=>ic[x[0]]+' '+x[1]+(x[2]?'\n    '+x[2]:'')).join('\n'));
+    bilgiGoster('Hazır mıyım?', head+'\n\n'+r.map(x=>ic[x[0]]+' '+x[1]+(x[2]?'\n    '+x[2]:'')).join('\n'));
   }
   function deviceLine(){
     const MR=window.MediaRecorder, sup=x=>!!(MR&&MR.isTypeSupported&&MR.isTypeSupported(x));
@@ -2224,6 +2242,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     $('#rt').textContent='~'+fmtTime(wc/Math.max(20,state.speed||0)*60);
   }
   let toastT;
+  /* alert() YERİNE: sayfayı durdurmayan panel. Aynı metni gösteriyor ama
+     sufle akmaya, kamera görüntü vermeye devam ediyor. */
+  function bilgiGoster(baslik, metin){
+    $('#bilgiBas').textContent=baslik;
+    $('#bilgiMetin').textContent=metin;
+    $('#bilgi').classList.add('open');
+    $('#bilgiKapat').focus();
+  }
+  function bilgiKapat(){ $('#bilgi').classList.remove('open'); }
+
   function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
 
   /* ---------- KAYIT SIRASINDA ENGELLEYİCİ PENCERE AÇILMAZ ----------
@@ -2249,6 +2277,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
+   '9.7':'SUFLE DONMASI DÜZELTİLDİ: sürüm notu, hazırlık raporu, hata günlüğü ve hoş geldin ekranı tarayıcının KENDİ diyaloğuyla açılıyordu. O diyalog açıkken tarayıcı sayfayı tümüyle durdurur: metin akmaz, kamera görüntüsü donar, sesle takip çalışmaz ve 3-2-1 geri sayımı takılı görünür. Telefonda bu kaldırılmıştı, masaüstüne taşınmamıştı.\n\nArtık hepsi kendi panelimizde açılıyor; panel açıkken sufle akmaya devam ediyor. Escape ya da dışına tıklayarak kapatabilirsin.',
    '9.6':'MASAÜSTÜ KUMANDA SUNUCUSUNDA GÜVENLİK DÜZELTMESİ: tarayıcında açık duran başka bir sayfa sufleyi sürebiliyor, hatta çekimi ortasında durdurabiliyordu. Komut ucu artık yalnız kendi kumanda sayfandan gelen isteği kabul ediyor; eşleştirme akışı hiç değişmedi.\n\nBu sabah eklenenler: yayın notu (çekimden sonra başlık adayları, açıklama taslağı ve etiketler — telefonla birebir aynı metni üretiyor), arşiv listesi artık videoları belleğe çekmiyor (yalnız seçtiğin çekim getiriliyor), Temizle aracı Word ve PDF belgesinden gelen görünmez karakterleri de temizliyor, hata günlüğü sayfa yenilense de duruyor ve sufle sunucusu cevap vermiyorsa kumanda paneli sebebini söylüyor.',
    '9.5':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda düzeltilenler: sesle takip kendini sonsuz yeniden başlatıp bir süre sonra sözü takip etmeyi bırakıyordu; yeşil ekran/kırpma görüntüsü kayıt sırasında kopunca donmuş kare kaydedilmeye devam ediyordu; çekim sürerken kamera veya mikrofon değiştirmek çekimin sesini öldürüyordu.\n\n(Mac\'te kamera düğmesi kayıt sürerken zaten çekimi düzgün bitiriyor — bu üç hata Mac\'i etkilemiyordu.)\n\nMac\'te düzeltilen: çekim ortasında mikrofon koparsa (USB/Bluetooth) artık haber veriliyor — görüntü aktığı için kayıt sağlam görünüyor ama sonrası sessiz kalıyordu. Görüntü için uyarı vardı, ses için yoktu.\n\nMac\'te ayrica: "Sayilari yaziya cevir" araci binlik ayracini, ondalik virgulu, yuzdeyi ve saati ayri ayri cevirip okunamaz metin uretiyordu (12,5% -> "on iki, yuzde bes" gibi bambaska bir sayi). Duzeltildi. Ayrica altyazi, kisaltma ve sira sayilarindaki noktada (vb. Dr. 3. T.C.) cumleyi bolup tek kelimelik kutucuk uretiyordu — o da duzeltildi.\n\nPencereyi yeniden boyutlandirinca ya da tam ekrana girip cikinca sufle metnin baska yerine atliyordu: satir sarmasi bastan hesaplandigi icin kayitli piksel konumu baska bir kelimeye denk geliyordu. Artik okudugun satir korunuyor.\n\nDepo dolunca kaydetme sessizce PATLIYORDU: setItem istisna firlatiyor, hicbir yerde yakalanmiyordu ve o sirada calisan is (senaryo secme, silme, ayar degistirme) ortasinda kiriliyordu. Artik yakalaniyor ve durum soyleniyor.\n\nISARETLEME MOTORU EKLENDI: *vurgu*, {telaffuz} ve / // (2) duraklama isaretleri Mac suflesinde harfi harfine goruniyordu — simdi telefondaki gibi cozuluyor ve duraklamalar gercekten bekletiyor. "Nefes isareti" aracinin ekledigi / isaretleri de artik duraklama olarak calisiyor.'
   };
@@ -2265,7 +2294,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   function showNews(){
     if(diyalogKapisi()) return;
     const k=Object.keys(NEWS).sort(verCmp).pop();
-    alert('Sufle v'+k+' — ne değişti?\n\n'+NEWS[k]);
+    bilgiGoster('Sufle v'+k+' — ne değişti?', NEWS[k]);
   }
   /* DAMGA GÖSTERİMDEN SONRA BASILIR. Telefonda tersi yapılmıştı: kullanıcı
      gösterim gecikmesi dolmadan uygulamayı kapatınca "görüldü" damgası çoktan
@@ -2274,13 +2303,20 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(state.seenVer===VER) return;
     const ilk=ilkKurulum;
     setTimeout(()=>{
-      if(ilk) alert('Sufle\'ye hoş geldin\n\n1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.');
+      if(ilk) bilgiGoster('Sufleye hoş geldin', '1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.');
       else toast('🆕 v'+VER+' — ne değiştiğini görmek için alttaki sürüme tıkla');
       state.seenVer=VER; save();
     },1400);
   }
 
   /* ---------- OLAYLAR ---------- */
+  $('#bilgiKapat').onclick=bilgiKapat;
+  $('#bilgi').onclick=e=>{ if(e.target.id==='bilgi') bilgiKapat(); };
+  /* Escape ile kapanma: paneli açık bırakıp sufleyi kullanmaya devam
+     edebilirsin ama kapatmanın klavye yolu da olmalı. */
+  window.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && $('#bilgi').classList.contains('open')){ e.stopPropagation(); bilgiKapat(); }
+  }, true);
   playBtn.onclick=togglePlay;
   $('#resetBtn').onclick=reset;
   camBtn.onclick=toggleCam;
