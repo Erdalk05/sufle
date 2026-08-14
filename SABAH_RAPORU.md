@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
 
@@ -79,7 +80,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Kapıya kendi elimle regresyon soktum:** `denetim.py`'ye eklediğim satır-sonu yorum temizliği, metin içindeki `//` ifadesini de yorum sanıyordu. Sürüm notundaki `/ // (2)` dizeyi kesti ve Türkçe cümleler koda karıştı. Düzelttim, dört yönde doğruladım.
 - **H6'daki koruma eksikti:** "Sesi düzelt" düğmesi izleri kendi durduruyor, kapıya hiç varmıyordu. F4 turunda yakaladım.
 - **Sürüm notundaki kesme işareti** iki kez JS dizesini kırdı — uygulama **hiç açılmayacaktı**. Her ikisini de kapının 2. adımı yakaladı.
-- **Testlerin koda birebir kilitlenmesi** kapıyı 5 kez gereksiz kırmızıya çevirdi. Kuralı `CLAUDE.md`'ye yazdım, süpürmeyi X1/X2 olarak P2'ye aldım.
+- **Testlerin koda birebir kilitlenmesi** kapıyı 5 kez gereksiz kırmızıya çevirdi. Kuralı `CLAUDE.md`'ye yazdım, süpürmeyi X1/X2 olarak P2'ye aldım. A1 turunda **14 sahte kırmızı** daha çıktı (aynı sınıf); üçünü iddiaya çevirdim ve gevşetmenin kapıyı kör etmediğini 4 ayrı bozmayla doğruladım.
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
@@ -93,7 +94,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **39 commit**, hepsi yerelde, `claude` dalında
-- **2092 test** (gece başında 732) · yeni test dosyası: 39–68
-- Gece planı: 135 görevden **35'i** işlendi (bütün P0'lar + 28 P1)
+- **41 commit**, hepsi yerelde, `claude` dalında
+- **2110 test** (gece başında 732) · yeni test dosyası: 39–69
+- Gece planı: 135 görevden **36'sı** işlendi (bütün P0'lar + 29 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
