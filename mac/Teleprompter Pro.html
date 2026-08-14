@@ -1942,8 +1942,14 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       c.text=c.words.join(' '); });
     return cues;
   }
-  function tc(s){ s=Math.max(0,s);
-    const h=Math.floor(s/3600),mi=Math.floor(s%3600/60),se=Math.floor(s%60),ms=Math.round((s-Math.floor(s))*1000);
+  /* Telefonla AYNI kural (bkz. tests/80): saniye ve milisaniye ayri
+     hesaplanınca 0,9995 ustu ondalik "00:00:05,1000" uretiyordu — dort haneli
+     milisaniye gecerli .srt degil. Tam milisaniyeden turetiliyor. */
+  function tc(s){
+    let t=Math.max(0,Math.round(s*1000));
+    const ms=t%1000; t=(t-ms)/1000;
+    const se=t%60;   t=(t-se)/60;
+    const mi=t%60,   h=(t-mi)/60;
     const p=(n,l)=>String(n).padStart(l,'0');
     return p(h,2)+':'+p(mi,2)+':'+p(se,2)+','+p(ms,3); }
   function srtText(){ return buildCues().map((c,n)=>(n+1)+'\n'+tc(c.start)+' --> '+tc(c.end)+'\n'+c.text+'\n').join('\n'); }
