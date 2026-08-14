@@ -72,8 +72,11 @@ ok('camDenied iki dilde tanımlı', (tel.match(/camDenied:'/g)||[]).length >= 2)
 /* ---------- BAĞLI MI ----------
    "Yazıldı ama çağrılmıyor" olursa kullanıcı yine eski çıplak mesajı görür. */
 const openCam=cikar(kod,/async function openCam\(\)\{[\s\S]*?\n\}/,'openCam');
+/* İDDİA: izin reddi mesajına yol tarifi EKLENİYOR. Mesaja üçüncü bir
+   parça eklemek (ör. tarayıcı adı) iddiayı bozmaz — bu gece tests/37
+   tam bu yüzden boşuna kırmızı vermişti. */
 ok('izin reddinde yol tarifi mesaja ekleniyor',
-   /toast\(m\('camDenied'\)\+izinYolu\(\)\)/.test(openCam));
+   /toast\([^\n]*m\('camDenied'\)[^\n]*izinYolu\(\)/.test(openCam));
 ok('diğer kamera hataları bozulmadı',
    /camBusy/.test(openCam) && /camNone/.test(openCam));
 

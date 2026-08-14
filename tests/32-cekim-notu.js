@@ -43,8 +43,10 @@ const render = cikar(tel, /async function renderTakes\(\)\{[\s\S]*?\n\}/, 'rende
 ok('liste ses rozetini gösteriyor', /sesRozeti\(it\.ses\)/.test(render));
 ok('liste notu gösteriyor', /it\.not/.test(render));
 ok('not düğmesi var', /data-a="note"/.test(render));
+/* İDDİA: not düğmesinin ekran okuyucuya söylenen bir adı var ve o ad
+   sözlükten geliyor. Özniteliklerin SIRASI iddianın parçası değil. */
 ok('not düğmesi adlandırılmış (ekran okuyucu)',
-   /data-a="note" aria-label="'\+m\('takeNote'\)/.test(render));
+   /data-a="note"[^\n]{0,80}aria-label="[^\n]{0,20}m\('takeNote'\)/.test(render));
 ok('not kayıt sürerken açılmıyor (donma kapısı)',
    /data-a="note"[\s\S]{0,400}?rec\.state==='recording'/.test(render));
 /* Korunan iddia: not KALICI olarak yazılıyor. Yazımın hangi çağrıyla

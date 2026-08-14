@@ -75,5 +75,7 @@ ok('satırların hemen hepsi çözüm öneriyor',
    "Yazıldı ama hiçbir yere bağlı değil" sınıfı bu depoda birden çok kez çıktı. */
 ok('panel bir yerde çiziliyor', /function renderDevice\(\)/.test(kod));
 ok('çizim raporu kullanıyor', /const rows=deviceReport\(\);/.test(cikar(kod,/function renderDevice\(\)\{[\s\S]*?\n\}/,'renderDevice')));
+/* İDDİA: çalışmayan satırda öneri metni KAÇIRILARAK gösteriliyor.
+   Kutunun sınıfını ya da etiketini değiştirmek iddiayı bozmaz. */
 ok('çalışmayan satırda öneri gösteriliyor',
-   /!ok&&r\[3\]\?'<div class="s">'\+esc\(r\[3\]\)/.test(kod));
+   /!ok&&r\[3\]\?[^\n]*esc\(r\[3\]\)/.test(kod));

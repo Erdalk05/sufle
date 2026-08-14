@@ -80,8 +80,11 @@ ok('geri sarınca bekleme de iptal ediliyor', /holdUntil=0;/.test(setPos));
 /* ---------- BAĞLI MI ---------- */
 ok('buildWords işaretleme motorunu kullanıyor',
    /\.replace\(\/\\S\+\/g,isaretle\)/.test(cikar(mac,/function buildWords\(\)\{[\s\S]*?\n  \}/,'buildWords')));
+/* İDDİA: her belirteç işaretleme motorundan geçiyor. Eskiden desen
+   birleştirmenin BİÇİMİNİ kilitliyordu (`'<span class="w">'+biyonik(m)+…`);
+   Mace bir sınıf ya da öznitelik eklemek testi boşuna kırardı. */
 ok('eski "her belirteci olduğu gibi bas" yolu kalmadı',
-   !/'<span class="w">'\+biyonik\(m\)\+'<\/span>'/.test(mac));
+   !/replace\(\/\\S\+\/g,\s*m\s*=>[^\n]*biyonik\(m\)/.test(mac));
 ok('vurgu için stil tanımlı', /#scroller \.w\.em\{/.test(mac));
 ok('duraklama için stil tanımlı', /#scroller \.hold\{/.test(mac));
 

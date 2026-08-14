@@ -56,7 +56,9 @@ ok('gerçek adres varken eski davranış duruyor',
    /else:\s*\n\s*print\("  Telefon \(kumanda\):  http:\/\/%s:%d\/remote" % \(ip, PORT\)\)/.test(sunucu));
 
 /* ---------- MAC SAYFASI: çalışmayacak QR gösterilmiyor ---------- */
-const kur=cikar(mac,/const yerelMi = [\s\S]*?img\.src='\/qr\?d='\+encodeURIComponent\(url\);/,'QR kurulumu');
+/* Çıkarım QR satırına kadar gitmeli ama adresin BİRLEŞTİRME biçimine
+   kilitlenmemeli: sorguya bir parametre eklemek iddiayı bozmaz. */
+const kur=cikar(mac,/const yerelMi = [\s\S]*?img\.src=[^\n]*encodeURIComponent\(url\);/,'QR kurulumu');
 ok('adres yerel mi diye bakılıyor', /const yerelMi = /.test(kur));
 ok('yerelse QR gizleniyor', /if\(yerelMi\)\{[\s\S]{0,200}?img\.style\.display='none';/.test(kur));
 ok('yerelse adres yerine sebep yazılıyor', /Wi-Fi adresi bulunamadı/.test(kur));
@@ -75,7 +77,10 @@ ok('yerelse QR üretimine hiç gidilmiyor',
 }
 
 /* ---------- ESKİ DAVRANIŞ KORUNDU ---------- */
-ok('gerçek adreste QR hâlâ üretiliyor', /img\.src='\/qr\?d='\+encodeURIComponent\(url\)/.test(kur));
+/* İDDİA: QR, hazırlanan ADRESTEN üretiliyor ve adres kaçırılıyor.
+   Uç noktanın yolu ya da ek parametreler iddianın parçası değil. */
+ok('gerçek adreste QR hâlâ üretiliyor',
+   /img\.src=[^\n]*\/qr[^\n]*encodeURIComponent\(url\)/.test(kur));
 ok('gerçek adreste adres metni hâlâ yazılıyor', /\$\('#remoteUrl'\)\.textContent=host\+'\/remote'/.test(kur));
 ok('port yedeği düzeltmesi duruyor (/info gerçek portu bildiriyor)',
    /PORT = p          # ← \/info ve QR artık GERÇEK portu bildiriyor/.test(sunucu));

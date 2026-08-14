@@ -96,6 +96,8 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 ### Kapının kendi kör noktası (gece sonunda kapatıldı)
 
+**Testlerin kendi kalitesi tarandı:** kodun BİÇİMİNE kilitlenmiş 6 desen bulunup iddiaya bağlandı; bunlar bu gece kapıyı boşuna kırmızıya çeviren beş vakanın aynı şeklindeydi. Tarama artık sürekli. **Bozma tezgâhında da delik çıktı**: yanlış bir dosya yolu verilince tezgâh sessizce gerçek dosyaya düşüyordu, yani bozma hiç ölçülmeden test "geçti" diyordu — bu gece üç bozma tam bu yüzden yanıltmıştı. Artık hata veriyor.
+
 **Parite muafiyet listesi artık kendini denetliyor:** o liste elle yazılıyordu ve kapının gücü tam da ona bağlıydı, ama hiçbir kontrolü yoktu. Artık bayat muafiyet (kaynaktan kalkmış etiket), yanlış muafiyet (aslında iki platformda da olan etiket) ve sessiz büyüme (yeni muafiyet eklemek) yakalanıyor.
 
 **Kapıya altıncı adım eklendi:** fonksiyon kapsamı. Testlerin hiç anmadığı fonksiyon sayısı artarsa kapı kırmızı veriyor (telefon 51, Mac 33 tabanla başladı; %80 ve %77). Ölçütü bilerek yüzde yapmadım: yüzdeyle ölçseydik testsiz bir fonksiyonu silmek kapsamı iyileşmiş gibi gösterirdi.
@@ -157,7 +159,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **91 commit**, hepsi yerelde, `claude` dalında
-- **3755 test** (gece başında 732) · yeni test dosyası: 39–113
-- Gece planı: 138 görevden **84'ü** işlendi (bütün P0'lar + 76 P1 + F9)
+- **92 commit**, hepsi yerelde, `claude` dalında
+- **3778 test** (gece başında 732) · yeni test dosyası: 39–114
+- Gece planı: 138 görevden **85'i** işlendi (bütün P0'lar + 77 P1 + F9)
 - Kapı: 6 adım yeşil · 4 ayna birebir · `denetim.py` temiz

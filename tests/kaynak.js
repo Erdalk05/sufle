@@ -7,7 +7,16 @@ const path = require('path');
 const REPO = path.resolve(__dirname, '..');
 const HOME = process.env.HOME || '';
 
-function ilkVarOlan(adaylar, ad) {
+/* AÇIKÇA VERİLEN YOL YANLIŞSA SESSİZCE DEPOYA DÜŞME.
+   Ortam değişkeni yalnız kasıtlı bozma turlarında veriliyor. Yol yanlışsa
+   eski davranış onu atlayıp DEPODAKİ gerçek dosyayı sınıyordu: bozma hiç
+   ölçülmüyor ama test "geçti" diyor. 2026-08-14 gecesi tam bu yüzden üç
+   bozma "yakalanmadı" göründü; oysa bozma dosyaları hiç yazılmamıştı.
+   Ölçmeyen kapı sınıfı — açıkça verilen yol VARSA doğru olmalı. */
+function ilkVarOlan(adaylar, ad, acikYol) {
+  if (acikYol && !fs.existsSync(acikYol))
+    throw new Error('Verilen yol yok: ' + acikYol + ' (' + ad + ')\n' +
+      'Ortam değişkeni yanlışsa bozma turu HİÇBİR ŞEY ölçmez.');
   for (const p of adaylar) if (p && fs.existsSync(p)) return p;
   throw new Error(
     'Kaynak bulunamadı: ' + ad + '\nBakılan yerler:\n  ' + adaylar.filter(Boolean).join('\n  ') +
@@ -19,7 +28,7 @@ const telefonYolu = () => ilkVarOlan([
   process.env.SUFLE_TELEFON,
   path.join(REPO, 'index.html'),
   path.join(HOME, 'Desktop/iPhone Teleprompter/index.html'),
-], 'telefon index.html');
+], 'telefon index.html', process.env.SUFLE_TELEFON);
 
 /* SIRA DEPODAN BAŞLAR — 2026-08-13'te bu sıra tersti ve gerçekten yanılttı.
    Depodaki mac/ dosyası düzenlenip masaüstü kopyası eşitlenmeyince testler
@@ -30,7 +39,7 @@ const macYolu = () => ilkVarOlan([
   process.env.SUFLE_MAC,
   path.join(REPO, 'mac/Teleprompter Pro.html'),
   path.join(HOME, 'Desktop/Teleprompter/Teleprompter Pro.html'),
-], 'Mac Teleprompter Pro.html');
+], 'Mac Teleprompter Pro.html', process.env.SUFLE_MAC);
 
 const oku = p => fs.readFileSync(p, 'utf8');
 
