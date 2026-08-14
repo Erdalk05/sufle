@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından 27 P1 işlendi. **38 commit**, tamamı yerelde.
-Testler **732 → 2045**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından **50 P1** işlendi. **63 commit**, tamamı yerelde.
+Testler **732 → 2823**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -105,10 +105,10 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Testlerin koda birebir kilitlenmesi** kapıyı 5 kez gereksiz kırmızıya çevirdi. Kuralı `CLAUDE.md`'ye yazdım, süpürmeyi X1/X2 olarak P2'ye aldım. A1 turunda **14 sahte kırmızı** daha çıktı (aynı sınıf); üçünü iddiaya çevirdim ve gevşetmenin kapıyı kör etmediğini 4 ayrı bozmayla doğruladım.
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
-- **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Kasıtlı bozma turumu kendi kabuk satırım İKİ KEZ yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. Önce 6, sonra 5 bozma "geçti/yakalanmadı" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım — ve **kuralı yazdıktan sonra bir kez daha düştüm**.
 - **Aynı iki tuzağa ikinci kez düştüm**: hayalet MSG anahtarı (mesaj `kelime:` ile bitince denetim onu anahtar sanıyor) ve şablon dizesi içindeki yoruma ters tırnak koymak. İkisini de CLAUDE.md'ye yazdım.
 - **Bir ön bulguyu yanlış kaydettim**: I3 turunda "Mac ve telefon altyazı süre sınırı farklı" diye not düştüm; ölçünce aynı çıktı — 6 değerini kendi test tezgâhıma koymuşum ve kaynaktan geldiğini sanmışım. Planı düzelttim.
-- **`$?` tuzağına ikinci kez düştüm** — kendi yazdığım kurala rağmen `echo "$(basename …) -> $?"` kullandım ve 5 bozmanın 5'i de "yakalanmadı" göründü; testler aslında hepsini yakalıyordu.
+
 - **Sıklık sondamı yanlış kurdum**: bozuk damga oranını ölçerken ürettiğim ondalıklar kırılma bölgesine hiç düşmüyordu ve "0 vaka" çıktı — kusur oradaydı, sondam kördü. Ondalığı doğrudan tarayacak şekilde düzelttim.
 - **Kendi tezgâhımda kopya-test tuzağına düştüm**: duraklama muhasebesini kaynaktan çıkarmak yerine elle yazmıştım; iki kasıtlı bozma yakalanmadı. Üç satırın üçü de kaynaktan çıkarılır hâle getirildi.
 - **Kanıtlanmamış bir koruma yazdım**: asılı testin tabanı düşürmesin diye ayrı bir dal ekledim; kasıtlı bozma turu o dalın hiçbir şeyi değiştirmediğini gösterdi (`Math.max` zaten koruyordu). Kaldırdım.
