@@ -21,6 +21,10 @@ def lan_ip():
     except Exception:
         return "127.0.0.1"
 
+def lan_yok(ip):
+    """Telefonun ulasamayacagi adresler. Mac sunucusuyla AYNI kural (E9)."""
+    return (not ip) or ip.startswith("127.") or ip == "::1" or ip == "localhost"
+
 def ensure_cert(ip):
     if os.path.exists(CERT) and os.path.exists(KEY):
         return True
@@ -80,21 +84,49 @@ if __name__ == "__main__":
     ip = lan_ip()
     if not ensure_cert(ip):
         print("OpenSSL gerekli. Kurulu mu kontrol edin."); raise SystemExit(1)
-    url = "https://%s:%d/" % (ip, PORT)
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ctx.load_cert_chain(CERT, KEY)
-    httpd = http.server.ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
+
+    # ONCE BAGLAN, SONRA YAZDIR. Port sabit 8443ti ve yedegi yoktu: baska bir
+    # kopya aciksa Python yigin izi basip cikiyordu. Kullanici ne oldugunu
+    # anlamiyordu. Mac sunucusundaki yedegin aynisi (tests/29).
+    ilk = PORT
+    httpd = None
+    for p in range(ilk, ilk + 10):
+        try:
+            httpd = http.server.ThreadingHTTPServer(("0.0.0.0", p), Handler)
+            PORT = p          # /info GERCEK portu bildirsin
+            break
+        except OSError:
+            continue
+    if httpd is None:
+        print("  ! %d-%d arasi tum portlar dolu. Acik bir sufle sunucusu var mi diye bak."
+              % (ilk, ilk + 9))
+        raise SystemExit(1)
     httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+
+    url = "https://%s:%d/" % (ip, PORT)
     print("=" * 50)
     print("  iPHONE SUFLE — HTTPS SUNUCU ÇALIŞIYOR")
     print("=" * 50)
-    print("  Telefon Safari'de aç:")
-    print("     " + url)
-    print("  (İlk açılışta 'Bu Bağlantı Özel Değil' -> Ayrıntıları")
-    print("   Göster -> Bu Siteyi Ziyaret Et deyin. Sonra kamera çalışır.)")
-    print("=" * 50)
-    print("  QR (telefon kamerasıyla okutun):\n")
-    make_qr_ascii(url)
+    if PORT != ilk:
+        print("  ! %d doluydu, %d kullanılıyor." % (ilk, PORT))
+    # OLU ADRESI CALISIYORMUS GIBI YAZMA (E9, Mac sunucusunda ayni kusur vardi).
+    # lan_ip() basarisiz olunca 127.0.0.1 donuyor; o adres TELEFONDA telefonun
+    # kendisini gosterir, yani sayfa hic acilmaz. Calismayacak QR da uretilmez.
+    if lan_yok(ip):
+        print("  ! Bu bilgisayarın Wi-Fi adresi bulunamadı.")
+        print("    Telefon bu sunucuya ulaşamaz.")
+        print("    Wi-Fi'ye bağlan ve sunucuyu yeniden başlat.")
+        print("=" * 50)
+    else:
+        print("  Telefon Safari'de aç:")
+        print("     " + url)
+        print("  (İlk açılışta 'Bu Bağlantı Özel Değil' -> Ayrıntıları")
+        print("   Göster -> Bu Siteyi Ziyaret Et deyin. Sonra kamera çalışır.)")
+        print("=" * 50)
+        print("  QR (telefon kamerasıyla okutun):\n")
+        make_qr_ascii(url)
     print("\n  Kapatmak için: Ctrl + C")
     print("=" * 50)
     try:
