@@ -23,11 +23,17 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
    Biyonik okuma da kelime başlarını kalınlaştırıp sarmayı değiştiriyor;
    buildContent ölçüyor (maxPos doğru) ama okunan kelime kayıyordu. */
 
+/* YENİDEN ÖLÇÜM İSTEĞİ — BİÇİME DEĞİL İDDİAYA BAK.
+   Korunan şey "bu ayar yeniden ölçüm tetikliyor". İsteğin doğrudan rAF ile mi
+   yoksa kare başına tek ölçüme indiren planlayıcıyla mı kurulduğu uygulama
+   ayrıntısı; A1'de planlayıcı eklenince bu test davranış hiç bozulmadığı hâlde
+   kırmızıya döndü (bkz. CLAUDE.md test kilidi tablosu). */
+const OLC='(?:olcPlanla\\(\\)|requestAnimationFrame\\(yenidenOlc\\))';
 /* ---------- ARTIK ÖLÇÜLÜYOR ---------- */
 ok('kalınlık değişince kelime korunuyor',
-   /bind\('#weight','weight',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/.test(kod));
+   new RegExp("bind\\('#weight','weight',\\(\\)=>"+OLC+"\\)").test(kod));
 ok('harf aralığı değişince kelime korunuyor',
-   /bind\('#ls','ls',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/.test(kod));
+   new RegExp("bind\\('#ls','ls',\\(\\)=>"+OLC+"\\)").test(kod));
 ok('geri aramasız eski bağlama kalmadı',
    !/bind\('#weight','weight'\);/.test(kod) && !/bind\('#ls','ls'\);/.test(kod));
 
@@ -77,9 +83,9 @@ ok('buildContent hâlâ kendisi ölçüyor',
 
 /* ---------- A4/A5 DÜZELTMELERİ DURUYOR ---------- */
 for(const [ad,re] of [
-  ['yazı boyutu', /bind\('#fs','fs',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['satır aralığı', /bind\('#lh','lh',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['kenar boşluğu', /bind\('#mg','mg',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['okuma çizgisi', /bind\('#eye','eyePos',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
+  ['yazı boyutu', new RegExp("bind\\('#fs','fs',\\(\\)=>"+OLC+"\\)")],
+  ['satır aralığı', new RegExp("bind\\('#lh','lh',\\(\\)=>"+OLC+"\\)")],
+  ['kenar boşluğu', new RegExp("bind\\('#mg','mg',\\(\\)=>"+OLC+"\\)")],
+  ['okuma çizgisi', new RegExp("bind\\('#eye','eyePos',\\(\\)=>"+OLC+"\\)")],
   ['döndürme', /orientationchange',\(\)=>setTimeout\(yenidenOlc,320\)/],
 ]) ok(ad+' korumasi duruyor', re.test(kod));

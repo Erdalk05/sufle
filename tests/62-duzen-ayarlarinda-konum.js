@@ -18,20 +18,26 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    Döndürmeden BÜYÜK, çünkü hem satır yüksekliği hem satırdaki kelime sayısı
    birlikte değişiyor. Bu ayarlar prova sırasında sürekli oynatılıyor. */
 
+/* YENİDEN ÖLÇÜM İSTEĞİ — BİÇİME DEĞİL İDDİAYA BAK.
+   Korunan şey "bu ayar yeniden ölçüm tetikliyor". İsteğin doğrudan rAF ile mi
+   yoksa kare başına tek ölçüme indiren planlayıcıyla mı kurulduğu uygulama
+   ayrıntısı; A1'de planlayıcı eklenince bu testler davranış hiç bozulmadığı
+   hâlde kırmızıya döndü (bkz. CLAUDE.md test kilidi tablosu). */
+const OLC='(?:olcPlanla\\(\\)|requestAnimationFrame\\(yenidenOlc\\))';
 /* ---------- DÜZENİ DEĞİŞTİREN YOLLAR KELİMEYİ KORUYOR ---------- */
 const KORUMALI=[
-  ['yazı boyutu',      /bind\('#fs','fs',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['satır aralığı',    /bind\('#lh','lh',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['kenar boşluğu',    /bind\('#mg','mg',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
-  ['yazı tipi',        /#fontSeg button[\s\S]{0,120}?requestAnimationFrame\(yenidenOlc\)/],
-  ['okuma çizgisi',    /bind\('#eye','eyePos',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/],
+  ['yazı boyutu',      new RegExp("bind\\('#fs','fs',\\(\\)=>"+OLC+"\\)")],
+  ['satır aralığı',    new RegExp("bind\\('#lh','lh',\\(\\)=>"+OLC+"\\)")],
+  ['kenar boşluğu',    new RegExp("bind\\('#mg','mg',\\(\\)=>"+OLC+"\\)")],
+  ['yazı tipi',        new RegExp("#fontSeg button[\\s\\S]{0,120}?"+OLC)],
+  ['okuma çizgisi',    new RegExp("bind\\('#eye','eyePos',\\(\\)=>"+OLC+"\\)")],
 ];
 for(const [ad,re] of KORUMALI) ok(ad+' değişince kelime korunuyor', re.test(kod));
 /* Bu iddiayı FONKSİYONLA SINIRLA. İlk yazışımda deseni bütün dosyada aradım;
    `[\s\S]*?` fonksiyonun sonunda durmuyor, ilerideki bir eşleşmeyi buluyor ve
    bozma yakalanmıyordu. Önce bloğu çıkar, sonra içinde ara. */
 ok('göz hattı reçetesinde kelime korunuyor',
-   /requestAnimationFrame\(yenidenOlc\)/.test(
+   new RegExp(OLC).test(
      cikar(kod,/function applyEyeRecipe\(\)\{[\s\S]*?\n\}/,'applyEyeRecipe')));
 
 /* ---------- DÜZENİ DEĞİŞTİRMEYEN YOL BOŞUNA DOKUNMUYOR ----------
@@ -92,7 +98,7 @@ ok('yenidenOlc measure çağırıyor (maxPos yine güncelleniyor)',
 ok('döndürme hâlâ yenidenOlc kullanıyor',
    /orientationchange',\(\)=>setTimeout\(yenidenOlc,320\)/.test(kod));
 ok('yeniden boyutlandırma hâlâ yenidenOlc kullanıyor',
-   /'resize',\(\)=>requestAnimationFrame\(yenidenOlc\)/.test(kod));
+   new RegExp("'resize',\\(\\)=>"+OLC).test(kod));
 ok('yenidenOlc kelime indeksini ölçümden ÖNCE alıyor',
    cikar(kod,/function yenidenOlc\(\)\{[\s\S]*?\n\}/,'yenidenOlc').indexOf('yakinIdx(pos+eyeOff())') <
    cikar(kod,/function yenidenOlc\(\)\{[\s\S]*?\n\}/,'yenidenOlc').indexOf('measure()'));

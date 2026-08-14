@@ -110,8 +110,10 @@ ok('bilinen aktif kelime varsa o kullanılıyor (yeniden aramaya gerek yok)',
 
 /* ---------- HER İKİ OLAY DA BU YOLU KULLANIYOR ----------
    Biri eski yolda kalırsa hata yalnız o durumda geri gelir ve bulunması zor olur. */
+/* İstek doğrudan rAF ile de, kare başına tek ölçüme indiren planlayıcıyla da
+   kurulabilir; korunan iddia yalnız "yeniden boyutlanınca yeniden ölçülüyor". */
 ok('pencere yeniden boyutlanınca yeniden ölçülüyor',
-   /window\.addEventListener\('resize',\(\)=>requestAnimationFrame\(yenidenOlc\)\)/.test(kod));
+   /window\.addEventListener\('resize',\(\)=>(?:olcPlanla\(\)|requestAnimationFrame\(yenidenOlc\))\)/.test(kod));
 ok('ekran döndürülünce yeniden ölçülüyor',
    /window\.addEventListener\('orientationchange',\(\)=>setTimeout\(yenidenOlc,320\)\)/.test(kod));
 ok('eski "pikseli koru" yolu kodda kalmadı',
