@@ -56,7 +56,7 @@ ok('bağlanmadan önce banner basılmıyor',
   ok('depoda hiç pem dosyası yok', !/\.pem/.test(izlenen));
 }
 
-if(!opensslVar || !py) { console.log('· ortam eksik, canlı sunucu adımları atlandı'); return; }
+if(!opensslVar || !py) { console.log('ATLANDI: ortam eksik (openssl/python), canlı sunucu adımları koşmadı'); return; }
 
 /* ---------- CANLI: SUNUCUYU GERÇEKTEN BAŞLAT ---------- */
 const os=require('os');

@@ -1,0 +1,149 @@
+const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
+const fs=require('fs'), path=require('path'), os=require('os');
+const {execFileSync}=require('child_process');
+const {REPO}=require('./kaynak');
+const KOS=path.join(REPO,'tests','kos.js');
+const kaynak=fs.readFileSync(KOS,'utf8');
+
+/* M2 — KAPININ KENDİ KÖR NOKTASI: "ÇÖKTÜ" İLE "GEÇTİ" AYIRT EDİLMİYORDU.
+
+   Koşturucu çıkış kodunu zaten alıyordu, o yüzden ÇÖKEN test yakalanıyordu.
+   Ama iddia sayısı hiç ölçülmüyordu ve iki delik vardı — ikisi de ÖLÇÜLDÜ:
+
+   1) SIFIR İDDİALI TEST YEŞİL GEÇİYORDU. Koşturucuya 0 iddialı bir dosya
+      eklendi: "✓ 99-bos-deneme.js  0 test" yazdı, kapı YEŞİL kaldı ve
+      toplam 2355 hiç değişmedi. Yani bir test sessizce boşalırsa (çıkarım
+      deseni tutmaz, erken dönüş, koşul hiç sağlanmaz) kimse duymuyordu.
+      Bu gece dört test tam da böyle boşaldı; yalnız ÇÖKTÜKLERİ için
+      yakalandılar. Çökmeden boşalsalardı kapı yeşil derdi.
+
+   2) İDDİA SAYISININ DÜŞMESİ görünmezdi. 29 iddialı bir test 2 iddiaya
+      indirildi: eski koşturucu "✓ 2 test" deyip geçiyordu. Koruma %93
+      daralmış olur ve kapı bunu bildirmezdi.
+
+   Çözüm: dosya başına sayım `beklenen.json` içinde tutuluyor; düşerse KIRMIZI,
+   artarsa taban yükseliyor. Sıfır iddia her hâlükârda kırmızı. Ortama bağlı
+   atlamalar `ATLANDI:` satırıyla karşılaştırmadan muaf.
+
+   Bu test koşturucuyu GEÇİCİ BİR DİZİNDE gerçekten çalıştırır; kendi tabanına
+   ya da gerçek testlere dokunmaz. */
+
+/* ---------- KAYNAK DÜZEYİ ---------- */
+ok('taban dosyası tanımlı', /beklenen\.json/.test(kaynak));
+ok('sıfır iddia kırmızı sayılıyor', /gecen \+ kalan === 0/.test(kaynak));
+ok('düşüş karşılaştırması var', /gecen \+ kalan < eski/.test(kaynak));
+ok('taban yalnız yukarı taşınıyor', /Math\.max\(eski \|\| 0, gecen \+ kalan\)/.test(kaynak));
+ok('taban atomik yazılıyor (yarım dosya kapıyı yanıltmasın)', /renameSync/.test(kaynak));
+ok('ortam atlaması tanınıyor', /ATLANDI:/.test(kaynak));
+ok('çıkış kodu hâlâ dikkate alınıyor', /catch \(e\) \{[\s\S]{0,80}ok = false/.test(kaynak));
+
+/* ---------- CANLI: GEÇİCİ DİZİNDE KOŞTUR ---------- */
+const kur = (dosyalar, taban) => {
+  const d=fs.mkdtempSync(path.join(os.tmpdir(),'sufle-kos-'));
+  fs.copyFileSync(KOS, path.join(d,'kos.js'));
+  for(const [ad,icerik] of Object.entries(dosyalar)) fs.writeFileSync(path.join(d,ad), icerik);
+  if(taban) fs.writeFileSync(path.join(d,'beklenen.json'), JSON.stringify(taban));
+  return d;
+};
+const kos = d => {
+  try { return {kod:0, cikti:execFileSync(process.execPath,[path.join(d,'kos.js')],{encoding:'utf8'})}; }
+  catch(e){ return {kod:e.status==null?1:e.status, cikti:(e.stdout||'')+(e.stderr||'')}; }
+};
+const sil = d => { try{ fs.rmSync(d,{recursive:true,force:true}); }catch(e){} };
+
+const IYI = 'const ok=(n,c)=>{ console.log((c?"\\u2713 ":"\\u2717 HATA ")+n); if(!c) process.exitCode=1; };\n'+
+            'ok("bir",true); ok("iki",true); ok("uc",true);\n';
+const BOS = 'if(true) return;\n';
+const KIRIK = 'const ok=(n,c)=>{ console.log((c?"\\u2713 ":"\\u2717 HATA ")+n); if(!c) process.exitCode=1; };\n'+
+              'ok("yanlis",false);\n';
+const COKEN = 'yokFonksiyon();\n';
+const ATLAYAN = 'console.log("ATLANDI: ortam eksik");\n'+
+                'const ok=(n,c)=>{ console.log((c?"\\u2713 ":"\\u2717 HATA ")+n); };\nok("tek",true);\n';
+
+{
+  const d=kur({'10-iyi.js':IYI});
+  const r=kos(d);
+  ok('sağlam test yeşil geçiyor', r.kod===0);
+  ok('iddia sayısı bildiriliyor', /10-iyi\.js\s+3 test/.test(r.cikti));
+  ok('taban dosyası oluşturuluyor', fs.existsSync(path.join(d,'beklenen.json')));
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('taban doğru sayıyı kaydediyor', t['10-iyi.js']===3);
+  sil(d);
+}
+{
+  /* ASIL BULGU: hiç iddia koşmayan test. */
+  const d=kur({'10-iyi.js':IYI,'11-bos.js':BOS});
+  const r=kos(d);
+  ok('SIFIR iddialı test kapıyı KIRMIZI yapıyor', r.kod!==0);
+  ok('sebebi yazılıyor', /HİÇ İDDİA KOŞMADI/.test(r.cikti));
+  ok('boş test kırık listesine giriyor', /kırık:.*11-bos\.js/.test(r.cikti));
+  ok('sağlam test bundan etkilenmiyor', /✓ 10-iyi\.js/.test(r.cikti));
+  sil(d);
+}
+{
+  /* İKİNCİ BULGU: koruma daralması. */
+  const d=kur({'10-iyi.js':IYI}, {'10-iyi.js':9});
+  const r=kos(d);
+  ok('iddia sayısı DÜŞÜNCE kapı kırmızı', r.kod!==0);
+  ok('düşüş miktarı yazılıyor', /iddia sayısı DÜŞTÜ: 9 → 3/.test(r.cikti));
+  /* Taban düşürülmemeli: bir kez kabul edilirse daralma kalıcı olur ve
+     ikinci koşuda kapı yeşile döner — kör nokta geri gelir. */
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('taban düşürülmüyor (daralma kalıcılaşmasın)', t['10-iyi.js']===9);
+  const r2=kos(d);
+  ok('ikinci koşuda da kırmızı kalıyor', r2.kod!==0);
+  sil(d);
+}
+{
+  /* Büyüme serbest: yeni iddia eklemek kapıyı kırmamalı, taban yükselmeli. */
+  const d=kur({'10-iyi.js':IYI}, {'10-iyi.js':1});
+  const r=kos(d);
+  ok('iddia sayısı ARTINCA kapı yeşil', r.kod===0);
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('taban yeni sayıya yükseliyor', t['10-iyi.js']===3);
+  sil(d);
+}
+{
+  /* Çöken test eskiden de yakalanıyordu; bozulmadığını doğrula. */
+  const d=kur({'10-coken.js':COKEN});
+  const r=kos(d);
+  ok('çöken test hâlâ kırmızı', r.kod!==0);
+  ok('çöken test 0 iddia olarak da işaretleniyor', /HİÇ İDDİA KOŞMADI/.test(r.cikti));
+  sil(d);
+}
+{
+  const d=kur({'10-kirik.js':KIRIK});
+  const r=kos(d);
+  ok('başarısız iddia hâlâ kırmızı', r.kod!==0);
+  ok('hata sayılıyor', /1 hata/.test(r.cikti));
+  sil(d);
+}
+{
+  /* Ortam eksikse (openssl yok gibi) taban karşılaştırması yapılmamalı,
+     yoksa o makinede kapı haksız yere kırmızı yanar. */
+  const d=kur({'10-atlayan.js':ATLAYAN}, {'10-atlayan.js':40});
+  const r=kos(d);
+  ok('ortam eksikken düşüş kapıyı kırmıyor', r.kod===0);
+  ok('atlandığı bildiriliyor', /taban karşılaştırması atlandı/.test(r.cikti));
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('atlanan testin tabanı korunuyor', t['10-atlayan.js']===40);
+  sil(d);
+}
+{
+  /* Silinen test dosyasının tabanı birikmemeli. */
+  const d=kur({'10-iyi.js':IYI}, {'10-iyi.js':3,'99-silinmis.js':50});
+  kos(d);
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('silinen testin tabanı temizleniyor', !('99-silinmis.js' in t));
+  ok('duran testin tabanı korunuyor', t['10-iyi.js']===3);
+  sil(d);
+}
+
+/* ---------- GERÇEK TABAN SAĞLIKLI MI ---------- */
+{
+  const t=JSON.parse(fs.readFileSync(path.join(REPO,'tests','beklenen.json'),'utf8'));
+  const dosyalar=fs.readdirSync(path.join(REPO,'tests')).filter(f=>/^\d\d-.*\.js$/.test(f));
+  ok('taban her test dosyasını kapsıyor', dosyalar.every(f=>t[f]!=null));
+  ok('tabanda olmayan dosya yok', Object.keys(t).every(f=>dosyalar.includes(f)));
+  ok('hiçbir testin tabanı sıfır değil', Object.values(t).every(v=>v>0));
+}

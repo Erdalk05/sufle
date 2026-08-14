@@ -46,6 +46,7 @@ Bu turda üç kez tökezlediğim yerler:
 
 - **Bozmayı HEDEF BLOĞA uygula.** Aynı desen dosyanın başka yerinde de olabilir; `replace(...,1)` ilkini seçer ve yanlış yeri bozarsın (bugün iki kez: `},1400);` ve `rememberPos(); pullEditor();`). Fonksiyonu regex ile bulup içinde değiştir.
 - **Her testten sonra ÇIKIŞ KODUNA bak.** "HATA satırı yok" testin geçtiğini göstermez — test çökmüş de olabilir, o zaman hiç satır basmaz. `node tests/X.js >/dev/null 2>&1; echo $?`
+- **İddia sayısı da bir kapı.** `tests/beklenen.json` dosya başına sayımı tutuyor: sıfır iddia = KIRMIZI, sayı düşerse = KIRMIZI, artarsa taban yükselir. Ölçüldü: eskiden 0 iddialı bir test "✓ 0 test" deyip yeşil geçiyordu ve 29 iddialı bir test 2ye inse kapı susuyordu. Ortama bağlı atlamalarda test `ATLANDI:` bassın.
 - **`$?` okumadan önce BAŞKA KOMUT ÇALIŞTIRMA.** `echo "$(basename $f) -> $?"` yalan söyler: komut ikamesi `$?` genişlemeden önce koşar ve kodu sıfırlar. Bu yüzden 6 kasıtlı bozmanın 6'sı da "geçti" göründü; testler aslında doğru çalışıyordu. Önce `c=$?`, sonra gerisi.
 - **`indexOf` ile sıra ölçme.** Çağrı hiç yoksa `-1` döner ve `-1 < n` DOĞRU çıkar; eksikliği "sıra doğru" diye geçirir. Varlığı ayrıca sına.
 - **Gevşek desen.** `/lsFull/` aramak yetmez, `lsFullWarned=false` de eşleşir. Kullanıcıya GÖSTERİLEN şeyi ara.
