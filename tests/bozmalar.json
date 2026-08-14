@@ -1,0 +1,149 @@
+[
+ {
+  "ad": "K8 anahtar satıra bağlı değil",
+  "test": "95-dokunma-hedefi.js",
+  "kaynak": "telefon",
+  "bul": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px",
+  "koy": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0"
+ },
+ {
+  "ad": "F1 ışık aralığı sıklaştı",
+  "test": "96-isik-ornekleme-maliyeti.js",
+  "kaynak": "telefon",
+  "bul": "  },20000);\n  body.classList.add('rec');",
+  "koy": "  },2000);\n  body.classList.add('rec');"
+ },
+ {
+  "ad": "G1 fps koruması kalktı",
+  "test": "97-kompozit-fps-olcumu.js",
+  "kaynak": "telefon",
+  "bul": "if(compFps.son && nowF-compFps.son>1000){ compFps.n=1; compFps.t0=nowF; }",
+  "koy": ""
+ },
+ {
+  "ad": "G4 arka plan oranı bozuk",
+  "test": "98-arka-plan-orani.js",
+  "kaynak": "telefon",
+  "bul": "  const k=Math.min(1, 1920/Math.max(W,H), 1080/Math.min(W,H));",
+  "koy": "  const k=1;"
+ },
+ {
+  "ad": "G5 dosya boyutu kapısı yok",
+  "test": "99-arka-plan-bellek.js",
+  "kaynak": "telefon",
+  "bul": "  if(f.size>25*1024*1024){ toast(m('bgDosyaBuyuk')); return; }\n",
+  "koy": ""
+ },
+ {
+  "ad": "G7 gölgelendirici silinmiyor",
+  "test": "100-kompozit-kaynak-birakma.js",
+  "kaynak": "telefon",
+  "bul": "  gl.deleteShader(vs); gl.deleteShader(fs);\n",
+  "koy": ""
+ },
+ {
+  "ad": "G10 çift altyazı uyarısı yok",
+  "test": "101-kompozit-paket-video-turu.js",
+  "kaynak": "telefon",
+  "bul": "    ...(lastPath && lastPath.burn ? ['',",
+  "koy": "    ...(false ? ['',"
+ },
+ {
+  "ad": "H9 chunks ikinci kopya kalıyor",
+  "test": "102-uzun-kayit-bellek.js",
+  "kaynak": "telefon",
+  "bul": "    chunks=[];   // Blob veriyi devraldı",
+  "koy": "    // chunks=[];   // Blob veriyi devraldı"
+ },
+ {
+  "ad": "I2 altyazı önbelleği yok",
+  "test": "103-gomulu-altyazi-maliyeti.js",
+  "kaynak": "telefon",
+  "bul": "capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size",
+  "koy": "capOnbellek.txt===txt && capOnbellek.size===size"
+ },
+ {
+  "ad": "J1 arşiv güncellemesi iki işlem",
+  "test": "104-arsiv-guncelleme.js",
+  "kaynak": "telefon",
+  "bul": "    const tx=d.transaction('takes','readwrite');\n    const q=tx.objectStore('takes').openCursor(id);",
+  "koy": "    const tx=d.transaction('takes');\n    const q=tx.objectStore('takes').openCursor(id);"
+ },
+ {
+  "ad": "J4 sürüm etiketi yok",
+  "test": "105-paket-surum-etiketi.js",
+  "kaynak": "telefon",
+  "bul": "    ...(cekimSenaryo && cekimSenaryo.ikiSurumlu ? [",
+  "koy": "    ...(false ? ["
+ },
+ {
+  "ad": "I1 vekil koruması yok (telefon)",
+  "test": "66-uzun-kelime-tasmasi.js",
+  "kaynak": "telefon",
+  "bul": "      if(k<w.length && yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
+  "koy": ""
+ },
+ {
+  "ad": "I1 vekil koruması yok (Mac)",
+  "test": "66-uzun-kelime-tasmasi.js",
+  "kaynak": "mac",
+  "bul": "        if(k<w.length&&yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
+  "koy": ""
+ },
+ {
+  "ad": "K3 kapalı sayfa gizlenmiyor",
+  "test": "106-klavye-sekme-sirasi.js",
+  "kaynak": "telefon",
+  "bul": "  .sheet{visibility:hidden}\n",
+  "koy": ""
+ },
+ {
+  "ad": "K7 odak kilidi yok",
+  "test": "107-odak-tuzagi.js",
+  "kaynak": "telefon",
+  "bul": "  arkayiKilitle();\n  // Arama kalıntısı",
+  "koy": "  // Arama kalıntısı"
+ },
+ {
+  "ad": "L1 Mac yayın notu düğmesi yok",
+  "test": "108-mac-yayin-notu.js",
+  "kaynak": "mac",
+  "bul": "  $('#rrNote').onclick=downloadNote;\n",
+  "koy": ""
+ },
+ {
+  "ad": "L11 Mac listesi blobları taşıyor",
+  "test": "109-mac-arsiv-listesi.js",
+  "kaynak": "mac",
+  "bul": "        const {blob, ...ustveri}=c.value;      // videoyu BIRAK\n        ustveri.videoVar=!!blob;",
+  "koy": "        const ustveri=c.value;\n        ustveri.videoVar=!!ustveri.blob;"
+ },
+ {
+  "ad": "L7 telefon günlüğü geri okumuyor",
+  "test": "110-hata-gunlugu-kalicilik.js",
+  "kaynak": "telefon",
+  "bul": "eskiHatalariGeriYukle();\nfunction logErr",
+  "koy": "function logErr"
+ },
+ {
+  "ad": "L7 Mac günlüğü yazmıyor",
+  "test": "110-hata-gunlugu-kalicilik.js",
+  "kaynak": "mac",
+  "bul": "    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}\n",
+  "koy": ""
+ },
+ {
+  "ad": "L9 sunucu cevapsızken ölü adres",
+  "test": "111-mac-kumanda-paneli-durumu.js",
+  "kaynak": "mac",
+  "bul": "      if(r.ok) bilgi=await r.json();",
+  "koy": "      bilgi=await r.json();"
+ },
+ {
+  "ad": "L10 görünmez karakter temizliği yok",
+  "test": "112-mac-riskli-bes.js",
+  "kaynak": "mac",
+  "bul": "      .replace(/\\u00AD/g,'')\n",
+  "koy": ""
+ }
+]

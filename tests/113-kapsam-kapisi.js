@@ -26,11 +26,20 @@ const kapiSh=path.join(REPO,'kapi.sh');
 /* ---------- KAPIYA BAĞLI MI ---------- */
 {
   const sh=fs.readFileSync(kapiSh,'utf8');
-  ok('kapıda altıncı adım var', /say "6\/6 Fonksiyon kapsamı"/.test(sh));
+  /* Adım NUMARASINA kilitlenme: kapıya yeni bir adım eklemek bu testi
+     boşuna kırıyordu (M8de tam bunu yaşadım, bir saat önce yazdığım
+     testte). İddia "kapsam adımı var", "altıncı sırada" değil. */
+  ok('kapıda kapsam adımı var', /say "\d+\/\d+ Fonksiyon kapsamı"/.test(sh));
   ok('kapsam betiği çağrılıyor', /python3 kapsam\.py index\.html "\$MACF"/.test(sh));
   ok('başarısızlık kapıyı kırmızı yapıyor', /python3 kapsam\.py[^\n]*\|\| KOD=1/.test(sh));
-  ok('adım etiketleri altıya güncellenmiş',
-     /"1\/6 /.test(sh) && /"5\/6 /.test(sh) && !/\/5 /.test(sh));
+  /* İDDİA: bütün adım etiketleri AYNI toplamı gösteriyor. Toplamın kaç
+     olduğu değil, tutarlı olması önemli — yoksa rapor yalan söyler. */
+  const etiketler=[...sh.matchAll(/say "(\d+)\/(\d+) /g)];
+  const toplamlar=[...new Set(etiketler.map(m=>m[2]))];
+  ok('adım etiketleri tutarlı ('+etiketler.length+' adım, toplam '+toplamlar.join(',')+')',
+     etiketler.length>=6 && toplamlar.length===1 && +toplamlar[0]===etiketler.length);
+  ok('adım numaraları 1den başlayıp artıyor',
+     etiketler.every((m,i)=>+m[1]===i+1));
   ok('betiğin kendisi depoda', fs.existsSync(kapsamPy));
   ok('taban dosyası depoda', fs.existsSync(path.join(REPO,'tests','kapsam.json')));
 }

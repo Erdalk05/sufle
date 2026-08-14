@@ -1,6 +1,6 @@
 #!/bin/bash
 # Sufle yeşil kapı — yayından ÖNCE koşturulur. Hepsi geçmeden yayınlanmaz.
-# 6 adım: denetim · sözdizimi · testler · sürüm · aynalar · fonksiyon kapsamı
+# 7 adım: denetim · sözdizimi · testler · sürüm · aynalar · kapsam · bozma turu
 # ⚠️ .son-yayin dosyasını YAYINDAN SONRA yaz. Önce yazarsan kapı yeni sürümü
 #    "zaten yayınlanmış" sanıp kendini bloke eder (bir kez başıma geldi).
 #   ./kapi.sh
@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 KOD=0
 say(){ printf '\n\033[1m== %s ==\033[0m\n' "$1"; }
 
-say "1/6 Statik denetim (telefon + Mac)"
+say "1/7 Statik denetim (telefon + Mac)"
 # DEPO ÖNCE. Ters sıra 2026-08-13'te yanılttı: depodaki dosya düzenlendi,
 # masaüstü kopyası eski kaldı, kapı eski dosyayı denetleyip yeşil dedi.
 MACF="mac/Teleprompter Pro.html"
@@ -22,7 +22,7 @@ else
   echo "  (Mac dosyası bulunamadı, atlandı)"
 fi
 
-say "2/6 JS sözdizimi"
+say "2/7 JS sözdizimi"
 TMP=$(mktemp -d)
 python3 - "$TMP" <<'PY' || KOD=1
 import re, sys, os
@@ -45,10 +45,10 @@ else
   echo "  Mac dosyası yok, atlandı"
 fi
 
-say "3/6 Regresyon testleri"
+say "3/7 Regresyon testleri"
 node tests/kos.js || KOD=1
 
-say "4/6 Sürüm tutarlılığı"
+say "4/7 Sürüm tutarlılığı"
 python3 - <<'PY' || KOD=1
 import re, sys
 ver = re.search(r"VER='([\d.]+)'", open('index.html', encoding='utf-8').read()).group(1)
@@ -65,7 +65,7 @@ if prev and int(cache) <= int(prev[1]):
 print("  ✓ sürüm ve cache ileri gitmiş")
 PY
 
-say "5/6 Platformlar arası tutarlılık"
+say "5/7 Platformlar arası tutarlılık"
 python3 - "$MACF" <<'PY2' || KOD=1
 import re, sys, hashlib, os
 mac = sys.argv[1]
@@ -112,12 +112,18 @@ for ad, kanon, ayna in AYNALAR:
 sys.exit(0 if ok else 1)
 PY2
 
-say "6/6 Fonksiyon kapsamı"
+say "6/7 Fonksiyon kapsamı"
 # TESTİN HİÇ ANMADIĞI FONKSİYON SAYISI DÜŞMELİ, ARTMAMALI.
 # Ölçüt bilerek "kapsanmayan sayısı": yüzde ile ölçseydik testsiz bir
 # fonksiyonu SİLMEK kapsamı iyileştirmiş gibi görünürdü. Gerekçenin
 # tamamı kapsam.py başında.
 python3 kapsam.py index.html "$MACF" || KOD=1
+
+say "7/7 Kasıtlı bozma turu"
+# HER TESTİN AYIRT ETTİĞİ TEKRARLANABİLİR OLARAK KANITLANIYOR.
+# Eskiden bozmalar geçici betiklerdi: kanıt yalnız commit mesajında
+# kalıyordu ve testi sonradan gevşeten kimse yakalanmıyordu.
+python3 bozma.py || KOD=1
 
 rm -rf "$TMP"
 echo
