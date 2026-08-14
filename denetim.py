@@ -199,7 +199,22 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     def keys(var):
         m = re.search(var + r"=\{(.*?)\n\};", js, re.S)
         if not m: return set(), set()
-        parts = re.split(r"\n\s*en:\{", m.group(1))
+        # DİZE İÇERİĞİNİ MASKELE. Anahtar deseni `ad:'` biçimini arıyor; bir
+        # DEĞERİN İÇİNDE iki nokta varsa (ör. '...şu adrese girin:') desen
+        # "girin" diye olmayan bir anahtar uyduruyordu ve "TR/EN farkı" diye
+        # sahte bir hata veriyordu. 2026-08-14'te tam bu oldu: TR'de "girin",
+        # EN'de "address". Maskeleme çapayı ('...') bozmadan içeriği siliyor.
+        # ÖNCE YORUMLARI AT. Sözlükteki açıklama yorumlarında Türkçe kesme
+        # işareti geçiyor ("Mac’in", "FAZ B’ye"); maskeleyici onları dize
+        # başlangıcı sanıp GERÇEK KODU yutuyordu ve 7 anahtar birden
+        # kayboldu. CLAUDE.md’deki kesme işareti tuzağının kardeşi.
+        govde = re.sub(r"/\*.*?\*/", " ", m.group(1), flags=re.S)
+        # İKİ tırnak türü de tek geçişte: sözlükte "📁 Dosyalar'a Kaydet" gibi
+        # çift tırnaklı ve İÇİNDE kesme işareti olan değerler var. Yalnız tek
+        # tırnağı maskelemek o kesmeyi dize başlangıcı sanıp sonraki 7 anahtarı
+        # yutuyordu. Tek desen, alternation ile ikisini birden yakalıyor.
+        govde = re.sub(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"", "'\u00a7'", govde)
+        parts = re.split(r"\n\s*en:\{", govde)
         kk = lambda b: set(re.findall(r"""(?:^|[,{\s])([a-zA-Z][a-zA-Z0-9]*)\s*:\s*['"]""", b))
         return kk(parts[0]), (kk(parts[1]) if len(parts) > 1 else set())
 

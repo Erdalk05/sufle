@@ -41,11 +41,22 @@ const ISTISNA = [
   'Teleprompter', 'Pro',
   /* Örnek senaryo metni: kullanıcı ilk açılışta bunu siliyor, arayüz değil. */
   'Merhaba! Bu Teleprompter Pro.',
+  /* Dil düğmesinin kendi yazıları. 'TR' ve 'EN' iki dilde de AYNI görünür —
+     kullanıcı hangi dilde olursa olsun kendi dilini adıyla aramalı.
+     Telefon kabuğu da aynısını yapıyor (<button data-lang="tr">TR). */
+  'TR', 'EN',
   /* Çalışma zamanında yazılan sayaç/etiketler — applyLang bunları EZERSE
      kullanıcı bayat değer görür, o yüzden i18n'lenmemeleri DOĞRU. */
   '0 kelime', '~0 sn', 'WPM',
 ];
-const CALISMA_ID = ['bilgiBas','camBtn','playBtn','recBtn','rrDownload','sbVer','voiceBtn','sbErr','wc','rt'];
+/* Çalışma zamanında yazılan ögeler. data-i18n konsaydı applyLang dil
+   değişince o değeri EZER ve kullanıcı bayat metin görür:
+     modeV  <- curMode().name        (satır 1255)
+     bandV  <- state.band+' satır'   (satır 1310)
+   İkisi de kod tarafından basılıyor; çevirileri kendi üretim yerlerine
+   bağlanmalı, işaretlemeye değil. Bu yüzden kapsam dışı — ELEME GEREKÇESİ. */
+const CALISMA_ID = ['bilgiBas','camBtn','playBtn','recBtn','rrDownload','sbVer','voiceBtn',
+                    'sbErr','wc','rt','modeV','bandV'];
 
 /* Kapsanmış ögelerin İÇİNİ maskele: data-i18n taşıyan bir öge ve altındaki
    her şey çevrilmiş sayılır. */

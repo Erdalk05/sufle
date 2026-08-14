@@ -149,7 +149,18 @@ görünür metinler sayılır, kapsananlar ve **gerekçesi yazılı** istisnalar
 
 Kapı ayrıca üç yarım yapıyı reddetti — üçü de düğme turuna ertelendi: `setLang()` (çağıran yok),
 `mLangTR/EN` anahtarları (kullanan yok), `state.lang` okuması (yazan yok).
-**Kalan: 41 metin, sonra düğme.**
+**A.2d** ✅ **BİTTİ — Mac tam iki dilli.** Kapsam **41 → 0**; 31 yeni anahtar (parite **327/327**);
+dil düğmesi (TR/EN) durum çubuğunda, okuma+yazma+düğme birlikte geldi.
+**Gerçek tarayıcıda doğrulandı:** `🎯 Göz çizgisi → 🎯 Eye line`, `Çekime hazır mıyım? → Am I ready
+to shoot?`, `lang="en"`. No-op iddiası bir hata da yakaladı: `mHScripts` başlığa konsaydı
+applyLang h3 içindeki ＋ düğmesini silecekti — iç span'e alındı.
+`denetim.py` ayrıştırıcısında iki katman kör nokta bulundu ve düzeltildi (dize içindeki `:` sahte
+anahtar üretiyordu; çift tırnaklı `"Dosyalar'a Kaydet"` maskeleyiciyi şaşırtıyordu).
+
+### 🎯 ERDAL TALİMATI (2026-08-14 akşam): "en gelişmiş dizayn, tek tuş, görsel ve içeriksel"
+FAZ B öne çekildi ve ölçütü yükseltildi: yalnız jeton geçişi değil — **tek tuşla çekime giden,
+2026 standardında, dört platformda aynı hiyerarşi**. Sıradaki tur B.1+B.3 birlikte:
+rol renkleri + aşamalı açılım ("ilk açılışta yalnız metin + BAŞLAT + hız").
 
 Bu adımın ortaya çıkardığı üç yapısal sonuç:
 1. **Sözlük ikiye ayrıldı** (`sozluk.js` = etiketler, `mesajlar.js` = mesajlar). Hepsini Mac'e
@@ -257,3 +268,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 4 | 2026-08-14 | A.2a: sözlük çekirdeğe taşındı + parite kilidi | md5 birebir (I18N+MSG) · tr/en 240/240 · 27 bozma kanıtlı · Mac eşleşmesi %55 ölçüldü | 7/8 yeşil (VER doğru kırmızı) |
 | 5 | 2026-08-14 | A.2b: Mac sözlüğü kullanıyor (data-i18n 0→85) + kapsam kapısı | parite 275/275 · applyLang TR'de no-op (85/85 birebir) · eksik 28 ölçüldü · denetim.py iki geçişli | 7/8 yeşil (VER doğru kırmızı) |
 | 6 | 2026-08-14 | A.2c: 28 öznitelik + 21 anahtar; kapsam ölçütü iki kez düzeltildi | kapsam **69 → 41** (önceki commit'e karşı ölçüldü) · parite 296/296 · applyLang TR'de no-op (öznitelikler dahil) | 7/8 yeşil (VER doğru kırmızı) |
+| 7 | 2026-08-14 | A.2d: Mac tam iki dilli — kapsam 41→0, dil düğmesi, tarayıcı kanıtı | EN geçişi gerçek tarayıcıda doğrulandı · parite 327/327 · denetim.py 2 kör nokta | 8/8'in 7'si yeşil (VER doğru kırmızı) |

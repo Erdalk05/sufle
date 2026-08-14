@@ -28,8 +28,12 @@ const macHam=mac.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ---------- ÜÇ DURUM DA KAYNAKTA VAR MI ---------- */
 ok('file:// durumunda hiç kurulmuyor', /if\(!location\.protocol\.startsWith\('http'\)\) return;/.test(macKod));
+/* Desen BİÇİME değil DAVRANIŞA bağlı: eskiden markup birebir eşleşiyordu
+   (`<div id="remoteOff" class="rb-note">`) ve A.2d'de data-i18n eklenince
+   kırıldı — oysa kullanıcı için hiçbir şey değişmemişti. İddia şu: remoteOff
+   diye bir öge var ve varsayılan olarak GİZLİ DEĞİL. */
 ok('kapalı mesajı VARSAYILAN olarak görünür (file:// yolunda gösterilmesi gerekmiyor)',
-   /<div id="remoteOff" class="rb-note">/.test(mac) && !/id="remoteOff"[^>]*display:none/.test(mac));
+   /<div\b[^>]*\bid="remoteOff"[^>]*>/.test(mac) && !/id="remoteOff"[^>]*display:none/.test(mac));
 ok('açık bölüm varsayılan olarak gizli', /<div id="remoteOn" style="display:none">/.test(mac));
 ok('file:// mesajı sebebi söylüyor', /tarayıcı file:\/\/ modunda sunucuya bağlanamaz/.test(mac));
 ok('file:// mesajı ne yapılacağını söylüyor', /Teleprompter Sunucu\.command/.test(mac));

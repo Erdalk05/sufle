@@ -342,7 +342,7 @@
   <!-- ===== SOL PANEL ===== -->
   <div id="left">
     <div class="sec">
-      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo" data-i18n-title="mTNew" aria-label="Yeni senaryo" data-aria="mTNew">＋</button></h3>
+      <h3><span data-i18n="mHScripts">Senaryolar</span> <button class="iconbtn" id="newScript" title="Yeni senaryo" data-i18n-title="mTNew" aria-label="Yeni senaryo" data-aria="mTNew">＋</button></h3>
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
@@ -384,13 +384,13 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <div id="count">3</div>
     </div>
     <div id="statusbar">
-      <span><kbd>Boşluk</kbd> başlat</span>
-      <span><kbd>↑</kbd><kbd>↓</kbd> hız</span>
-      <span><kbd>R</kbd> başa</span>
-      <span><kbd>←</kbd><kbd>→</kbd> satır</span>
-      <span><kbd>K</kbd> kayıt</span>
-      <span><kbd>F</kbd> tam ekran</span>
-      <span><kbd>H</kbd> sade</span>
+      <span data-i18n="mSbPlay"><kbd>Boşluk</kbd> başlat</span>
+      <span data-i18n="mSbSpeed"><kbd>↑</kbd><kbd>↓</kbd> hız</span>
+      <span data-i18n="mSbReset"><kbd>R</kbd> başa</span>
+      <span data-i18n="mSbLine"><kbd>←</kbd><kbd>→</kbd> satır</span>
+      <span data-i18n="mSbRec"><kbd>K</kbd> kayıt</span>
+      <span data-i18n="mSbFs"><kbd>F</kbd> tam ekran</span>
+      <span data-i18n="mSbHide"><kbd>H</kbd> sade</span>
       <span>WPM <b id="sbWpm">140</b> <b id="sbSpeed" style="display:none">140</b></span>
       <span id="sbDev" style="opacity:.6"></span>
       <!-- Sürüm yazısı artık düğme: sürüm notlarının elle girişi bu.
@@ -398,6 +398,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
            ulaşamıyordu; Mac'e o hata taşınmasın diye baştan düğme. -->
       <button id="sbVer" title="🆕 Ne değişti? — sürüm notları" data-i18n-title="mTNews" aria-label="Ne değişti? Sürüm notları" data-aria="mANews"
               style="opacity:.6;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0"></button>
+      <span id="langSwitch" class="seg" role="group" aria-label="Arayüz dili" data-aria="mLangLabel"><button data-lang="tr" aria-pressed="true">TR</button><button data-lang="en" aria-pressed="false">EN</button></span>
       <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla" data-i18n-title="mTErrDetail"></span>
     </div>
   </div>
@@ -416,10 +417,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-mode="video" data-i18n="mVideo">YouTube</button>
         </div>
         <div class="rb-note" id="modeHint" style="margin-top:6px"></div>
-        <div class="toggle" style="margin-top:8px"><span>⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwCrop">⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
         <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
-        <div class="toggle" style="margin-top:8px"><span>🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
-        <div class="toggle" style="margin-top:8px"><span>💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwChroma">🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
         <div class="field" style="margin-top:10px">
           <div class="top"><label data-i18n="fxTitle">🎚 Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
           <div class="seg" id="fxSeg">
@@ -428,9 +429,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
             <button data-fx="noisy" data-i18n="mNoisy">Gürültülü</button>
             <button data-fx="studio" data-i18n="bkStudio">Stüdyo</button>
           </div>
-          <div class="rb-note">Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.</div>
+          <div class="rb-note" data-i18n="mNoteAudio">Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.</div>
         </div>
-        <div class="toggle" style="margin-top:8px"><span>🫁 Konuşmayı kesince sufle dursun</span><div class="sw2" data-t="vad"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwVad">🫁 Konuşmayı kesince sufle dursun</span><div class="sw2" data-t="vad"></div></div>
         <div id="chromaBox" style="display:none">
           <div class="top" style="margin-top:8px"><label data-i18n="keyColor">Perde rengi</label></div>
           <div class="selectish" id="keySel">
@@ -465,9 +466,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
             <button class="btn" id="bgClear" style="flex:1" data-i18n="mRemove">✕ Kaldır</button>
           </div>
           <input type="file" id="bgFile" accept="image/*" style="display:none">
-          <div class="rb-note" style="margin-top:6px">Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.</div>
+          <div class="rb-note" style="margin-top:6px" data-i18n="mNoteChroma">Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.</div>
         </div>
-        <div class="toggle" style="margin-top:8px"><span>🚫 Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwSafe">🚫 Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
       </div>
       <div class="field">
         <div class="top"><label data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="speedV">140</span></div>
@@ -509,15 +510,15 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-c2="upper" data-i18n="caseUp">BÜYÜK</button>
           <button data-c2="lower" data-i18n="caseLow">küçük</button>
         </div>
-        <div class="rb-note" style="margin-top:4px">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
-        <div class="toggle" style="margin-top:8px"><span>⚡ Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
-        <div class="rb-note">Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.</div>
+        <div class="rb-note" style="margin-top:4px" data-i18n="mNoteCase">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBionic">⚡ Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
+        <div class="rb-note" data-i18n="mNoteBionic">Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.</div>
         <div class="top" style="margin-top:10px"><label data-i18n="capOffset">💬 Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
         <input type="range" id="capOff" min="-20" max="20" value="0">
-        <div class="rb-note">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
+        <div class="rb-note" data-i18n="mNoteCap">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
         <div class="top" style="margin-top:10px"><label data-i18n="mCapMaxW">💬 Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
         <input type="range" id="capMaxW" min="3" max="12" value="7">
-        <div class="rb-note">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
+        <div class="rb-note" data-i18n="mNoteCapW">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
       </div>
     </div>
 
@@ -553,22 +554,22 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     </div>
 
     <div class="ctrl">
-      <div class="toggle"><span>🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
-      <div class="toggle"><span>🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
-      <div class="toggle"><span>🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
-      <div class="toggle"><span>🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
-      <div class="toggle"><span>✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
-      <div class="toggle"><span>⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
+      <div class="toggle"><span data-i18n="mSwMirror">🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
+      <div class="toggle"><span data-i18n="mSwFlip">🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
+      <div class="toggle"><span data-i18n="mSwEye">🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
+      <div class="toggle"><span data-i18n="mSwDim">🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
+      <div class="toggle"><span data-i18n="mSwHl">✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
+      <div class="toggle"><span data-i18n="mSwCount">⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
     </div>
 
     <div class="ctrl" id="remoteCtrl">
       <div class="field">
         <div class="top"><label data-i18n="mRemoteCtrl">📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
         <div id="remoteBox">
-          <div id="remoteOff" class="rb-note">📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
+          <div id="remoteOff" class="rb-note" data-i18n="mRemoteOff">📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
           <div id="remoteOn" style="display:none">
             <img id="qrImg" alt="QR" style="display:none;width:140px;height:140px;border-radius:10px;background:#fff;padding:6px;margin:2px auto 8px;display:block">
-            <div class="rb-note">Telefonla QR’ı okutun ya da şu adrese girin:</div>
+            <div class="rb-note" data-i18n="mNoteQr">Telefonla QR’ı okutun ya da şu adrese girin:</div>
             <div id="remoteUrl" class="rb-url">—</div>
           </div>
         </div>
@@ -580,7 +581,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 <!-- KAYIT ÖNİZLEME -->
 <div id="recResult">
   <div class="rr-box">
-    <div class="rr-head">🎬 Çekim hazır <span id="rrSize"></span></div>
+    <div class="rr-head"><span data-i18n="mRrHead">🎬 Çekim hazır</span> <span id="rrSize"></span></div>
     <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
     <video id="rrVideo" controls playsinline></video>
     <div class="rr-btns">
@@ -591,7 +592,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <button class="btn" id="rrKeep" data-i18n="mKeep">⭐ Arşive al</button>
       <button class="btn primary" id="rrDownload">⬇︎ İndir (.webm)</button>
     </div>
-    <div class="rr-note">Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.</div>
+    <div class="rr-note" data-i18n="mRrNote">Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.</div>
   </div>
 </div>
 
@@ -710,7 +711,13 @@ const I18N={
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
   mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi',
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
-  mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...'},
+  mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...',
+  /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
+  mSwCrop:'⧉ Seçilen orana kırparak kaydet',mSwChroma:'🟩 Yeşil ekran (chroma key)',mSwBurn:'💬 Altyazıyı videoya göm',mSwVad:'🫁 Konuşmayı kesince sufle dursun',mSwSafe:'🚫 Platform arayüz alanları',mSwBionic:'⚡ Biyonik okuma (kelime başları kalın)',mSwMirror:'🪞 Ayna (yatay çevir)',mSwFlip:'🔃 Ters (dikey çevir)',mSwEye:'🎯 Göz çizgisi',mSwDim:'🌗 Odak karartma',mSwHl:'✨ Kelime vurgusu',mSwCount:'⏱ 3-2-1 sayaç',mSbPlay:'<kbd>Boşluk</kbd> başlat',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> hız',mSbReset:'<kbd>R</kbd> başa',mSbLine:'<kbd>←</kbd><kbd>→</kbd> satır',mSbRec:'<kbd>K</kbd> kayıt',mSbFs:'<kbd>F</kbd> tam ekran',mSbHide:'<kbd>H</kbd> sade',
+  /* Mac ipucu ve panel metinleri (A.2d) */
+  mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'🎬 Çekim hazır',
+  /* Dil düğmesi (A.2d) */
+  mLangLabel:'Arayüz dili'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -796,7 +803,13 @@ const I18N={
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
   mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface',
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
-  mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...'}
+  mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...',
+  /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
+  mSwCrop:'⧉ Record cropped to the chosen ratio',mSwChroma:'🟩 Green screen (chroma key)',mSwBurn:'💬 Burn subtitles into the video',mSwVad:'🫁 Pause the prompter when you stop speaking',mSwSafe:'🚫 Platform interface areas',mSwBionic:'⚡ Bionic reading (bold word beginnings)',mSwMirror:'🪞 Mirror (flip horizontally)',mSwFlip:'🔃 Invert (flip vertically)',mSwEye:'🎯 Eye line',mSwDim:'🌗 Focus dimming',mSwHl:'✨ Word highlight',mSwCount:'⏱ 3-2-1 countdown',mSbPlay:'<kbd>Space</kbd> start',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> speed',mSbReset:'<kbd>R</kbd> rewind',mSbLine:'<kbd>←</kbd><kbd>→</kbd> line',mSbRec:'<kbd>K</kbd> record',mSbFs:'<kbd>F</kbd> full screen',mSbHide:'<kbd>H</kbd> minimal',
+  /* Mac ipucu ve panel metinleri (A.2d) */
+  mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'📴 <b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'🎬 Take ready',
+  /* Dil düğmesi (A.2d) */
+  mLangLabel:'Interface language'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -834,9 +847,13 @@ const I18N={
       b.setAttribute('aria-pressed', b.dataset.lang===L ? 'true' : 'false');
     });
   }
-  /* setLang() BİLEREK yok: çağıracak dil düğmesi henüz eklenmedi (kapsam
-     sıfırlanmadı) ve çağrılmayan fonksiyon ölü koddur — denetim.py haklı
-     olarak bağırdı. Düğmeyle birlikte gelecek. */
+  /* Kapsam SIFIRLANDIĞI için düğme artık meşru (tests/122 ölçüyor).
+     Okuma + yazma + düğme BİRLİKTE geliyor; yalnız biri yarım yapıdır. */
+  function setLang(yeni){
+    if(yeni!=='tr' && yeni!=='en') return;
+    if(yeni===L) return;
+    L=yeni; state.lang=yeni; save(); applyLang();
+  }
   const root=document.documentElement, body=document.body;
   const app=$('#app'), frame=$('#frame'), prompt=$('#prompt'), scroller=$('#scroller'),
         stageWrap=$('#stageWrap'), cam=$('#cam');
@@ -3076,12 +3093,11 @@ const I18N={
      85'inde işaretlemedeki metin sözlükteki değerle birebir aynı.
      Çağrı yine de burada duruyor ki bağlantı KANITLI olsun — bağlanmamış
      altyapı, olmayan altyapıdan kötüdür (yapıldı sanılır). */
-  /* Kayıtlı dil OKUNMUYOR çünkü YAZAN da yok: dil düğmesi henüz eklenmedi.
-     Okumayı şimdiden koymak yarım yapı olurdu ve denetim.py haklı olarak
-     'durum alanı okunuyor ama hiç yazılmıyor: lang' dedi. Düğme turunda
-     okuma + yazma + düğme BİRLİKTE gelecek; eski kayıtlarda alan
-     bulunmayacağı için okuma `state.lang==='en'` biçiminde olmalı,
-     `!state.lang` DEĞİL (deponun 6 numaralı hata sınıfı). */
+  /* ESKİ KAYITLARDA `lang` ALANI YOK. Bu yüzden `state.lang==='en'` diye
+     bakılıyor, `!state.lang` DİYE DEĞİL: ikincisi alanı hiç olmayan eski
+     kullanıcıyı bambaşka bir dala sokardı (deponun 6 numaralı hata sınıfı). */
+  L = (state.lang==='en' ? 'en' : 'tr');
+  $$('#langSwitch button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
   applyLang();
   const s=curScript();
   $('#title').value=s.title; $('#editor').value=s.text;
