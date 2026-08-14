@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Kumanda tanı paneli yanlış suçlu gösterebiliyordu** — aynı paneldeki tetik kelimesi kutusuna dokunduktan sonra kumandaya basınca tuş kutuya gidiyor, panel ise 6 saniye sonra kumandayı ve işletim sistemini suçluyordu; çalışan bir kumandayı attırabilirdi.
 - **iPhone sunucusu telefonun ulaşamayacağı adresi QR olarak basıyordu** — Wi-Fi adresi bulunamayınca `127.0.0.1` yazıp QR üretiyordu; telefon okuyor, sayfa hiç açılmıyordu. Ayrıca 8443 doluysa yığın izi basıp çıkıyordu. İkisi de Mac tarafında zaten düzeltilmişti, buraya taşınmamış.
 - **Kendi tetik kelimen sessizce çalışmayabiliyordu** — boşluk içeren tetik (iki kelimelik ifade) hiçbir zaman tanınmıyor, yalnız noktalama/emojiden oluşan tetik hiç denenmiyordu; alan dolu göründüğü için kurduğunu sanıyordun.
 - **Yeşil ekran kapalıyken onun ayarları yine de sürükleniyordu** — perde rengi, eşik, kenar yumuşaklığı, saçak temizliği, arka plan seçimi: hepsi görünür, oynatılabilir ve tamamen etkisiz; sebebi de yazmıyordu. Altyazı gömme kapalıyken altyazı ayarları için de aynıydı.
@@ -102,7 +103,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **48 commit**, hepsi yerelde, `claude` dalında
-- **2326 test** (gece başında 732) · yeni test dosyası: 39–75
-- Gece planı: 136 görevden **42'si** işlendi (bütün P0'lar + 35 P1)
+- **49 commit**, hepsi yerelde, `claude` dalında
+- **2355 test** (gece başında 732) · yeni test dosyası: 39–76
+- Gece planı: 136 görevden **43'ü** işlendi (bütün P0'lar + 36 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
