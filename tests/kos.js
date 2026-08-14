@@ -9,6 +9,20 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/* TEST BAŞINA SÜRE TAVANI (M3).
+   `execFileSync` zaman aşımsız çağrılıyordu: TEK bir asılı test kapıyı
+   SÜRESİZ bekletiyor. ÖLÇÜLDÜ: `setInterval(()=>{},1000)` içeren bir dosya
+   eklendi, koşturucu 8 saniye sonra hâlâ koşuyordu ve kendiliğinden hiç
+   bitmeyecekti. Gece fabrikası gibi gözetimsiz koşan bir düzende bu, kapının
+   kırmızı vermesi değil HİÇ CEVAP VERMEMESİ demek — en kötü hâli, çünkü
+   "sürüyor" ile "öldü" ayırt edilemez.
+   Zaman aşımı KIRMIZI sayılıyor; sessizce atlanırsa test kapsamı sessizce
+   düşer (M2de kapattığımız kör noktanın aynısı olurdu).
+   Tavan cömert. ÖLÇÜLEN süreler: en yavaş üç test 75-iphone-sunucu (5,5 sn,
+   gerçek HTTPS sunucusu başlatıyor), 35-arsiv-askida-kalma (3,3 sn) ve
+   29-yerel-sunucu (3,2 sn); 77 dosyanın tamamı 14,8 sn. 60 saniyelik tavan
+   en yavaş testin 11 katı — yavaş bir makinede bile yanlış alarm vermez. */
+const SURE_TAVANI = +(process.env.SUFLE_TEST_TAVAN || 60000);
 const dizin = __dirname;
 const dosyalar = fs.readdirSync(dizin)
   .filter(f => /^\d\d-.*\.js$/.test(f))
@@ -36,11 +50,15 @@ let toplam = 0, hata = 0, kirik = [];
 for (const f of dosyalar) {
   let cikti = '';
   let ok = true;
+  let asildi = false;
   try {
-    cikti = execFileSync(process.execPath, [path.join(dizin, f)], { encoding: 'utf8' });
+    cikti = execFileSync(process.execPath, [path.join(dizin, f)],
+                         { encoding: 'utf8', timeout: SURE_TAVANI, killSignal: 'SIGKILL' });
   } catch (e) {
     ok = false;
     cikti = (e.stdout || '') + (e.stderr || '');
+    /* Zaman aşımında Node ya `killed` bayrağını ya da ETIMEDOUT kodunu verir. */
+    if (e.killed || e.code === 'ETIMEDOUT') asildi = true;
   }
   const gecen = (cikti.match(/✓/g) || []).length;
   const kalan = (cikti.match(/✗/g) || []).length;
@@ -48,6 +66,7 @@ for (const f of dosyalar) {
   const atlandi = /ATLANDI:/.test(cikti);
   const eski = taban[f];
   const notlar = [];
+  if (asildi) notlar.push(`SÜRE AŞIMI (${SURE_TAVANI / 1000} sn) — test asılı kaldı, öldürüldü`);
   /* Hiç iddia koşmadıysa test bir şey ÖLÇMEMİŞTİR — geçti sayılamaz. */
   if (gecen + kalan === 0) notlar.push('HİÇ İDDİA KOŞMADI');
   /* Koruma daralmışsa söyle. Atlanan testte karşılaştırma yapılmaz. */
@@ -55,15 +74,18 @@ for (const f of dosyalar) {
     notlar.push(`iddia sayısı DÜŞTÜ: ${eski} → ${gecen + kalan}`);
   if (atlandi) notlar.push('ortam eksik, taban karşılaştırması atlandı');
   /* Taban yalnız yukarı taşınır; düşüşü burada kabul etmek kapıyı kör ederdi. */
+  /* Asılı test yarım çıktı verir, ama `Math.max` zaten tabanı düşürmüyor —
+     bunun için ayrı bir dal yazmıştım, kasıtlı bozma turunda o dalın hiçbir
+     şey değiştirmediği ölçüldü ve kaldırıldı. Kanıtlanmamış koruma tutma. */
   if (!atlandi) yeniTaban[f] = Math.max(eski || 0, gecen + kalan);
   else if (eski != null) yeniTaban[f] = eski;
-  const sorunlu = notlar.some(n => /HİÇ İDDİA|DÜŞTÜ/.test(n));
+  const sorunlu = notlar.some(n => /HİÇ İDDİA|DÜŞTÜ|SÜRE AŞIMI/.test(n));
   const durum = ok && !kalan && !sorunlu ? '✓' : '✗';
   console.log(`${durum} ${f.padEnd(34)} ${String(gecen).padStart(3)} test` +
               (notlar.length ? '   ← ' + notlar.join(' · ') : ''));
   if (sorunlu && !kirik.includes(f)) kirik.push(f);
   if (!ok || kalan) {
-    kirik.push(f);
+    if (!kirik.includes(f)) kirik.push(f);
     cikti.split('\n').filter(l => l.includes('✗') || l.includes('Error')).forEach(l => console.log('    ' + l.trim()));
   }
 }

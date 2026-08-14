@@ -36,6 +36,10 @@ ok('taban yalnız yukarı taşınıyor', /Math\.max\(eski \|\| 0, gecen \+ kalan
 ok('taban atomik yazılıyor (yarım dosya kapıyı yanıltmasın)', /renameSync/.test(kaynak));
 ok('ortam atlaması tanınıyor', /ATLANDI:/.test(kaynak));
 ok('çıkış kodu hâlâ dikkate alınıyor', /catch \(e\) \{[\s\S]{0,80}ok = false/.test(kaynak));
+ok('test başına süre tavanı var', /timeout: SURE_TAVANI/.test(kaynak));
+ok('asılan test SIGKILL ile öldürülüyor', /killSignal: 'SIGKILL'/.test(kaynak));
+ok('süre aşımı kırmızı sayılıyor', /SÜRE AŞIMI/.test(kaynak) && /DÜŞTÜ\|SÜRE AŞIMI/.test(kaynak));
+ok('tavan ortam değişkeniyle ayarlanabilir', /SUFLE_TEST_TAVAN/.test(kaynak));
 
 /* ---------- CANLI: GEÇİCİ DİZİNDE KOŞTUR ---------- */
 const kur = (dosyalar, taban) => {
@@ -45,8 +49,9 @@ const kur = (dosyalar, taban) => {
   if(taban) fs.writeFileSync(path.join(d,'beklenen.json'), JSON.stringify(taban));
   return d;
 };
-const kos = d => {
-  try { return {kod:0, cikti:execFileSync(process.execPath,[path.join(d,'kos.js')],{encoding:'utf8'})}; }
+const kos = (d, env) => {
+  const s={encoding:'utf8', env:{...process.env, ...(env||{})}};
+  try { return {kod:0, cikti:execFileSync(process.execPath,[path.join(d,'kos.js')],s)}; }
   catch(e){ return {kod:e.status==null?1:e.status, cikti:(e.stdout||'')+(e.stderr||'')}; }
 };
 const sil = d => { try{ fs.rmSync(d,{recursive:true,force:true}); }catch(e){} };
@@ -136,6 +141,37 @@ const ATLAYAN = 'console.log("ATLANDI: ortam eksik");\n'+
   const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
   ok('silinen testin tabanı temizleniyor', !('99-silinmis.js' in t));
   ok('duran testin tabanı korunuyor', t['10-iyi.js']===3);
+  sil(d);
+}
+
+{
+  /* M3 CANLI: asılı test kapıyı asmıyor, kırmızı veriyor ve DİĞER testler
+     koşmaya devam ediyor — biri asıldı diye kapsam düşmemeli. */
+  const ASILI='setInterval(()=>{},1000);\n';
+  const d=kur({'10-asili.js':ASILI,'11-iyi.js':IYI});
+  const t0=Date.now();
+  const r=kos(d,{SUFLE_TEST_TAVAN:'2000'});
+  const gecen=Date.now()-t0;
+  ok('asılı test kapıyı ASMIYOR (ölçülen '+(gecen/1000).toFixed(1)+' sn)', gecen<15000);
+  ok('asılı test kapıyı KIRMIZI yapıyor', r.kod!==0);
+  ok('süre aşımı sebebi yazılıyor', /SÜRE AŞIMI \(2 sn\)/.test(r.cikti));
+  ok('asılı test kırık listesinde', /kırık:.*10-asili\.js/.test(r.cikti));
+  ok('asılı test listede BİR kez geçiyor', (r.cikti.match(/10-asili\.js/g)||[]).length<=3);
+  ok('diğer testler koşmaya devam ediyor', /✓ 11-iyi\.js/.test(r.cikti));
+  sil(d);
+}
+{
+  /* Asılı testin yarım çıktısı TABANI DÜŞÜRMEMELİ: düşürürse bir sonraki
+     koşuda daralma kalıcılaşır ve kapı yeşile döner.
+     NOT: bunu ayrı bir `if (asildi)` dalıyla korumuştum; kasıtlı bozma turu o
+     dalın HİÇBİR ŞEYİ değiştirmediğini gösterdi (Math.max zaten düşürmüyor),
+     dal kaldırıldı. Bu iddia şimdi Math.max korumasını sınıyor. */
+  const ASILI_YARIM='const ok=(n,c)=>{ console.log((c?"\\u2713 ":"\\u2717 ")+n); };\n'+
+                    'ok("bir",true);\nsetInterval(()=>{},1000);\n';
+  const d=kur({'10-asili.js':ASILI_YARIM}, {'10-asili.js':20});
+  kos(d,{SUFLE_TEST_TAVAN:'2000'});
+  const t=JSON.parse(fs.readFileSync(path.join(d,'beklenen.json'),'utf8'));
+  ok('asılı testin yarım çıktısı tabanı düşürmüyor', t['10-asili.js']===20);
   sil(d);
 }
 
