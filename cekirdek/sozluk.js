@@ -100,7 +100,9 @@ const I18N={
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'🎬 Çekim hazır',
   /* Dil düğmesi (A.2d) */
-  mLangLabel:'Arayüz dili'},
+  mLangLabel:'Arayüz dili',
+  /* Mac panel sekmesi (B.3) */
+  mTabShoot:'Çekim'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -192,5 +194,7 @@ const I18N={
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'📴 <b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'🎬 Take ready',
   /* Dil düğmesi (A.2d) */
-  mLangLabel:'Interface language'}
+  mLangLabel:'Interface language',
+  /* Mac panel sekmesi (B.3) */
+  mTabShoot:'Shooting'}
 };

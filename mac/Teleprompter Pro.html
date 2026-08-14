@@ -112,6 +112,24 @@
   .btn.primary{background:var(--accent);color:#04210f;border-color:transparent}
   .btn.primary:hover{filter:brightness(1.08)}
   .btn.danger{color:#ff6b6b}
+  /* Bölümlü düğme (dil + panel sekmeleri). A.2d'de langSwitch 'seg' sınıfıyla
+     eklendi ama stil YOKTU — düğmeler çıplak tarayıcı görünümündeydi; bu tur
+     yakalandı. Jetonlardan besleniyor. */
+  .seg{display:inline-flex;gap:2px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;padding:2px}
+  .seg button{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;
+    font-weight:700;padding:4px 10px;border-radius:7px;cursor:pointer}
+  .seg button.on{background:var(--accent);color:var(--on-action)}
+  /* Sağ panel sekmeleri: telefondaki üç katman (Okuma · Çekim · Görünüm).
+     53 kontrolün aynı anda görünmesi 'hepsi eşit önemde' demekti — hiçbiri
+     önemli görünmüyordu. Sekme dışı gruplar akıştan tamamen çıkar
+     (display:none) — klavye gezintisi görünmeyene takılmaz. */
+  #rtabs{display:flex;gap:4px;margin-bottom:12px;position:sticky;top:0;z-index:5;
+    background:var(--panel);padding:4px 0}
+  #rtabs button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+    font:inherit;font-size:12.5px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
+  #rtabs button.on{background:var(--accent);color:var(--on-action);border-color:transparent}
+  #right .ctrl.sekmeDisi{display:none}
   .btn.rec{background:#e53935;color:#fff;border-color:transparent}
   .btn.rec.active{animation:pulse 1.2s infinite}
   @keyframes pulse{50%{filter:brightness(.7)}}
@@ -405,7 +423,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 
   <!-- ===== SAĞ PANEL — AYARLAR ===== -->
   <div id="right">
-    <div class="ctrl">
+  <div id="rtabs" role="tablist">
+    <button data-rtab="read" class="on" data-i18n="tabRead">Okuma</button>
+    <button data-rtab="cam" data-i18n="mTabShoot">Çekim</button>
+    <button data-rtab="look" data-i18n="tabLook">Görünüm</button>
+  </div>
+    <div class="ctrl" data-rtab="cam">
       <div class="field">
         <div class="top"><label data-i18n="mode">🎯 Çekim modu</label><span class="v" id="modeV">Serbest</span></div>
         <div class="selectish" id="modeSel">
@@ -522,7 +545,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       </div>
     </div>
 
-    <div class="ctrl">
+    <div class="ctrl" data-rtab="look">
       <div class="field">
         <div class="top"><label data-i18n="mFont">Yazı Tipi</label></div>
         <div class="selectish" id="famSel">
@@ -553,7 +576,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       </div>
     </div>
 
-    <div class="ctrl">
+    <div class="ctrl" data-rtab="read">
       <div class="toggle"><span data-i18n="mSwMirror">🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
       <div class="toggle"><span data-i18n="mSwFlip">🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
       <div class="toggle"><span data-i18n="mSwEye">🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
@@ -562,7 +585,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <div class="toggle"><span data-i18n="mSwCount">⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
     </div>
 
-    <div class="ctrl" id="remoteCtrl">
+    <div class="ctrl" id="remoteCtrl" data-rtab="cam">
       <div class="field">
         <div class="top"><label data-i18n="mRemoteCtrl">📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
         <div id="remoteBox">
@@ -717,7 +740,9 @@ const I18N={
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'🎬 Çekim hazır',
   /* Dil düğmesi (A.2d) */
-  mLangLabel:'Arayüz dili'},
+  mLangLabel:'Arayüz dili',
+  /* Mac panel sekmesi (B.3) */
+  mTabShoot:'Çekim'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -809,7 +834,9 @@ const I18N={
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'📴 <b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'🎬 Take ready',
   /* Dil düğmesi (A.2d) */
-  mLangLabel:'Interface language'}
+  mLangLabel:'Interface language',
+  /* Mac panel sekmesi (B.3) */
+  mTabShoot:'Shooting'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -3098,6 +3125,17 @@ const I18N={
      kullanıcıyı bambaşka bir dala sokardı (deponun 6 numaralı hata sınıfı). */
   L = (state.lang==='en' ? 'en' : 'tr');
   $$('#langSwitch button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+  /* Sağ panel sekmeleri (B.3). Eski kayıtta rtab alanı YOK — açık değer
+     kontrolü, `!state.rtab` değil. Varsayılan Okuma: çekim yapmayan
+     kullanıcı da her gün okuma ayarlarına dokunuyor. */
+  function applyRtab(){
+    const t=(state.rtab==='cam'||state.rtab==='look')?state.rtab:'read';
+    $$('#right .ctrl').forEach(c=>c.classList.toggle('sekmeDisi', c.dataset.rtab!==t));
+    $$('#rtabs button').forEach(b=>{ b.classList.toggle('on', b.dataset.rtab===t);
+      b.setAttribute('aria-selected', b.dataset.rtab===t?'true':'false'); });
+  }
+  $$('#rtabs button').forEach(b=>b.onclick=()=>{ state.rtab=b.dataset.rtab; save(); applyRtab(); });
+  applyRtab();
   applyLang();
   const s=curScript();
   $('#title').value=s.title; $('#editor').value=s.text;

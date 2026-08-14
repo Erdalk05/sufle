@@ -200,8 +200,12 @@ telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.c
 **zaten var**. "40+ kontrol" Mac'in sağ paneline ait. B.3'ün gerçek hedefi **Mac paneli**;
 telefonun sadeliği korunması gereken varlık (test 123 §3 bunu kilitliyor: intro ≤6 düğme).
 **B.2 Emoji → SVG ikon.** Tek sprite, 20×20 stroke. "Amatör → ürün" algısının yarısı bu.
-**B.3 Aşamalı açılım.** İlk açılışta yalnız: metin + BAŞLAT + hız. Gerisi sekme/`<details>` arkasında.
-Sağ panel 3 sekme: **Okuma · Çekim · Görünüm**, sekme başına ≤6 kontrol.
+**B.3 Aşamalı açılım.** ✅ **Mac paneli BİTTİ** — sağ panel 3 sekme (Okuma · Çekim · Görünüm),
+telefonla aynı katmanlar, sözlükten etiketli. **Tarayıcıda doğrulandı:** varsayılan sekmede Çekim'in
+27 kontrolü DOM akışından çıkıyor; sekme seçimi yeniden yüklemede korunuyor (`state.rtab`, eski
+kayıtlara dayanıklı okuma). Yan kazanç: `.seg` stili — A.2d'deki dil düğmesi **çıplak tarayıcı
+düğmesi** olarak kalmış, bu turda yakalandı ve stillendi.
+Telefonda B.3 gereksiz çıktı (ilk açılış 5 kontrol, ölçüldü) — sadeliği test koruyor.
 **B.4 Odak modu.** Çekim başlayınca kabuk kaybolur: metin + ince ilerleme + süre + kayıt noktası.
 **B.5 Durum satırı.** "Sesle takip · tr-TR · mikrofon açık" — kullanıcı hangi moddayım diye denemesin.
 **B.6 Klavye + kısayol kartı.** `↑↓` hız, `M` ayna, `R` kayıt, `F` tam ekran, `?` kart.
@@ -277,3 +281,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 6 | 2026-08-14 | A.2c: 28 öznitelik + 21 anahtar; kapsam ölçütü iki kez düzeltildi | kapsam **69 → 41** (önceki commit'e karşı ölçüldü) · parite 296/296 · applyLang TR'de no-op (öznitelikler dahil) | 7/8 yeşil (VER doğru kırmızı) |
 | 7 | 2026-08-14 | A.2d: Mac tam iki dilli — kapsam 41→0, dil düğmesi, tarayıcı kanıtı | EN geçişi gerçek tarayıcıda doğrulandı · parite 327/327 · denetim.py 2 kör nokta | 8/8'in 7'si yeşil (VER doğru kırmızı) |
 | 8 | 2026-08-14 | B.1 başlangıç: jetonlar kullanımda + tnum ×12 + ilk-açılış ölçümü | accent→r-action iki kabukta · telefon 5/9 kontrol (analiz iddiası çürüdü) · 15 iddia | 7/8 yeşil (VER doğru kırmızı) |
+| 9 | 2026-08-14 | B.3 Mac: sağ panel 53 kontrol → 3 sekme; .seg stili | tarayıcıda: Çekim 27 kontrol gizleniyor · sekme kalıcı · 23 iddia | 7/8 yeşil (VER doğru kırmızı) |

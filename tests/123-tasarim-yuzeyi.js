@@ -67,3 +67,31 @@ const mac = oku(macYolu());
   ok('ilk açılışta en fazla 6 düğme (ölçülen 5 + pay 1) — şimdi: ' + dugmeler.length,
      dugmeler.length > 0 && dugmeler.length <= 6);
 }
+
+/* ---------- 4. MAC SAĞ PANELİ ÜÇ SEKME (B.3) ---------- */
+{
+  /* Ölçülen dert: 53 kontrol aynı anda görünüyordu — "hepsi eşit önemde"
+     demek hiçbiri önemli değil demek. Telefonun üç katmanı Mac'e taşındı.
+     Tarayıcıda doğrulandı: Okuma sekmesindeyken Çekim'in 27 kontrolü DOM
+     akışından çıkıyor (display:none), sekme seçimi yeniden yüklemede
+     korunuyor (state.rtab). */
+  ok('Mac: sekme çubuğu var (rtabs)', /<div id="rtabs" role="tablist">/.test(mac));
+  const gruplar = [...mac.matchAll(/<div class="ctrl"[^>]*data-rtab="(read|cam|look)"/g)];
+  ok('Mac: 4 grubun 4\'ü de sekmeye atanmış — bulunan: ' + gruplar.length, gruplar.length === 4);
+  /* Atamasız grup sekme değişince HEP görünür kalır ve sekme yapısı
+     sessizce anlamsızlaşır — o yüzden atama sayısı da kilitli. */
+  const atamasiz = (mac.match(/<div class="ctrl"(?![^>]*data-rtab)/g) || []).length;
+  ok('Mac: sekmesiz .ctrl grubu yok — bulunan: ' + atamasiz, atamasiz === 0);
+  const kod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  ok('Mac: applyRtab tanımlı VE çağrılıyor',
+     /function applyRtab\(\)\{/.test(kod) && /^\s*applyRtab\(\);/m.test(kod));
+  ok('Mac: sekme seçimi kaydediliyor (state.rtab + save)',
+     /state\.rtab=b\.dataset\.rtab; save\(\);/.test(kod));
+  /* Eski kayıtta rtab alanı yok — açık değer kontrolü şart. */
+  ok('Mac: rtab eski kayıtlara dayanıklı okunuyor',
+     /state\.rtab==='cam'\|\|state\.rtab==='look'/.test(kod));
+  ok('Mac: sekme dışı grup akıştan çıkıyor (display:none)',
+     /#right \.ctrl\.sekmeDisi\{display:none\}/.test(mac));
+  ok('Mac: .seg stili artık tanımlı (dil düğmesi çıplak kalmasın)',
+     /\.seg\{display:inline-flex/.test(mac));
+}
