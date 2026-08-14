@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Toplu silme onayı sayfayı kapatınca açık kalıyordu** — silme geri alınamaz; vazgeçmek için sayfayı kapatsan bile onay duruyordu ve birkaç saniye içinde geri açıp bir dokunuş yıldızsız çekimlerin hepsini siliyordu.
 - **Ekran okuyucu bildirimlerin hiçbirini duyurmuyordu** — uygulamanın sana sebep söylediği tek kanal alt bildirimler (154 çağrı yeri) ve hiçbiri ekran okuyucuya iletilmiyordu; masaüstünde tek bir canlı bölge bile yoktu.
 - **Yüksek kontrast ayarı yazı kutularını kapsamıyordu** — senaryo düzenleyicisi, tetik kelimesi kutusu, sekmeler ve iki ayraç ayar açıkken bile soluk kalıyordu; kutuyu görünür kılan tek şey olan kenarlık 1,48:1 idi (eşik 3:1).
 - **Masaüstünde altyazı kelime sınırı ayarı yoktu** — telefonda 3-12 arası ayarlanıyor, Mac 7'ye sabitti; aynı senaryo iki cihazda farklı bölünüyordu. Mac'e aynı ayar eklendi; diğer her şeyde iki platform birebir aynı çıktı (ölçüldü).
@@ -122,7 +123,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **58 commit**, hepsi yerelde, `claude` dalında
-- **2674 test** (gece başında 732) · yeni test dosyası: 39–84
-- Gece planı: 138 görevden **52'si** işlendi (bütün P0'lar + 45 P1)
+- **59 commit**, hepsi yerelde, `claude` dalında
+- **2707 test** (gece başında 732) · yeni test dosyası: 39–85
+- Gece planı: 138 görevden **53'ü** işlendi (bütün P0'lar + 46 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
