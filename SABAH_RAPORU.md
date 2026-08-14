@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Masaüstünde altyazı kelime sınırı ayarı yoktu** — telefonda 3-12 arası ayarlanıyor, Mac 7'ye sabitti; aynı senaryo iki cihazda farklı bölünüyordu. Mac'e aynı ayar eklendi; diğer her şeyde iki platform birebir aynı çıktı (ölçüldü).
 - **Altyazıyı öne çekince baştaki satırlar üst üste biniyordu** — kayma eksiye alınınca videonun başındaki damgalar sıfıra sıkışıyor, birkaç altyazı aynı anda ekrana geliyordu; ölçülen eşik iki saniye kayma + dakikada iki yüz kelime.
 - **Altyazı dosyasında bozuk zaman damgası oluşabiliyordu** — küsurat yuvarlanınca `00:00:05,1000` gibi dört haneli milisaniye çıkıyor, bu geçerli bir altyazı satırı değil; ölçülen risk yüz damgalık videoda ~%5. Masaüstünde de aynıydı.
 - **Çekimlerim listesi bütün videoları belleğe çekiyordu** — liste yalnız ad/tarih/süre/not gösterdiği hâlde arşivdeki tüm videoları okuyordu; üstelik her yıldıza dokunuşta, her yeniden adlandırmada, her not düzenlemesinde yeniden.
@@ -100,6 +101,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Bir ön bulguyu yanlış kaydettim**: I3 turunda "Mac ve telefon altyazı süre sınırı farklı" diye not düştüm; ölçünce aynı çıktı — 6 değerini kendi test tezgâhıma koymuşum ve kaynaktan geldiğini sanmışım. Planı düzelttim.
 - **`$?` tuzağına ikinci kez düştüm** — kendi yazdığım kurala rağmen `echo "$(basename …) -> $?"` kullandım ve 5 bozmanın 5'i de "yakalanmadı" göründü; testler aslında hepsini yakalıyordu.
 - **Sıklık sondamı yanlış kurdum**: bozuk damga oranını ölçerken ürettiğim ondalıklar kırılma bölgesine hiç düşmüyordu ve "0 vaka" çıktı — kusur oradaydı, sondam kördü. Ondalığı doğrudan tarayacak şekilde düzelttim.
 - **Kendi tezgâhımda kopya-test tuzağına düştüm**: duraklama muhasebesini kaynaktan çıkarmak yerine elle yazmıştım; iki kasıtlı bozma yakalanmadı. Üç satırın üçü de kaynaktan çıkarılır hâle getirildi.
@@ -117,7 +119,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **55 commit**, hepsi yerelde, `claude` dalında
-- **2565 test** (gece başında 732) · yeni test dosyası: 39–81
-- Gece planı: 137 görevden **49'u** işlendi (bütün P0'lar + 42 P1)
+- **56 commit**, hepsi yerelde, `claude` dalında
+- **2603 test** (gece başında 732) · yeni test dosyası: 39–82
+- Gece planı: 137 görevden **50'si** işlendi (bütün P0'lar + 43 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz

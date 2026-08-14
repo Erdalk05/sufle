@@ -153,7 +153,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | I7 | `capTimes` kelime atlamada boşluk bırakıyor mu | P1 |
 | I8 | Gömülü altyazı kontur/gölge okunabilirliği — açık zeminde ölç | P2 |
 | I9 | `.srt` dosya adı Türkçe karakterli senaryoda bozuluyor mu | P2 |
-| I10 | Mac altyazı gömme telefonla aynı sonucu veriyor mu ⚠️ **I3 turunda ölçülen ön bulgu**: iki platform bölme parametrelerinde ayrışıyor — Mac `CAP_MAXW=7` **sabit** ve `CAP_MAXSEC=3,6`; telefonda kelime sınırı kullanıcı ayarı, süre sınırı 6 sn. Aynı metin iki platformda farklı kuyruklara bölünüyor. Kapsam bu turda açılmadı. | P1 |
+| I10 | Mac altyazı gömme telefonla aynı sonucu veriyor mu ⛔+✅ **Hipotezin büyük kısmı çürüdü**: aynı girdiyle iki gerçek motor koşturuldu, **varsayılan ayarda kuyruklar birebir aynı** (42 karakter, 3,6 sn, 0,08 boşluk, aynı `sentenceEnd`+KISALTMA). **I3 turundaki ön bulgumu düzelttim**: "Mac 3,6 telefon 6" YANLIŞTI — 6 değerini kendi test tezgâhıma koymuştum. Geriye tek fark kaldı: kelime sınırı telefonda ayar (3-12), Mac'te sabit 7 (ölçüldü: telefon 4'te 8 kuyruk, Mac 7). Mac'e aynı ayar eklendi. tests/82 (37 iddia), 6 bozma. **İddia sayacı kapısı ilk gerçek yakalamasını yaptı** (tests/34 32→26) ve o test Mac'in eksikliğini "bilinen fark" diye kilitliyormuş. `a7eff87` | P1 |
 
 ## J. Çekim arşivi ve paylaşım
 | # | Görev | Ö |
