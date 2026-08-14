@@ -106,7 +106,7 @@
  "105-paket-surum-etiketi.js": 33,
  "106-klavye-sekme-sirasi.js": 31,
  "107-odak-tuzagi.js": 31,
- "108-mac-yayin-notu.js": 47,
+ "108-mac-yayin-notu.js": 48,
  "109-mac-arsiv-listesi.js": 36,
  "110-hata-gunlugu-kalicilik.js": 56,
  "111-mac-kumanda-paneli-durumu.js": 36,
@@ -119,5 +119,6 @@
  "118-hedef-ve-kontrast.js": 33,
  "119-mac-donduran-diyalog.js": 21,
  "120-file-protokolu.js": 8,
- "121-jetonlar-ve-derleme.js": 33
+ "121-jetonlar-ve-derleme.js": 35,
+ "122-mac-i18n-kapsami.js": 10
 }

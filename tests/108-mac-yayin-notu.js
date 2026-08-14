@@ -30,7 +30,18 @@ const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 ok('Macte yayın notu var', /function yayinNotu\(\)\{/.test(macKod));
 ok('Macte düz metin ayıklama var', /function duzMetin\(t\)\{/.test(macKod));
 ok('Macte not indirilebiliyor', /function downloadNote\(\)\{/.test(macKod));
-ok('Macte notun düğmesi var', /<button class="btn" id="rrNote">📝 Yayın notu<\/button>/.test(mac));
+/* Desen BİÇİME değil İDDİAYA bağlı. Eskiden markup birebir kilitliydi
+   (`<button class="btn" id="rrNote">📝 Yayın notu</button>`) ve A.2b'de
+   `data-i18n` özniteliği eklenince kırıldı — oysa kullanıcı için HİÇBİR ŞEY
+   değişmemişti, düğme aynı yerde aynı yazıyla duruyordu. CLAUDE.md'nin
+   ölçülmüş kuralı: desen bozulunca kullanıcı için ne değişiyor? Cevap
+   "hiçbir şey" ise desen yanlış yere bakıyor. İddia şu: rrNote diye bir
+   DÜĞME var ve üstünde "Yayın notu" YAZIYOR. */
+{
+  const dugme = mac.match(/<button\b[^>]*\bid="rrNote"[^>]*>([\s\S]*?)<\/button>/);
+  ok('Macte notun düğmesi var', !!dugme);
+  ok('düğmenin üstünde "Yayın notu" yazıyor', !!dugme && /Yayın notu/.test(dugme[1]));
+}
 ok('düğme bağlı', /\$\('#rrNote'\)\.onclick=downloadNote;/.test(macKod));
 /* ZIP kasten yok — karar kodda da görünür olmalı ki sonradan "unutulmuş"
    sanılıp taşınmasın. */

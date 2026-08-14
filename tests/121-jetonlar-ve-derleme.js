@@ -123,7 +123,19 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
   })();
   ok('sözlük çekirdekte', fs.existsSync(sozYolu));
   const soz = fs.existsSync(sozYolu) ? fs.readFileSync(sozYolu, 'utf8') : '';
-  ok('çekirdekte I18N ve MSG birlikte', /const I18N=\{/.test(soz) && /const MSG=\{/.test(soz));
+  /* I18N ve MSG AYRI dosyada: Mac yalnız etiketleri kullanıyor, mesajları
+     değil. Tek dosyada tutup Mac'e gömdüğümde telefona özgü metin
+     ("Ayarlar → Safari → Kamera") Mac dosyasına sızdı ve tests/52 haklı
+     olarak kırıldı. Kabuk KULLANDIĞINI gömsün. */
+  ok('sözlükte I18N var, MSG YOK (ayrı dosyada)',
+     /const I18N=\{/.test(soz) && !/const MSG=\{/.test(soz));
+  const mesajYolu = path.join(REPO, 'cekirdek', 'mesajlar.js');
+  ok('mesajlar ayrı çekirdek dosyasında',
+     fs.existsSync(mesajYolu) && /const MSG=\{/.test(fs.readFileSync(mesajYolu, 'utf8')));
+  /* Sızıntının kendisi de kilitlensin: Mac'te kamera izni için Safari yolu
+     tarif edilmemeli — Mac'te Safari izni diye bir şey yok. */
+  ok('Mac dosyasına telefona özgü Safari kamera yolu sızmıyor',
+     !/Ayarlar → Safari → Kamera/.test(oku(macYolu())));
 
   const tel = oku(telefonYolu());
   ok('telefonda sözlük işaretleyicisi var', tel.includes('/* ==CEKIRDEK:sozluk.js== */'));

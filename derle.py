@@ -38,10 +38,13 @@ CEKIRDEK = os.path.join(REPO, 'cekirdek')
 PLAN = [
     # (modül dosyası, gömüleceği kabuklar)
     ('jetonlar.css', ['index.html', 'mac/Teleprompter Pro.html']),
-    # Sözlük şimdilik yalnız telefonda. Mac'e gömmek onu KULLANMAYA
-    # başladığında anlamlı — kullanılmayan 250 satır ölü kod olurdu ve
-    # denetim.py'nin ölü kod dedektörü haklı olarak bağırırdı.
-    ('sozluk.js', ['index.html']),
+    # A.2b'den beri Mac de sözlüğü KULLANIYOR (85 data-i18n), o yüzden
+    # ona da gömülüyor. Daha önce yalnız telefondaydı: kullanılmayan 250
+    # satır ölü kod olurdu ve denetim.py haklı olarak bağırırdı.
+    ('sozluk.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Mesajlar YALNIZ telefonda: Mac bugün m() kullanmıyor. Gömseydim
+    # telefona özgü metinler ('Ayarlar → Safari') Mac dosyasına sızardı.
+    ('mesajlar.js', ['index.html']),
 ]
 
 BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'

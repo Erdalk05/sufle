@@ -46,7 +46,23 @@ def _satir_yorumunu_at(line):
     return line
 
 
-def audit(path, msg_var="const MSG", i18n_var="const I18N"):
+def kullanilan_anahtarlar(path):
+    """Bir kabuğun KULLANDIĞI I18N anahtarları: t('x'), data-i18n, data-i18n-ph.
+
+    A.2b'den beri sözlük iki kabuk arasında ORTAK (cekirdek/sozluk.js). Ölü
+    anahtar denetimi tek dosyaya bakarsa YALAN söyler: Mac'in kullandığı
+    anahtar telefonda ölü görünür ve tersi. İlk koşuşta 35 sahte "ölü anahtar"
+    tam bu yüzden çıktı. Kullanım BÜTÜN kabuklardan toplanmalı."""
+    src = open(path, encoding="utf-8").read()
+    html = re.sub(r"<script.*?</script>", "", src, flags=re.S)
+    bloklar = re.findall(r"<script>(.*?)</script>", src, re.S)
+    js = bloklar[-1] if bloklar else ""
+    return (set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
+            | set(re.findall(r'data-i18n="([^"]+)"', html))
+            | set(re.findall(r'data-i18n-ph="([^"]+)"', html)))
+
+
+def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None):
     """Telefon (index.html) ve Mac (Teleprompter Pro.html) dosyalarını denetler.
     Mac sürümünde durum `state.x`, telefonda `st.x`; sözlük yok. Farkları burada
     ayırıyoruz — Mac bugüne kadar hiç tam denetimden geçmemişti."""
@@ -250,16 +266,28 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N"):
     if d - it: problems.append(("I18N'de olmayan data-i18n", sorted(d - it)))
     dp = set(re.findall(r'data-i18n-ph="([^"]+)"', html))
     if dp - it: problems.append(("I18N'de olmayan data-i18n-ph", sorted(dp - it)))
-    olu_i18n = sorted(it - tc - d - dp)
+    # Ölü anahtar: BÜTÜN kabuklarda kullanılmayan. Tek dosyaya bakmak sözlük
+    # ortaklaştıktan sonra yalan söylüyordu (bkz. kullanilan_anahtarlar).
+    kullanim = (tc | d | dp) | (genel_kullanim or set())
+    olu_i18n = sorted(it - kullanim)
     if olu_i18n: problems.append(("I18N'de tanımlı ama hiç kullanılmayan anahtar", olu_i18n))
 
     return problems
 
 if __name__ == "__main__":
     bad = 0
-    for path in sys.argv[1:]:
+    # 1. GEÇİŞ: kullanımı bütün kabuklardan topla. 2. geçişte denetle.
+    yollar = sys.argv[1:]
+    genel = set()
+    for path in yollar:
+        try:
+            genel |= kullanilan_anahtarlar(path)
+        except Exception as e:
+            print("  ✗ kullanım taranamadı:", path, e)
+            bad += 1
+    for path in yollar:
         print("=" * 8, path.split("/")[-1], "=" * 8)
-        pr = audit(path)
+        pr = audit(path, genel_kullanim=genel)
         if not pr:
             print("  temiz ✓")
         for name, items in pr:

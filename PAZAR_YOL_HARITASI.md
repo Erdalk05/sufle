@@ -131,7 +131,27 @@ Taşımanın **birebir** olduğu md5 ile kanıtlandı (I18N 19.016 karakter, MSG
 aynı); telefon davranışı değişmedi. `tests/121` artık pariteyi de kilitliyor: **tr 240 · en 240 · eksik 0**,
 ve kabukta `I18N`/`MSG` **tam olarak birer kez** tanımlı (ikinci tanım JS'te sessizce gölgeler).
 
-**A.2b** *(açık, sıradaki)* Mac sözlüğü KULLANSIN. Kapsam ölçüldü:
+**A.2b** ⏳ **BÜYÜK KISMI BİTTİ** — Mac artık sözlüğü kullanıyor: `data-i18n` **0 → 85**.
+27 yeni anahtar + 8 Mac'e özel anahtar sözlüğe eklendi (TR/EN parite **275/275**).
+`applyLang()` yazıldı ve başlatmaya bağlandı; **Türkçede hiçbir şeyi değiştirmediği ölçüldü**
+(85 ögenin 85'inde işaretleme metni sözlük değeriyle birebir).
+
+**Dil düğmesi BİLEREK eklenmedi.** `tests/122` kapsamı ölçüyor: **109 görünür metin, 81 i18n'li,
+28 eksik** (20 `title`, 2 `placeholder`, 6 `aria-label`). Yarı İngilizce arayüz, hiç İngilizce
+olmamasından kötüdür. Taban dosyası sayıyı kilitliyor; **sıfıra inince düğme gelecek** (test bunu
+da iddia olarak taşıyor). Kalan iş **A.2c**.
+
+Bu adımın ortaya çıkardığı üç yapısal sonuç:
+1. **Sözlük ikiye ayrıldı** (`sozluk.js` = etiketler, `mesajlar.js` = mesajlar). Hepsini Mac'e
+   gömünce telefona özgü metin ("Ayarlar → Safari → Kamera") Mac dosyasına sızdı ve `tests/52`
+   haklı olarak kırıldı — Mac'te Safari izni diye bir şey yok. **Kabuk kullandığını gömer.**
+2. **`denetim.py` iki geçişli oldu.** Ölü anahtar denetimi tek dosyaya bakıyordu; sözlük
+   ortaklaşınca Mac'in kullandığı anahtar telefonda ölü göründü ve **35 sahte ölü anahtar** çıktı.
+   Kullanım artık bütün kabuklardan toplanıyor.
+3. **`tests/108` biçime kilitliydi** — markup'ı birebir eşleştiriyordu, `data-i18n` eklenince
+   kırıldı, oysa kullanıcı için hiçbir şey değişmemişti. Desen iddiaya bağlandı.
+
+*(Eski ölçüm, kayıt için)* Kapsam ölçüldü:
 **Mac'te 105 görünür etiket, 58'inin (%55) telefon sözlüğünde karşılığı zaten var**
 (`1 satır`→`b1`, `Ayarlar`→`settings`, `Bokeh`→`bkBokeh`…). Kalan **47** etiket yeni anahtar + İngilizce
 çeviri istiyor. Buna Mac'e `t()`/`m()`/`applyLang()` + dil düğmesi eklemek ve 105 özniteliği göçürmek
@@ -225,3 +245,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 2 | 2026-08-14 | FAZ A mimari kararı: ES modülü elendi (ölçüldü) + `tests/120-file-protokolu.js` | Chrome headless `file://`: modül YÜKLENMEDİ, klasik çalıştı; 8 iddia, 3 kasıtlı bozmanın 3'ü kapıda yakalandı | 6/7 yeşil (VER doğru kırmızı) |
 | 3 | 2026-08-14 | A.1: `derle.py` + jeton çekirdeği + kapı 8. adımı; kapsam tabanı onarımı | bayatlık çıkış 1/0 ölçüldü · 26 iddia · 2 bozma kapıda · SIGTERM'de taban artık korunuyor | 7/8 yeşil (VER doğru kırmızı) |
 | 4 | 2026-08-14 | A.2a: sözlük çekirdeğe taşındı + parite kilidi | md5 birebir (I18N+MSG) · tr/en 240/240 · 27 bozma kanıtlı · Mac eşleşmesi %55 ölçüldü | 7/8 yeşil (VER doğru kırmızı) |
+| 5 | 2026-08-14 | A.2b: Mac sözlüğü kullanıyor (data-i18n 0→85) + kapsam kapısı | parite 275/275 · applyLang TR'de no-op (85/85 birebir) · eksik 28 ölçüldü · denetim.py iki geçişli | 7/8 yeşil (VER doğru kırmızı) |

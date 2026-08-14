@@ -1151,7 +1151,13 @@ const I18N={
   noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.',tSplit:'🪓 Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
   wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
-  voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.'},
+  voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
+  /* --- Mac kabuğu (A.2b) --- */
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'✅ Hazır mıyım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
+     büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
+     sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
+  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1229,8 +1235,27 @@ const I18N={
   noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. 🎤 voice commands do the same job.',tSplit:'🪓 Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
   wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
-  voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
+  voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
+  /* --- Mac kabuğu (A.2b) --- */
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'✅ Ready?',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
+     büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
+     sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
+  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface'}
 };
+/* ==/CEKIRDEK:sozluk.js== */
+
+/* ==CEKIRDEK:mesajlar.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/mesajlar.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SUFLE kullanıcı mesajları — m() ile okunur. TEK KAYNAK.
+   sozluk.js'ten AYRI dosya, çünkü kabuklar farklı şeye ihtiyaç duyuyor:
+   Mac bugün yalnız arayüz etiketlerini (I18N) kullanıyor, mesajları değil.
+   Hepsini tek dosyada tutup Mac'e gömdüğümde telefona özgü metinler
+   ('Ayarlar → Safari → Kamera') Mac dosyasına sızdı ve tests/52 haklı
+   olarak kırıldı — Mac kullanıcısına Safari tarif edilmemeli. Kabuk
+   KULLANDIĞINI gömsün. */
 
 const MSG={
  tr:{noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
@@ -1344,7 +1369,7 @@ const MSG={
   bgSet:'Background image loaded',bgCleared:'Background image removed',
   bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off'}
 };
-/* ==/CEKIRDEK:sozluk.js== */
+/* ==/CEKIRDEK:mesajlar.js== */
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
 <b>Ekran hareketleri</b><br>• Dokun = başlat/duraklat<br>• Yukarı-aşağı sürükle = metinde ileri-geri sar<br>• Sağ kenarda sürükle = hızı canlı değiştir<br>• İki kez dokun = kilidi aç/kapat<br><br>
