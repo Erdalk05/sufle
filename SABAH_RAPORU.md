@@ -88,6 +88,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Altın testte kendi iddiam yanlış çıktı**: kaydırma motorunun metnin sonunu hiç geçmemesi gerektiğini varsaydım; kod doğruydu — son satırın okuma çizgisini geçebilmesi için taşma bilinçli ve sınırlı.
 - **Vurgu düzeltmemin ilk deseni dengesiz yıldızları (`***x***`) sessizce vurguya çeviriyordu**; kendi yazdığım test bunu görmedi, iki ESKİ test (06 ve 17) yakaladı. Kapının değeri tam da burada.
 - **Denetimi argümansız koşturdum** (`python3 denetim.py`) ve "temiz" sandım — hiçbir dosyaya bakmamıştı. Tam da bu gece 12 kez bulduğum "ölçmeyen kapı" sınıfının kendisi.
 
@@ -99,7 +100,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **46 commit**, hepsi yerelde, `claude` dalında
-- **2266 test** (gece başında 732) · yeni test dosyası: 39–73
-- Gece planı: 136 görevden **40'ı** işlendi (bütün P0'lar + 33 P1)
+- **47 commit**, hepsi yerelde, `claude` dalında
+- **2295 test** (gece başında 732) · yeni test dosyası: 39–74
+- Gece planı: 136 görevden **41'i** işlendi (bütün P0'lar + 34 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz

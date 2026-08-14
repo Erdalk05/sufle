@@ -25,7 +25,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | A7 | Hız rampasının (200 ms) kayıt sırasında tempo ölçümünü bozup bozmadığı | P2 |
 | A8 | `jumpLine` bölüm sınırında takılıyor mu | P2 |
 | A9 | `prefers-reduced-motion` açıkken rampa da kapanmalı mı — karar + uygula | P2 |
-| A10 | Motorun tamamı için tek bir "aynı girdi → aynı mesafe" altın testi | P1 |
+| A10 | Motorun tamamı için tek bir "aynı girdi → aynı mesafe" altın testi ✅ Gerçek `tick`+`setPos`+`pxPerSec` sentetik kare saatiyle koşturuluyor; ürün kodu değişmedi. Kilitlenen sözleşme: belirlenim · **kare hızından bağımsızlık** (10 sn akışta 60/30/15 fps → 1374,3 / 1376,7 / 1381,3 px, sapma %0,51; kaynağı rampanın üstel yaklaşımı) · hız orantısı (wpm×2 → mesafe×2,000) · takılma koruması (2 sn gecikme = 11,7 px fark) · metnin sonu (kendiliğinden duruyor, taşma 120 px / tavan 160) · duraklamalar bir kez (kayıp 205 px ≈ beklenen 210). **Kendi iddiam bir kez yanlış çıktı** ("sonu hiç geçmemeli"); kod doğruydu, sözleşme düzeltildi. 8 bozma ile kanıtlandı. `89a79dd` | P1 |
 
 ## B. Metin ve işaretleme
 | # | Görev | Ö |
