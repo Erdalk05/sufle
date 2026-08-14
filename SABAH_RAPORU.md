@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından **53 P1** işlendi. **67 commit**, tamamı yerelde.
-Testler **732 → 2890**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından **54 P1** işlendi. **68 commit**, tamamı yerelde.
+Testler **732 → 2915**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -128,7 +128,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **67 commit**, hepsi yerelde, `claude` dalında
-- **2890 test** (gece başında 732) · yeni test dosyası: 39–92
-- Gece planı: 138 görevden **60'ı** işlendi (bütün P0'lar + 53 P1)
+- **68 commit**, hepsi yerelde, `claude` dalında
+- **2915 test** (gece başında 732) · yeni test dosyası: 39–93
+- Gece planı: 138 görevden **61'i** işlendi (bütün P0'lar + 54 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
