@@ -156,9 +156,39 @@ class Handler(http.server.BaseHTTPRequestHandler):
         else:
             self._send(404, "text/plain", "yok")
 
+    def _origin_tamam(self):
+        """ZİYARET ETTİĞİN HERHANGİ BİR SAYFA SUFLEYİ SÜREBİLİYORDU.
+        Sunucu yerel ağda dinliyor ve /cmd hiçbir şey sormuyordu: açık bir
+        sekmedeki kötü niyetli sayfa fetch ile POST atıp çekimi
+        başlatıp durdurabilirdi. Kayıt sırasında bu, çekimin ortasında
+        durması demek.
+
+        Tarayıcı ÇAPRAZ KAYNAKLI POST ta `Origin` başlığını HER ZAMAN
+        gönderir; kendi kumanda sayfamız da gönderir ve orada Origin
+        isteğin Host una eşittir. Dolayısıyla:
+          · Origin var ve Host la aynı  -> bizim sayfamız, kabul
+          · Origin var ama farklı       -> başka bir site, REDDET
+          · Origin yok                  -> tarayıcı değil (curl, betik);
+            CSRF vektörü değildir, kabul
+        Jeton yerine bunu seçtim: eşleştirme akışını hiç değiştirmiyor ve
+        asıl saldırı yolunu kapatıyor. Yerel ağdaki bir saldırgan jetonu
+        zaten QR/adresten görebilirdi, yani jetonun kazancı sınırlıydı."""
+        origin = self.headers.get("Origin")
+        if not origin:
+            return True
+        try:
+            o = urllib.parse.urlparse(origin)
+        except Exception:
+            return False
+        return o.netloc == (self.headers.get("Host") or "")
+
     def do_POST(self):
         p = urllib.parse.urlparse(self.path)
         if p.path == "/cmd":
+            if not self._origin_tamam():
+                self._send(403, "application/json",
+                           '{"ok":false,"sebep":"baska bir siteden gelen komut reddedildi"}')
+                return
             n = int(self.headers.get("Content-Length", 0) or 0)
             raw = self.rfile.read(n) if n else b"{}"
             try: obj = json.loads(raw.decode("utf-8"))

@@ -17,9 +17,15 @@ ok('rapor dosyası var', fs.existsSync(RAPOR));
 const r=fs.readFileSync(RAPOR,'utf8');
 
 /* ---------- ZORUNLU BÖLÜMLER ---------- */
-for(const b of ['Tek cümlede','Senden istediğim tek şey','Ne bozuktu',
-                'Çürüyen hipotezler','Kendi hatalarım','Sende karar bekleyenler','Sayılar'])
+for(const b of ['Tek cümlede','Ne bozuktu','Çürüyen hipotezler','Kendi hatalarım','Sayılar'])
   ok('bölüm var: '+b, new RegExp('##.*'+b.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(r));
+/* Yayın durumu BAŞLIKTA olmalı — ama başlığın metni yayından önce ve sonra
+   farklı ("Senden istediğim tek şey" / "v9.5 YAYINLANDI"). İddia başlığın
+   ADI değil, durumun göze çarpan bir başlıkta bildirilmesi. */
+ok('yayın durumu bir başlıkta bildiriliyor',
+   /##[^\n]*(istediğim tek şey|YAYINLANDI)/.test(r));
+ok('kararlar bir başlıkta toplanmış',
+   /##[^\n]*(karar bekleyenler|bıraktığın kararlar)/.test(r));
 
 /* ---------- SAYILAR GERÇEKLE UYUŞUYOR MU ---------- */
 function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
@@ -45,9 +51,13 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
   let gercek=null;
   try{ gercek=+execFileSync('git',['rev-list','--count','origin/main..HEAD'],
         {cwd:REPO,encoding:'utf8'}).trim(); }catch(_){}
+  /* Yayından SONRA sayı sıfıra iniyor ve rapor artık sayı değil DURUM
+     yazıyor ("v9.5 canlıda"). Sayı varsa doğruluğu sınanır; yoksa
+     yayın durumunun yazılı olması aranır. */
   const yazan=sayi(/\*\*(\d+) commit yayınlanmamış\*\*/);
-  ok('raporda yayınlanmamış commit sayısı yazıyor', yazan!==null);
-  if(gercek!==null && yazan!==null){
+  ok('rapor yayın durumunu bildiriyor',
+     yazan!==null || /canlıda/.test(r));
+  if(gercek!==null && yazan!==null && gercek>0){
     console.log('   commit: rapor '+yazan+' · gerçek '+gercek);
     /* TAM EŞİTLİK İMKÂNSIZ ve ilk yazışımda bunu göremedim: doğru sayıyı
        rapora yazıp commit edince sayı bir artıyor, yani iddia hiçbir zaman
@@ -60,7 +70,10 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
   let dal=null;
   try{ dal=execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],
         {cwd:REPO,encoding:'utf8'}).trim(); }catch(_){}
-  if(dal) ok('raporda doğru dal adı yazıyor ('+dal+')', r.includes('`'+dal+'` dalında'));
+  /* Dal adı yalnız "yayınlanmamış commit" satırı varken anlamlı; yayından
+     sonra rapor sayı değil DURUM yazıyor ve dal adı orada gereksiz. */
+  if(dal && yazan!==null)
+    ok('raporda doğru dal adı yazıyor ('+dal+')', r.includes('`'+dal+'` dalında'));
 }
 {
   /* Kapı adım sayısı. */
@@ -88,18 +101,27 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
 
 /* ---------- YAYIN DURUMU DOĞRU ANLATILIYOR MU ---------- */
 {
-  ok('hiçbir şeyin yayınlanmadığı yazıyor', /Hiçbir şey yayınlanmadı/.test(r));
-  ok('yayın kararının Erdalda olduğu yazıyor', /yayın kararı sende/i.test(r));
-  /* .son-yayin gerçekten el değmemiş olmalı — rapor bunu iddia ediyor. */
+  /* İddia DURUMA DUYARLI olmalı. İlk yazışımda "hiçbir şey yayınlanmadı
+     yazıyor" diye sabitlemiştim; yayın yapılınca o iddia YANLIŞ bir dünyayı
+     savunur hâle geldi. Doğru iddia: rapor, gerçekte ne olduysa ONU söylesin.
+     Ölçüt `.son-yayin` ile şu anki sürümün karşılaştırması. */
   const sy=path.join(REPO,'.son-yayin');
-  if(fs.existsSync(sy)){
-    const icerik=fs.readFileSync(sy,'utf8').trim();
-    const ver=(fs.readFileSync(path.join(REPO,'index.html'),'utf8').match(/VER='([\d.]+)'/)||[])[1];
-    console.log('   .son-yayin: "'+icerik+'" · şu anki sürüm: '+ver);
-    ok('.son-yayin şu anki sürümden GERİDE (yani yayın yapılmamış)',
-       ver && !icerik.startsWith(ver+' '));
-    ok('rapor .son-yayine dokunulmadığını söylüyor', /son-yayin/.test(r));
+  const ver=(fs.readFileSync(path.join(REPO,'index.html'),'utf8').match(/VER='([\d.]+)'/)||[])[1];
+  const icerik=fs.existsSync(sy)?fs.readFileSync(sy,'utf8').trim():'';
+  const yayinlandi=!!ver && icerik.startsWith(ver+' ');
+  console.log('   .son-yayin: "'+icerik+'" · şu anki sürüm: '+ver+
+              ' · bekleyen yayın: '+(yayinlandi?'yok':'VAR'));
+  ok('sürüm okunabildi', !!ver);
+  if(yayinlandi){
+    ok('yayın yapılmışsa rapor bunu söylüyor', /YAYINLANDI|canlıda/.test(r));
+    ok('yayın canlıdan doğrulandığı yazıyor', /canlıdan doğruland|md5 birebir/i.test(r));
+  } else {
+    ok('bekleyen yayın varsa rapor bunu söylüyor',
+       /yayınlanmadı|yayınlanmamış|yayın kararı sende/i.test(r));
   }
+  /* Hangi durumda olursa olsun: yayın kelimesi raporda geçmeli, sessiz
+     kalmamalı — Erdalın ilk baktığı şey bu. */
+  ok('rapor yayın konusuna değiniyor', /yayın/i.test(r));
 }
 
 /* ---------- KARAR BEKLEYENLER GERÇEK Mİ ---------- */

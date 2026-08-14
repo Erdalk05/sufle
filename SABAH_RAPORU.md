@@ -6,15 +6,25 @@
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
 kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma turu eklendi).
-**123 commit yayınlanmamış**, kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Kapı yeşil. **v9.5 sabah yayınlandı ve canlıdan doğrulandı**; bana bıraktığın üç karar
+da verildi ve **v9.6** olarak hazır bekliyor.
 
-## 🔴 Senden istediğim tek şey
+## ✅ v9.5 YAYINLANDI
 
-**v9.5'i yayınlamak.** Gecenin tamamı yerelde birikti, `.son-yayin` dosyasına dokunmadım.
-Yayın protokolü `CLAUDE.md`'de; sıra kritik. Onay verirsen ben yaparım, tek komut.
+Onayını aldıktan sonra protokol sırayla uygulandı ve **canlıdan doğrulandı**:
+`erdalk05.github.io` VER=9.5, `sw.js` cache=sufle-v77, dosya deponun kopyasıyla
+**md5 birebir**, gecenin 13 düzeltmesinin 13ünün izi canlı dosyada tek tek sayıldı.
+Ancak ondan sonra `.son-yayin` yazıldı.
 
-Sürüm notu iki dilde yazıldı ve gecenin bütün düzeltmelerini kullanıcı diliyle anlatıyor
-(uygulama içinde ⚙️ → "Ne değişti" bölümünde görünecek).
+## Bana bıraktığın kararlar — verildi
+
+| Karar | Ne yaptım | Neden |
+|---|---|---|
+| **T23** `/cmd` güvenliği | **Origin kontrolü** | Gerçek saldırı tarayıcı kaynaklı; tarayıcı çapraz kaynaklı POSTta `Origin` başlığını her zaman gönderir, yani asıl yol 5 satırla kapanıyor. Jeton eşleştirme akışını değiştirirdi ve yerel ağdaki saldırgan jetonu QRden zaten görebilirdi — bedeli kazancından büyük. |
+| **K11** dokunma hedefleri | **Hedef 44 piksele çıktı, görünüm hiç değişmedi** | Sana "büyütmek görünümü değiştirir" demiştim; doğru ama eksikti. Görünmez bir örtüyle paint büyümeden hedef büyütülebiliyor — K8de anahtar satırında yaptığımın aynısı. |
+| **K9** kenarlık kontrastı | **Temaya dokunmadım; işletim sistemi tercihi devralınıyor** | Ölçtüm: normal tema 1,17:1, yüksek kontrast 16,58:1. Erişilebilir yol zaten var ve çalışıyor; asıl boşluk bulunabilirlikti. Artık cihazında yüksek kontrast açıksa uygulama da açık başlıyor. Temayı değiştirmek uygulamanın kimliğini değiştirirdi — o senin kararın, benim değil. |
+
+Üçü de **v9.6** olarak hazır; yayın için tek kelimen yeter.
 
 ## Ne bozuktu — kullanıcıya değen sırayla
 
@@ -187,7 +197,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **123 commit yayınlanmamış** (`main` dalında, `origin/main` ilerisinde) — 113ü bugün, 10u dün akşam
-- **3835 test** (gece başında 732) · yeni test dosyası: 39–116
+- **v9.5 canlıda** · v9.6 hazır ve yayınlanmamış (yalnız bu sabahki üç karar)
+- **3885 test** (gece başında 732) · yeni test dosyası: 39–118
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
