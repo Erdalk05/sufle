@@ -187,5 +187,12 @@
   "kaynak": "sozluk",
   "bul": ",undoDel:'↺ Restore deleted'",
   "koy": ",undoDelBOZUK:'↺ Restore deleted'"
+ },
+ {
+  "ad": "B4 odak modu geri getirmesi söküldü",
+  "test": "124-odak-modu.js",
+  "kaynak": "telefon",
+  "bul": "  if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */\n",
+  "koy": ""
  }
 ]

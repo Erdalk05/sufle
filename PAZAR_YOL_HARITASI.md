@@ -211,7 +211,13 @@ telefonla aynı katmanlar, sözlükten etiketli. **Tarayıcıda doğrulandı:** 
 kayıtlara dayanıklı okuma). Yan kazanç: `.seg` stili — A.2d'deki dil düğmesi **çıplak tarayıcı
 düğmesi** olarak kalmış, bu turda yakalandı ve stillendi.
 Telefonda B.3 gereksiz çıktı (ilk açılış 5 kontrol, ölçüldü) — sadeliği test koruyor.
-**B.4 Odak modu.** Çekim başlayınca kabuk kaybolur: metin + ince ilerleme + süre + kayıt noktası.
+**B.4 Odak modu.** ✅ **telefon BİTTİ** — ve mevcut özellik bir TUZAKMIŞ: "Kayıtta düğmeleri
+gizle" açıkken alt çubuk `pointer-events:none` oluyordu ve **kaydı durduracak düğme o çubukta**;
+geri getirme yoktu, tek çıkış sesli komuttu. `peekUI()` eklendi: ilk dokunuş kabuğu getirir
+(eylem yapmaz), 4 sn dokunulmazsa kayıt sürerken yeniden gizlenir; kabuk açıkken her dokunuş sayacı
+tazeler. **Tarayıcıda kanıtlı** (dokunuş→geldi, 4,6 sn→yeniden gizli). Tuzak kapanınca odak modu
+**varsayılan AÇIK** yapıldı (yalnız yeni kurulum — eski kayıtta alan yazılı). `tests/124`, 10 iddia +
+kapıda kanıtlı bozma. Mac tarafı (kayıtta panellerin kendiliğinden `full`e geçmesi) sonraki dilim.
 **B.5 Durum satırı.** "Sesle takip · tr-TR · mikrofon açık" — kullanıcı hangi moddayım diye denemesin.
 **B.6 Klavye + kısayol kartı.** `↑↓` hız, `M` ayna, `R` kayıt, `F` tam ekran, `?` kart.
 **B.7 Onboarding.** 4 adım, atlanabilir, bir kez.
@@ -288,3 +294,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 8 | 2026-08-14 | B.1 başlangıç: jetonlar kullanımda + tnum ×12 + ilk-açılış ölçümü | accent→r-action iki kabukta · telefon 5/9 kontrol (analiz iddiası çürüdü) · 15 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 9 | 2026-08-14 | B.3 Mac: sağ panel 53 kontrol → 3 sekme; .seg stili | tarayıcıda: Çekim 27 kontrol gizleniyor · sekme kalıcı · 23 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 10 | 2026-08-14 | B.2 başlangıç: SVG ikon altyapısı + telefon kromu | 4/4 ikon tarayıcıda çiziliyor (22×22) · aria korundu · 36 iddia | 7/8 yeşil (VER doğru kırmızı) |
+| 11 | 2026-08-14 | B.4 telefon: odak modu tuzağı kapandı + varsayılan açık | tarayıcıda döngü kanıtlı · peekUI sırası kilitli · 28 bozma | 7/8 yeşil (VER doğru kırmızı) |

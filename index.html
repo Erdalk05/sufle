@@ -1486,7 +1486,11 @@ const DEF={
   eyePos:18, eyeTasindi:0, ilkAkis:0, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true, hideUI:false,
+  quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true,
+  /* B.4: odak modu VARSAYILAN. Tuzak kapandıktan sonra (peekUI) güvenli;
+     eski kullanıcının kaydında alan zaten yazılı olduğundan onların
+     tercihi değişmez, yalnız yeni kurulumlara etki eder. */
+  hideUI:true,
   target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
@@ -5461,8 +5465,30 @@ function apply(){
 /* ============ DOKUNMA: sürükle / hız / kilit ============ */
 let dragging=false,dragMode=null,sx=0,sy=0,startPos=0,startWpm=0,moved=false,lastTap=0;
 const stage=$('#stage');
+/* ODAK MODU GERİ GETİRME (B.4). Bu düzeltmeden önce "Kayıtta düğmeleri
+   gizle" bir TUZAKTI: hideUI tüm alt çubuğu pointer-events:none yapıyor
+   ve kaydı DURDURACAK düğme de o çubukta — dokunuşla geri getirme yoktu.
+   Kullanıcının tek çıkışı sesli komuttu; bilmiyorsa kilitli kalıyordu
+   (deponun 6 numaralı sınıfı: ön koşullu ayar = tuzak).
+   Elgato/Teleprompter.com kalıbı: ilk dokunuş kabuğu GÖSTERİR, eylem
+   YAPMAZ; 4 sn dokunulmazsa kayıt sürüyorsa yeniden gizlenir. */
+/* Ad 'odakT': dosyada peekT zaten var (ayar sayfası saydamlığı) ve ikinci
+   tanım node --check'te yakalandı — sessiz gölgeleme olmadan. */
+let odakT=0;
+function peekUI(){
+  if(!body.classList.contains('hideUI')) return false;
+  body.classList.remove('hideUI');
+  clearTimeout(odakT);
+  odakT=setTimeout(()=>{ if(st.hideUI && body.classList.contains('rec')) body.classList.add('hideUI'); },4000);
+  return true;
+}
+/* Kabuk görünürken yapılan HER dokunuş sayacı tazeler — düğmelerle
+   uğraşırken kabuk elin altından kaybolmasın. */
+document.addEventListener('pointerdown',()=>{ if(odakT){ clearTimeout(odakT);
+  odakT=setTimeout(()=>{ if(st.hideUI && body.classList.contains('rec')) body.classList.add('hideUI'); },4000); } },true);
 stage.addEventListener('pointerdown',e=>{
   if(anySheet()) return;
+  if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */
   if(body.classList.contains('locked')) return;
   dragging=true; moved=false; sx=e.clientX; sy=e.clientY; startPos=pos; startWpm=st.wpm;
   dragMode = (window.innerWidth-e.clientX < 56) ? 'speed' : 'scrub';
