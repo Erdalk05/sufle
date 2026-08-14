@@ -4,8 +4,9 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından **55 P1** işlendi. **70 commit**, tamamı yerelde.
-Testler **732 → 2952**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
+kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma turu eklendi).
+**122 commit yayınlanmamış**, kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -149,19 +150,44 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Gevşek desen bir bozmayı kaçırdı**: "ölü adreste QR üretilmiyor" iddiam, QR ölü dalın içine eklendiğinde bile ilerideki `else` dalı sayesinde eşleşmeye devam ediyordu. İddiayı dala daralttım.
 - **Altın testte kendi iddiam yanlış çıktı**: kaydırma motorunun metnin sonunu hiç geçmemesi gerektiğini varsaydım; kod doğruydu — son satırın okuma çizgisini geçebilmesi için taşma bilinçli ve sınırlı.
 - **Vurgu düzeltmemin ilk deseni dengesiz yıldızları (`***x***`) sessizce vurguya çeviriyordu**; kendi yazdığım test bunu görmedi, iki ESKİ test (06 ve 17) yakaladı. Kapının değeri tam da burada.
-- **Denetimi argümansız koşturdum** (`python3 denetim.py`) ve "temiz" sandım — hiçbir dosyaya bakmamıştı. Tam da bu gece 12 kez bulduğum "ölçmeyen kapı" sınıfının kendisi.
+- **Denetimi argümansız koşturdum** (`python3 denetim.py`) ve "temiz" sandım — hiçbir dosyaya bakmamıştı. Tam da bu gece **beş kez** bulduğum "ölçmeyen kapı" sınıfının kendisi.
+- **Bozma tezgâhımın kendisi ölçmüyormuş**: yanlış bir dosya yolu verince tezgâh sessizce gerçek dosyaya düşüyordu, yani bozma hiç uygulanmadan test "geçti" diyordu. Üç bozmanın "yakalanmadı" görünmesi bu yüzdendi; dosyalar hiç yazılmamıştı. Artık hata veriyor.
+- **Bir saat önce yazdığım testi bir saat sonra kendim kırdım**: kapının adım numarasına (`6/6`) kilitlenmişti, yedinci adımı ekleyince boşuna kırmızı verdi — aynı gece taradığım hata sınıfının ta kendisi.
+
+## ⚠️ Yaptığım bir hata — senin müdahaleni gerektiriyor
+
+Gecenin sonunda `tests/29` (yerel sunucu testi) kırmızı verdi. 8081 portunu tutan bir
+süreç buldum ve **onun benim testimden kalma olduğunu varsayıp kapattım**. Değilmiş:
+**EduGo projesinin Expo iOS geliştirme sunucusuydu** (`~/edugo/apps/mobile`, 3,5 dakikadır
+çalışıyordu). Sufle deposunun dışına çıkmamalıydım; varsaymadan önce sürecin ne olduğuna
+bakmalıydım.
+
+Zararı geri alınabilir: o sunucuyu yeniden başlatman yeterli. Ama bu, projelerin
+birbirine karışmaması kuralının ihlaliydi ve bir daha yapmayacağım.
+
+İkinci bulgu: `tests/29` gerçek port açtığı için **makinede o portu kullanan başka
+herhangi bir şey kapıyı kırmızıya çevirebiliyor**. Kapının makine durumuna bağlı olması
+ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sende karar bekleyenler
 
-1. **v9.5 yayını** (yukarıda)
-2. **T7** — iPhone'da paylaşım tanı satırı: "Fotoğraflara kaydetmiyor" sorununun tek kalan engeli, gerçek cihaz gerekiyor
-3. **K9** — normal temanın kenarlık rengi erişilebilirlik eşiğinin altında (1,29:1 / 3:1). Yükseltmek uygulamanın görünümünü baştan aşağı değiştirir: tasarım kararı senin.
-4. **K11** — ikon düğmesi 35 px, segment 40 px, sekme 38 px: üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin görünümünü değiştirir; tasarım kararı senin. (Anahtarlar görünüm değişmeden düzeltildi.)
-5. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
+**Karar:**
+
+1. **v9.5 yayını** (yukarıda) — tek istediğim bu
+2. **K9** — normal temanın kenarlık rengi erişilebilirlik eşiğinin altında (1,29:1 / 3:1). Yükseltmek uygulamanın görünümünü baştan aşağı değiştirir: tasarım kararı senin.
+3. **K11** — ikon düğmesi 35 px, segment 40 px, sekme 38 px: üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin görünümünü değiştirir; tasarım kararı senin. (Anahtarlar görünüm değişmeden düzeltildi.)
+4. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk). Cevabına göre **E1** uygulanır.
+
+**Gerçek cihaz gerektirenler** (Node tezgâhında ölçülemez):
+
+5. **T7** — iPhone'da paylaşım tanı satırı: "Fotoğraflara kaydetmiyor" sorununun tek kalan engeli. Cevabına göre **J10** iyileştirilir.
+6. **G12** — büyük fotoğrafın çözülme maliyeti (12 MP fotoğrafta 46,5 MB) `createImageBitmap` ile düşürülebilir; Safarinin yeniden boyutlandırma desteği gerçek iPhonede doğrulanmalı. Yanlış görünen arka plan bugünkü hâlden kötü olur, o yüzden ölçmeden dokunmadım.
+7. **J11** — aynı videoyu arşivde tekrar yazarken tarayıcı baytları kopyalıyor mu; yalnız cihazda ölçülür.
+8. **H10** — kayıt sürerken sekme arka plana alınınca ne oluyor; belgelenmesi için gerçek kullanım gerekiyor.
 
 ## Sayılar
 
-- **93 commit**, hepsi yerelde, `claude` dalında
-- **3808 test** (gece başında 732) · yeni test dosyası: 39–115
-- Gece planı: 138 görevden **86'sı** işlendi (bütün P0'lar + 78 P1 + F9)
+- **122 commit yayınlanmamış** (`main` dalında, `origin/main` ilerisinde) — 112si bugün, 10u dün akşam
+- **3835 test** (gece başında 732) · yeni test dosyası: 39–116
+- Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
