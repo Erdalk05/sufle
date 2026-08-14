@@ -68,6 +68,8 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 Test koşturucusu **sıfır iddialı bir testi yeşil geçiriyordu** ve bir testin iddia sayısı düşerse susuyordu. Ölçtüm: 0 iddialı dosya eklendim, kapı yeşil kaldı; 29 iddialı testi 2ye indirdim, yine yeşil. Bu gece dört test tam da böyle boşalmıştı — yalnız çöktükleri için yakalandılar. Artık dosya başına iddia sayısı tutuluyor; sıfır ya da düşüş kırmızı.
 
+İkinci kör nokta: **tek bir asılı test kapıyı süresiz bekletiyordu** — kırmızı vermek değil, hiç cevap vermemek. Gözetimsiz gece koşusunda en kötü hâli. Artık test başına 60 saniye tavan var (en yavaş testin 11 katı) ve aşım kırmızı.
+
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
 Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
@@ -94,6 +96,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Kanıtlanmamış bir koruma yazdım**: asılı testin tabanı düşürmesin diye ayrı bir dal ekledim; kasıtlı bozma turu o dalın hiçbir şeyi değiştirmediğini gösterdi (`Math.max` zaten koruyordu). Kaldırdım.
 - **Gevşek desen bir bozmayı kaçırdı**: "ölü adreste QR üretilmiyor" iddiam, QR ölü dalın içine eklendiğinde bile ilerideki `else` dalı sayesinde eşleşmeye devam ediyordu. İddiayı dala daralttım.
 - **Altın testte kendi iddiam yanlış çıktı**: kaydırma motorunun metnin sonunu hiç geçmemesi gerektiğini varsaydım; kod doğruydu — son satırın okuma çizgisini geçebilmesi için taşma bilinçli ve sınırlı.
 - **Vurgu düzeltmemin ilk deseni dengesiz yıldızları (`***x***`) sessizce vurguya çeviriyordu**; kendi yazdığım test bunu görmedi, iki ESKİ test (06 ve 17) yakaladı. Kapının değeri tam da burada.
@@ -107,7 +110,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **50 commit**, hepsi yerelde, `claude` dalında
-- **2388 test** (gece başında 732) · yeni test dosyası: 39–77
-- Gece planı: 136 görevden **44'ü** işlendi (bütün P0'lar + 37 P1)
+- **51 commit**, hepsi yerelde, `claude` dalında
+- **2399 test** (gece başında 732) · yeni test dosyası: 39–77
+- Gece planı: 136 görevden **45'i** işlendi (bütün P0'lar + 38 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
