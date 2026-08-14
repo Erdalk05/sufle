@@ -201,7 +201,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | # | Görev | Ö |
 |---|---|---|
 | M1 | Kapsam raporu `kapi.sh`'e eklensin (fonksiyon kapsamı düşerse uyar) | P1 |
-| M2 | Testlerin ÇÖKMESİ ile geçmesi ayırt edilsin — `kos.js` çıkış kodunu zaten alıyor, iddia sayısını da say | P1 |
+| M2 | Testlerin ÇÖKMESİ ile geçmesi ayırt edilsin — `kos.js` çıkış kodunu zaten alıyor, iddia sayısını da say ✅ **Kapının kendi kör noktasıydı ve ÖLÇÜLDÜ.** Çıkış kodu zaten alınıyordu (çöken test yakalanıyordu) ama iddia sayısı ölçülmüyordu: (1) 0 iddialı bir dosya eklendi → "✓ 0 test" yazıp kapı **yeşil** kaldı, toplam hiç değişmedi — bu gece dört test tam da böyle boşaldı, yalnız çöktükleri için yakalandılar; (2) 29 iddialı bir test 2ye indirildi → eski koşturucu "✓ 2 test" deyip geçiyordu, koruma %93 daralmış olurdu. `tests/beklenen.json` ile dosya başına sayım: sıfır iddia kırmızı, düşüş kırmızı ve **taban düşürülmez** (yoksa daralma ikinci koşuda kalıcılaşır), artış serbest, `ATLANDI:` muaf. tests/77 koşturucuyu geçici dizinde gerçekten çalıştırıyor (33 iddia); 4 bozma. `3821159` | P1 |
 | M3 | Asılı kalan test kapıyı asar — `kos.js`'e test başına süre tavanı | P1 |
 | M4 | `denetim.py` boş catch tabanı 23/16 — her birini gözden geçir, düşür | P2 |
 | M5 | Parite listesi elle yazılıyor: yeni koruma eklenince uyaran bir kontrol | P1 |

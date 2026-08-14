@@ -64,6 +64,10 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
 
+### Kapının kendi kör noktası (gece sonunda kapatıldı)
+
+Test koşturucusu **sıfır iddialı bir testi yeşil geçiriyordu** ve bir testin iddia sayısı düşerse susuyordu. Ölçtüm: 0 iddialı dosya eklendim, kapı yeşil kaldı; 29 iddialı testi 2ye indirdim, yine yeşil. Bu gece dört test tam da böyle boşalmıştı — yalnız çöktükleri için yakalandılar. Artık dosya başına iddia sayısı tutuluyor; sıfır ya da düşüş kırmızı.
+
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
 Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
@@ -103,7 +107,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **49 commit**, hepsi yerelde, `claude` dalında
-- **2355 test** (gece başında 732) · yeni test dosyası: 39–76
-- Gece planı: 136 görevden **43'ü** işlendi (bütün P0'lar + 36 P1)
+- **50 commit**, hepsi yerelde, `claude` dalında
+- **2388 test** (gece başında 732) · yeni test dosyası: 39–77
+- Gece planı: 136 görevden **44'ü** işlendi (bütün P0'lar + 37 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
