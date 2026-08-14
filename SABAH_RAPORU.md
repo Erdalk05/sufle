@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Fener sessizce sönüyordu** — mikrofonu/çözünürlüğü değiştirince, kamerayı yeniden açınca veya uygulama arka plandan dönüp kamerayı kurtarınca ışık gidiyor, anahtar açık görünmeye devam ediyordu.
 - **İki kelimeyi birden vurgulamak hiç çalışmıyordu** — `*çok önemli*` yazınca vurgu uygulanmıyor, yıldızlar suflede ve gömülü altyazıda kalıyordu; yayın paketi ise siliyordu. Okuduğun metinle yayımladığın metin ayrışıyordu. Masaüstünde de aynıydı.
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
@@ -96,7 +97,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **43 commit**, hepsi yerelde, `claude` dalında
-- **2167 test** (gece başında 732) · yeni test dosyası: 39–70
-- Gece planı: 135 görevden **37'si** işlendi (bütün P0'lar + 30 P1)
+- **44 commit**, hepsi yerelde, `claude` dalında
+- **2192 test** (gece başında 732) · yeni test dosyası: 39–71
+- Gece planı: 135 görevden **38'i** işlendi (bütün P0'lar + 31 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
