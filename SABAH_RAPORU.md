@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Yeşil ekran boşuna yavaş sanılıyordu** — uygulamadan çıkıp geri dönünce kare hızı ölçümü ara verilen süreyi de sayıyordu: gerçek akış 60 fps iken 30 saniye arka plan sonrası **4 fps**, iki dakika sonrası **1 fps** bildiriliyordu. Eşik 20 olduğu için hazırlık kontrolü "Kompozit yavaş — çözünürlüğü düşür ya da yeşil ekranı kapat" diyordu; hiçbir sorunu olmayan kullanıcıya kaliteyi düşürtebilirdi. Düzeltmeden sonra üç vakada da 61 fps.
 - **Ayar anahtarının yanındaki yazıya basmak hiçbir şey yapmıyordu** — tıklama yalnız 29 piksellik anahtara bağlıydı, oysa satır 44 pikselden yüksek. Parmak biraz kaysa dokunuş boşa gidiyor, sen anahtarın bozuk olduğunu sanıyordun. Artık satırın her yeri açıp kapatıyor; görünüm hiç değişmedi.
 
 ### Kapının kendi kör noktası (gece sonunda kapatıldı)
@@ -134,7 +135,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **72 commit**, hepsi yerelde, `claude` dalında
-- **3006 test** (gece başında 732) · yeni test dosyası: 39–96
-- Gece planı: 138 görevden **65'i** işlendi (bütün P0'lar + 57 P1 + F9)
+- **73 commit**, hepsi yerelde, `claude` dalında
+- **3035 test** (gece başında 732) · yeni test dosyası: 39–97
+- Gece planı: 138 görevden **66'sı** işlendi (bütün P0'lar + 58 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
