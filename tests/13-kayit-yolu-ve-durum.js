@@ -36,7 +36,12 @@ ok('senaryo değişince eski konum yazılıyor',
 const stopComp=kod(cikar(js,/function stopComp\(\)\{[\s\S]*?\n\}/,'stopComp'));
 ok('ÖDÜNÇ ALINAN ses izi durdurulmuyor', /cam0\.indexOf\(t\)<0/.test(stopComp));
 ok('GPU kaynakları bırakılıyor', /deleteTexture/.test(stopComp) && /deleteProgram/.test(stopComp));
-ok('kompozit kapanınca durum tam sıfırlanıyor', /comp\.gl=null; comp\.bgReady=false;/.test(stopComp));
+/* Desen alanların YAZILIŞ SIRASINA değil, her birinin sıfırlandığı
+   İDDİASINA bağlı: araya yeni alan girince (G7de comp.cv) kapı boşuna
+   kırmızıya dönüyordu. */
+for(const alan of ['tex','bgTex','buf','pr','gl'])
+  ok('kompozit kapanınca sıfırlanıyor: '+alan, new RegExp('comp\\.'+alan+'=null;').test(stopComp));
+ok('kompozit kapanınca arka plan hazır işareti düşüyor', /comp\.bgReady=false;/.test(stopComp));
 
 // ---------- KAYIT KAYNAĞI ZİNCİRİ ----------
 const doStart=kod(cikar(js,/function doStartRec\(\)\{[\s\S]*?\n\}/,'doStartRec'));

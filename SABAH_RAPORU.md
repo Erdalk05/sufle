@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Yeşil ekran kapandıktan sonra bellek tutuyordu** — iki çizim yüzeyi eski boyutunda kalıyordu (dikey çekimde **15,8 MB**, kare çekimde 8,9 MB) ve her açılışta iki gölgelendirici daha birikiyordu; kaynakta tek bir gölgelendirici silme çağrısı yoktu. Kodun kendi yorumu "aç-kapa döngüsünde doku ve program birikiyordu" diyor — düzeltme yapılmış ama üç kalemden ikisi unutulmuş.
 - **Büyük fotoğrafı arka plan yapmak sekmeyi öldürebiliyordu** — dosya önce tümüyle belleğe kopyalanıyordu. Ölçülen tepe: 12 MP telefon fotoğrafında **51 MB**, 48 MP fotoğrafta **202 MB**, 60 MPde **263 MB**. Hiçbir boyut kapısı da yoktu, yani sekme ölürse sebebini hiçbir yerde göremiyordun. Yayın paketinde öğrendiğimiz dersin aynısı: içeriği önce tümüyle belleğe alma. Artık kopya çıkarılmıyor ve çok büyük dosya sebebiyle birlikte reddediliyor.
 - **Yatay videoda yeşil ekran arka planı geriliyordu** — 16:9 çekimde arka plan dokusu kare kuruluyor ve tüm kareye yayılıyordu: **1,78 kat yatay ezilme** (kamera oranında 1,19 kat). Üstelik Reels profilinden YouTube profiline geçmek bunu tek dokunuşla yapıyor, sonra da düzeltmiyordu. Kırpma matematiği doğruydu ama yanlış orana kırpıyordu, yani düzeltme kendi kendini iptal ediyordu.
 - **Yeşil ekran boşuna yavaş sanılıyordu** — uygulamadan çıkıp geri dönünce kare hızı ölçümü ara verilen süreyi de sayıyordu: gerçek akış 60 fps iken 30 saniye arka plan sonrası **4 fps**, iki dakika sonrası **1 fps** bildiriliyordu. Eşik 20 olduğu için hazırlık kontrolü "Kompozit yavaş — çözünürlüğü düşür ya da yeşil ekranı kapat" diyordu; hiçbir sorunu olmayan kullanıcıya kaliteyi düşürtebilirdi. Düzeltmeden sonra üç vakada da 61 fps.
@@ -137,7 +138,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **75 commit**, hepsi yerelde, `claude` dalında
-- **3135 test** (gece başında 732) · yeni test dosyası: 39–99
-- Gece planı: 138 görevden **68'i** işlendi (bütün P0'lar + 60 P1 + F9)
+- **76 commit**, hepsi yerelde, `claude` dalında
+- **3140 test** (gece başında 732) · yeni test dosyası: 39–100
+- Gece planı: 138 görevden **69'u** işlendi (bütün P0'lar + 61 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
