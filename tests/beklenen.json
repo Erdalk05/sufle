@@ -76,7 +76,7 @@
  "75-iphone-sunucu.js": 31,
  "76-kumanda-tani-paneli.js": 29,
  "77-kapi-iddia-sayaci.js": 44,
- "78-kayit-suresi-ve-cift-dongu.js": 30,
+ "78-kayit-suresi-ve-cift-dongu.js": 32,
  "79-arsiv-ustveri-video.js": 32,
  "80-srt-zaman-damgasi.js": 45,
  "81-altyazi-kaymasi-cakisma.js": 57,
@@ -88,5 +88,6 @@
  "87-kayit-turu-ve-uzanti.js": 30,
  "88-kayit-gozcusu.js": 20,
  "89-duraklamada-altyazi-zamani.js": 25,
- "90-paylasim-iptali.js": 24
+ "90-paylasim-iptali.js": 24,
+ "91-altyazi-cekime-baglandi.js": 21
 }

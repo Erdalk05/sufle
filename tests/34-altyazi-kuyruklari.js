@@ -31,6 +31,8 @@ function kur(src, macMi){
     const ${onek} = { capOffset: __opt.off||0, capMaxW: __opt.maxW };
     const words = __k.map(s => ({textContent:s}));
     const capTimes = __z, wordLine = __s;
+    /* buildCues artik cekimin anlik goruntusunu tercih ediyor (I6). */
+    const cekimAltyazi=null;
     ${sabit}
     ${capMaxW}
     ${kisaltma}

@@ -35,7 +35,8 @@ if(!sT||!sM||!sabT||!sabM||!seT||!seM||!kisT||!kisM||!mwT||!mwM) return;
 function kos(src,sabit,se,kis,mw,o){
   return new Function('__o',
     sabit+'\n'+kis+'\n'+se+'\n'+
-    'const st={capOffset:__o.off,capMaxW:__o.maxW}; const state=st;\n'+mw+'\n'+
+    'const st={capOffset:__o.off,capMaxW:__o.maxW}; const state=st;\n'+
+    '/* I6: buildCues artik cekim anlik goruntusunu tercih ediyor. */ const cekimAltyazi=null;\n'+mw+'\n'+
     'const words=[],wordLine=[],capTimes=[];'+
     'for(let i=0;i<__o.k.length;i++){ words.push({textContent:__o.k[i]});'+
     ' wordLine.push(Math.floor(i/__o.satir)); capTimes.push(__o.bas+i*__o.ar); }'+

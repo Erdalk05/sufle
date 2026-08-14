@@ -45,7 +45,15 @@ if(!sEl || !sTick || !sEase || !sPos || !sPps) return;
 const sBasla  = parca(/recT=performance\.now\(\); recPausedMs=0; recPaused=false;/,'kayıt başlangıcı');
 const sDurakla= parca(/recPaused=true; pauseStart=performance\.now\(\);/,'duraklatma');
 const sDevam  = parca(/recPausedMs\+=performance\.now\(\)-pauseStart; recPaused=false;\n    body\.classList\.remove\('recpaused'\);/,'devam etme');
-const sDurdur = parca(/if\(recPaused\)\{ recPausedMs\+=performance\.now\(\)-pauseStart; recPaused=false; \}\n  pendingDur=recElapsed\(\);/,'durdurma');
+/* I6da araya altyazı anlık görüntüsü satırı girdi. İlk düzeltmemde deseni
+   genişlettim ve ARADAKİ satırı da yutup tezgâhı kırdım (`words` tanımsız).
+   Doğrusu: iki ifadeyi AYRI çıkarıp aradakini hiç almamak. Korunan iddia
+   ikisinin varlığı ve sırası; aralarında ne olduğu bu testin konusu değil. */
+const sDurKapat = parca(/if\(recPaused\)\{ recPausedMs\+=performance\.now\(\)-pauseStart; recPaused=false; \}/,'durdurmada duraklama kapatma');
+const sDurOlc   = parca(/pendingDur=recElapsed\(\);            \/\/ <-- recT/,'durdurmada süre ölçümü');
+const sDurdur   = (sDurKapat && sDurOlc) ? sDurKapat+'\n  pendingDur=recElapsed();' : null;
+if(sDurKapat && sDurOlc) ok('duraklama kapatma süre ölçümünden ÖNCE',
+   kod.indexOf(sDurKapat) < kod.indexOf('pendingDur=recElapsed();            // <-- recT'));
 if(!sBasla || !sDurakla || !sDevam || !sDurdur) return;
 
 function saatKur(saat){

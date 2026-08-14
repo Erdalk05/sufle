@@ -41,6 +41,8 @@ function kos(src, {off=0, aralik=0.43, bas=5, adet=30, satir=30, maxW=7}={}){
   return new Function('__o', `
     /* Mac ayni durumu state diye adlandiriyor; ikisini de kur. */
     const st={capOffset:__o.off}; const state=st;
+    /* buildCues artik cekimin anlik goruntusunu tercih ediyor (I6). */
+    const cekimAltyazi=null;
     const CAP_MAXCH=42, CAP_MAXSEC=6, CAP_GAP=0.08, CAP_MAXW=__o.maxW;
     const capMaxW=()=>__o.maxW;
     const sentenceEnd=w=>/[.!?…]$/.test(w);
@@ -138,7 +140,11 @@ const negatif=c=>c.filter(x=>x.start<0||x.end<0).length;
 
 /* ---------- KAYNAK DÜZEYİ ---------- */
 ok('kayma aralığı -2 ile +2 saniye', /id="capOffset" min="-20" max="20"/.test(tel));
-ok('başlangıçlar sıfıra kırpılıyor', /Math\.max\(0,capTimes\[i\]\+off\)/.test(kod));
+/* Korunan iddia: başlangıç negatife düşemez. Damganın hangi değişkenden
+   okunduğu (ekran ya da çekimin anlık görüntüsü) uygulama ayrıntısı — I6da
+   altyazı çekime bağlanınca bu iddia davranış bozulmadan kırmızıya döndü. */
+ok('başlangıçlar sıfıra kırpılıyor',
+   /Math\.max\(0,(?:capTimes\[i\]|kaynak\[i\]\.t)\+off\)/.test(kod));
 ok('sıraya dizme telefonda var', /if\(cues\[n\]\.start < onceki\.end\)/.test(kod));
 ok('sıraya dizme Mac tarafında da var', /if\(cues\[n\]\.start < onceki\.end\)/.test(macKod));
 ok('dizerken görünürlük korunuyor (telefon)',

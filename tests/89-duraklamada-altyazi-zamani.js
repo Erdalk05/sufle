@@ -102,6 +102,8 @@ function kur(saat, adet){
 {
   const cues=new Function('__t', `
     const st={capOffset:0}; const CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+    /* buildCues artik cekimin anlik goruntusunu tercih ediyor (I6). */
+    const cekimAltyazi=null;
     const capMaxW=()=>3; const sentenceEnd=()=>false;
     const words=__t.map((_,i)=>({textContent:'k'+i}));
     const wordLine=__t.map(()=>0); const capTimes=__t.slice();

@@ -75,8 +75,12 @@ ok('paketten önce hiç çekim yoksa yine de çalışıyor (active yedek)',
    sıfırlanıyor; buildCues boş dönüyor, yani YANLIŞ altyazı üretilmiyor —
    sessizce kayboluyor. Bu, yanlış altyazıdan iyidir ama bilinçli olduğu
    kayda geçsin. */
+/* Korunan iddia: damgasız kelime altyazıya girmiyor. Damganın nereden
+   okunduğu (ekran ya da çekimin anlık görüntüsü) uygulama ayrıntısı — I6da
+   altyazı çekime bağlanınca bu iddia davranış bozulmadan kırmızıya döndü. */
 ok('altyazı yalnız damgalı zamanlardan üretiliyor',
-   /if\(capTimes\[i\]==null\) continue;/.test(cikar(kod,/function buildCues\(\)\{[\s\S]*?\n\}/,'buildCues')));
+   /\.t==null\) continue;|if\(capTimes\[i\]==null\) continue;/.test(
+     cikar(kod,/function buildCues\(\)\{[\s\S]*?\n\}/,'buildCues')));
 ok('sürüm değişince içerik yeniden kuruluyor',
    /fillEditor\(\); renderScripts\(\); buildContent\(\); reset\(\);/.test(cikar(kod,/function surumDegistir\(\)\{[\s\S]*?\n\}/,'surumDegistir')));
 
