@@ -199,7 +199,12 @@ Kalan: rol ayrımı (kayıt kırmızı ayrı jetonda ama vurgu hâlâ tek yeşil
 telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.com disiplini telefonda
 **zaten var**. "40+ kontrol" Mac'in sağ paneline ait. B.3'ün gerçek hedefi **Mac paneli**;
 telefonun sadeliği korunması gereken varlık (test 123 §3 bunu kilitliyor: intro ≤6 düğme).
-**B.2 Emoji → SVG ikon.** Tek sprite, 20×20 stroke. "Amatör → ürün" algısının yarısı bu.
+**B.2 Emoji → SVG ikon.** ⏳ **başladı** — `cekirdek/ikonlar.html` (Feather/MIT, stroke,
+`currentColor`) + `derle.py` HTML-modül desteği. Telefonun 4 krom düğmesi geçti
+(⚙︎📝✅🎤 → sliders/belge/onay/mikrofon), **tarayıcıda doğrulandı: 4/4 çizim, 22×22**,
+erişilebilir adlar korundu. Kapsam bilerek dar: `playBtn/pauseBtn` çalışma zamanında yazılıyor
+(▶︎/⏸ zaten tek renk), sözlük emoji önekleri İÇERİK — dokunmak i18n birebirlik iddialarını kırar.
+Kalan: Mac krom düğmeleri (çalışma zamanı yazımlarıyla birlikte), sekme/sheet başlık ikonları.
 **B.3 Aşamalı açılım.** ✅ **Mac paneli BİTTİ** — sağ panel 3 sekme (Okuma · Çekim · Görünüm),
 telefonla aynı katmanlar, sözlükten etiketli. **Tarayıcıda doğrulandı:** varsayılan sekmede Çekim'in
 27 kontrolü DOM akışından çıkıyor; sekme seçimi yeniden yüklemede korunuyor (`state.rtab`, eski
@@ -282,3 +287,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 7 | 2026-08-14 | A.2d: Mac tam iki dilli — kapsam 41→0, dil düğmesi, tarayıcı kanıtı | EN geçişi gerçek tarayıcıda doğrulandı · parite 327/327 · denetim.py 2 kör nokta | 8/8'in 7'si yeşil (VER doğru kırmızı) |
 | 8 | 2026-08-14 | B.1 başlangıç: jetonlar kullanımda + tnum ×12 + ilk-açılış ölçümü | accent→r-action iki kabukta · telefon 5/9 kontrol (analiz iddiası çürüdü) · 15 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 9 | 2026-08-14 | B.3 Mac: sağ panel 53 kontrol → 3 sekme; .seg stili | tarayıcıda: Çekim 27 kontrol gizleniyor · sekme kalıcı · 23 iddia | 7/8 yeşil (VER doğru kırmızı) |
+| 10 | 2026-08-14 | B.2 başlangıç: SVG ikon altyapısı + telefon kromu | 4/4 ikon tarayıcıda çiziliyor (22×22) · aria korundu · 36 iddia | 7/8 yeşil (VER doğru kırmızı) |

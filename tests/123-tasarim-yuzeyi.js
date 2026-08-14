@@ -95,3 +95,27 @@ const mac = oku(macYolu());
   ok('Mac: .seg stili artık tanımlı (dil düğmesi çıplak kalmasın)',
      /\.seg\{display:inline-flex/.test(mac));
 }
+
+/* ---------- 5. KROM İKONLARI SVG (B.2) ---------- */
+{
+  /* Renkli emoji her platformda başka çizilir ve koyu arayüzle uyumsuzdur —
+     analizde "amatör algısının yarısı" diye ölçülen kalem. Krom düğmeleri
+     stroke SVG'ye geçti; tarayıcıda doğrulandı (4/4 çizim, 22×22).
+     KAPSAM BİLEREK DAR: yalnız statik krom düğmeleri. playBtn/pauseBtn
+     çalışma zamanında yazılıyor (▶︎/⏸ zaten tek renk sembol), sözlükteki
+     emoji önekleri ise İÇERİK — onlara dokunmak i18n birebirlik iddialarını
+     kırardı. Genişletme ayrı karar. */
+  ok('telefon: ikon tanımları gömülü', /<!-- ==CEKIRDEK:ikonlar\.html== -->/.test(tel));
+  for (const [id, ikon] of [['settingsBtn','i-ayarlar'],['scriptsBtn','i-senaryo'],
+                            ['readyBtn','i-hazir'],['voiceBtn','i-mikrofon']]) {
+    const m = tel.match(new RegExp('<button[^>]*id="' + id + '"[^>]*>([\\s\\S]*?)</button>'));
+    ok('telefon #' + id + ' SVG ikon kullanıyor (' + ikon + ')',
+       !!m && m[1].includes('href="#' + ikon + '"'));
+    /* İkona geçerken ad kaybolmasın: SVG aria-hidden, düğme aria-label'lı. */
+    const ac = tel.match(new RegExp('<button[^>]*id="' + id + '"[^>]*>'));
+    ok('telefon #' + id + ' erişilebilir adını koruyor', !!ac && /aria-label="[^"]{3,}"/.test(ac[0]));
+  }
+  for (const ikon of ['i-ayarlar','i-senaryo','i-hazir','i-mikrofon']) {
+    ok('sembol tanımlı: ' + ikon, new RegExp('<symbol id="' + ikon + '"').test(tel));
+  }
+}

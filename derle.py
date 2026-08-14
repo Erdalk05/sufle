@@ -45,6 +45,8 @@ PLAN = [
     # Mesajlar YALNIZ telefonda: Mac bugün m() kullanmıyor. Gömseydim
     # telefona özgü metinler ('Ayarlar → Safari') Mac dosyasına sızardı.
     ('mesajlar.js', ['index.html']),
+    # İkonlar şimdilik yalnız telefonda kullanılıyor (krom düğmeleri).
+    ('ikonlar.html', ['index.html']),
 ]
 
 BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'
@@ -53,6 +55,10 @@ BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'
 
 
 def isaret(ad):
+    # HTML gövdesine gömülen modül CSS-yorum işaretleyicisi TAŞIYAMAZ:
+    # /* */ orada yorum değil GÖRÜNÜR METİN olur. .html modülü HTML yorumu alır.
+    if ad.endswith('.html'):
+        return (f'<!-- ==CEKIRDEK:{ad}== -->', f'<!-- ==/CEKIRDEK:{ad}== -->')
     return (f'/* ==CEKIRDEK:{ad}== */', f'/* ==/CEKIRDEK:{ad}== */')
 
 
@@ -60,7 +66,10 @@ def uret(ad):
     """Modülün gömülecek hâli: başlık + içerik."""
     with open(os.path.join(CEKIRDEK, ad), encoding='utf-8') as f:
         govde = f.read().strip()
-    return BASLIK.format(ad=ad) + '\n' + govde
+    b = BASLIK.format(ad=ad)
+    if ad.endswith('.html'):
+        b = '<!-- ' + b.replace('/* ', '').replace(' */', '') + ' -->'
+    return b + '\n' + govde
 
 
 def yerlestir(kabuk_metni, ad, icerik, kabuk_yolu):

@@ -265,6 +265,9 @@
     color:#fff;font-size:21px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);flex:none}
   .cbtn:active{filter:brightness(1.4)}
   .cbtn.on{background:var(--accent);color:var(--accent-d)}
+  /* SVG krom ikonları (B.2): currentColor sayesinde düğme durumu neyse
+     ikon o renk — açıkken --accent-d, kapalıyken beyaz. */
+  .cbtn .ic{width:22px;height:22px;display:block;margin:auto}
   #recBtn{width:74px;height:74px;background:#fff;border:5px solid rgba(255,255,255,.4);position:relative;border-radius:50%;flex:none}
   #recBtn::after{content:"";width:52px;height:52px;border-radius:50%;background:#ff3b30;transition:.18s;display:block;margin:auto}
   #recBtn.rec::after{width:28px;height:28px;border-radius:8px}
@@ -503,12 +506,12 @@
 
 <!-- ALT KONTROL -->
 <div id="bar" class="hidden">
-  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" title="Ayarlar">⚙︎</button>
-  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" title="Senaryolar">📝</button>
-  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" title="Çekime hazır mıyım?">✅</button>
+  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" title="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
+  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" title="Senaryolar"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
+  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" title="Çekime hazır mıyım?"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
   <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn">⏸</button>
   <button id="recBtn" aria-label="Kayıt başlat/durdur" data-aria="recBtn" disabled></button>
-  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" title="Sesle takip">🎤</button>
+  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" title="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
   <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" title="Başlat">▶︎</button>
 </div>
 
@@ -1050,6 +1053,51 @@
      reddi, depo dolu, kayıt öldü, arşive yazıldı, sesli komut onayı...
      opacity ile gizlendiği için (display:none değil) canlı bölge çalışır. -->
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ==CEKIRDEK:ikonlar.html== -->
+<!-- ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/ikonlar.html
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) -->
+<!-- SUFLE ikon tanımları — TEK KAYNAK (B.2). derle.py kabuğa gömer.
+
+     NEDEN SVG: renkli emoji her platformda başka çizilir (Apple/Google/
+     Windows ayrı setler), koyu arayüzde renk uyumu yoktur ve "amatör ürün"
+     algısının analizde ölçülen en büyük tekil kaynağıdır. Stroke ikonlar
+     currentColor kullanır: düğme rengi neyse ikon o renk — jeton sistemine
+     kendiliğinden uyar.
+
+     Kaynak: Feather Icons (MIT). 24×24 görünüm kutusu, 1.8 kalem, yuvarlak uç.
+     KURAL: yeni ikon eklerken sembole DEĞİL kullanan düğmeye aria-label ver;
+     SVG'nin kendisi aria-hidden kalır (ekran okuyucu düğme adını okur, çizimi
+     değil). -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-ayarlar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+    <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+    <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+    <line x1="17" y1="16" x2="23" y2="16"/>
+  </symbol>
+  <symbol id="i-senaryo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+  </symbol>
+  <symbol id="i-hazir" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </symbol>
+  <symbol id="i-mikrofon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+  </symbol>
+</svg>
+<!-- ==/CEKIRDEK:ikonlar.html== -->
 
 <script>
 (function(){
