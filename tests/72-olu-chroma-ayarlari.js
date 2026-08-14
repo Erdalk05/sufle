@@ -79,13 +79,18 @@ ok('kapı ayar uygulanırken koşuyor', /renderVad\(\); gateSettings\(\)/.test(k
 /* ---------- KAPI GERÇEKTEN NE YAPIYOR ---------- */
 function kapiKos({chroma, burnCaps}){
   return new Function('__c','__b', `
-    const st={chroma:__c, burnCaps:__b};
+    const st={chroma:__c, burnCaps:__b, voiceCmd:__b};
     const L='tr';
+    /* K2 kurallarinin okudugu durum (stream asagida zaten tanimli). */
+    const sections=[];
     const kutular={};
     function blok(){ return { style:{}, cocuklar:[],
       querySelector(q){ return this.cocuklar.find(x=>x.sinif==='gateWhy')||null; },
       insertBefore(e){ this.cocuklar.unshift(e); }, get firstChild(){ return this.cocuklar[0]||null; } }; }
-    kutular['#chromaDeps']=blok(); kutular['#burnDeps']=blok();
+    /* K2de kapıya wakeDeps de eklendi; tezgâh onu tanımayınca gateSettings
+       tanımsız bir öğeye yazmaya çalışıyordu. Kapının blok listesi büyüdükçe
+       burası da büyümeli — iddia sayacı bu daralmayı yakaladı. */
+    kutular['#chromaDeps']=blok(); kutular['#burnDeps']=blok(); kutular['#wakeDeps']=blok();
     const $=(s)=>{ if(kutular[s]) return kutular[s];
       return { querySelector:()=>null }; };
     const document={ createElement:()=>({ sinif:'', style:{cssText:''}, textContent:'',

@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından **54 P1** işlendi. **68 commit**, tamamı yerelde.
-Testler **732 → 2915**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından **55 P1** işlendi. **70 commit**, tamamı yerelde.
+Testler **732 → 2952**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Üç ayar daha sessizce ölüydü** — senaryoda bölüm başlığı yokken bölüm sonunda durma, kamera kapalıyken nefesle akış, sesli komut kapalıyken tetik kelimesi alanı; üçü de açılabiliyor ama hiçbir şey yapmıyordu.
 - **Çekimden sonra senaryoya dokununca altyazı kayboluyordu** — sürüm değiştirmek, metni düzenlemek ya da senaryo sayfasını kapatmak altyazı zamanlarını siliyordu; sonra uygulama sana yanlış sebebi söylüyordu ("sufle akmamış"). Artık altyazı çekimin kendisine bağlı.
 - **Masaüstünde paylaşımı iptal edince hiçbir şey söylenmiyordu** — düğmeye basıp pencereyi kapattığında ekranda hiç iz kalmıyordu; telefon "dosya duruyor, tekrar deneyebilirsin" diyor, Mac susuyordu.
 - **Kaydı hemen duraklatınca yanlış uyarı çıkıyordu** — uygulama kaydın başladığını 2,5 sn sonra denetliyor; o sürede duraklattığında bunu "hiç başlamadı" sanıp korkutucu bir uyarı veriyordu.
@@ -108,6 +109,8 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım İKİ KEZ yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. Önce 6, sonra 5 bozma "geçti/yakalanmadı" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım — ve **kuralı yazdıktan sonra bir kez daha düştüm**.
+- **Kapı KIRMIZIYKEN commit ettim** — K2 turunda testi kırdığımı fark etmeden commit'i geçtim. Hemen düzelttim ama kural açık: kapı yeşil değilse iş bitmemiştir.
+- **Şablon dizesi yorumuna ters tırnak: bu gece ÜÇ kez** — kuralı CLAUDE.md'ye yazdıktan sonra bile iki kez daha.
 - **Aynı iki tuzağa ikinci kez düştüm**: hayalet MSG anahtarı (mesaj `kelime:` ile bitince denetim onu anahtar sanıyor) ve şablon dizesi içindeki yoruma ters tırnak koymak. İkisini de CLAUDE.md'ye yazdım.
 - **Bir ön bulguyu yanlış kaydettim**: I3 turunda "Mac ve telefon altyazı süre sınırı farklı" diye not düştüm; ölçünce aynı çıktı — 6 değerini kendi test tezgâhıma koymuşum ve kaynaktan geldiğini sanmışım. Planı düzelttim.
 
@@ -128,7 +131,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **68 commit**, hepsi yerelde, `claude` dalında
-- **2915 test** (gece başında 732) · yeni test dosyası: 39–93
-- Gece planı: 138 görevden **61'i** işlendi (bütün P0'lar + 54 P1)
+- **70 commit**, hepsi yerelde, `claude` dalında
+- **2952 test** (gece başında 732) · yeni test dosyası: 39–94
+- Gece planı: 138 görevden **62'si** işlendi (bütün P0'lar + 55 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
