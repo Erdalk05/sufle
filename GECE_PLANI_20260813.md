@@ -166,7 +166,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | J5 | Paylaşım iptalinde (AbortError) mesaj doğru mu — testle kilitle | P1 |
 | J6 | Arşiv 50 çekimde render maliyeti | P2 |
 | J7 | Çekim notu 140 karakter sınırı arayüzde belli mi | P2 |
-| J8 | `dbDel` zaman aşımı koruması eksik — ekle (v9.4 deseni) | P1 |
+| J8 | `dbDel` zaman aşımı koruması eksik — ekle (v9.4 deseni) ✅ **Korumasız TEK depo işleviydi** ve `onabort` da bağlı değildi (kota baskısı / sürüm değişimi işlemi iptal ettirir → söz hiç çözülmez). Önemi toplu silmede: silme bir DÖNGÜDE çağrılıyor ve arşiv yolunda düğme o sırada devre dışı — kullanıcının çıkışı yok. **İkinci katman**: zaman aşımı tek çağrıyı kurtarır, döngüyü kurtarmaz (50 × 10 sn = 8 dk donmuş arayüz); üst üste 3 başarısızlıkta iki yol da duruyor ve kaç tanesinin silindiğini söylüyor. Arada tek tük hata döngüyü kesmiyor (ölçüldü). tests/86 (41 iddia) dört senaryo + 7 bozma. `7468b65` | P1 |
 | J9 | Toplu silme yıldızlıları gerçekten koruyor mu — testle kilitle ✅ **Koruma doğru çıktı** (hiçbir sıralamada yıldızlı silinmiyor; liste **onay anında** yeniden okunduğu için onaydan hemen önce yıldızlanan çekim de korunuyor) **ama aynı yerde geri alınamaz bir tehlike vardı: sayfa kapanınca onay açık kalıyordu.** Düğmeye bas → "Emin misin?" → panikle, sayfayı kapat → 4 sn içinde geri aç → bir dokunuş → yıldızsızların TAMAMI gider. Arşiv kutusundaki ikizi zaten sıfırlanıyormuş; bu yol kapsam dışında kalmış. `silmeyiIptal()` kapanışa bağlandı. tests/85 (33 iddia), 6 bozma. `292e16a` | P1 |
 | J10 | Paylaşım tanı satırı (T7) Erdal'ın cevabına göre iyileştirilir | 🔒 |
 

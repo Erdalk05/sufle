@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Silme askıda kalırsa ekran sonsuza kadar bekliyordu** — arşiv işlemleri arasında yalnız silmenin süre koruması yoktu; depo cevap vermezse toplu silme hiç bitmiyor ve arşiv ekranında düğme kapalı olduğu için çıkış da kalmıyordu.
 - **Toplu silme onayı sayfayı kapatınca açık kalıyordu** — silme geri alınamaz; vazgeçmek için sayfayı kapatsan bile onay duruyordu ve birkaç saniye içinde geri açıp bir dokunuş yıldızsız çekimlerin hepsini siliyordu.
 - **Ekran okuyucu bildirimlerin hiçbirini duyurmuyordu** — uygulamanın sana sebep söylediği tek kanal alt bildirimler (154 çağrı yeri) ve hiçbiri ekran okuyucuya iletilmiyordu; masaüstünde tek bir canlı bölge bile yoktu.
 - **Yüksek kontrast ayarı yazı kutularını kapsamıyordu** — senaryo düzenleyicisi, tetik kelimesi kutusu, sekmeler ve iki ayraç ayar açıkken bile soluk kalıyordu; kutuyu görünür kılan tek şey olan kenarlık 1,48:1 idi (eşik 3:1).
@@ -104,6 +105,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Aynı iki tuzağa ikinci kez düştüm**: hayalet MSG anahtarı (mesaj `kelime:` ile bitince denetim onu anahtar sanıyor) ve şablon dizesi içindeki yoruma ters tırnak koymak. İkisini de CLAUDE.md'ye yazdım.
 - **Bir ön bulguyu yanlış kaydettim**: I3 turunda "Mac ve telefon altyazı süre sınırı farklı" diye not düştüm; ölçünce aynı çıktı — 6 değerini kendi test tezgâhıma koymuşum ve kaynaktan geldiğini sanmışım. Planı düzelttim.
 - **`$?` tuzağına ikinci kez düştüm** — kendi yazdığım kurala rağmen `echo "$(basename …) -> $?"` kullandım ve 5 bozmanın 5'i de "yakalanmadı" göründü; testler aslında hepsini yakalıyordu.
 - **Sıklık sondamı yanlış kurdum**: bozuk damga oranını ölçerken ürettiğim ondalıklar kırılma bölgesine hiç düşmüyordu ve "0 vaka" çıktı — kusur oradaydı, sondam kördü. Ondalığı doğrudan tarayacak şekilde düzelttim.
@@ -123,7 +125,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **59 commit**, hepsi yerelde, `claude` dalında
-- **2707 test** (gece başında 732) · yeni test dosyası: 39–85
-- Gece planı: 138 görevden **53'ü** işlendi (bütün P0'lar + 46 P1)
+- **60 commit**, hepsi yerelde, `claude` dalında
+- **2748 test** (gece başında 732) · yeni test dosyası: 39–86
+- Gece planı: 138 görevden **54'ü** işlendi (bütün P0'lar + 47 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
