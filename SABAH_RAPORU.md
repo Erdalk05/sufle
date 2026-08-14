@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Ayar anahtarının yanındaki yazıya basmak hiçbir şey yapmıyordu** — tıklama yalnız 29 piksellik anahtara bağlıydı, oysa satır 44 pikselden yüksek. Parmak biraz kaysa dokunuş boşa gidiyor, sen anahtarın bozuk olduğunu sanıyordun. Artık satırın her yeri açıp kapatıyor; görünüm hiç değişmedi.
 
 ### Kapının kendi kör noktası (gece sonunda kapatıldı)
 
@@ -127,11 +128,12 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 1. **v9.5 yayını** (yukarıda)
 2. **T7** — iPhone'da paylaşım tanı satırı: "Fotoğraflara kaydetmiyor" sorununun tek kalan engeli, gerçek cihaz gerekiyor
 3. **K9** — normal temanın kenarlık rengi erişilebilirlik eşiğinin altında (1,29:1 / 3:1). Yükseltmek uygulamanın görünümünü baştan aşağı değiştirir: tasarım kararı senin.
-4. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
+4. **K10** — ikon düğmesi 35 px, segment 40 px, sekme 38 px: üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin görünümünü değiştirir; tasarım kararı senin. (Anahtarlar görünüm değişmeden düzeltildi.)
+5. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
 
 ## Sayılar
 
-- **70 commit**, hepsi yerelde, `claude` dalında
-- **2952 test** (gece başında 732) · yeni test dosyası: 39–94
-- Gece planı: 138 görevden **62'si** işlendi (bütün P0'lar + 55 P1)
+- **71 commit**, hepsi yerelde, `claude` dalında
+- **2974 test** (gece başında 732) · yeni test dosyası: 39–95
+- Gece planı: 138 görevden **63'ü** işlendi (bütün P0'lar + 56 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
