@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Masaüstünde Temizle aracı görünmez karakterleri atlıyordu** — Word ya da PDF belgesinden yapıştırılan metinde yumuşak tire kelimenin içinde kalıyor, paragraf ayracı satıra bölünmüyordu. Telefonda bu gece düzeltilmişti, masaüstüne taşınmamış.
 - **Masaüstünde sunucu cevap vermezken çalışmayan adres gösteriliyordu** — dosyaya çift tıklayarak açma durumu zaten net anlatılıyordu, ama sayfa bir sunucudan açılıp sufle sunucusu cevap vermediğinde panel telefona yazılacak bir adres gösteriyor, QR ise sessizce kayboluyordu. Windows kopyasında en olası durum bu. Artık sebep ve çözüm yazıyor.
 - **Hata günlüğü tam gerektiği anda boşalıyordu** — uygulama çöküp yeniden açıldığında önceki oturumun hataları gidiyordu; oysa "çekimim neden bozuldu" sorusu tam o zaman soruluyor. Telefon kaydı diske yazıyor ama **hiç geri okumuyordu** (yazma tümüyle ölüydü), masaüstü ise hiç yazmıyordu. Artık son 10 hata iki platformda da geri geliyor.
 - **Masaüstünde arşiv listesi bütün videoları belleğe çekiyordu** — liste yalnız tarih, boyut ve ad gösterdiği hâlde her açılışta arşivdeki TÜM videoları okuyordu. Telefonda bu kusur bu gece kapatılmıştı, masaüstüne taşınmamış. Artık liste sıfır video okuyor, seçtiğin çekim için bir tane getiriliyor.
@@ -152,7 +153,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **88 commit**, hepsi yerelde, `claude` dalında
-- **3649 test** (gece başında 732) · yeni test dosyası: 39–111
-- Gece planı: 138 görevden **81'i** işlendi (bütün P0'lar + 73 P1 + F9)
+- **89 commit**, hepsi yerelde, `claude` dalında
+- **3720 test** (gece başında 732) · yeni test dosyası: 39–112
+- Gece planı: 138 görevden **82'si** işlendi (bütün P0'lar + 74 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
