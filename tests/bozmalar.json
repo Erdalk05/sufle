@@ -145,5 +145,26 @@
   "kaynak": "mac",
   "bul": "      .replace(/\\u00AD/g,'')\n",
   "koy": ""
+ },
+ {
+  "ad": "A0 telefon kabuğu modül betiğine çevrildi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "telefon",
+  "bul": "<script>\n(function(){\n'use strict';",
+  "koy": "<script type=\"module\">\n(function(){\n'use strict';"
+ },
+ {
+  "ad": "A0 telefona CDN bağımlılığı eklendi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "telefon",
+  "bul": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>",
+  "koy": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>\n<link rel=\"stylesheet\" href=\"https://cdn.example.com/a.css\">"
+ },
+ {
+  "ad": "A0 Mac kabuğu modül betiğine çevrildi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "mac",
+  "bul": "<script>\n(function(){\n  const $ = s=>document.querySelector(s);",
+  "koy": "<script type=\"module\">\n(function(){\n  const $ = s=>document.querySelector(s);"
  }
 ]

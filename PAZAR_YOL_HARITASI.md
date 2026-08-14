@@ -77,14 +77,43 @@ okuma — analizdeki **Tip B rakip paritesi**), `undoDelBtn` "Geri getir", `scIm
 
 ## 1 · FAZ A — Tek çekirdek (en kritik mimari borç)
 
-İki dosya diverge etti (6.357 vs 2.824). Dört platforma **aynı anda** çıkmanın ön koşulu:
-özellik iki kez yazılmasın. Aksi hâlde her yeni özellik 2× maliyet + kalıcı davranış farkı.
+İki dosya diverge etti (6.357 vs 2.824; ortak yüzey yalnız 22/106). Dört platforma **aynı anda**
+çıkmanın ön koşulu: özellik iki kez yazılmasın. Aksi hâlde her yeni özellik 2× maliyet + kalıcı davranış farkı.
 
-**A.1** `çekirdek/` klasörü: motor, ses, işaretleme, srt, depo, i18n → ES modülü. Build yok, `<script type=module>`.
-**A.2** Telefon kabuğu `index.html` çekirdeği kullansın. Kapı yeşil, davranış birebir aynı (regresyon testi).
-**A.3** Mac/Windows kabuğu aynı çekirdeği kullansın. Mac'te eksik olan (kompozit, arşiv, hazırlık) otomatik gelir.
-**A.4** Sözlük tek kaynak: TR/EN anahtarları iki dosyada ayrı yaşamasın.
-**Bitti ölçütü:** bir özelliği çekirdekte değiştir → dört platformda da değişsin; `denetim.py` 0 fark.
+### 🔴 Mimari karar — ES modülü ELENDİ, ölçümle (2026-08-14)
+
+Yol haritasının ilk hâli "`<script type=module>`, build yok" diyordu. **Ölçüldü, yanlış çıktı.**
+Chrome headless, aynı çekirdek iki biçimde, `file://` üzerinden:
+
+| Biçim | `file://` sonucu |
+|---|---|
+| `<script type="module">` + `import` | ❌ **BASLANGIC** — modül hiç yüklenmedi |
+| `<script src>` klasik | ✅ **CEKIRDEK-YUKLENDI** |
+
+Üstelik **sessizce** başarısız oluyor: hata yok, uygulama boş açılır. Bu deponun 2 numaralı
+tekrarlayan hata sınıfı. Mac kullanıcısı HTML'e çift tıkladığında (`file://` — hafızada kayıtlı,
+"kumanda yok" sanılan vaka da buydu) uygulama **tümden açılmazdı**.
+
+**İkinci ve daha ağır gerekçe:** ürünün kimliği "tek dosya, sıfır bağımlılık" (`CLAUDE.md`).
+`çekirdek/*.js`'e bölmek bunu bozar — kullanıcı tek HTML'i kopyaladığında uygulama kırılır.
+
+**Karar:** kaynak `çekirdek/` modüllerinde yaşar, **derleme adımı** onları iki kabuğun içine
+**gömer**. Çıktı yine tek dosya, sıfır bağımlılık, `file://` uyumlu.
+
+**Derlemenin bedeli ölçülü olarak biliniyor:** kaynak ile çıktının ayrışması (Erdal'ın diğer
+depolarında "bayat dist" iki kez pahalıya patladı). Bu yüzden derleme adımı kapıya bağlanacak:
+**kapı çıktıyı yeniden üretip diff alır; fark varsa KIRMIZI.** Bayat çıktı imkânsız hâle gelir.
+
+### Görevler
+
+**A.1** `derle.py` + `çekirdek/` iskeleti. İlk gömülen modül **düşük riskli** olan: tasarım
+jetonları (CSS) + TR/EN sözlük. Motor/kayıt gibi mantık ilk turda TAŞINMAZ — boru hattı önce
+ucuz içerikle kanıtlanır. Kapıya bayat-çıktı kontrolü eklenir.
+**A.2** Sözlük tek kaynak. Mac'te `data-i18n` **hiç yok** (0 eşleşme, telefonda 252) → Mac Türkçe'ye
+gömülü; İngilizce desteği de bu adımda gelir (matris #28 "çok dil" = 1).
+**A.3** Motor + işaretleme + SRT çekirdeğe taşınır; iki kabuk da aynı kodu gömer.
+**A.4** Mac'te eksik özellikler (kompozit, arşiv, hazırlık) çekirdekten otomatik gelir.
+**Bitti ölçütü:** bir özelliği çekirdekte değiştir → iki çıktıda da değişsin; kapı bayat-çıktıyı yakalasın.
 
 ---
 
@@ -166,3 +195,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | — | 2026-08-14 | Yol haritası kuruldu, başlangıç VER=9.7, 126 test | — | — |
 | 0 | 2026-08-14 | T0.1 + T0.3: analizin 10 iddiası kaynaktan sınandı | 4 çürüdü · 3 doğrulandı · 3 kısmen; skor 53,6 → **54,5** | ⬜ kod değişmedi |
 | 1 | 2026-08-14 | T0.2: `fark.py` — platform yüzey farkı çıkarıcı | telefon 106 / Mac 50 etkileşimli yüzey; 76 telefon-özel, 23 Mac-özel, 13 yalnız-ad; ölçüt `--kanit` ile ayırt ediyor | 6/7 yeşil (VER doğru kırmızı) |
+| 2 | 2026-08-14 | FAZ A mimari kararı: ES modülü elendi (ölçüldü) + `tests/120-file-protokolu.js` | Chrome headless `file://`: modül YÜKLENMEDİ, klasik çalıştı; 8 iddia, 3 kasıtlı bozmanın 3'ü kapıda yakalandı | 6/7 yeşil (VER doğru kırmızı) |
