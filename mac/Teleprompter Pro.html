@@ -1940,6 +1940,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       c.end = nx ? Math.max(c.start+0.4, nx.start-CAP_GAP) : c.start+1.4;
       if(c.end-c.start>6) c.end=c.start+6;
       c.text=c.words.join(' '); });
+    /* Telefonla AYNI kural (bkz. tests/81): negatif kayma baslangiclari sifira
+       kirpinca birden cok kuyruk ayni ana yigiliyor ve CAKISAN altyazi
+       uretiyordu. Sira ve sure tek yerde duzeltiliyor. */
+    for(let n=1;n<cues.length;n++){
+      const onceki=cues[n-1];
+      if(cues[n].start < onceki.end){
+        cues[n].start = onceki.end;
+        if(cues[n].end < cues[n].start+0.4) cues[n].end = cues[n].start+0.4;
+      }
+    }
     return cues;
   }
   /* Telefonla AYNI kural (bkz. tests/80): saniye ve milisaniye ayri
