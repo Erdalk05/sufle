@@ -1059,6 +1059,20 @@ const root=document.documentElement, body=document.body;
 const cam=$('#cam'), scroller=$('#scroller'), VER='9.7';
 
 /* ============ i18n ============ */
+/* ==CEKIRDEK:sozluk.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/sozluk.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SUFLE sözlüğü — TEK KAYNAK. İki kabuğa da derle.py gömer.
+   Telefondan olduğu gibi alındı; TR/EN paritesi 240/240 ölçülmüştü ve
+   taşımada bozulmadığı diff ile kanıtlandı. Mac bugüne dek Türkçeye
+   gömülüydü (data-i18n sayısı 0) — İngilizce desteği buradan gelecek.
+
+   I18N = arayüz etiketleri (t() ve data-i18n)
+   MSG  = kullanıcıya gösterilen mesajlar (m())
+   Yeni anahtar eklerken TR ve EN'e BİRLİKTE ekle; denetim.py parite farkını
+   yakalıyor ama eksik çeviri kullanıcıya boş etiket olarak görünür. */
+
 const I18N={
  tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'🔒 kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
@@ -1217,6 +1231,7 @@ const I18N={
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.'}
 };
+
 const MSG={
  tr:{noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
   recErr:'Kayıt başlatılamadı',needCam:'Önce kamerayı aç',voiceNo:'Bu tarayıcı sesle takibi desteklemiyor',
@@ -1329,6 +1344,7 @@ const MSG={
   bgSet:'Background image loaded',bgCleared:'Background image removed',
   bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off'}
 };
+/* ==/CEKIRDEK:sozluk.js== */
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
 <b>Ekran hareketleri</b><br>• Dokun = başlat/duraklat<br>• Yukarı-aşağı sürükle = metinde ileri-geri sar<br>• Sağ kenarda sürükle = hızı canlı değiştir<br>• İki kez dokun = kilidi aç/kapat<br><br>

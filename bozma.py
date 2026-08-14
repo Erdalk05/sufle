@@ -27,6 +27,7 @@ KAYNAK = {
     # Çekirdek modülleri de bozulabilmeli: kabuklara GÖMÜLDÜKLERİ için
     # bir jeton hatası iki platformu birden vurur, yani en pahalı sınıf.
     'jeton': (os.path.join(REPO, 'cekirdek', 'jetonlar.css'), 'SUFLE_JETON'),
+    'sozluk': (os.path.join(REPO, 'cekirdek', 'sozluk.js'), 'SUFLE_SOZLUK'),
 }
 
 

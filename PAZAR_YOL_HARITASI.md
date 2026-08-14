@@ -126,8 +126,18 @@ koyuyor; geri koyma **sinyale dayanıklı değildi**. Ölçüldü: eski sürüm 
 taban bozuk kalıyor (çıkış 143), yeni sürüm sinyali yakalayıp geri koyuyor. Tetikleyici de bilinen:
 `kos.js` test başına 60 sn tavan uyguluyor ve bu test python3'ü birkaç kez çağırıyor — yani kaza
 tekrar edecekti. `finally` + `exit` + `SIGTERM/SIGINT/SIGHUP` işleyicisi eklendi.
-**A.2** Sözlük tek kaynak. Mac'te `data-i18n` **hiç yok** (0 eşleşme, telefonda 252) → Mac Türkçe'ye
-gömülü; İngilizce desteği de bu adımda gelir (matris #28 "çok dil" = 1).
+**A.2a** ✅ **BİTTİ** — `I18N` + `MSG` → `cekirdek/sozluk.js`, telefona derlemeyle gömülüyor.
+Taşımanın **birebir** olduğu md5 ile kanıtlandı (I18N 19.016 karakter, MSG 14.154 karakter, iki hash de
+aynı); telefon davranışı değişmedi. `tests/121` artık pariteyi de kilitliyor: **tr 240 · en 240 · eksik 0**,
+ve kabukta `I18N`/`MSG` **tam olarak birer kez** tanımlı (ikinci tanım JS'te sessizce gölgeler).
+
+**A.2b** *(açık, sıradaki)* Mac sözlüğü KULLANSIN. Kapsam ölçüldü:
+**Mac'te 105 görünür etiket, 58'inin (%55) telefon sözlüğünde karşılığı zaten var**
+(`1 satır`→`b1`, `Ayarlar`→`settings`, `Bokeh`→`bkBokeh`…). Kalan **47** etiket yeni anahtar + İngilizce
+çeviri istiyor. Buna Mac'e `t()`/`m()`/`applyLang()` + dil düğmesi eklemek ve 105 özniteliği göçürmek
+ekleniyor → **tek başına bir tur**. Yarım bırakılırsa deponun 1 numaralı hata sınıfı olur
+("yarım kalmış düzeltme"), o yüzden bölündü.
+Sözlük Mac'e **henüz gömülmüyor**: kullanılmayan 250 satır ölü koddur ve `denetim.py` haklı olarak bağırır.
 **A.3** Motor + işaretleme + SRT çekirdeğe taşınır; iki kabuk da aynı kodu gömer.
 **A.4** Mac'te eksik özellikler (kompozit, arşiv, hazırlık) çekirdekten otomatik gelir.
 **Bitti ölçütü:** bir özelliği çekirdekte değiştir → iki çıktıda da değişsin; kapı bayat-çıktıyı yakalasın.
@@ -214,3 +224,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 1 | 2026-08-14 | T0.2: `fark.py` — platform yüzey farkı çıkarıcı | telefon 106 / Mac 50 etkileşimli yüzey; 76 telefon-özel, 23 Mac-özel, 13 yalnız-ad; ölçüt `--kanit` ile ayırt ediyor | 6/7 yeşil (VER doğru kırmızı) |
 | 2 | 2026-08-14 | FAZ A mimari kararı: ES modülü elendi (ölçüldü) + `tests/120-file-protokolu.js` | Chrome headless `file://`: modül YÜKLENMEDİ, klasik çalıştı; 8 iddia, 3 kasıtlı bozmanın 3'ü kapıda yakalandı | 6/7 yeşil (VER doğru kırmızı) |
 | 3 | 2026-08-14 | A.1: `derle.py` + jeton çekirdeği + kapı 8. adımı; kapsam tabanı onarımı | bayatlık çıkış 1/0 ölçüldü · 26 iddia · 2 bozma kapıda · SIGTERM'de taban artık korunuyor | 7/8 yeşil (VER doğru kırmızı) |
+| 4 | 2026-08-14 | A.2a: sözlük çekirdeğe taşındı + parite kilidi | md5 birebir (I18N+MSG) · tr/en 240/240 · 27 bozma kanıtlı · Mac eşleşmesi %55 ölçüldü | 7/8 yeşil (VER doğru kırmızı) |

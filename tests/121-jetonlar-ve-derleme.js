@@ -106,3 +106,56 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
        /ÜRETİLDİ — ELLE DÜZENLEME/.test(s));
   }
 }
+
+/* ---------- 4. SÖZLÜK TEK KAYNAK MI ---------- */
+{
+  /* Sözlük çekirdeğe taşındı (A.2a). Bu bölümün işi geri kaymayı önlemek:
+     biri kabuğa elle ikinci bir I18N/MSG yazarsa "tek kaynak" sessizce biter
+     ve iki dil iki yerde ayrışmaya başlar. */
+  /* SUFLE_JETON'da olduğu gibi: bozma turu sözlüğü geçici kopyada bozup yolu
+     SUFLE_SOZLUK ile veriyor. Bu satır olmadan test hep depodaki sağlam dosyayı
+     okur ve bozma YAKALANMAZ — bir kez tam bunu yaşadım, kapı söyledi. */
+  const sozYolu = (() => {
+    const v = process.env.SUFLE_SOZLUK;
+    if (v && !fs.existsSync(v))
+      throw new Error('Verilen yol yok: ' + v + ' (SUFLE_SOZLUK) — bozma turu hiçbir şey ölçmez.');
+    return v || path.join(REPO, 'cekirdek', 'sozluk.js');
+  })();
+  ok('sözlük çekirdekte', fs.existsSync(sozYolu));
+  const soz = fs.existsSync(sozYolu) ? fs.readFileSync(sozYolu, 'utf8') : '';
+  ok('çekirdekte I18N ve MSG birlikte', /const I18N=\{/.test(soz) && /const MSG=\{/.test(soz));
+
+  const tel = oku(telefonYolu());
+  ok('telefonda sözlük işaretleyicisi var', tel.includes('/* ==CEKIRDEK:sozluk.js== */'));
+  /* İDDİA: kabukta sözlük TAM OLARAK BİR kez tanımlı. İkinci bir tanım
+     JavaScript'te sessizce öncekini gölgeler; hata vermez, yalnız yanlış
+     çalışır — bu deponun en sevdiği hata biçimi. */
+  ok('telefonda I18N tam olarak 1 kez tanımlı',
+     (tel.match(/const I18N\s*=/g) || []).length === 1);
+  ok('telefonda MSG tam olarak 1 kez tanımlı',
+     (tel.match(/const MSG\s*=/g) || []).length === 1);
+
+  /* TR/EN paritesi: eksik çeviri kullanıcıya BOŞ etiket olarak görünür. */
+  const kes = (ad) => {
+    const m = soz.match(new RegExp('\\b' + ad + '\\s*:\\s*\\{'));
+    if (!m) return null;
+    let d = 1, k = m.index + m[0].length;
+    while (d && k < soz.length) { if (soz[k] === '{') d++; else if (soz[k] === '}') d--; k++; }
+    return soz.slice(m.index + m[0].length, k - 1);
+  };
+  /* ⚠️ BLOĞU indexOf('en:') İLE KESME. İlk yazımda öyle yaptım ve test yalan
+     söyledi: tr 51 · en 241 çıktı, oysa gerçek 240/240. Sebep, TR değerlerinin
+     İÇİNDE geçen bir "en:" dizisi bloğu erkenden kesmesiydi. Süslü parantez
+     sayan kes() zaten yazılmıştı; asıl hata onu kullanmamaktı. */
+  const anah = (govde) => new Set([...govde.matchAll(/(?:^|[,{]\s*)([A-Za-z]\w*)\s*:/gm)].map(x => x[1]));
+  const trG = kes('tr'), enG = kes('en');
+  ok('sözlükte tr ve en blokları okunabildi', !!trG && !!enG);
+  if (trG && enG) {
+    const t = anah(trG), e = anah(enG);
+    const eksik = [...t].filter(k => !e.has(k));
+    const fazla = [...e].filter(k => !t.has(k));
+    /* Sayının kendisi de bir iddia: blok yanlış kesilirse 240 çıkmaz. */
+    ok(`I18N tr/en paritesi (tr ${t.size} · en ${e.size} · eksik ${eksik.length} · fazla ${fazla.length})`,
+       eksik.length === 0 && fazla.length === 0 && t.size > 200);
+  }
+}

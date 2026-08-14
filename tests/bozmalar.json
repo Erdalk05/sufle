@@ -180,5 +180,12 @@
   "kaynak": "jeton",
   "bul": "--r-record-t:#FF4D4F",
   "koy": "--r-record-t:#D93036"
+ },
+ {
+  "ad": "A2 sözlükte anahtar adı bozuldu (tr/en paritesi kırıldı)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "sozluk",
+  "bul": ",undoDel:'↺ Restore deleted'",
+  "koy": ",undoDelBOZUK:'↺ Restore deleted'"
  }
 ]
