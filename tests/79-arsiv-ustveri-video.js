@@ -42,16 +42,33 @@ function calistir(depo, betik){
     const sozZamanAsimi=(f)=>new Promise(r=>f(r));
     const openDB=async()=>({
       transaction(){ return { objectStore(){ return {
-        openCursor(){
+        /* J1: dbGuncelle artık ANAHTARLI imleçle güncelliyor (tek işlemde
+           oku-değiştir-yaz). Tezgâh iki kullanımı da tanımalı: anahtarsız
+           çağrı listeyi geziyor, anahtarlı çağrı tek kaydı açıp update
+           veriyor. Ayrıca sonuç hem q.result hem olay nesnesinden okunabilir
+           olmalı — iki çağıran iki ayrı biçim kullanıyor. */
+        openCursor(anahtar){
           const q={};
           setTimeout(()=>{
+            if(anahtar!==undefined){
+              const kayit=__d.veri.find(x=>x.id===anahtar);
+              if(!kayit){ q.result=null; q.onsuccess&&q.onsuccess({target:{result:null}}); return; }
+              __d.okumaSayisi++;
+              if(kayit.blob) __d.blobOkumaSayisi++;
+              q.result={ value:kayit,
+                update(v){ const i=__d.veri.findIndex(x=>x.id===anahtar);
+                  __d.veri[i]=v; __iz.push('yazildi:'+anahtar); } };
+              q.onsuccess&&q.onsuccess({target:{result:q.result}});
+              return;
+            }
             let i=0;
             const ilerle=()=>{
-              if(i>=__d.veri.length){ q.onsuccess({target:{result:null}}); return; }
+              if(i>=__d.veri.length){ q.result=null; q.onsuccess({target:{result:null}}); return; }
               const kayit=__d.veri[i++];
               __d.okumaSayisi++;
               if(kayit.blob) __d.blobOkumaSayisi++;   // imleç kaydın TAMAMINI verir
-              q.onsuccess({target:{result:{value:kayit, continue:ilerle}}});
+              q.result={value:kayit, continue:ilerle};
+              q.onsuccess({target:{result:q.result}});
             };
             ilerle();
           },0);

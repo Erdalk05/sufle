@@ -132,7 +132,13 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    Mac'te bu kavram HİÇ YOK — ölçüldü, ilgili adlar Mac dosyasında sıfır kez
    geçiyor. Mac'in kumandası ayrı bir şey: telefondan açılan QR web sayfası.
    Dolayısıyla profil içe aktarmanın (tests/58) Mac karşılığı da yok. */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn']);
+/* dbGuncelle: ARŞİV ÜSTVERİSİNİ DÜZENLEMEK TELEFONA ÖZGÜ. Telefonda
+   arşivdeki çekime yıldız verilebiliyor, not yazılabiliyor ve adı
+   değiştirilebiliyor (renderTakes içindeki üç düğme). Mac'te bu kavram
+   HİÇ YOK — ölçüldü: `fav`, not düzenleme ve yeniden adlandırma Mac
+   dosyasında sıfır kez geçiyor; Mac arşivi yalnız aç/sil yapan bir
+   numara listesi (showTakes). autoSave ile aynı gerekçe. */
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle']);
 const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));

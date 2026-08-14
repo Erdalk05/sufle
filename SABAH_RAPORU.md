@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Yıldız sessizce kayboluyordu** — arşivdeki bir çekimi yıldızlayıp hemen not yazdığında ikisi de aynı eski kaydı okuyup üst üste yazıyordu ve yıldız gidiyordu. Liste depodan okuduğu için yıldız ekranda da geri sönüyor, yani uygulamayı hatalı sanıyordun; oysa kaydettiğin şey gerçekten gitmişti. Çift dokunuşta sonuç tümüyle belirsizdi. Artık aynı anda yapılan düzenlemelerin hepsi kalıyor.
 - **Gömülü altyazı kayıt sırasında boşuna iş yapıyordu** — satır düzeni her karede yeniden hesaplanıyordu, oysa altyazı metni konuşma temposuyla değişiyor. Ölçüldü: yedi kelimelik bir altyazıda saniyede **480 gereksiz ölçüm**, yani 24 kat fazla iş; hem de tam kayıt sürerken. Beş saniyelik koşumda ~1800 işlem **57ye** indi. Masaüstünde de aynıydı.
 - **Emoji altyazıda ortadan bölünüyordu** — uzun bir emoji dizisi satıra sığmayınca kesim emojinin ortasına düşüyordu: ekranda kutu, altyazı dosyasında bambaşka bir karakter. Ölçüldü: 90 vakanın **73ünde** oluyordu, düzeltmeden sonra hiçbirinde. Masaüstünde de aynıydı, ikisi de düzeltildi ve artık birebir aynı bölüyorlar.
 - **Yayın paketinde çift altyazı tuzağı** — altyazıyı videoya gömerek çektiğinde pakette hem yakılmış altyazılı video hem ayrı altyazı dosyası oluyordu. İkisini birden yükleyen kişi ekranda iki kat altyazı görüyor ve sebebini anlamıyordu. Dosyayı atmadım (yeniden kurguda işe yarıyor); yayın notu artık durumu ve ne yapmaman gerektiğini söylüyor.
@@ -144,7 +145,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **80 commit**, hepsi yerelde, `claude` dalında
-- **3346 test** (gece başında 732) · yeni test dosyası: 39–103
-- Gece planı: 138 görevden **73'ü** işlendi (bütün P0'lar + 65 P1 + F9)
+- **81 commit**, hepsi yerelde, `claude` dalında
+- **3379 test** (gece başında 732) · yeni test dosyası: 39–104
+- Gece planı: 138 görevden **74'ü** işlendi (bütün P0'lar + 66 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
