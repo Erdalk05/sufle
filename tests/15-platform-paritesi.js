@@ -148,6 +148,64 @@ say('telefonda korunup Mac\'te korunmayan hata yolu yok',
 say('Mac\'te korunup telefonda korunmayan hata yolu yok',
     macFazla.length===0 || (console.log('   → telefonda eksik:', macFazla), false));
 
+/* ---------- M5: MUAFİYET LİSTESİNİN KENDİ DENETİMİ ----------
+   Listeler ELLE yazılıyor ve kapının gücü tam da onlara bağlı. Üç şekilde
+   sessizce zayıflayabilir:
+     1) BAYAT MUAFİYET — muaf tutulan etiket kaynaktan kalkmış olabilir.
+        O ad sonradan geri gelirse hiç sorgulanmadan muaf sayılır.
+     2) YANLIŞ MUAFİYET — "yalnız telefonda" denen etiket aslında Macte de
+        varsa muafiyet hiçbir şey saklamıyor ama sakladığını sanıyoruz.
+     3) SESSİZ BÜYÜME — yeni muafiyet eklemek kapıyı zayıflatır; bu bir
+        KARAR olmalı, fark edilmeden olan bir şey değil.
+   Üçü de burada kapatıldı. Taban dosya-başı iddia sayacı ve fonksiyon
+   kapsamı kapısıyla aynı desen: yalnız AŞAĞI çekiliyor. */
+{
+  const fs=require('fs'), path=require('path');
+  const TABAN=path.join(__dirname,'parite-taban.json');
+  /* 1+2) Her muafiyet HÂLÂ gerekli mi: kendi platformunda VAR, diğerinde YOK. */
+  const bayatTel=[...SADECE_TELEFON].filter(x => !tE.has(x));
+  const yanlisTel=[...SADECE_TELEFON].filter(x => mE.has(ESDEGER[x]||x));
+  const bayatMac=[...SADECE_MAC].filter(x => !mE.has(x));
+  const yanlisMac=[...SADECE_MAC].filter(x => tE.has(x));
+  say('telefon muafiyetlerinin hepsi hâlâ telefonda var'+(bayatTel.length?' — bayat: '+bayatTel.join(', '):''),
+      bayatTel.length===0);
+  say('telefon muafiyetlerinin hiçbiri Macte YOK'+(yanlisTel.length?' — aslında var: '+yanlisTel.join(', '):''),
+      yanlisTel.length===0);
+  say('Mac muafiyetlerinin hepsi hâlâ Macte var'+(bayatMac.length?' — bayat: '+bayatMac.join(', '):''),
+      bayatMac.length===0);
+  say('Mac muafiyetlerinin hiçbiri telefonda YOK'+(yanlisMac.length?' — aslında var: '+yanlisMac.join(', '):''),
+      yanlisMac.length===0);
+  /* İsim eşlemesi de iki tarafı da bulmalı; bulamıyorsa eşleme ölü. */
+  const oluEs=Object.entries(ESDEGER).filter(([t,m]) => !tE.has(t) && !mE.has(m));
+  say('isim eşlemelerinin hepsi kullanılıyor'+(oluEs.length?' — ölü: '+oluEs.map(x=>x[0]).join(', '):''),
+      oluEs.length===0);
+
+  /* 3) SESSİZ BÜYÜME: sayı artarsa KIRMIZI, azalırsa taban sıkışır. */
+  const sayi={tel:SADECE_TELEFON.size, mac:SADECE_MAC.size, es:Object.keys(ESDEGER).length};
+  let taban=null;
+  try{ taban=JSON.parse(fs.readFileSync(TABAN,'utf8')); }catch(_){}
+  if(!taban){
+    console.log('   · parite tabanı ilk kez yazılıyor:', JSON.stringify(sayi));
+    say('taban yazılabildi', (fs.writeFileSync(TABAN, JSON.stringify(sayi,null,1)), true));
+  } else {
+    const buyuyen=Object.keys(sayi).filter(k => sayi[k] > (taban[k]??0));
+    say('muafiyet listesi BÜYÜMEDİ'+(buyuyen.length?' — büyüyen: '+buyuyen.map(k=>k+' '+taban[k]+'→'+sayi[k]).join(', '):'')+
+        ' (telefon '+sayi.tel+' · Mac '+sayi.mac+' · eşleme '+sayi.es+')',
+        buyuyen.length===0);
+    if(!buyuyen.length){
+      const yeni={}; for(const k of Object.keys(sayi)) yeni[k]=Math.min(taban[k]??sayi[k], sayi[k]);
+      if(JSON.stringify(yeni)!==JSON.stringify(taban)){
+        console.log('   · taban sıkışıyor:', JSON.stringify(taban), '→', JSON.stringify(yeni));
+        fs.writeFileSync(TABAN, JSON.stringify(yeni,null,1));
+      }
+    }
+  }
+  /* Liste boşuna büyümesin diye tavan da var: muafiyet sayısı gerçek
+     etiket sayısının yarısını geçerse kapı zaten anlamsızdır. */
+  say('muafiyetler etiketlerin yarısından az (telefon)', SADECE_TELEFON.size < tE.size/2);
+  say('muafiyetler etiketlerin yarısından az (Mac)', SADECE_MAC.size < mE.size/2);
+}
+
 /* Bu turda bulunan üç somut eksik — bir daha geri gelmesin */
 say('Mac: GPU kaynakları gerçekten bırakılıyor',
     /deleteTexture/.test(jsM) && /deleteProgram/.test(jsM));
