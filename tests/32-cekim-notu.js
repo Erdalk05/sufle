@@ -47,7 +47,12 @@ ok('not düğmesi adlandırılmış (ekran okuyucu)',
    /data-a="note" aria-label="'\+m\('takeNote'\)/.test(render));
 ok('not kayıt sürerken açılmıyor (donma kapısı)',
    /data-a="note"[\s\S]{0,400}?rec\.state==='recording'/.test(render));
-ok('not diske yazılıyor', /it\.not=[\s\S]{0,60}?dbPut\(it\)/.test(render));
+/* Korunan iddia: not KALICI olarak yazılıyor. Yazımın hangi çağrıyla
+   yapıldığı uygulama ayrıntısı — J2de arşiv listesi videoları belleğe
+   çekmesin diye `dbPut(it)` yerine oku-değiştir-yaz `dbGuncelle` geldi ve
+   bu iddia davranış hiç bozulmadığı hâlde kırmızıya döndü. */
+ok('not diske yazılıyor',
+   /it\.not=[\s\S]{0,90}?(?:dbPut\(it\)|dbGuncelle\(it\.id,)/.test(render));
 ok('not uzunluğu sınırlı (liste taşmasın)', /it\.not=n\.trim\(\)\.slice\(0,\d+\)/.test(render));
 
 /* ---------- ROZET EŞLEMESİ ---------- */

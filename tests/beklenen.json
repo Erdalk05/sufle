@@ -33,7 +33,7 @@
  "32-cekim-notu.js": 29,
  "33-iki-surumlu-senaryo.js": 36,
  "34-altyazi-kuyruklari.js": 32,
- "35-arsiv-askida-kalma.js": 21,
+ "35-arsiv-askida-kalma.js": 23,
  "36-sesle-takip-yeniden-baslatma.js": 19,
  "37-kamera-kurtarma.js": 22,
  "38-kompozit-baglam-kaybi.js": 18,
@@ -76,5 +76,6 @@
  "75-iphone-sunucu.js": 31,
  "76-kumanda-tani-paneli.js": 29,
  "77-kapi-iddia-sayaci.js": 44,
- "78-kayit-suresi-ve-cift-dongu.js": 30
+ "78-kayit-suresi-ve-cift-dongu.js": 30,
+ "79-arsiv-ustveri-video.js": 32
 }

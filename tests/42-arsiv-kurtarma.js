@@ -62,7 +62,7 @@ function tikla({kayitlar, yazmaSonuclari, tiklama=1}){
     const $=k=>el[k];
     const m=k=>k;
     const toast=k=>__iz.push('toast:'+k);
-    const dbAll=async()=>__k;
+    const dbListe=async()=>__k;
     const dbDel=async(id)=>{ __iz.push('sil:'+id); return true; };
     const arsivKutusu=()=>__iz.push('kutuYenilendi');
     const renderTakes=()=>__iz.push('arsivYenilendi');
@@ -141,6 +141,6 @@ ok('onay geri alınamaz olduğunu söylüyor', /archWipeSure:'[^']*Geri alınama
 
 /* ---------- ARŞİV EKRANINDAKİ TOPLU SİLME BOZULMADI ---------- */
 ok('arşiv ekranındaki toplu silme hâlâ yıldızlıları koruyor',
-   /const all=await dbAll\(\), kill=all\.filter\(x=>!x\.fav\);/.test(
+   /const all=await dbListe\(\), kill=all\.filter\(x=>!x\.fav\);/.test(
      cikar(kod, /\$\('#takesWipe'\)\.onclick=async\(\)=>\{[\s\S]*?\n\};/, 'takesWipe')));
 })();

@@ -85,7 +85,10 @@ const kur = () => { const iz=[];
 
 /* ---------- IndexedDB YOLLARI KORUNUYOR MU ---------- */
 const kod = tel.replace(/\/\*[\s\S]*?\*\//g,'');
-for (const [ad, fn] of [['openDB','openDB'],['dbPut','dbPut'],['dbAll','dbAll']]) {
+/* dbAll kaldırıldı (J2): liste artık videoları belleğe çekmiyor, yerine
+   üstveri okuyan dbListe ve tek kayıt getiren dbGetir geldi. Zaman aşımı
+   koruması ikisinde de olmalı — asılı bir okuma arşiv sayfasını boş bırakır. */
+for (const [ad, fn] of [['openDB','openDB'],['dbPut','dbPut'],['dbListe','dbListe'],['dbGetir','dbGetir']]) {
   const govde = cikar(kod, new RegExp('(?:async )?function '+fn+'\\([\\s\\S]*?\\n\\}'), fn);
   ok(ad+' zaman aşımıyla korunuyor', /sozZamanAsimi\(/.test(govde));
   /* SÜRE DE ÖLÇÜLMELİ: yalnız "korunuyor mu" diye bakınca 4000 yerine
