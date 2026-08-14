@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **iPhone sunucusu telefonun ulaşamayacağı adresi QR olarak basıyordu** — Wi-Fi adresi bulunamayınca `127.0.0.1` yazıp QR üretiyordu; telefon okuyor, sayfa hiç açılmıyordu. Ayrıca 8443 doluysa yığın izi basıp çıkıyordu. İkisi de Mac tarafında zaten düzeltilmişti, buraya taşınmamış.
 - **Kendi tetik kelimen sessizce çalışmayabiliyordu** — boşluk içeren tetik (iki kelimelik ifade) hiçbir zaman tanınmıyor, yalnız noktalama/emojiden oluşan tetik hiç denenmiyordu; alan dolu göründüğü için kurduğunu sanıyordun.
 - **Yeşil ekran kapalıyken onun ayarları yine de sürükleniyordu** — perde rengi, eşik, kenar yumuşaklığı, saçak temizliği, arka plan seçimi: hepsi görünür, oynatılabilir ve tamamen etkisiz; sebebi de yazmıyordu. Altyazı gömme kapalıyken altyazı ayarları için de aynıydı.
 - **Fener sessizce sönüyordu** — mikrofonu/çözünürlüğü değiştirince, kamerayı yeniden açınca veya uygulama arka plandan dönüp kamerayı kurtarınca ışık gidiyor, anahtar açık görünmeye devam ediyordu.
@@ -88,6 +89,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 - **Sesle takip ölçümünü üç kez yanlış yaptım**, üçü de kendi test düzeneğimde: kelimeyi iki kez göndermek, sonucu yanlış yorumlayıp etkisiz bir yama yazmak (geri aldım), ve kelime üreticimin `wordEq`'i yanıltması. Sonuncusu yüzünden bir tur boyunca **var olmayan bir kusuru** (D11) rapora yazdım; gerçek kelimelerle ölçünce hepsi düzeldi. Ders test 65'e ve plana yazıldı: sentetik veri, ölçtüğü sistemin denklik kurallarına karşı da doğrulanmalı.
 
 - **Kasıtlı bozma turumu kendi kabuk satırım yalanladı:** `echo "$(basename $f) -> $?"` yazınca komut ikamesi `$?` genişlemeden önce koşup çıkış kodunu sıfırlıyor. 6 bozmanın 6'sı da "geçti" göründü; testler aslında hepsini yakalıyordu. Kuralı `CLAUDE.md`'ye yazdım.
+- **Gevşek desen bir bozmayı kaçırdı**: "ölü adreste QR üretilmiyor" iddiam, QR ölü dalın içine eklendiğinde bile ilerideki `else` dalı sayesinde eşleşmeye devam ediyordu. İddiayı dala daralttım.
 - **Altın testte kendi iddiam yanlış çıktı**: kaydırma motorunun metnin sonunu hiç geçmemesi gerektiğini varsaydım; kod doğruydu — son satırın okuma çizgisini geçebilmesi için taşma bilinçli ve sınırlı.
 - **Vurgu düzeltmemin ilk deseni dengesiz yıldızları (`***x***`) sessizce vurguya çeviriyordu**; kendi yazdığım test bunu görmedi, iki ESKİ test (06 ve 17) yakaladı. Kapının değeri tam da burada.
 - **Denetimi argümansız koşturdum** (`python3 denetim.py`) ve "temiz" sandım — hiçbir dosyaya bakmamıştı. Tam da bu gece 12 kez bulduğum "ölçmeyen kapı" sınıfının kendisi.
@@ -100,7 +102,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **47 commit**, hepsi yerelde, `claude` dalında
-- **2295 test** (gece başında 732) · yeni test dosyası: 39–74
-- Gece planı: 136 görevden **41'i** işlendi (bütün P0'lar + 34 P1)
+- **48 commit**, hepsi yerelde, `claude` dalında
+- **2326 test** (gece başında 732) · yeni test dosyası: 39–75
+- Gece planı: 136 görevden **42'si** işlendi (bütün P0'lar + 35 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
