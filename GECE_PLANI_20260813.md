@@ -176,10 +176,11 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | K1 | Ayar araması 28 anahtarın hepsini buluyor mu — testle kilitle | P1 |
 | K2 | Ön koşulu olan ayarlar gri + sebep: hepsi kapsanıyor mu | P1 |
 | K3 | Klavye ile tam gezinme: sekme sırası mantıklı mı | P1 |
-| K4 | Yüksek kontrast temasında kontrast oranı WCAG AA mı — ÖLÇ | P1 |
+| K4 | Yüksek kontrast temasında kontrast oranı WCAG AA mı — ÖLÇ ⛔+✅ **Metin kontrastı iki temada da AA geçiyor** (yüksek kontrast: sufle 21,00 · ipucu 17,21 · vurgu 15,61 — normal: 18,37 · 6,96 · 8,21). **Ama metin dışı kontrast (1.4.11, eşik 3:1) açık buldu**: yazı kutusunun zemini sayfadan yalnız 1,06:1 ayrılıyor, yani kutuyu görünür kılan tek şey kenarlık — ve o kenarlık **yüksek kontrast açıkken bile 1,48:1** kalıyordu. Kural düzenleyiciyi, tetik kutusunu, sekmeleri ve iki ayracı hiç kapsamıyormuş. Kapsam genişletildi (hepsi 21:1). tests/83 (43 iddia), 7 bozma; hesabın kendisi de bilinen değerlerle sınanıyor. `98770fa` | P1 |
 | K5 | Ayar profilleri (Reels/YouTube/Sunum) hangi ayarları değiştiriyor — belgele | P2 |
 | K6 | `aria-live` bölgesi yok: toast'lar ekran okuyucuya duyuruluyor mu | P1 |
 | K7 | Odak tuzağı: sayfa açıkken Tab arkaya kaçıyor mu | P1 |
+| K9 | 🔒 **Erdal kararı**: normal temanın kenarlık rengi (`--line` #2a2a32) sayfa zeminine karşı 1,29:1 — WCAG 1.4.11 metin dışı eşiği 3:1. Yükseltmek uygulamanın GÖRÜNÜMÜNÜ baştan aşağı değiştirir; tasarım kararı. Yüksek kontrast yolu K4te kapatıldı | 🔒 |
 | K8 | Dokunma hedefleri 44×44 px altında olan var mı — ölç | P1 |
 | K9 | İlk açılış tanıtımı ikinci kez gösterilmiyor mu | P2 |
 | K10 | Renk körlüğü: ses rozeti yalnız renge mi dayanıyor (🔊/🔈/⚠️ zaten simge) | P2 |

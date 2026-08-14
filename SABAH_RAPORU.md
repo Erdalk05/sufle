@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Yüksek kontrast ayarı yazı kutularını kapsamıyordu** — senaryo düzenleyicisi, tetik kelimesi kutusu, sekmeler ve iki ayraç ayar açıkken bile soluk kalıyordu; kutuyu görünür kılan tek şey olan kenarlık 1,48:1 idi (eşik 3:1).
 - **Masaüstünde altyazı kelime sınırı ayarı yoktu** — telefonda 3-12 arası ayarlanıyor, Mac 7'ye sabitti; aynı senaryo iki cihazda farklı bölünüyordu. Mac'e aynı ayar eklendi; diğer her şeyde iki platform birebir aynı çıktı (ölçüldü).
 - **Altyazıyı öne çekince baştaki satırlar üst üste biniyordu** — kayma eksiye alınınca videonun başındaki damgalar sıfıra sıkışıyor, birkaç altyazı aynı anda ekrana geliyordu; ölçülen eşik iki saniye kayma + dakikada iki yüz kelime.
 - **Altyazı dosyasında bozuk zaman damgası oluşabiliyordu** — küsurat yuvarlanınca `00:00:05,1000` gibi dört haneli milisaniye çıkıyor, bu geçerli bir altyazı satırı değil; ölçülen risk yüz damgalık videoda ~%5. Masaüstünde de aynıydı.
@@ -115,11 +116,12 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 1. **v9.5 yayını** (yukarıda)
 2. **T7** — iPhone'da paylaşım tanı satırı: "Fotoğraflara kaydetmiyor" sorununun tek kalan engeli, gerçek cihaz gerekiyor
-3. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
+3. **K9** — normal temanın kenarlık rengi erişilebilirlik eşiğinin altında (1,29:1 / 3:1). Yükseltmek uygulamanın görünümünü baştan aşağı değiştirir: tasarım kararı senin.
+4. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
 
 ## Sayılar
 
-- **56 commit**, hepsi yerelde, `claude` dalında
-- **2603 test** (gece başında 732) · yeni test dosyası: 39–82
-- Gece planı: 137 görevden **50'si** işlendi (bütün P0'lar + 43 P1)
+- **57 commit**, hepsi yerelde, `claude` dalında
+- **2646 test** (gece başında 732) · yeni test dosyası: 39–83
+- Gece planı: 138 görevden **51'i** işlendi (bütün P0'lar + 44 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
