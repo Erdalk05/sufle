@@ -69,7 +69,7 @@ ok('harf aralığı ayarı gerçekten --ls yazıyor', /setProperty\('--ls',st\.l
 }
 
 /* ---------- BİYONİK OKUMA ---------- */
-const sw=cikar(kod,/\$\$\('\.sw'\)\.forEach\(s=>s\.onclick=async\(\)=>\{[\s\S]*?\n\}\);/,'anahtarlar');
+const sw=cikar(kod,/const k=s\.dataset\.t;[\s\S]*?\n\}\);/,'anahtarlar');
 const biy=cikar(sw,/if\(k==='bionic'\)\{[\s\S]*?\n  \}/,'biyonik dalı');
 ok('biyonik açılınca içerik yeniden kuruluyor', /buildContent\(\);/.test(biy));
 ok('biyonik açılınca okunan kelime saklanıyor', /activeIdx>=0 \? activeIdx : yakinIdx\(pos\+eyeOff\(\)\)/.test(biy));

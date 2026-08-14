@@ -63,7 +63,7 @@ function siraDogru(parca, mutasyon){
   ok('çözünürlük: kapı st.quality DEĞİŞMEDEN önce', siraDogru(q,'st.quality=b.dataset.q'));
 }
 {
-  const sw=cikar(kod,/\$\$\('\.sw'\)\.forEach\(s=>s\.onclick=async\(\)=>\{[\s\S]*?\n\}\);/,'anahtarlar');
+  const sw=cikar(kod,/const k=s\.dataset\.t;[\s\S]*?\n\}\);/,'anahtarlar');
   ok('anahtarlar: kamera anahtarları için kapı var',
      /\(k==='backCam'\|\|k==='rawAudio'\|\|k==='safeAudio'\) && !kameraDegisebilir\(\)/.test(sw));
   ok('anahtarlar: kapı st[k] DEĞİŞMEDEN önce', siraDogru(sw,'st[k]=!st[k]'));

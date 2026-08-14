@@ -181,7 +181,8 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | K6 | `aria-live` bölgesi yok: toast'lar ekran okuyucuya duyuruluyor mu ✅ **Duyurulmuyordu.** `toast()` uygulamanın sebep söylediği tek kanal — **154 çağrı yeri**, ve bu gece kapattığım kusurların çoğunun çözümü de bir toast metniydi. `#toast` öğesinde `aria-live`/`role` yoktu; Mac'te ise dosyanın tamamında tek `aria-live` bile yoktu. Kapsama tanı paneli ve kayıt durumu da eklendi. **Süre sayacı bilerek dışarıda** (saniyede bir konuşurdu) ve canlı bölge sayısı 3-6 aralığında kapıya bağlandı. Toast `opacity` ile gizlendiği (display:none değil) teste kilitlendi — aksi hâlde düzeltme sessizce etkisiz kalırdı. tests/84 (28 iddia), 7 bozma. `95cc490` | P1 |
 | K7 | Odak tuzağı: sayfa açıkken Tab arkaya kaçıyor mu | P1 |
 | K9 | 🔒 **Erdal kararı**: normal temanın kenarlık rengi (`--line` #2a2a32) sayfa zeminine karşı 1,29:1 — WCAG 1.4.11 metin dışı eşiği 3:1. Yükseltmek uygulamanın GÖRÜNÜMÜNÜ baştan aşağı değiştirir; tasarım kararı. Yüksek kontrast yolu K4te kapatıldı | 🔒 |
-| K8 | Dokunma hedefleri 44×44 px altında olan var mı — ölç | P1 |
+| K10 | 🔒 **Erdal kararı**: ikon düğmesi 35 px, segment düğmesi 40 px, sekme düğmesi 38 px — üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin GÖRÜNÜMÜNÜ değiştirir; tasarım kararı. Anahtarlar K8te düzeltildi (görünüm değişmeden) | 🔒 |
+| K8 | Dokunma hedefleri 44×44 px altında olan var mı — ölç | P1 | ✅ ÖLÇÜLDÜ: 4 hedef altında. Anahtar (48×29, 28 adet) düzeltildi — işleyici `.tog` satırına taşındı, hedef 29→44+ px, görünüm aynı. Kalan üçü (ikon 35, segment 40, sekme 38) görünüm değiştirmeden büyümez → K9 ile Erdala. tests/95 |
 | K9 | İlk açılış tanıtımı ikinci kez gösterilmiyor mu | P2 |
 | K10 | Renk körlüğü: ses rozeti yalnız renge mi dayanıyor (🔊/🔈/⚠️ zaten simge) | P2 |
 

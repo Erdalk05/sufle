@@ -19,7 +19,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
    yansıyor ve doğru çalışıyor; orada engel yok — çalışan bir yeteneği
    gereksiz yere kapatmıyoruz. */
 
-const sw=cikar(kod,/\$\$\('\.sw'\)\.forEach\(s=>s\.onclick=async\(\)=>\{[\s\S]*?\n\}\);/,'anahtar işleyicisi');
+const sw=cikar(kod,/const k=s\.dataset\.t;[\s\S]*?\n\}\);/,'anahtar işleyicisi');
 
 function tikla(anahtar,{kayitta=true, kompozitAcik=false}={}){
   const iz=[];

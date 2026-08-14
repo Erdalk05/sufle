@@ -70,7 +70,7 @@ ok('sürüm değiştirme içeriği yeniden kuruyor',
 ok('senaryo seçme içeriği yeniden kuruyor',
    /buildContent\(\)/.test(cikar(kod,/function selectScript\(id\)\{[\s\S]*?\n\}/,'selectScript')));
 ok('biyonik okuma içeriği yeniden kuruyor',
-   /buildContent\(\);/.test(cikar(kod,/\$\$\('\.sw'\)\.forEach\(s=>s\.onclick=async\(\)=>\{[\s\S]*?\n\}\);/,'anahtarlar')));
+   /buildContent\(\);/.test(cikar(kod,/const k=s\.dataset\.t;[\s\S]*?\n\}\);/,'anahtarlar')));
 
 /* ---------- TAKİP BAŞLANGICI BOZULMADI ---------- */
 ok('takip başlarken hâlâ ölçüp liste kuruyor',

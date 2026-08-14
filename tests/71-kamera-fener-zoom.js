@@ -26,7 +26,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 const mCaps=kod.match(/function setupCaps\(\)\{[\s\S]*?\n\}/);
 ok('setupCaps çıkarılabildi', !!mCaps);
-const mTog=kod.match(/\$\$\('\.sw'\)\.forEach\(s=>s\.onclick=async\(\)=>\{[\s\S]*?\n\}\);/);
+const mTog=kod.match(/const k=s\.dataset\.t;[\s\S]*?\n\}\);/);
 ok('anahtar işleyicisi çıkarılabildi', !!mTog);
 if(!mCaps || !mTog) return;
 
@@ -89,8 +89,7 @@ function anahtarKos(k){
     const s={dataset:{t:__k}};
     const el={onclick:null};
     const $$=()=>[el];
-    ${mTog[0].replace("$$('.sw').forEach(s=>s.onclick=","el.onclick=(")
-             .replace(/\}\);\s*$/,'});')}
+    el.onclick=async()=>{ ${mTog[0].replace(/\n\s*\};\n\}\);\s*$/,'').replace(/\n\}\);\s*$/,'')} };
     return {calistir:async()=>{ await el.onclick(); __iz.son='zoom='+st.zoom+',torch='+st.torch; return __iz; }};
   `)(iz, k);
 }
