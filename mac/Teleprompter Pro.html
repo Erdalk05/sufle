@@ -1823,7 +1823,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       if(navigator.canShare && navigator.canShare({files:[f]})){
         await navigator.share({files:[f]}); return;
       }
-    }catch(e){ if(e && e.name==='AbortError') return; }
+    }catch(e){
+      /* IPTAL BASARISIZLIK DEGILDIR ve SESSIZ de kalmamali: kullanici paylasim
+         penceresini kapatinca Mac hicbir sey soylemiyordu, telefon ise
+         "dosya duruyor, tekrar deneyebilirsin" diyor. Ayni sey soylensin. */
+      if(e && e.name==='AbortError'){ toast('Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin'); return; }
+    }
     // 2) klasik indirme
     try{
       const url=lastUrl||URL.createObjectURL(lastBlob);
