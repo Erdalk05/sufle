@@ -126,7 +126,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **62 commit**, hepsi yerelde, `claude` dalında
-- **2798 test** (gece başında 732) · yeni test dosyası: 39–88
-- Gece planı: 138 görevden **56'sı** işlendi (bütün P0'lar + 49 P1)
+- **63 commit**, hepsi yerelde, `claude` dalında
+- **2823 test** (gece başında 732) · yeni test dosyası: 39–89
+- Gece planı: 138 görevden **57'si** işlendi (bütün P0'lar + 50 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
