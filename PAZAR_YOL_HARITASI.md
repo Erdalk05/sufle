@@ -136,10 +136,20 @@ ve kabukta `I18N`/`MSG` **tam olarak birer kez** tanımlı (ikinci tanım JS'te 
 `applyLang()` yazıldı ve başlatmaya bağlandı; **Türkçede hiçbir şeyi değiştirmediği ölçüldü**
 (85 ögenin 85'inde işaretleme metni sözlük değeriyle birebir).
 
-**Dil düğmesi BİLEREK eklenmedi.** `tests/122` kapsamı ölçüyor: **109 görünür metin, 81 i18n'li,
-28 eksik** (20 `title`, 2 `placeholder`, 6 `aria-label`). Yarı İngilizce arayüz, hiç İngilizce
-olmamasından kötüdür. Taban dosyası sayıyı kilitliyor; **sıfıra inince düğme gelecek** (test bunu
-da iddia olarak taşıyor). Kalan iş **A.2c**.
+**A.2c** ⏳ 21 yeni anahtar + 28 öznitelik bağlandı (`data-i18n-title` / `data-i18n-ph` / `data-aria`);
+`applyLang` artık `title` ve `aria-label` da çeviriyor. Parite **296/296**.
+**Kapsam 69 → 41** (aynı ölçütle önceki commit'e karşı ölçüldü).
+
+**Dil düğmesi HÂLÂ eklenmedi — bu turda iki kez daha haklı çıktı.** Ölçütüm iki kez dardı:
+① yalnız öge metni sayılıyordu, 28 öznitelik görünmüyordu → "0 eksik" deyip düğmeye yeşil ışık
+yakacaktı (ekran okuyucu kullanan biri arayüzün tamamını Türkçe duyardı);
+② öznitelikler eklendi ama `<span>` ve iç içe ögeler hâlâ dışarıdaydı → durum çubuğu ve bütün
+anahtar etiketleri sayılmıyordu, **53 metin daha**. Ölçüt artık **eleme** ile çalışıyor: bütün
+görünür metinler sayılır, kapsananlar ve **gerekçesi yazılı** istisnalar düşülür.
+
+Kapı ayrıca üç yarım yapıyı reddetti — üçü de düğme turuna ertelendi: `setLang()` (çağıran yok),
+`mLangTR/EN` anahtarları (kullanan yok), `state.lang` okuması (yazan yok).
+**Kalan: 41 metin, sonra düğme.**
 
 Bu adımın ortaya çıkardığı üç yapısal sonuç:
 1. **Sözlük ikiye ayrıldı** (`sozluk.js` = etiketler, `mesajlar.js` = mesajlar). Hepsini Mac'e
@@ -246,3 +256,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 3 | 2026-08-14 | A.1: `derle.py` + jeton çekirdeği + kapı 8. adımı; kapsam tabanı onarımı | bayatlık çıkış 1/0 ölçüldü · 26 iddia · 2 bozma kapıda · SIGTERM'de taban artık korunuyor | 7/8 yeşil (VER doğru kırmızı) |
 | 4 | 2026-08-14 | A.2a: sözlük çekirdeğe taşındı + parite kilidi | md5 birebir (I18N+MSG) · tr/en 240/240 · 27 bozma kanıtlı · Mac eşleşmesi %55 ölçüldü | 7/8 yeşil (VER doğru kırmızı) |
 | 5 | 2026-08-14 | A.2b: Mac sözlüğü kullanıyor (data-i18n 0→85) + kapsam kapısı | parite 275/275 · applyLang TR'de no-op (85/85 birebir) · eksik 28 ölçüldü · denetim.py iki geçişli | 7/8 yeşil (VER doğru kırmızı) |
+| 6 | 2026-08-14 | A.2c: 28 öznitelik + 21 anahtar; kapsam ölçütü iki kez düzeltildi | kapsam **69 → 41** (önceki commit'e karşı ölçüldü) · parite 296/296 · applyLang TR'de no-op (öznitelikler dahil) | 7/8 yeşil (VER doğru kırmızı) |

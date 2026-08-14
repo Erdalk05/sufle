@@ -92,7 +92,9 @@ const I18N={
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi'},
+  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi',
+  /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
+  mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -176,5 +178,7 @@ const I18N={
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface'}
+  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface',
+  /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
+  mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...'}
 };

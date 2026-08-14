@@ -308,13 +308,13 @@
 
   <!-- ===== ÜST ÇUBUK ===== -->
   <div id="topbar">
-    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar" aria-label="Senaryolar">📝</button>
+    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar" data-i18n-title="scripts" aria-label="Senaryolar" data-aria="scripts">📝</button>
     <div class="brand">Teleprompter <b>Pro</b></div>
     <button class="btn primary" id="playBtn">▶︎ Başlat</button>
-    <button class="btn" id="resetBtn" title="Başa sar (R)" aria-label="Başa sar (R)">⟲</button>
+    <button class="btn" id="resetBtn" title="Başa sar (R)" data-i18n-title="mTReset" aria-label="Başa sar (R)" data-aria="mTReset">⟲</button>
     <span class="clock" id="clock">00:00</span>
 
-    <span class="pill" id="fmtPill" title="Çekim formatı">
+    <span class="pill" id="fmtPill" title="Çekim formatı" data-i18n-title="mTFmt">
       <button data-fmt="9:16" class="on" data-i18n="mFmt916">📱 9:16</button>
       <button data-fmt="16:9" data-i18n="mFmt169">🖥 16:9</button>
       <button data-fmt="1:1" data-i18n="mFmt11">⬜ 1:1</button>
@@ -324,25 +324,25 @@
 
     <div class="spacer"></div>
 
-    <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle">🎤 Sesle</button>
+    <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle" data-i18n-title="mTVoice">🎤 Sesle</button>
     <button class="btn" id="camBtn">📷 Kamera</button>
-    <button class="btn" id="readyBtn" title="Çekime hazır mıyım?" data-i18n="mReady">✅ Hazır mıyım</button>
+    <button class="btn" id="readyBtn" title="Çekime hazır mıyım?" data-i18n-title="mTReady" data-i18n="mReady">✅ Hazır mıyım</button>
     <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
-    <button class="btn" id="undoDelBtn" title="Son silinen senaryoyu geri getir" data-i18n="mUndoDel">↺ Geri getir</button>
-    <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için" data-i18n="mPip">🪟 Yüzen Sufle</button>
-    <button class="btn" id="takesBtn" title="Arşivdeki çekimler" data-i18n="takes">🎞 Çekimlerim</button>
-    <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)" data-i18n="mScripts">⬆︎ Senaryolar</button>
+    <button class="btn" id="undoDelBtn" title="Son silinen senaryoyu geri getir" data-i18n-title="mTUndoDel" data-i18n="mUndoDel">↺ Geri getir</button>
+    <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için" data-i18n-title="mTPip" data-i18n="mPip">🪟 Yüzen Sufle</button>
+    <button class="btn" id="takesBtn" title="Arşivdeki çekimler" data-i18n-title="mTTakes" data-i18n="takes">🎞 Çekimlerim</button>
+    <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)" data-i18n-title="mTExport" data-i18n="mScripts">⬆︎ Senaryolar</button>
     <input type="file" id="scImport" accept="application/json,.json" style="display:none">
-    <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n="mFullscreen">⛶ Tam Ekran</button>
-    <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)" data-i18n="mCsClean">⇔ Sade</button>
-    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" aria-label="Ayarlar">⚙︎</button>
+    <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n-title="mTFs" data-i18n="mFullscreen">⛶ Tam Ekran</button>
+    <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)" data-i18n-title="mTHide" data-i18n="mCsClean">⇔ Sade</button>
+    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" data-i18n-title="settings" aria-label="Ayarlar" data-aria="settings">⚙︎</button>
   </div>
   <div id="backdrop"></div>
 
   <!-- ===== SOL PANEL ===== -->
   <div id="left">
     <div class="sec">
-      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo" aria-label="Yeni senaryo">＋</button></h3>
+      <h3>Senaryolar <button class="iconbtn" id="newScript" title="Yeni senaryo" data-i18n-title="mTNew" aria-label="Yeni senaryo" data-aria="mTNew">＋</button></h3>
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
@@ -350,8 +350,8 @@
       <div class="selectish" id="secList"></div>
     </div>
     <div id="editorWrap">
-      <input id="title" placeholder="Senaryo başlığı" value="Yeni Senaryo">
-      <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın...">Merhaba! Bu Teleprompter Pro.
+      <input id="title" placeholder="Senaryo başlığı" data-i18n-ph="mPhTitle" value="Yeni Senaryo">
+      <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın..." data-i18n-ph="mPhEditor">Merhaba! Bu Teleprompter Pro.
 
 Telefon formatında (9:16) çekim yapıyorsanız sağ üstten formatı seçtiniz bile. Kamerayı açıp doğrudan kayıt da alabilirsiniz.
 
@@ -396,9 +396,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <!-- Sürüm yazısı artık düğme: sürüm notlarının elle girişi bu.
            Telefonda tek giriş otomatik açılıştı ve kaçıran bir daha
            ulaşamıyordu; Mac'e o hata taşınmasın diye baştan düğme. -->
-      <button id="sbVer" title="🆕 Ne değişti? — sürüm notları" aria-label="Ne değişti? Sürüm notları"
+      <button id="sbVer" title="🆕 Ne değişti? — sürüm notları" data-i18n-title="mTNews" aria-label="Ne değişti? Sürüm notları" data-aria="mANews"
               style="opacity:.6;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0"></button>
-      <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla"></span>
+      <span id="sbErr" style="display:none;color:#ffb300;cursor:pointer" title="Ayrıntı için tıkla" data-i18n-title="mTErrDetail"></span>
     </div>
   </div>
 
@@ -535,12 +535,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="top"><label data-i18n="mTheme">Tema</label></div>
         <!-- Tek seçimli grup: anahtar değil, radyo. Klavye erişimi ve adları
              JS'te veriliyor (title'dan türetiliyor). -->
-        <div class="swatches" id="themeSel" role="radiogroup" aria-label="Tema">
-          <div class="sw on" data-theme="classic" style="background:#000" title="Klasik"></div>
-          <div class="sw" data-theme="paper" style="background:#fff" title="Beyaz"></div>
-          <div class="sw" data-theme="green" style="background:#0F3D2E" title="Yeşil"></div>
-          <div class="sw" data-theme="blue" style="background:#0d2440" title="Mavi"></div>
-          <div class="sw" data-theme="amber" style="background:#2a1c00" title="Amber"></div>
+        <div class="swatches" id="themeSel" role="radiogroup" aria-label="Tema" data-aria="mTheme">
+          <div class="sw on" data-theme="classic" style="background:#000" title="Klasik" data-i18n-title="mThClassic"></div>
+          <div class="sw" data-theme="paper" style="background:#fff" title="Beyaz" data-i18n-title="mThWhite"></div>
+          <div class="sw" data-theme="green" style="background:#0F3D2E" title="Yeşil" data-i18n-title="mThGreen"></div>
+          <div class="sw" data-theme="blue" style="background:#0d2440" title="Mavi" data-i18n-title="mThBlue"></div>
+          <div class="sw" data-theme="amber" style="background:#2a1c00" title="Amber" data-i18n-title="mThAmber"></div>
         </div>
       </div>
       <div class="field" style="margin-top:11px">
@@ -708,7 +708,9 @@ const I18N={
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi'},
+  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi',
+  /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
+  mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -792,7 +794,9 @@ const I18N={
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface'}
+  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface',
+  /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
+  mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -819,7 +823,20 @@ const I18N={
       /* İçinde etiket varsa innerHTML — telefonda <b> ham metin görünmüştü. */
       if(/<[a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v; });
     $$('[data-i18n-ph]').forEach(el=>{ const v=I18N[L][el.dataset.i18nPh]; if(v) el.placeholder=v; });
+    /* title ve aria-label DE çevrilir. A.2b'de yalnız etiket metni çevriliyordu
+       ve kapsam ölçütü bunu saymadığı için "bitti" görünüyordu: düğme yazıları
+       İngilizce, ipuçları Türkçe kalırdı — ekran okuyucu kullanan biri arayüzün
+       TAMAMINI Türkçe duyardı. */
+    $$('[data-i18n-title]').forEach(el=>{ const v=I18N[L][el.dataset.i18nTitle]; if(v) el.title=v; });
+    $$('[data-aria]').forEach(el=>{ const v=I18N[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
+    $$('#langSwitch button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.lang===L);
+      b.setAttribute('aria-pressed', b.dataset.lang===L ? 'true' : 'false');
+    });
   }
+  /* setLang() BİLEREK yok: çağıracak dil düğmesi henüz eklenmedi (kapsam
+     sıfırlanmadı) ve çağrılmayan fonksiyon ölü koddur — denetim.py haklı
+     olarak bağırdı. Düğmeyle birlikte gelecek. */
   const root=document.documentElement, body=document.body;
   const app=$('#app'), frame=$('#frame'), prompt=$('#prompt'), scroller=$('#scroller'),
         stageWrap=$('#stageWrap'), cam=$('#cam');
@@ -3059,6 +3076,12 @@ const I18N={
      85'inde işaretlemedeki metin sözlükteki değerle birebir aynı.
      Çağrı yine de burada duruyor ki bağlantı KANITLI olsun — bağlanmamış
      altyapı, olmayan altyapıdan kötüdür (yapıldı sanılır). */
+  /* Kayıtlı dil OKUNMUYOR çünkü YAZAN da yok: dil düğmesi henüz eklenmedi.
+     Okumayı şimdiden koymak yarım yapı olurdu ve denetim.py haklı olarak
+     'durum alanı okunuyor ama hiç yazılmıyor: lang' dedi. Düğme turunda
+     okuma + yazma + düğme BİRLİKTE gelecek; eski kayıtlarda alan
+     bulunmayacağı için okuma `state.lang==='en'` biçiminde olmalı,
+     `!state.lang` DEĞİL (deponun 6 numaralı hata sınıfı). */
   applyLang();
   const s=curScript();
   $('#title').value=s.title; $('#editor').value=s.text;

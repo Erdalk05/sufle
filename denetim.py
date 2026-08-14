@@ -57,9 +57,14 @@ def kullanilan_anahtarlar(path):
     html = re.sub(r"<script.*?</script>", "", src, flags=re.S)
     bloklar = re.findall(r"<script>(.*?)</script>", src, re.S)
     js = bloklar[-1] if bloklar else ""
+    # data-i18n-title ve data-aria DE kullanımdır. A.2c'de eklendiler ve bu
+    # satır güncellenmeyince 21 anahtar "hiç kullanılmıyor" diye bağırdı;
+    # oysa hepsi Mac işaretlemesinde bağlıydı. Dedektörün kendi kör noktası.
     return (set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
             | set(re.findall(r'data-i18n="([^"]+)"', html))
-            | set(re.findall(r'data-i18n-ph="([^"]+)"', html)))
+            | set(re.findall(r'data-i18n-ph="([^"]+)"', html))
+            | set(re.findall(r'data-i18n-title="([^"]+)"', html))
+            | set(re.findall(r'data-aria="([^"]+)"', html)))
 
 
 def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None):
