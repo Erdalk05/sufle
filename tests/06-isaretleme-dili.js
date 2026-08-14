@@ -7,6 +7,8 @@ const grab=re=>{ const m=src.match(re); if(!m) throw new Error('bulunamadı: '+r
 const st={bionic:false};
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 eval(grab(/function bionic\(w\)\{[\s\S]*?\n\}/));
+/* markup artık çok kelimeli vurguyu dağıtan vurguYay'a bağımlı (B1, tests/70). */
+eval(grab(/function vurguYay\(satir\)\{[\s\S]*?\n\}/));
 eval(grab(/function markup\(raw\)\{[\s\S]*?\n\}/));
 
 // altyazıya giden metin = .w span'larının İÇ metni (etiketsiz)

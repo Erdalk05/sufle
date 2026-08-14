@@ -76,6 +76,8 @@ ok('ses zinciri GERÇEKTEN kurulup takılıyor', /fxTrack=makeFxTrack\(\);/.test
 const st={bionic:false};
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 eval(cikar(jsHam,/function bionic\(w\)\{[\s\S]*?\n\}/,'bionic'));
+/* markup artık çok kelimeli vurguyu dağıtan vurguYay'a bağımlı (B1, tests/70). */
+eval(cikar(jsHam,/function vurguYay\(satir\)\{[\s\S]*?\n\}/,'vurguYay'));
 eval(cikar(jsHam,/function markup\(raw\)\{[\s\S]*?\n\}/,'markup'));
 const em = t => /class="w em"/.test(markup(t));
 ok('*x* vurgulu', em('*x*'));

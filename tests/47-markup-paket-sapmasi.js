@@ -25,7 +25,8 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    söylüyor ("ipucu suflede ve ALTYAZIDA görünüyordu") — tetikleyici farklı,
    sınıf aynı. */
 
-const src=['markup','duzMetin']
+/* markup artık çok kelimeli vurguyu dağıtan vurguYay'a bağımlı (B1, tests/70). */
+const src=['vurguYay','markup','duzMetin']
   .map(f=>cikar(kod,new RegExp('function '+f+'\\([\\s\\S]*?\\n\\}'),f)).join('\n');
 const M=new Function('esc','bionic',src+'; return {markup,duzMetin};')(s=>s,s=>s);
 

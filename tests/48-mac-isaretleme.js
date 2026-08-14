@@ -16,9 +16,15 @@ const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
    Telefondaki kurallar Mac'e taşındı; duraklamalar artık gerçekten bekletiyor. */
 
-const isaretle=new Function('escapeHtml','biyonik',
-  cikar(mac,/function isaretle\(tok\)\{[\s\S]*?\n  \}/,'Mac isaretle')+'; return isaretle;')(s=>s,s=>s);
+const macIsaretle=new Function('escapeHtml','biyonik',
+  cikar(mac,/function vurguYay\(satir\)\{[\s\S]*?\n  \}/,'Mac vurguYay')+'\n'+
+  cikar(mac,/function isaretle\(tok\)\{[\s\S]*?\n  \}/,'Mac isaretle')+
+  '; return {isaretle,vurguYay};')(s=>s,s=>s);
+/* Satır düzeyi: dağıtım buildWords içinde yapılıyor, tek belirteçte değil. */
+const isaretle=tok=>macIsaretle.vurguYay(tok).replace(/\S+/g,macIsaretle.isaretle);
+/* markup artık çok kelimeli vurguyu dağıtan vurguYay'a bağımlı (B1, tests/70). */
 const markup=new Function('esc','bionic',
+  cikar(tel,/function vurguYay\(satir\)\{[\s\S]*?\n\}/,'telefon vurguYay')+'\n'+
   cikar(tel,/function markup\(raw\)\{[\s\S]*?\n\}/,'telefon markup')+'; return markup;')(s=>s,s=>s);
 
 /* Mac HTML varlıklarıyla yazıyor (kaynak dosyada okunur kalsın diye) — karşılaştırmadan önce çöz. */
@@ -73,7 +79,7 @@ ok('geri sarınca bekleme de iptal ediliyor', /holdUntil=0;/.test(setPos));
 
 /* ---------- BAĞLI MI ---------- */
 ok('buildWords işaretleme motorunu kullanıyor',
-   /r\.replace\(\/\\S\+\/g,isaretle\)/.test(cikar(mac,/function buildWords\(\)\{[\s\S]*?\n  \}/,'buildWords')));
+   /\.replace\(\/\\S\+\/g,isaretle\)/.test(cikar(mac,/function buildWords\(\)\{[\s\S]*?\n  \}/,'buildWords')));
 ok('eski "her belirteci olduğu gibi bas" yolu kalmadı',
    !/'<span class="w">'\+biyonik\(m\)\+'<\/span>'/.test(mac));
 ok('vurgu için stil tanımlı', /#scroller \.w\.em\{/.test(mac));

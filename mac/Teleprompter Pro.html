@@ -764,6 +764,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
      arac sufleyi kendi bozuyordu.
      Noktalama isarete yapisabiliyor ("*harika*!"); once ayriliyor, kelimenin
      parcasi olarak yerinde kaliyor. */
+  /* ÇOK KELİMELİ VURGU — İŞARETLEMEDEN ÖNCE KELİMEYE DAĞIT.
+     İşaretleme belirteç bazlı: `*çok önemli*` iki belirtece bölünüyor ve
+     hiçbiri `*…*` kalıbına uymuyordu; vurgu hiç çalışmadığı gibi yıldızlar
+     ekranda kalıyordu. Telefonla AYNI kural (bkz. tests/70).
+     Sınır: yıldızın yanında boşluk olmamalı (`3 * 4 * 5` çarpma kalsın) ve
+     yıldız dizisi dengeli olmalı (`***x***` olduğu gibi durur). */
+  function vurguYay(satir){
+    return satir.replace(/(?<!\*)\*{1,2}(?!\*)([^\s*](?:[^*\n]*[^\s*])?)\*{1,2}(?!\*)/g,(m,ic)=>
+      ic.split(/\s+/).map(w=>'*'+w+'*').join(' '));
+  }
   function isaretle(tok){
     const mw=tok.match(/^\((\d+(?:[.,]\d+)?)s?\)$/);
     if(mw){ const ms=Math.min(10000,Math.round(parseFloat(mw[1].replace(',','.'))*1000));
@@ -786,7 +796,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       if(!r){ html+='<div class="ln br">&nbsp;</div>'; return; }
       if(/^#{1,3}\s*/.test(r)){ html+='<div class="ln h">'+escapeHtml(r.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
       if(/^\[.*\]$/.test(r)){ html+='<div class="ln note">'+escapeHtml(r)+'</div>'; return; }
-      html+='<div class="ln">'+r.replace(/\S+/g,isaretle)+'</div>';
+      html+='<div class="ln">'+vurguYay(r).replace(/\S+/g,isaretle)+'</div>';
     });
     scroller.innerHTML=html;
     words=[...scroller.querySelectorAll('.w')];
