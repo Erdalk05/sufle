@@ -1104,7 +1104,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.7';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.8';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -5671,6 +5671,8 @@ const NEWS={
        en:'👆 <b>Small buttons are easier to hit</b>: the tap area of the top-bar icons, segment and tab buttons is now 44 pixels — the look is unchanged, only the touchable area grew.'
        +'<br>◐ <b>Your device high contrast setting is honoured</b>: if the operating system asks for more contrast, the app starts with it on. If you turn it off later, that choice is kept.'
        +'<br>🔒 <b>Security fix in the desktop remote server</b>: another page open in your browser could drive the prompter and even stop a take. Only your own remote page can send commands now.'},
+ '9.8':{tr:'✨ <b>Arayüz yenilendi</b>: kayıt sırasında ekrandaki düğmeler artık kendiliğinden gizleniyor — sahne temiz, yalnız metin ve kayıt göstergesi kalıyor. Ekrana dokununca düğmeler geri gelir, birkaç saniye dokunmazsan yeniden gizlenir. Eskiden bu ayar açıkken kaydı durdurmak imkansızdı, o tuzak kapandı. Ayrıca ana düğmeler yeni çizgi ikonlarla tazelendi, süre ve hız göstergeleri artık titremiyor, vurgu rengi daha okunur bir tona alındı.',
+       en:'✨ <b>Interface refresh</b>: while recording, the on-screen buttons now hide themselves — a clean stage with only the text and the recording indicator. Tap the screen to bring them back; they hide again after a few seconds. Previously, with this setting on, stopping a recording was impossible — that trap is fixed. The main buttons also got new line icons, the time and speed readouts no longer jitter, and the accent color moved to a more readable tone.'},
  '9.7':{tr:'🖥 <b>Masaüstü sürümünde sufle donuyordu</b>: sürüm notu, hazırlık raporu ve hoş geldin ekranı tarayıcının kendi diyaloğuyla açılıyordu ve o diyalog açıkken sayfa tümüyle duruyor — metin akmıyor, kamera görüntüsü donuyor, geri sayım takılıyordu. Telefonda bu kaldırılmıştı, masaüstüne taşınmamış. Artık kendi panelimizle açılıyor ve sufle akmaya devam ediyor.',
        en:'🖥 <b>The desktop prompter froze</b>: the release note, readiness report and welcome screen used the browser native dialog, and while such a dialog is open the page stops completely — the text does not scroll, the camera preview freezes and the countdown stutters. This was removed on the phone but never carried to the desktop. They now open in our own panel and the prompter keeps running.'},
 };

@@ -2,6 +2,15 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 📦 v9.8 HAZIR — yayınlanmadı, yayın kararı sende (2026-08-14 akşam)
+
+Pazar yol haritasının ilk 13 turu tamamlandı (`PAZAR_YOL_HARITASI.md`):
+tek çekirdek + derleme kapısı · Mac tam iki dilli (TR/EN düğmesi) · sağ panel 3 sekme ·
+SVG krom ikonları · **odak modu** (kayıtta arayüz kendiliğinden gizlenir, dokununca gelir —
+eski hâli kaydı durdurmayı imkansızlaştıran bir tuzaktı, kapandı) · rol renkleri + tabular-nums.
+Kapı 8/8 yeşil, 29 kanıtlı bozma, 22 kanıtlı test dosyası. **Onay verirsen push + canlı doğrulama
+protokolü uygulanacak.**
+
 ## Tek cümlede
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,

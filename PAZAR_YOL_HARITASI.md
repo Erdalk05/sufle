@@ -299,3 +299,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 10 | 2026-08-14 | B.2 başlangıç: SVG ikon altyapısı + telefon kromu | 4/4 ikon tarayıcıda çiziliyor (22×22) · aria korundu · 36 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 11 | 2026-08-14 | B.4 telefon: odak modu tuzağı kapandı + varsayılan açık | tarayıcıda döngü kanıtlı · peekUI sırası kilitli · 28 bozma | 7/8 yeşil (VER doğru kırmızı) |
 | 12 | 2026-08-14 | B.4 Mac: kayıtta paneller oto-kapanır, düzen geri gelir | sıra iddiası kilitli · 29 bozma kanıtlı · 14 iddia | 7/8 yeşil (VER doğru kırmızı) |
+| 13 | 2026-08-14 | **v9.8 yayın hazırlığı** — VER 9.8 · cache v80 · TR+EN sürüm notları | **KAPI 8/8 YEŞİL** — kampanyanın ilk tam yeşili; push Erdal onayı bekliyor | ✅ 8/8 |
