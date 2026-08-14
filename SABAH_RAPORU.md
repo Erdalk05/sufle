@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Çekimlerim listesi bütün videoları belleğe çekiyordu** — liste yalnız ad/tarih/süre/not gösterdiği hâlde arşivdeki tüm videoları okuyordu; üstelik her yıldıza dokunuşta, her yeniden adlandırmada, her not düzenlemesinde yeniden.
 - **Sesle takiple çekim yaparken metin konuştuğunun önüne geçiyordu** — kaydı başlatmak zamanlı akışı da açıyordu, iki sistem aynı anda metni sürüyordu; ölçülen kayma dakikada 140 kelimede yarım kelime, 300de bir kelimeden fazla. Bölüm sonunda çekim kendiliğinden de durabiliyordu.
 - **Kumanda tanı paneli yanlış suçlu gösterebiliyordu** — aynı paneldeki tetik kelimesi kutusuna dokunduktan sonra kumandaya basınca tuş kutuya gidiyor, panel ise 6 saniye sonra kumandayı ve işletim sistemini suçluyordu; çalışan bir kumandayı attırabilirdi.
 - **iPhone sunucusu telefonun ulaşamayacağı adresi QR olarak basıyordu** — Wi-Fi adresi bulunamayınca `127.0.0.1` yazıp QR üretiyordu; telefon okuyor, sayfa hiç açılmıyordu. Ayrıca 8443 doluysa yığın izi basıp çıkıyordu. İkisi de Mac tarafında zaten düzeltilmişti, buraya taşınmamış.
@@ -112,7 +113,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **52 commit**, hepsi yerelde, `claude` dalında
-- **2429 test** (gece başında 732) · yeni test dosyası: 39–78
-- Gece planı: 136 görevden **46'sı** işlendi (bütün P0'lar + 39 P1)
+- **53 commit**, hepsi yerelde, `claude` dalında
+- **2463 test** (gece başında 732) · yeni test dosyası: 39–79
+- Gece planı: 137 görevden **47'si** işlendi (bütün P0'lar + 40 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
