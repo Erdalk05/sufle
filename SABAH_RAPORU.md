@@ -4,8 +4,8 @@
 
 ## Tek cümlede
 
-Gecenin **bütün P0'ları** kapandı, ardından **50 P1** işlendi. **63 commit**, tamamı yerelde.
-Testler **732 → 2823**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
+Gecenin **bütün P0'ları** kapandı, ardından **51 P1** işlendi. **65 commit**, tamamı yerelde.
+Testler **732 → 2847**. Kapı yeşil. **Hiçbir şey yayınlanmadı** — yayın kararı sende.
 
 ## 🔴 Senden istediğim tek şey
 
@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Masaüstünde paylaşımı iptal edince hiçbir şey söylenmiyordu** — düğmeye basıp pencereyi kapattığında ekranda hiç iz kalmıyordu; telefon "dosya duruyor, tekrar deneyebilirsin" diyor, Mac susuyordu.
 - **Kaydı hemen duraklatınca yanlış uyarı çıkıyordu** — uygulama kaydın başladığını 2,5 sn sonra denetliyor; o sürede duraklattığında bunu "hiç başlamadı" sanıp korkutucu bir uyarı veriyordu.
 - **Silme askıda kalırsa ekran sonsuza kadar bekliyordu** — arşiv işlemleri arasında yalnız silmenin süre koruması yoktu; depo cevap vermezse toplu silme hiç bitmiyor ve arşiv ekranında düğme kapalı olduğu için çıkış da kalmıyordu.
 - **Toplu silme onayı sayfayı kapatınca açık kalıyordu** — silme geri alınamaz; vazgeçmek için sayfayı kapatsan bile onay duruyordu ve birkaç saniye içinde geri açıp bir dokunuş yıldızsız çekimlerin hepsini siliyordu.
@@ -126,7 +127,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **63 commit**, hepsi yerelde, `claude` dalında
-- **2823 test** (gece başında 732) · yeni test dosyası: 39–89
-- Gece planı: 138 görevden **57'si** işlendi (bütün P0'lar + 50 P1)
+- **65 commit**, hepsi yerelde, `claude` dalında
+- **2847 test** (gece başında 732) · yeni test dosyası: 39–90
+- Gece planı: 138 görevden **58'i** işlendi (bütün P0'lar + 51 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
