@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""Çekirdek gömücü — `cekirdek/` içindeki tek kaynağı iki kabuğun İÇİNE yazar.
+
+NEDEN GÖMME, ayrı dosya değil (ölçüldü, 2026-08-14):
+  `<script type="module">` + `import` file:// altında YÜKLENMİYOR ve bunu
+  SESSİZCE yapıyor — Chrome headless ile sınandı, ekranda boş uygulama kalıyor.
+  Mac kullanıcısı HTML'e çift tıkladığında adres file:// olur. Ayrıca ürünün
+  kimliği "tek dosya, sıfır bağımlılık": kullanıcı tek HTML'i kopyalayabilmeli.
+  Bu yüzden kaynak modüllerde yaşar, ÇIKTI tek dosya kalır.
+
+GÖMMENİN BİLİNEN BEDELİ — BAYAT ÇIKTI:
+  Kaynak değişip çıktı yenilenmezse ikisi ayrışır ve kimse fark etmez. Erdal'ın
+  diğer depolarında bu iki kez pahalıya patladı ("Turbo bayat-dist", "Vercel
+  bayat-dist"): kapı yeşil görünürken yayınlanan kod eskiydi. O yüzden bu betik
+  yalnız yazmıyor, DENETLEYEBİLİYOR: `--denetle` çıktıyı yeniden üretip
+  diff alır, fark varsa sıfırdan farklı çıkış kodu döner. kapi.sh bunu koşuyor,
+  yani bayat çıktı yayına gidemez.
+
+İŞARETLEYİCİ SÖZLEŞMESİ — kabukların içinde:
+    /* ==CEKIRDEK:ad== */   ... üretilen içerik ...   /* ==/CEKIRDEK:ad== */
+  İşaretleyiciler ELLE konur (bir kez), aradaki her şey ÜRETİLİR. Aradaki
+  içeriği elle düzenlersen bir sonraki derlemede kaybolur — bu yüzden üretilen
+  blok kendi başına "elle düzenleme" uyarısı taşır.
+
+Kullanım:
+    python3 derle.py            # çıktıları yaz
+    python3 derle.py --denetle  # yazma, yalnız bayat mı diye bak (kapı adımı)
+"""
+import os
+import re
+import sys
+
+REPO = os.path.dirname(os.path.abspath(__file__))
+CEKIRDEK = os.path.join(REPO, 'cekirdek')
+
+# Hangi modül hangi kabuğa gömülecek. Bir modül iki kabukta da olabilir —
+# "tek kaynak" tam olarak bu demek.
+PLAN = [
+    # (modül dosyası, gömüleceği kabuklar)
+    ('jetonlar.css', ['index.html', 'mac/Teleprompter Pro.html']),
+]
+
+BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'
+          '   Değişiklik oraya yazılır, sonra: python3 derle.py\n'
+          '   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */')
+
+
+def isaret(ad):
+    return (f'/* ==CEKIRDEK:{ad}== */', f'/* ==/CEKIRDEK:{ad}== */')
+
+
+def uret(ad):
+    """Modülün gömülecek hâli: başlık + içerik."""
+    with open(os.path.join(CEKIRDEK, ad), encoding='utf-8') as f:
+        govde = f.read().strip()
+    return BASLIK.format(ad=ad) + '\n' + govde
+
+
+def yerlestir(kabuk_metni, ad, icerik, kabuk_yolu):
+    """İşaretleyiciler arasını değiştir. İşaretleyici yoksa AÇIKÇA hata ver.
+
+    Sessizce atlamak en tehlikelisi olurdu: derleme "başarılı" der, kabuk
+    hiç güncellenmez, kapı da diff görmediği için yeşil kalır."""
+    ac, kapa = isaret(ad)
+    if ac not in kabuk_metni or kapa not in kabuk_metni:
+        raise SystemExit(
+            f'⛔ {kabuk_yolu}: "{ad}" için işaretleyici yok.\n'
+            f'   Kabuğun içine bir kez şunu koy:\n     {ac}\n     {kapa}')
+    desen = re.compile(re.escape(ac) + r'.*?' + re.escape(kapa), re.S)
+    if len(desen.findall(kabuk_metni)) != 1:
+        raise SystemExit(f'⛔ {kabuk_yolu}: "{ad}" işaretleyicisi 1 kez olmalı.')
+    # sub yerine lambda: içerikteki \g gibi kaçış dizileri yorumlanmasın.
+    return desen.sub(lambda _: ac + '\n' + icerik + '\n' + kapa, kabuk_metni)
+
+
+def calis(denetle):
+    bayat, yazilan = [], []
+    for ad, kabuklar in PLAN:
+        icerik = uret(ad)
+        for k in kabuklar:
+            yol = os.path.join(REPO, k)
+            with open(yol, encoding='utf-8') as f:
+                eski = f.read()
+            yeni = yerlestir(eski, ad, icerik, k)
+            if yeni == eski:
+                continue
+            if denetle:
+                bayat.append(f'{k} ← cekirdek/{ad}')
+            else:
+                with open(yol, 'w', encoding='utf-8') as f:
+                    f.write(yeni)
+                yazilan.append(f'{k} ← cekirdek/{ad}')
+
+    if denetle:
+        if bayat:
+            print('⛔ BAYAT ÇIKTI — kaynak değişmiş, kabuk yenilenmemiş:')
+            for b in bayat:
+                print('   ', b)
+            print('   Çözüm: python3 derle.py')
+            return 1
+        print(f'✓ çıktı güncel ({sum(len(k) for _, k in PLAN)} gömme noktası)')
+        return 0
+
+    if yazilan:
+        for y in yazilan:
+            print('✓ yazıldı:', y)
+    else:
+        print('✓ değişiklik yok, çıktı zaten güncel')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(calis('--denetle' in sys.argv))

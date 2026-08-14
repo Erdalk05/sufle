@@ -24,6 +24,9 @@ KAYIT = os.path.join(REPO, 'tests', 'bozmalar.json')
 KAYNAK = {
     'telefon': (os.path.join(REPO, 'index.html'), 'SUFLE_TELEFON'),
     'mac': (os.path.join(REPO, 'mac', 'Teleprompter Pro.html'), 'SUFLE_MAC'),
+    # Çekirdek modülleri de bozulabilmeli: kabuklara GÖMÜLDÜKLERİ için
+    # bir jeton hatası iki platformu birden vurur, yani en pahalı sınıf.
+    'jeton': (os.path.join(REPO, 'cekirdek', 'jetonlar.css'), 'SUFLE_JETON'),
 }
 
 

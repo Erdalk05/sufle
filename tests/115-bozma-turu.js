@@ -31,8 +31,12 @@ ok('kayıt boş değil ('+kayit.length+' bozma)', kayit.length>=15);
      kayit.every(k=>k.ad && k.test && k.kaynak && typeof k.bul==='string' && typeof k.koy==='string'));
   ok('her kayıt gerçek bir test dosyasına bakıyor',
      kayit.every(k=>fs.existsSync(path.join(REPO,'tests',k.test))));
-  ok('kaynak adı yalnız telefon ya da mac',
-     kayit.every(k=>k.kaynak==='telefon'||k.kaynak==='mac'));
+  /* Kaynak kümesi bozma.py'deki KAYNAK eşlemesiyle AYNI olmalı. Uydurma bir
+     ad yazmak bozmayı sessizce hiç koşturmaz — A.1'de tam bunu yaptım,
+     'cekirdek' diye olmayan bir kaynak uydurdum ve kapı yakaladı. */
+  const KAYNAKLAR=['telefon','mac','jeton'];
+  ok('kaynak adı bozma.py KAYNAK eşlemesinde tanımlı',
+     kayit.every(k=>KAYNAKLAR.includes(k.kaynak)));
   ok('hiçbir bozma boş değil (bul ile koy aynı olamaz)',
      kayit.every(k=>k.bul!==k.koy && k.bul.length>0));
   /* İki platform da temsil edilmeli — yoksa Mac tarafı hiç sınanmaz. */

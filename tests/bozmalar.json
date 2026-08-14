@@ -166,5 +166,19 @@
   "kaynak": "mac",
   "bul": "<script>\n(function(){\n  const $ = s=>document.querySelector(s);",
   "koy": "<script type=\"module\">\n(function(){\n  const $ = s=>document.querySelector(s);"
+ },
+ {
+  "ad": "A1 jeton kontrastı AA altına düştü",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "jeton",
+  "bul": "--t-low:#868E9E",
+  "koy": "--t-low:#6B7280"
+ },
+ {
+  "ad": "A1 kayıt dolgu/metin rengi birleştirildi",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "jeton",
+  "bul": "--r-record-t:#FF4D4F",
+  "koy": "--r-record-t:#D93036"
  }
 ]

@@ -59,16 +59,49 @@ const kapiSh=path.join(REPO,'kapi.sh');
 }
 
 /* ---------- BETİĞİ GERÇEKTEN KOŞTUR ---------- */
+/* ⚠️ BU FONKSİYON GERÇEK TABAN DOSYASINI GEÇİCİ OLARAK BOZUYOR.
+   Kapıyı sınamanın tek dürüst yolu bu — sahte bir kopya üstünde koşturmak
+   betiğin gerçekten o dosyaya yazıp yazmadığını ölçemezdi.
+
+   AMA geri koyma ÇÖKMEYE DAYANIKLI OLMALI. 2026-08-14'te dayanıklı değildi ve
+   bedeli görüldü: test aradaki bir satırda öldü, taban `{"index.html":0}`
+   hâlinde kaldı (JSON.stringify'ın sıkışık biçimi ele verdi) ve kapsam kapısı
+   bundan sonraki HER koşuda yanlış tabanla silahlandı — Mac girdisi tümden
+   kayboldu, index tabanı 51'den 0'a düştü. Kapı yeşil görünüp yanlış ölçen
+   sınıfın ta kendisi.
+
+   Çözüm: yazma ile geri koyma arasındaki HER yol finally'den geçsin. */
 function kos(args, tabanIcerik){
   const yedek=path.join(REPO,'tests','kapsam.json');
   const eski=fs.existsSync(yedek)?fs.readFileSync(yedek,'utf8'):null;
-  if(tabanIcerik!==undefined) fs.writeFileSync(yedek, tabanIcerik);
-  let cikti='', kod=0;
-  try{ cikti=execFileSync('python3',[kapsamPy,...args],{cwd:REPO,encoding:'utf8'}); }
-  catch(e){ cikti=(e.stdout||'')+(e.stderr||''); kod=e.status||1; }
-  const sonTaban=fs.existsSync(yedek)?fs.readFileSync(yedek,'utf8'):null;
-  if(eski!==null) fs.writeFileSync(yedek, eski);
+  let cikti='', kod=0, sonTaban=null;
+  try{
+    if(tabanIcerik!==undefined) fs.writeFileSync(yedek, tabanIcerik);
+    try{ cikti=execFileSync('python3',[kapsamPy,...args],{cwd:REPO,encoding:'utf8'}); }
+    catch(e){ cikti=(e.stdout||'')+(e.stderr||''); kod=e.status||1; }
+    sonTaban=fs.existsSync(yedek)?fs.readFileSync(yedek,'utf8'):null;
+  } finally {
+    /* İstisna da olsa, process.exit de olsa taban ESKİ hâline döner. */
+    if(eski!==null) fs.writeFileSync(yedek, eski);
+  }
   return {cikti, kod, sonTaban};
+}
+/* ASIL TETİKLEYİCİ SİNYAL — ölçüldü, tahmin edilmedi.
+   `finally` ve `process.on('exit')` SIGTERM'de ÇALIŞMAZ; süreç anında ölür.
+   Eski sürüm SIGTERM ile sınandı: taban `{"index.html":999}` hâlinde kaldı,
+   yani depoda bulduğumuz `{"index.html":0}` ile aynı sınıf.
+
+   Bu testi ÖLDÜREN şey bilinen bir şey: kos.js test başına 60 sn tavan
+   uyguluyor (CLAUDE.md) ve bu test python3'ü birkaç kez çağırdığı için
+   yavaş makinede tavanı aşabiliyor. Yani bu kaza tekrar edecekti. */
+{
+  const yedek=path.join(REPO,'tests','kapsam.json');
+  const acilis=fs.existsSync(yedek)?fs.readFileSync(yedek,'utf8'):null;
+  const geri=()=>{ try{ if(acilis!==null) fs.writeFileSync(yedek, acilis); }catch(_){} };
+  process.on('exit', geri);
+  process.on('uncaughtException', e=>{ geri(); console.error(e); process.exit(1); });
+  for(const sig of ['SIGTERM','SIGINT','SIGHUP'])
+    process.on(sig, ()=>{ geri(); process.exit(143); });
 }
 {
   const r=kos(['index.html'], JSON.stringify({'index.html':999}));

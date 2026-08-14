@@ -5,7 +5,7 @@
 ## Tek cümlede
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
-kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma turu eklendi).
+kapı **5 adımdan 8 adıma** çıktı (fonksiyon kapsamı, kasıtlı bozma turu, derleme tazeliği eklendi).
 Kapı yeşil. **v9.5 sabah yayınlandı**, bana bıraktığın üç karar verildi ve **v9.6 olarak yayınlandı**.
 İkisi de canlıdan doğrulandı. Yayınlanmamış iş kalmadı.
 
@@ -214,6 +214,6 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 ## Sayılar
 
 - **v9.7 canlıda** (v9.5 sabah · v9.6 kararlar · v9.7 masaüstü donma düzeltmesi) · yayınlanmamış iş yok
-- **3885 test** (gece başında 732) · yeni test dosyası: 39–120
+- **3938 test** (gece başında 732) · yeni test dosyası: 39–121
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
+- Kapı: 8 adım yeşil · 4 ayna birebir · `denetim.py` temiz

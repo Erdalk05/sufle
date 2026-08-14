@@ -106,9 +106,26 @@ depolarında "bayat dist" iki kez pahalıya patladı). Bu yüzden derleme adım�
 
 ### Görevler
 
-**A.1** `derle.py` + `çekirdek/` iskeleti. İlk gömülen modül **düşük riskli** olan: tasarım
-jetonları (CSS) + TR/EN sözlük. Motor/kayıt gibi mantık ilk turda TAŞINMAZ — boru hattı önce
-ucuz içerikle kanıtlanır. Kapıya bayat-çıktı kontrolü eklenir.
+**A.1** ✅ **BİTTİ** — `derle.py` + `cekirdek/jetonlar.css`, iki kabuğa da gömülüyor.
+Kapıya **1. adım** olarak bağlandı ("Derleme tazeliği"): kaynak değişip kabuk yenilenmezse KIRMIZI
+(ölçüldü: bayatlıkta çıkış 1, tazede 0). En başa kondu çünkü çıktı bayatsa sonraki yedi adım da
+yanlış dosyayı ölçer. Kapı 7 → **8 adım**.
+· Jetonlar bugün **hiçbir kuralı değiştirmiyor** — boru hattı bilerek görsel değişiklik olmadan
+kanıtlandı (`class="tnum"` kullanan öge sayısı: 0). Kurallara geçiş B.1'de.
+· Kontrast **hesaplanarak** seçildi, `tests/121` her koşuda yeniden hesaplıyor (26 iddia).
+**Ölçümün ortaya çıkardığı tasarım gerçeği:** metin kırmızısı ile üstüne beyaz yazı gelen dolgu
+kırmızısı **aynı renk olamıyor** (#FF4D4F metin 5,19 ✓ ama dolgu 3,27 ✗). Roller dolgu/metin diye
+ayrıldı; tek renkle idare etmek erişilebilirliği sessizce kırardı.
+· Bozma koşturucusu çekirdek modüllerini de bozabiliyor artık (`jeton` kaynağı). İlk denemede
+`cekirdek` diye **var olmayan bir kaynak** uydurmuştum — o iki bozma hiç koşmayacaktı, kapı yakaladı.
+
+**A.1'de çıkan yan bulgu — kapsam kapısı sessizce silahsızlanıyormuş:**
+`tests/kapsam.json` tabanı `{"index.html":0}` hâlinde bulundu (Mac girdisi tümden kayıp, index 51→0).
+Kaynağı bulundu: `tests/113` kapıyı sınamak için tabanı **gerçek dosyada** geçici bozuyor ve geri
+koyuyor; geri koyma **sinyale dayanıklı değildi**. Ölçüldü: eski sürüm `kos()` içinde SIGTERM alınca
+taban bozuk kalıyor (çıkış 143), yeni sürüm sinyali yakalayıp geri koyuyor. Tetikleyici de bilinen:
+`kos.js` test başına 60 sn tavan uyguluyor ve bu test python3'ü birkaç kez çağırıyor — yani kaza
+tekrar edecekti. `finally` + `exit` + `SIGTERM/SIGINT/SIGHUP` işleyicisi eklendi.
 **A.2** Sözlük tek kaynak. Mac'te `data-i18n` **hiç yok** (0 eşleşme, telefonda 252) → Mac Türkçe'ye
 gömülü; İngilizce desteği de bu adımda gelir (matris #28 "çok dil" = 1).
 **A.3** Motor + işaretleme + SRT çekirdeğe taşınır; iki kabuk da aynı kodu gömer.
@@ -196,3 +213,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 0 | 2026-08-14 | T0.1 + T0.3: analizin 10 iddiası kaynaktan sınandı | 4 çürüdü · 3 doğrulandı · 3 kısmen; skor 53,6 → **54,5** | ⬜ kod değişmedi |
 | 1 | 2026-08-14 | T0.2: `fark.py` — platform yüzey farkı çıkarıcı | telefon 106 / Mac 50 etkileşimli yüzey; 76 telefon-özel, 23 Mac-özel, 13 yalnız-ad; ölçüt `--kanit` ile ayırt ediyor | 6/7 yeşil (VER doğru kırmızı) |
 | 2 | 2026-08-14 | FAZ A mimari kararı: ES modülü elendi (ölçüldü) + `tests/120-file-protokolu.js` | Chrome headless `file://`: modül YÜKLENMEDİ, klasik çalıştı; 8 iddia, 3 kasıtlı bozmanın 3'ü kapıda yakalandı | 6/7 yeşil (VER doğru kırmızı) |
+| 3 | 2026-08-14 | A.1: `derle.py` + jeton çekirdeği + kapı 8. adımı; kapsam tabanı onarımı | bayatlık çıkış 1/0 ölçüldü · 26 iddia · 2 bozma kapıda · SIGTERM'de taban artık korunuyor | 7/8 yeşil (VER doğru kırmızı) |

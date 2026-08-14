@@ -13,6 +13,78 @@
 <link rel="icon" href="icon-192.png">
 <title>Sufle</title>
 <style>
+/* ==CEKIRDEK:jetonlar.css== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/jetonlar.css
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SUFLE tasarım jetonları — TEK KAYNAK, iki kabuğa da derle.py gömer.
+   Elle düzenlenecek yer BURASI; index.html ve mac/*.html içindeki kopyalar üretilmiştir.
+
+   NEDEN ROL BAZLI: bugün tek bir --accent:#00C853 her işi görüyor — birincil
+   düğme, aktif sekme, saat, KAYIT. Kullanıcı ekranda beş yeşil görüp hangisinin
+   asıl eylem olduğunu ayırt edemiyor. Rakip analizindeki 25. kategori (UI/görsel
+   tasarım) 3 puan alıyor ve kaybın büyük kısmı bu.
+
+   ⚠️ BU DOSYA ŞU AN HİÇBİR KURALI DEĞİŞTİRMİYOR — yalnız değişken tanımlıyor.
+   Amaç boru hattını GÖRSEL DEĞİŞİKLİK OLMADAN kanıtlamak. Kuralların jetonlara
+   geçişi B.1'de tek tek, ölçerek yapılacak. Bir jetonu bugün kullanan yoksa
+   ekranda hiçbir şey değişmez; bu kasıtlıdır.
+
+   KONTRAST ÖLÇÜLDÜ, seçilmedi (WCAG 2.1 nispi parlaklık, en zor zemin
+   --s-raised #1C1C22). tests/121 bu oranları her koşuda yeniden hesaplıyor.
+
+   ÖLÇÜMÜN ORTAYA ÇIKARDIĞI ŞEY: metin olarak okunan kırmızı ile ÜSTÜNE BEYAZ
+   YAZI GELEN kırmızı aynı renk OLAMIYOR. #FF4D4F koyu zeminde yazı olarak 5,19
+   (geçer) ama dolgu yapılıp üstüne beyaz yazılınca 3,27 (kalır). Bu yüzden
+   rollerin dolgu ve metin biçimleri AYRI jeton; tek renkle idare etmek
+   erişilebilirliği sessizce kırardı. */
+
+:root{
+  /* --- yüzeyler --- */
+  --s-bg:#08090C;          /* en arka zemin */
+  --s-surface:#141418;     /* sayfa/panel */
+  --s-raised:#1C1C22;      /* kart, yükseltilmiş kutu */
+  --s-line:#2A2A32;        /* ayraç */
+
+  /* --- metin --- */
+  --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
+  --t-mid:#9AA0A6;         /*  6,42 : yardımcı metin */
+  --t-low:#868E9E;         /*  5,15 : en soluk okunabilir. #6B7280 ÖLÇÜLDÜ 3,51 = KALDI */
+
+  /* --- roller: DOLGU (üstündeki yazıyla birlikte AA) --- */
+  --r-action:#00D47E;      --on-action:#04210F;   /* 8,72 — asıl eylem, ekranda TEK olmalı */
+  --r-record:#D93036;      --on-record:#FFFFFF;   /* 4,74 — kayıt/yıkıcı */
+  --r-info:#2563EB;        --on-info:#FFFFFF;     /* 5,17 — bilgi/ikincil */
+  --r-warn:#FFB020;        --on-warn:#231704;     /* 9,60 — uyarı */
+
+  /* --- roller: METİN/İKON biçimi (koyu yüzey üstünde) --- */
+  --r-action-t:#00D47E;    /* 8,65 */
+  --r-record-t:#FF4D4F;    /* 5,19 — dolgu biçiminden BİLEREK farklı */
+  --r-info-t:#6BA6FF;      /* 6,88 — dolgu biçiminden BİLEREK farklı */
+  --r-warn-t:#FFB020;      /* 9,27 */
+
+  /* --- tipografi: 5 adım. Bugün 11/12/13/14/15px karışık kullanılıyor. --- */
+  --tx-xs:11px;            /* ALL CAPS etiket */
+  --tx-sm:13px;            /* yardımcı metin */
+  --tx-md:15px;            /* gövde, düğme */
+  --tx-lg:19px;            /* panel başlığı */
+  --tx-xl:26px;            /* sayaç, WPM */
+  /* Sufle metninin kendi ölçeği ayrı yaşar — kullanıcı onu elle ayarlıyor. */
+
+  /* --- boşluk: 4px ritmi. Bugün 6/7/9/11/14px karışık. --- */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px;
+
+  /* --- biçim --- */
+  --rad-sm:8px; --rad-md:12px; --rad-lg:16px; --rad-full:999px;
+  --ring:0 0 0 3px rgba(0,212,126,.45);   /* klavye odağı — görünür olmak ZORUNDA */
+  --tap:44px;                              /* en küçük dokunma hedefi */
+}
+
+/* Sayısal göstergeler zıplamasın (süre, WPM, sayaç).
+   Tek görsel etkisi olan kural bu ve KASITLI: rakamların genişliği eşitlenir,
+   sayaç her saniye sağa sola oynamaz. Ölçüsü değişmez, yalnız hizası. */
+.tnum,[data-tnum]{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+/* ==/CEKIRDEK:jetonlar.css== */
   :root{
     --accent:#00C853; --accent-d:#04210f; --txt:#fff;
     --eyeY:24%; --fs:46px; --lh:1.45; --mg:7vw; --pcolor:#fff; --pbg:#000;
