@@ -96,6 +96,8 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 
 ### Kapının kendi kör noktası (gece sonunda kapatıldı)
 
+**Kapıya altıncı adım eklendi:** fonksiyon kapsamı. Testlerin hiç anmadığı fonksiyon sayısı artarsa kapı kırmızı veriyor (telefon 51, Mac 33 tabanla başladı; %80 ve %77). Ölçütü bilerek yüzde yapmadım: yüzdeyle ölçseydik testsiz bir fonksiyonu silmek kapsamı iyileşmiş gibi gösterirdi.
+
 **Üçüncü kör nokta, bu turda bulundu:** test koşturucusu **üç haneli dosya adlarını hiç görmüyordu**. Süzgeç tam iki rakam istiyordu, yani 100, 101 ve 102 numaralı testler yazıldıkları hâlde hiç koşmadı ve kapı yine de yeşil dedi — dosya listeye girmediği için ne çıkış kodu ne iddia sayacı ateşleniyor. Düzeltince kapı 3140 testten **3263 teste** çıktı. Artık koşturucunun depodaki her test dosyasını gördüğü ayrıca iddia ediliyor.
 
 Test koşturucusu **sıfır iddialı bir testi yeşil geçiriyordu** ve bir testin iddia sayısı düşerse susuyordu. Ölçtüm: 0 iddialı dosya eklendim, kapı yeşil kaldı; 29 iddialı testi 2ye indirdim, yine yeşil. Bu gece dört test tam da böyle boşalmıştı — yalnız çöktükleri için yakalandılar. Artık dosya başına iddia sayısı tutuluyor; sıfır ya da düşüş kırmızı.
@@ -153,7 +155,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **89 commit**, hepsi yerelde, `claude` dalında
-- **3720 test** (gece başında 732) · yeni test dosyası: 39–112
-- Gece planı: 138 görevden **82'si** işlendi (bütün P0'lar + 74 P1 + F9)
-- Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
+- **90 commit**, hepsi yerelde, `claude` dalında
+- **3755 test** (gece başında 732) · yeni test dosyası: 39–113
+- Gece planı: 138 görevden **83'ü** işlendi (bütün P0'lar + 75 P1 + F9)
+- Kapı: 6 adım yeşil · 4 ayna birebir · `denetim.py` temiz
