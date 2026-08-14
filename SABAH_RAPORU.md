@@ -54,6 +54,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Depo dolunca yanlış yer tarif ediliyordu** — "çekimleri sil" deniyordu ama çekimler ayrı depoda; senaryo silmek de yer açmıyordu (silinen senaryo geri alma için saklanıyor).
 - **Masaüstünde depo dolunca kaydetme patlıyordu** — `setItem` istisnası hiç yakalanmıyordu, o sırada çalışan iş ortasında kırılıyordu (parite kapısı yakaladı).
 - **Harf aralığı ve kalınlık hiç yeniden ölçülmüyordu** — metin uzuyor ama akışın sınırı eski kalıyor, yani **metnin son satırları hiç görünmeden** akış bitiyordu.
+- **Kendi tetik kelimen sessizce çalışmayabiliyordu** — boşluk içeren tetik (iki kelimelik ifade) hiçbir zaman tanınmıyor, yalnız noktalama/emojiden oluşan tetik hiç denenmiyordu; alan dolu göründüğü için kurduğunu sanıyordun.
 - **Yeşil ekran kapalıyken onun ayarları yine de sürükleniyordu** — perde rengi, eşik, kenar yumuşaklığı, saçak temizliği, arka plan seçimi: hepsi görünür, oynatılabilir ve tamamen etkisiz; sebebi de yazmıyordu. Altyazı gömme kapalıyken altyazı ayarları için de aynıydı.
 - **Fener sessizce sönüyordu** — mikrofonu/çözünürlüğü değiştirince, kamerayı yeniden açınca veya uygulama arka plandan dönüp kamerayı kurtarınca ışık gidiyor, anahtar açık görünmeye devam ediyordu.
 - **İki kelimeyi birden vurgulamak hiç çalışmıyordu** — `*çok önemli*` yazınca vurgu uygulanmıyor, yıldızlar suflede ve gömülü altyazıda kalıyordu; yayın paketi ise siliyordu. Okuduğun metinle yayımladığın metin ayrışıyordu. Masaüstünde de aynıydı.
@@ -98,7 +99,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **45 commit**, hepsi yerelde, `claude` dalında
-- **2236 test** (gece başında 732) · yeni test dosyası: 39–72
-- Gece planı: 135 görevden **39'u** işlendi (bütün P0'lar + 32 P1)
+- **46 commit**, hepsi yerelde, `claude` dalında
+- **2266 test** (gece başında 732) · yeni test dosyası: 39–73
+- Gece planı: 136 görevden **40'ı** işlendi (bütün P0'lar + 33 P1)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
