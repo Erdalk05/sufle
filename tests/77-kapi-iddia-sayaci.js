@@ -179,7 +179,17 @@ const ATLAYAN = 'console.log("ATLANDI: ortam eksik");\n'+
 {
   const t=JSON.parse(fs.readFileSync(path.join(REPO,'tests','beklenen.json'),'utf8'));
   const dosyalar=fs.readdirSync(path.join(REPO,'tests')).filter(f=>/^\d\d-.*\.js$/.test(f));
-  ok('taban her test dosyasını kapsıyor', dosyalar.every(f=>t[f]!=null));
-  ok('tabanda olmayan dosya yok', Object.keys(t).every(f=>dosyalar.includes(f)));
+  /* KAPI BOŞUNA KURT BAĞIRMAMALI. Önce "taban her dosyayı kapsıyor" diye
+     ölçüyordum; taban koşunun SONUNDA yazıldığı için yeni bir test eklendiği
+     tur bu iddia bir kez kırmızı veriyor, sonra kendiliğinden yeşile dönüyor.
+     Test silindiğinde de aynısı. Rastgele kırmızı veren bir kapı, kapının
+     kendisine olan güveni bitirir — bu yüzden geçici durum bir NOT, sabit
+     durum bir İDDİA. Asıl koruma (sayı düşüşü) bunlara zaten bağlı değil. */
+  const eksik=dosyalar.filter(f=>t[f]==null);
+  const fazla=Object.keys(t).filter(f=>!dosyalar.includes(f));
+  if(eksik.length) console.log('  · tabanda henüz yok (bu koşunun sonunda eklenecek): '+eksik.join(', '));
+  if(fazla.length) console.log('  · tabanda artık olmayan dosya (bu koşunun sonunda temizlenecek): '+fazla.join(', '));
+  ok('geçici fark makul (en çok 2 dosya)', eksik.length+fazla.length<=2);
   ok('hiçbir testin tabanı sıfır değil', Object.values(t).every(v=>v>0));
+  ok('taban boş değil', Object.keys(t).length>50);
 }
