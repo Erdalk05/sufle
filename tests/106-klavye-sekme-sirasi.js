@@ -9,7 +9,7 @@ const tel=oku(telefonYolu());
    ama GİZLENMİYORDU. İçindeki düğmeler, kaydırıcılar ve yazı kutuları
    klavyeyle hâlâ odaklanabiliyordu.
 
-   ÖLÇÜLDÜ: sayfada 202 odaklanabilir öge var ve 172si sayfaların içinde.
+   ÖLÇÜLDÜ: sayfada 202 odaklanabilir öge var ve 175i sayfaların içinde.
    Yani ana ekranda Sekmeye basan biri GÖRÜNMEYEN denetimlerin arasında
    dolaşıyor; odak halkası ekranın hiçbir yerinde görünmüyor, kullanıcı
    odağın nereye gittiğini bilmiyor.
@@ -22,7 +22,7 @@ const tel=oku(telefonYolu());
      yardım                -> 186 Sekme
 
    `visibility:hidden` içeriği sekme sırasından tümüyle çıkarıyor. Ana
-   ekranda gezilen öge 202den 30a indi. Kapanış animasyonu bozulmuyor:
+   ekranda gezilen öge 202den 27ye indi. Kapanış animasyonu bozulmuyor:
    görünürlük geçişine 0,3 saniye gecikme kondu.
 
    NOT: odağın açık sayfa İÇİNDE tutulması (odak tuzağı) ayrı bir iş —
@@ -43,12 +43,12 @@ function odaklanabilir(html){
   return out;
 }
 function sayfalar(html){
-  const out=[]; const re=/<div class="sheet"[^>]*id="([^"]+)"/g; let s;
+  const out=[]; const re=/<div (?:class="sheet"[^>]*id="([^"]+)"|id="([^"]+)"[^>]*class="sheet")/g; let s;
   while((s=re.exec(html))){
     let d=1, i=re.lastIndex;
     const et=/<div\b[^>]*>|<\/div>/g; et.lastIndex=i; let e;
     while(d>0 && (e=et.exec(html))){ if(e[0]==='</div>') d--; else d++; i=et.lastIndex; }
-    out.push({id:s[1], bas:s.index, son:i});
+    out.push({id:s[1]||s[2], bas:s.index, son:i});
   }
   return out;
 }

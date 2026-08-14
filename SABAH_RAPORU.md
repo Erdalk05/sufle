@@ -76,7 +76,8 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
-- **Klavyeyle gezinmek görünmeyen denetimlerin arasında dolaştırıyordu** — kapalı ayar sayfaları ekran dışına itiliyor ama gizlenmiyordu. Ölçüldü: 202 odaklanabilir ögenin **172si** o kapalı sayfaların içinde, yani Sekme tuşu ekranda olmayan düğmelere uğruyor ve odak halkası hiçbir yerde görünmüyordu. Ana ekranda gezilen öge **202den 30a** indi; kapanış animasyonu bozulmadı.
+- **Açık sayfanın arkasındaki düğmelere klavyeyle ulaşılabiliyordu** — perde fareyi durduruyor ama Sekme tuşunu durdurmuyordu. Ölçüldü: arkada **27 denetim** geziliyor ve içlerinde **kayıt düğmesi** var; klavye kullanan biri ayar sayfası açıkken arkadaki kayda ulaşıp çekim başlatabiliyordu, üstelik sufle sayfanın altında kalmış hâlde. Sonuç ekranında da aynıydı.
+- **Klavyeyle gezinmek görünmeyen denetimlerin arasında dolaştırıyordu** — kapalı ayar sayfaları ekran dışına itiliyor ama gizlenmiyordu. Ölçüldü: 202 odaklanabilir ögenin **175i** o kapalı sayfaların içinde, yani Sekme tuşu ekranda olmayan düğmelere uğruyor ve odak halkası hiçbir yerde görünmüyordu. Ana ekranda gezilen öge **202den 27ye** indi; kapanış animasyonu bozulmadı.
 - **Yayın paketinin hangi sürümden çekildiği yazmıyordu** — iki dilde çekim yapınca iki paket iniyor ve ikisinin içinde de aynı adla senaryo dosyası oluyordu; hangisinin hangi videoya ait olduğunu ancak metni okuyarak anlıyordun. Uygulama bunu ZATEN ÖLÇÜYORDU ama ölçümü hiçbir yerde kullanmıyordu. Yayın notu artık sürümü ve dilini söylüyor.
 - **Yıldız sessizce kayboluyordu** — arşivdeki bir çekimi yıldızlayıp hemen not yazdığında ikisi de aynı eski kaydı okuyup üst üste yazıyordu ve yıldız gidiyordu. Liste depodan okuduğu için yıldız ekranda da geri sönüyor, yani uygulamayı hatalı sanıyordun; oysa kaydettiğin şey gerçekten gitmişti. Çift dokunuşta sonuç tümüyle belirsizdi. Artık aynı anda yapılan düzenlemelerin hepsi kalıyor.
 - **Gömülü altyazı kayıt sırasında boşuna iş yapıyordu** — satır düzeni her karede yeniden hesaplanıyordu, oysa altyazı metni konuşma temposuyla değişiyor. Ölçüldü: yedi kelimelik bir altyazıda saniyede **480 gereksiz ölçüm**, yani 24 kat fazla iş; hem de tam kayıt sürerken. Beş saniyelik koşumda ~1800 işlem **57ye** indi. Masaüstünde de aynıydı.
@@ -147,7 +148,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **83 commit**, hepsi yerelde, `claude` dalında
-- **3442 test** (gece başında 732) · yeni test dosyası: 39–106
-- Gece planı: 138 görevden **76'sı** işlendi (bütün P0'lar + 68 P1 + F9)
+- **84 commit**, hepsi yerelde, `claude` dalında
+- **3474 test** (gece başında 732) · yeni test dosyası: 39–107
+- Gece planı: 138 görevden **77'si** işlendi (bütün P0'lar + 69 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
