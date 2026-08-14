@@ -9,6 +9,22 @@ kapı **5 adımdan 7 adıma** çıktı (fonksiyon kapsamı ve kasıtlı bozma tu
 Kapı yeşil. **v9.5 sabah yayınlandı**, bana bıraktığın üç karar verildi ve **v9.6 olarak yayınlandı**.
 İkisi de canlıdan doğrulandı. Yayınlanmamış iş kalmadı.
 
+## 🔴 Bugün bulunan P0 — masaüstünde sufle donuyordu (DÜZELTİLDİ, v9.7)
+
+Bildirdiğin hata gerçekti ve **benim gecemden kalma değil, çok daha eskiden duruyordu**:
+sürüm notu, hazırlık raporu, hata günlüğü ve hoş geldin ekranı tarayıcının kendi
+`alert` penceresiyle açılıyordu. O pencere açıkken tarayıcı **sayfayı tümüyle durdurur** —
+metin akmaz, kamera görüntüsü donar, sesle takip çalışmaz, 3-2-1 takılı görünür.
+
+Telefonda bu sınıf gece kapatılmıştı; masaüstüne taşınmamıştı. Dördü de sayfayı
+durdurmayan bir panele taşındı ve **tarayıcıda doğrulandı**: panel açıkken sayfa
+çalışmaya devam ediyor.
+
+Not: bunu bulurken **ölçtüm, tahmin etmedim**. Önce `vurguYay` düzenli ifadesinden
+şüphelendim — ölçtüm, 2000 karakterde 0 ms, hipotez çürüdü. Telefonda da "akmıyor"
+gördüm ama o, sekmenin gizli olmasından kaynaklanan bir ölçüm kusuruydu; hata diye
+raporlamadım.
+
 ## ✅ v9.5 YAYINLANDI
 
 Onayını aldıktan sonra protokol sırayla uygulandı ve **canlıdan doğrulandı**:
@@ -197,7 +213,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.6 canlıda** (v9.5 sabah, v9.6 kararlardan sonra) · yayınlanmamış iş yok
+- **v9.7 canlıda** (v9.5 sabah · v9.6 kararlar · v9.7 masaüstü donma düzeltmesi) · yayınlanmamış iş yok
 - **3885 test** (gece başında 732) · yeni test dosyası: 39–119
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 7 adım yeşil · 4 ayna birebir · `denetim.py` temiz
