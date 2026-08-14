@@ -1688,13 +1688,34 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       tx.onabort=()=>{ logErr('idbPut',tx.error); bitir(false); };
     }, 15000, false, 'idbPut');
   }
-  async function mdbAll(){
+  /* ARŞİV LİSTESİ BÜTÜN VİDEOLARI BELLEĞE ÇEKİYORDU.
+     `getAll()` her kaydı OLDUĞU GİBİ veriyor — video alanı dahil. Oysa
+     liste yalnız tarih, boyut ve ad gösteriyor; video ancak seçilen TEK
+     çekim için gerekiyor. Telefonda bu kusur kapatılmıştı (dbListe imleçle
+     geziyor ve blobu bırakıyor); masaüstüne taşınmamıştı.
+     İmleç kaydı verirken video alanı ayıklanıyor, yerine yalnız "videosu
+     var mı" bilgisi konuyor. Seçilen çekimin videosu `mdbGetir` ile tek
+     tek getiriliyor. */
+  async function mdbListe(){
     const d=await openMDB(); if(!d) return [];
     return sozZamanAsimi(bitir=>{
-      const q=d.transaction('takes').objectStore('takes').getAll();
-      q.onsuccess=()=>bitir((q.result||[]).sort((a,b)=>b.created-a.created));
+      const out=[];
+      const q=d.transaction('takes').objectStore('takes').openCursor();
+      q.onsuccess=e=>{ const c=e.target.result;
+        if(!c){ bitir(out.sort((a,b)=>b.created-a.created)); return; }
+        const {blob, ...ustveri}=c.value;      // videoyu BIRAK
+        ustveri.videoVar=!!blob;
+        out.push(ustveri); c.continue(); };
       q.onerror=()=>bitir([]);
-    }, 10000, [], 'idbAll');
+    }, 10000, [], 'idbListe');
+  }
+  async function mdbGetir(id){
+    const d=await openMDB(); if(!d) return null;
+    return sozZamanAsimi(bitir=>{
+      const q=d.transaction('takes').objectStore('takes').get(id);
+      q.onsuccess=()=>bitir(q.result||null);
+      q.onerror=()=>bitir(null);
+    }, 10000, null, 'idbGetir');
   }
   async function mdbDel(id){
     const d=await openMDB(); if(!d) return;
@@ -1709,7 +1730,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   }
   async function showTakes(){
     if(diyalogKapisi()) return;
-    const list=await mdbAll();
+    const list=await mdbListe();
     if(!list.length){ toast('Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de'); return; }
     const sec=list.map((t,i)=>(i+1)+') '+new Date(t.created).toLocaleString()+' · '+
       (t.size/1048576).toFixed(1)+' MB · '+t.title).join('\n');
@@ -1719,7 +1740,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const it=list[parseInt(c,10)-1];
     if(!it){ toast('Numara bulunamadı'); return; }
     if(sil){ await mdbDel(it.id); toast('Silindi'); return; }
-    lastBlob=it.blob; recStart=0; recStop=(it.dur||0)*1000; showResult();
+    /* Video YALNIZ seçilen çekim için getiriliyor. */
+    const tam=await mdbGetir(it.id);
+    if(!tam||!tam.blob){ toast('Bu çekimin videosu bulunamadı'); return; }
+    lastBlob=tam.blob; recStart=0; recStop=(tam.dur||0)*1000; showResult();
   }
   /* ============ YÜZEN SUFLE (overlay) ============
      Rakiplerin (Speakflow, Vodium, FlowPrompter) hepsinde var, bizde yoktu:

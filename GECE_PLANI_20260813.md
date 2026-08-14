@@ -201,7 +201,7 @@ Kapsam haritası: telefonun 122, Mac'in 71 fonksiyonu testlerde hiç anılmıyor
 | L8 | Mac'te kalıcı depo isteği gerçekten gereksiz mi — ölç | P2 |
 | L9 | Mac sunucusu olmadan açılınca kumanda paneli net mi | P1 |
 | L10 | Mac fonksiyon kapsamı %47 — en riskli 5'ini testle kilitle | P1 |
-| L11 | **Mac arşiv listesi BÜTÜN videoları belleğe çekiyor** — `mdbAll` `getAll()` kullanıyor, `showTakes` ise yalnız tarih/boyut/ad gösteriyor. Telefonda bu kusur kapatılmıştı (`dbListe` blobları ayıklıyor, tests/79); Mac tarafına taşınmamış. J1 turunda bulundu | P1 |
+| L11 | **Mac arşiv listesi BÜTÜN videoları belleğe çekiyor** — `mdbAll` `getAll()` kullanıyor, `showTakes` ise yalnız tarih/boyut/ad gösteriyor. Telefonda bu kusur kapatılmıştı (`dbListe` blobları ayıklıyor, tests/79); Mac tarafına taşınmamış. J1 turunda bulundu | P1  ✅ **DÜZELTİLDİ.** `getAll()` her kaydı olduğu gibi veriyordu (video dahil), oysa `showTakes` yalnız tarih/boyut/ad gösteriyor. Telefondaki çözüm (imleç + blobu bırak, tests/79) masaüstüne taşındı; seçilen çekimin videosu `mdbGetir` ile tek tek getiriliyor. **Ölçüldü**: 20 çekimlik arşivde liste açmak artık **sıfır** video okuyor, seçilen çekim için **bir** tane. Videosu düşmüş kayıt işaretleniyor ve açılınca sebep söyleniyor. tests/109 (36 iddia), 8 bozma |
 
 ## M. Kapı, test, denetim altyapısı
 | # | Görev | Ö |

@@ -76,6 +76,7 @@ Her düzeltmenin regresyon testi var ve testin gerçekten ayırt ettiğini kası
 - **Uzun senaryoda yazı boyutunu sürüklemek takılıyordu** — 6 düzen kaydırıcısının hepsi parmağın her kıpırdamasında metnin tamamını yeniden ölçüyordu; tek karede onlarca kez. Artık kare başına bir kez.
 - **İkinci sürümde sesle takip hiç çalışmıyordu** — ikinci sürüm genelde başka dilde yazılır ama tanıma dili yerinde kalıyordu: İngilizce metni Türkçe dinleyen sufle tek kelime tutturamıyordu. Dahası sesle takip açıkken dili elle değiştirmek de bir işe yaramıyordu; düğme yeni dile geçiyor, dinleme eski dilde sürüyordu.
 - **Sesle takip açıkken yukarıdaki düzeltmeler işe yaramıyordu** — takibin hedefi de piksel olduğu için düzelttiğim konumu hemen geri bozuyordu; ayrıca senaryo değişince eski metnin kelimeleri eşleştiriliyordu.
+- **Masaüstünde arşiv listesi bütün videoları belleğe çekiyordu** — liste yalnız tarih, boyut ve ad gösterdiği hâlde her açılışta arşivdeki TÜM videoları okuyordu. Telefonda bu kusur bu gece kapatılmıştı, masaüstüne taşınmamış. Artık liste sıfır video okuyor, seçtiğin çekim için bir tane getiriliyor.
 - **Masaüstünde yayın notu yoktu** — telefonun çekimden sonra ürettiği başlık adayları, açıklama taslağı ve etiketler masaüstünde hiç yoktu. Eklendi. Zipi bilerek taşımadım: video ve altyazı masaüstünde zaten ayrı ayrı iniyor, tek dosyaya paketlemenin kazancı ince bir ikili biçimi iki dosyada tutmanın riskini karşılamıyor.
 - **Açık sayfanın arkasındaki düğmelere klavyeyle ulaşılabiliyordu** — perde fareyi durduruyor ama Sekme tuşunu durdurmuyordu. Ölçüldü: arkada **27 denetim** geziliyor ve içlerinde **kayıt düğmesi** var; klavye kullanan biri ayar sayfası açıkken arkadaki kayda ulaşıp çekim başlatabiliyordu, üstelik sufle sayfanın altında kalmış hâlde. Sonuç ekranında da aynıydı.
 - **Klavyeyle gezinmek görünmeyen denetimlerin arasında dolaştırıyordu** — kapalı ayar sayfaları ekran dışına itiliyor ama gizlenmiyordu. Ölçüldü: 202 odaklanabilir ögenin **175i** o kapalı sayfaların içinde, yani Sekme tuşu ekranda olmayan düğmelere uğruyor ve odak halkası hiçbir yerde görünmüyordu. Ana ekranda gezilen öge **202den 27ye** indi; kapanış animasyonu bozulmadı.
@@ -149,7 +150,7 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 
 ## Sayılar
 
-- **85 commit**, hepsi yerelde, `claude` dalında
-- **3521 test** (gece başında 732) · yeni test dosyası: 39–108
-- Gece planı: 138 görevden **78'i** işlendi (bütün P0'lar + 70 P1 + F9)
+- **86 commit**, hepsi yerelde, `claude` dalında
+- **3557 test** (gece başında 732) · yeni test dosyası: 39–109
+- Gece planı: 138 görevden **79'u** işlendi (bütün P0'lar + 71 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
