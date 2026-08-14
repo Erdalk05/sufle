@@ -86,6 +86,7 @@ Test koşturucusu **sıfır iddialı bir testi yeşil geçiriyordu** ve bir test
 
 ## Çürüyen hipotezler (kayda geçsin, tekrar aranmasın)
 
+- **Işık denetçisi kayıt sırasında pahalı değil** — hipotez çürüdü. Örnek boyu kamera 4K olsa da sabit 1536 piksel, döngü 4 µs, kayıt sırasında 20 saniyede bir örnek: 10 dakikalık çekimde toplam 0,12 milisaniye. Bütçe teste kilitlendi (örnek boyu, aralık ya da geri okuma bayrağı sessizce değişirse kapı kırmızıya döner). Aynı ölçümde **ışık uyarısının çekim başına en fazla bir kez** çıktığı da doğrulandı.
 Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Hepsini testle kilitledim ki ileride bozulursa yakalansın:
 
 - Mikrofon sızıntısı yok (sesle takip Web Audio'ya hiç dokunmuyor)
@@ -128,12 +129,12 @@ Planda "şu bozuktur" diye yazdığım 11 madde **doğru çalışıyordu**. Heps
 1. **v9.5 yayını** (yukarıda)
 2. **T7** — iPhone'da paylaşım tanı satırı: "Fotoğraflara kaydetmiyor" sorununun tek kalan engeli, gerçek cihaz gerekiyor
 3. **K9** — normal temanın kenarlık rengi erişilebilirlik eşiğinin altında (1,29:1 / 3:1). Yükseltmek uygulamanın görünümünü baştan aşağı değiştirir: tasarım kararı senin.
-4. **K10** — ikon düğmesi 35 px, segment 40 px, sekme 38 px: üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin görünümünü değiştirir; tasarım kararı senin. (Anahtarlar görünüm değişmeden düzeltildi.)
+4. **K11** — ikon düğmesi 35 px, segment 40 px, sekme 38 px: üçü de 44 px tavsiyesinin altında. Büyütmek üst çubuğun ve ayar sekmelerinin görünümünü değiştirir; tasarım kararı senin. (Anahtarlar görünüm değişmeden düzeltildi.)
 5. **T23** — `/cmd` herhangi bir web sayfasından tetiklenebiliyor. Seçenekler: Origin kontrolü · QR'a jeton koymak · olduğu gibi bırakmak (yerel ağ, düşük risk)
 
 ## Sayılar
 
-- **71 commit**, hepsi yerelde, `claude` dalında
-- **2974 test** (gece başında 732) · yeni test dosyası: 39–95
-- Gece planı: 138 görevden **63'ü** işlendi (bütün P0'lar + 56 P1)
+- **72 commit**, hepsi yerelde, `claude` dalında
+- **3006 test** (gece başında 732) · yeni test dosyası: 39–96
+- Gece planı: 138 görevden **65'i** işlendi (bütün P0'lar + 57 P1 + F9)
 - Kapı: 5 adım yeşil · 4 ayna birebir · `denetim.py` temiz
