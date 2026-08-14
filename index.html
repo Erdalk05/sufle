@@ -86,7 +86,7 @@
 .tnum,[data-tnum]{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 /* ==/CEKIRDEK:jetonlar.css== */
   :root{
-    --accent:#00C853; --accent-d:#04210f; --txt:#fff;
+    --accent:var(--r-action); --accent-d:var(--on-action); --txt:#fff;
     --eyeY:24%; --fs:46px; --lh:1.45; --mg:7vw; --pcolor:#fff; --pbg:#000;
     --scrim:.35; --weight:700; --ls:0px; --align:center; --bandIn:5%; --bandOut:26%;
     --sheetbg:#141418; --card:#1e1e24; --line:#2a2a32; --muted:#9aa0a6;
@@ -483,17 +483,17 @@
   <div id="eyeline"></div>
   <div id="recFrame"></div>
   <div id="progress"></div>
-  <div id="hud"><span id="hEl">00:00</span><span id="hRem">–</span><span id="hWpm">140</span></div>
-  <div id="recDot"><i></i><span id="recLbl" role="status" aria-live="polite">KAYITTA</span><span id="recTime">00:00</span></div>
+  <div id="hud"><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
+  <div id="recDot"><i></i><span id="recLbl" role="status" aria-live="polite">KAYITTA</span><span id="recTime" class="tnum">00:00</span></div>
   <div id="audBadge"></div>
-  <div id="speedRail"><div id="railV">140</div></div>
+  <div id="speedRail"><div id="railV" class="tnum">140</div></div>
   <div id="railHint"></div>
   <div id="speedCtl">
     <button id="spDown" aria-label="Yavaşlat" data-aria="spDown">−</button>
-    <span id="spVal">140<small data-i18n="spLabel">HIZ · WPM</small></span>
+    <span id="spVal" class="tnum">140<small data-i18n="spLabel">HIZ · WPM</small></span>
     <button id="spUp" aria-label="Hızlandır" data-aria="spUp">+</button>
   </div>
-  <div id="count">3</div>
+  <div id="count" class="tnum">3</div>
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)</div>
 </div>
 

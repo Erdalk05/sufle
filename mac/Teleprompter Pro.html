@@ -79,7 +79,7 @@
 /* ==/CEKIRDEK:jetonlar.css== */
   :root{
     --bg:#0a0a0c; --panel:#141418; --panel2:#1c1c22; --line:#2a2a32;
-    --txt:#e8e8ee; --muted:#8a8a96; --accent:#00C853;
+    --txt:#e8e8ee; --muted:#8a8a96; --accent:var(--r-action);
     --pFont:64px; --pLine:1.5; --pMargin:6vw; --pFamily:system; --bandIn:5%; --bandOut:31%;
     --pText:#ffffff; --pBg:#000000; --eyeY:42%;
   }
@@ -312,7 +312,7 @@
     <div class="brand">Teleprompter <b>Pro</b></div>
     <button class="btn primary" id="playBtn">▶︎ Başlat</button>
     <button class="btn" id="resetBtn" title="Başa sar (R)" data-i18n-title="mTReset" aria-label="Başa sar (R)" data-aria="mTReset">⟲</button>
-    <span class="clock" id="clock">00:00</span>
+    <span class="tnum clock" id="clock">00:00</span>
 
     <span class="pill" id="fmtPill" title="Çekim formatı" data-i18n-title="mTFmt">
       <button data-fmt="9:16" class="on" data-i18n="mFmt916">📱 9:16</button>
@@ -366,7 +366,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <button class="btn" id="tNum" data-i18n="tNum">🔢 Sayıları yaz</button>
         <button class="btn" id="undoTool" style="display:none" data-i18n="tUndo">↺ Geri al</button>
       </div>
-      <div class="editStats"><span id="wc">0 kelime</span><span id="rt">~0 sn</span></div>
+      <div class="editStats"><span id="wc" class="tnum">0 kelime</span><span id="rt" class="tnum">~0 sn</span></div>
     </div>
   </div>
 
@@ -391,7 +391,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <span data-i18n="mSbRec"><kbd>K</kbd> kayıt</span>
       <span data-i18n="mSbFs"><kbd>F</kbd> tam ekran</span>
       <span data-i18n="mSbHide"><kbd>H</kbd> sade</span>
-      <span>WPM <b id="sbWpm">140</b> <b id="sbSpeed" style="display:none">140</b></span>
+      <span>WPM <b id="sbWpm" class="tnum">140</b> <b id="sbSpeed" style="display:none" class="tnum">140</b></span>
       <span id="sbDev" style="opacity:.6"></span>
       <!-- Sürüm yazısı artık düğme: sürüm notlarının elle girişi bu.
            Telefonda tek giriş otomatik açılıştı ve kaçıran bir daha

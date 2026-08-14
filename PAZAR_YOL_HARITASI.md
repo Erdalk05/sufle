@@ -190,8 +190,15 @@ Sözlük Mac'e **henüz gömülmüyor**: kullanılmayan 250 satır ölü koddur 
 Taklit hedefi **Teleprompter.com**: özellik listesi değil **hiyerarşi disiplini**.
 Ek kaynaklar: Elgato (odak modu), BIGVU (çekim sonrası akış), Video Teleprompter UK (kamera kontrolü).
 
-**B.1 Tasarım jetonları.** Rol bazlı renk (`--action` yeşil / `--record` kırmızı / `--info` mavi / `--warn`),
-5 adımlı tipografi, 4px boşluk ritmi, `tabular-nums`. Kural: **ekranda aynı anda tek yeşil buton**.
+**B.1 Tasarım jetonları.** ⏳ **başladı** — `--accent` iki kabukta da `var(--r-action)`'a bağlandı
+(#00C853 → #00D47E, ölçülmüş kontrast 8,21 → 8,65); 12 sayısal gösterge `tabular-nums` aldı
+(HUD, kayıt süresi, hız, geri sayım, Mac saat/sayaç). `tests/123` kilitliyor (15 iddia).
+Kalan: rol ayrımı (kayıt kırmızı ayrı jetonda ama vurgu hâlâ tek yeşil), tipografi ölçeği, boşluk ritmi.
+
+**📏 B.3 ölçümü tarayıcıda yapıldı — analizin iddiası telefon için YANLIŞ çıktı:**
+telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.com disiplini telefonda
+**zaten var**. "40+ kontrol" Mac'in sağ paneline ait. B.3'ün gerçek hedefi **Mac paneli**;
+telefonun sadeliği korunması gereken varlık (test 123 §3 bunu kilitliyor: intro ≤6 düğme).
 **B.2 Emoji → SVG ikon.** Tek sprite, 20×20 stroke. "Amatör → ürün" algısının yarısı bu.
 **B.3 Aşamalı açılım.** İlk açılışta yalnız: metin + BAŞLAT + hız. Gerisi sekme/`<details>` arkasında.
 Sağ panel 3 sekme: **Okuma · Çekim · Görünüm**, sekme başına ≤6 kontrol.
@@ -269,3 +276,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 5 | 2026-08-14 | A.2b: Mac sözlüğü kullanıyor (data-i18n 0→85) + kapsam kapısı | parite 275/275 · applyLang TR'de no-op (85/85 birebir) · eksik 28 ölçüldü · denetim.py iki geçişli | 7/8 yeşil (VER doğru kırmızı) |
 | 6 | 2026-08-14 | A.2c: 28 öznitelik + 21 anahtar; kapsam ölçütü iki kez düzeltildi | kapsam **69 → 41** (önceki commit'e karşı ölçüldü) · parite 296/296 · applyLang TR'de no-op (öznitelikler dahil) | 7/8 yeşil (VER doğru kırmızı) |
 | 7 | 2026-08-14 | A.2d: Mac tam iki dilli — kapsam 41→0, dil düğmesi, tarayıcı kanıtı | EN geçişi gerçek tarayıcıda doğrulandı · parite 327/327 · denetim.py 2 kör nokta | 8/8'in 7'si yeşil (VER doğru kırmızı) |
+| 8 | 2026-08-14 | B.1 başlangıç: jetonlar kullanımda + tnum ×12 + ilk-açılış ölçümü | accent→r-action iki kabukta · telefon 5/9 kontrol (analiz iddiası çürüdü) · 15 iddia | 7/8 yeşil (VER doğru kırmızı) |
