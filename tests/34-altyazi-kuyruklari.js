@@ -24,7 +24,9 @@ function kur(src, macMi){
   const seRe = macMi ? /function sentenceEnd\(s\)\{[\s\S]*?\n  \}/ : /function sentenceEnd\(s\)\{[\s\S]*?\n\}/;
   const kisaltma = cikar(src, /const KISALTMA=new Set\(\[[\s\S]*?\]\);/, 'KISALTMA');
   const sabit = cikar(src, /const CAP_MAXW?[\s\S]{0,140}?CAP_GAP\s*=\s*[\d.]+;/, 'CAP sabitleri');
-  const capMaxW = macMi ? '' : cikar(src, /function capMaxW\(\)\{[^\n]*\}/, 'capMaxW');
+  /* I10: kelime sınırı artık İKİ platformda da kullanıcı ayarı; Mac tarafında
+     `capMaxW` yokmuş gibi davranmak tezgâhı çökertiyordu. */
+  const capMaxW = cikar(src, /function capMaxW\(\)\{[^\n]*\}/, 'capMaxW');
   return (kelimeler, zamanlar, satirlar, opt={}) => new Function('__k','__z','__s','__opt', `
     const ${onek} = { capOffset: __opt.off||0, capMaxW: __opt.maxW };
     const words = __k.map(s => ({textContent:s}));
@@ -152,11 +154,14 @@ for (const [k,z,s] of ORNEKLER){
 }
 ok('telefon ve Mac aynı girdide birebir aynı kuyrukları üretiyor'+(sapma?' — SAPMA: '+sapma:''), !sapma);
 
-/* Mac'te kelime sınırı kullanıcı ayarı YOK — bilerek, parite eksiği olarak
-   kayıtlı. Sabit varsayılanla telefonla aynı sonucu verdiği yukarıda ölçüldü. */
-ok('Mac kelime sınırı sabit (kullanıcı ayarı yok — bilinen fark)',
-   /CAP_MAXW\s*=\s*7/.test(mac) && !/capMaxW/.test(mac));
-ok('telefonda kelime sınırı ayarlanabilir', /function capMaxW\(\)\{/.test(tel));
+/* BU İDDİA BİR EKSİKLİĞİ KİLİTLİYORDU — I10da kapatıldı, iddia da çevrildi.
+   (Aynı dosya daha önce kısaltma kusurunu da "bilinen sınır" diye kilitlemişti;
+   CLAUDE.mddeki "kabul edilmiş kusuru teste yazma" kuralının ikinci vakası.) */
+ok('kelime sınırı İKİ platformda da kullanıcı ayarı',
+   /function capMaxW\(\)\{/.test(tel) && /function capMaxW\(\)\{/.test(mac));
+ok('Mac tarafında sabit CAP_MAXW kalmadı', !/CAP_MAXW/.test(mac));
+ok('Mac kaydırıcısı telefonunkiyle aynı aralıkta',
+   /id="capMaxW" min="3" max="12"/.test(mac) && /id="capMaxW" min="3" max="12"/.test(tel));
 
 /* ---------- SABİTLER İKİ PLATFORMDA AYNI ---------- */
 for (const [ad,re] of [['satır uzunluğu',/CAP_MAXCH=(\d+)/],['kuyruk süresi',/CAP_MAXSEC=([\d.]+)/],['kuyruk arası',/CAP_GAP=([\d.]+)/]]){

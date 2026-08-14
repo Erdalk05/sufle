@@ -32,7 +32,7 @@
  "31-yayin-paketi.js": 47,
  "32-cekim-notu.js": 29,
  "33-iki-surumlu-senaryo.js": 36,
- "34-altyazi-kuyruklari.js": 32,
+ "34-altyazi-kuyruklari.js": 33,
  "35-arsiv-askida-kalma.js": 23,
  "36-sesle-takip-yeniden-baslatma.js": 19,
  "37-kamera-kurtarma.js": 22,
@@ -79,5 +79,6 @@
  "78-kayit-suresi-ve-cift-dongu.js": 30,
  "79-arsiv-ustveri-video.js": 32,
  "80-srt-zaman-damgasi.js": 45,
- "81-altyazi-kaymasi-cakisma.js": 57
+ "81-altyazi-kaymasi-cakisma.js": 57,
+ "82-altyazi-platform-paritesi.js": 37
 }

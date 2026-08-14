@@ -429,6 +429,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="top" style="margin-top:10px"><label>💬 Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
         <input type="range" id="capOff" min="-20" max="20" value="0">
         <div class="rb-note">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
+        <div class="top" style="margin-top:10px"><label>💬 Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
+        <input type="range" id="capMaxW" min="3" max="12" value="7">
+        <div class="rb-note">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
       </div>
     </div>
 
@@ -542,7 +545,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -889,6 +892,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         : (state.fmt==='free' ? 'Serbest çerçevede kırpma yapılmaz.' : 'Kapalı: kayıt kameranın kendi oranında (yatay) çıkar.');
     }
     if($('#capOffV')){ $('#capOffV').textContent=(state.capOffset||0).toFixed(1); $('#capOff').value=Math.round((state.capOffset||0)*10); }
+    if($('#capMaxWV')){ $('#capMaxWV').textContent=String(state.capMaxW||7); $('#capMaxW').value=(state.capMaxW||7); }
     $('#modeV').textContent=curMode().name;
     $('#modeHint').textContent=modeLine();
     layoutFrame();
@@ -1902,7 +1906,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   /* ---------- ALTYAZI (.srt) — okuma zamanlamasından ----------
      Konuşma tanıma yok: metin senaryonun kendisi, zamanlama da kelimenin
      okuma çizgisinden geçtiği an. */
-  const CAP_MAXW=7, CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+  /* PARITE: telefonda "satirda en fazla kelime" bir KULLANICI AYARI, Mac'te
+     sabit 7di. Ayni metin iki platformda farkli bolunuyordu (olculdu: telefon
+     4 kelimeye ayarliyken 8 kuyruk, Mac 7). Diger parametreler zaten aynidi ve
+     varsayilan ayarda ciktilar BIREBIR esitti (bkz. tests/82). */
+  const CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;
+  function capMaxW(){ return state.capMaxW||7; }
   /* TURKCEDE NOKTA CUMLEYI BITIRMEK ZORUNDA DEGIL: kisaltmalar (vb. Dr. Sn.),
      sira sayilari (3. 12.) ve noktali kisaltmalar (T.C. A.Ş.) da noktayla
      yazilir. Altyazi bunlari cumle sonu sayinca kuyruk tam ortasindan kesiliyor
@@ -1930,7 +1939,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     const cues=[]; let cur=null;
     for(const w of list){
       if(!cur){ cur={start:w.t,words:[w.s],ln:w.ln,chars:w.s.length}; continue; }
-      const brk = cur.words.length>=CAP_MAXW || cur.chars+1+w.s.length>CAP_MAXCH ||
+      const brk = cur.words.length>=capMaxW() || cur.chars+1+w.s.length>CAP_MAXCH ||
                   (w.t-cur.start)>=CAP_MAXSEC || w.ln!==cur.ln || sentenceEnd(cur.words[cur.words.length-1]);
       if(brk){ cues.push(cur); cur={start:w.t,words:[w.s],ln:w.ln,chars:w.s.length}; }
       else { cur.words.push(w.s); cur.chars+=1+w.s.length; }
@@ -2210,6 +2219,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   $('#sch').addEventListener('input',e=>{ state.sch=+e.target.value; applyAll(); save(); });
   $$('#caseSel button').forEach(b=>b.onclick=()=>{ state.textCase=b.dataset.c2; applyAll(); save(); });
   $('#capOff').addEventListener('input',e=>{ state.capOffset=(+e.target.value)/10; applyAll(); save(); });
+  $('#capMaxW').addEventListener('input',e=>{ state.capMaxW=+e.target.value; applyAll(); save(); });
   $$('#keySel button').forEach(b=>b.onclick=()=>{ state.keyColor=b.dataset.k; applyAll(); save(); });
   $$('#bgcSel button').forEach(b=>b.onclick=()=>{ state.bgColor=b.dataset.b; applyAll(); save(); });
   $$('#bgKindSel button').forEach(b=>b.onclick=()=>{ state.bgKind=b.dataset.bk;
