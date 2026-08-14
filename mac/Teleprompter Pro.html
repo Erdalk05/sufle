@@ -508,7 +508,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Telefonla ayni: uygulamanin sebep soyledigi tek kanal. Mac tarafinda
+     hic aria-live yoktu, yani ekran okuyucu bu bildirimlerin hicbirini
+     duyurmuyordu. -->
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 (function(){
