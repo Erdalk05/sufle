@@ -1458,12 +1458,22 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     if(cur) out.push(cur);
     return out.length?out:[txt||''];
   }
+  /* ALTYAZI DÜZENİ HER KAREDE YENİDEN HESAPLANIYORDU (telefonla aynı kural).
+     Metin konuşma temposuyla, çizim kare hızıyla değişiyor: 150 kelime
+     dakika temposunda 24 kat gereksiz measureText işi çıkıyordu. */
+  let capOnbellek={txt:'', W:0, size:0, lines:null};
   function drawCaption(ctx,W,Hh){
     const txt=liveCue(); if(!txt) return;
     const size=Math.round(42*(W/1080));
     ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    const lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
+    let lines;
+    if(capOnbellek.lines && capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size){
+      lines=capOnbellek.lines;
+    } else {
+      lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
+      capOnbellek={txt, W, size, lines};
+    }
     const lh=size*1.25, blockH=lines.length*lh, baseY=Hh-Hh*0.16-blockH/2;
     ctx.save();
     ctx.fillStyle='rgba(0,0,0,.45)';
