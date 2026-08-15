@@ -1335,7 +1335,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.12';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.13';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -4062,9 +4062,25 @@ function trimDur(){ const v=$('#resultVid'); return (v.duration&&isFinite(v.dura
 function trimUpdate(){
   const d=trimDur();
   trimA=Math.min(+$('#trimA').value/1000*d, d);
-  trimB=Math.max(+$('#trimB').value/1000*d, trimA+0.3);
-  $('#vTrimA').textContent=trimA.toFixed(1)+' sn';
-  $('#vTrimB').textContent=trimB.toFixed(1)+' sn';
+  /* SEÇİM VİDEONUN SONUNU AŞAMAZ. En az 0,3 sn kuralı yalnız ALT sınırı
+     kuruyordu; üst sınır yoktu ve ölçüldü (2026-08-15, sınır değerlerle):
+       · başlangıcı sona sürükle (60 sn video) → seçim 60,00–60,30
+       · 0,2 sn'lik video               → seçim 0,00–0,30
+     İkisinde de var olmayan bir bölge kesilmeye çalışılıyor: `doTrim`
+     `currentTime>=trimB` bekliyor, o an HİÇ gelmiyor ve iş yalnız
+     `v.ended` ya da zaman aşımıyla bitiyor — üstelik kullanıcıya
+     "seçilen 0,3 sn" yazılıp `lastDur` da öyle kaydediliyor. Yani ekranda
+     yazan süre ile eldeki çekim ayrışıyor.
+     Sıra önemli: önce üst sınır, sonra alt sınır. Ters sırada bitişe
+     dayanmış bir seçim yine sonu aşardı. */
+  trimB=Math.min(Math.max(+$('#trimB').value/1000*d, trimA+0.3), d);
+  if(trimB-trimA<0.3) trimA=Math.max(0, trimB-0.3);
+  /* BİRİM DE ÇEVRİLMELİ. İki etiket de dile bakmadan " sn" yazıyordu;
+     İngilizce arayüzde süreler Türkçe birimle görünüyordu. Kapı göremezdi:
+     budama kutusu çekimden sonra "Kes" denene kadar gizli. */
+  const br = L==='tr' ? ' sn' : ' s';
+  $('#vTrimA').textContent=trimA.toFixed(1)+br;
+  $('#vTrimB').textContent=trimB.toFixed(1)+br;
   const sel=Math.max(0,trimB-trimA);
   $('#trimInfo').textContent = (L==='tr'
     ? 'Seçilen: '+sel.toFixed(1)+' sn (toplam '+d.toFixed(1)+' sn) · kesme işlemi yaklaşık '+Math.ceil(sel)+' sn sürer'
@@ -6467,6 +6483,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
+       en:'<b>Trimming no longer runs past the end of the video.</b> Dragging the start to the very end, or a very short take, could select a region that does not exist, so the duration on screen and the take in your hand could drift apart. The selection now always stays inside the video.<br><b>Duration unit is correct in English too</b>: the trim labels used the Turkish unit regardless of language.<br><b>Desktop</b>: both fixes landed there as well, where the whole info line had stayed Turkish.'},
  '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',
        en:'<b>Voice follow no longer dies when you pause.</b> iPhone ends recognition on every silence; the app treated that as a failure and switched the feature off after the sixth pause — measured, it took about 13 seconds. Pauses no longer count as failures: recognition returns within 150 ms and the first words after a pause are not skipped any more.<br><b>The real failure guard stays</b>: if recognition starts and no audio ever arrives, it still tells you why and stops.<br><b>Desktop</b>: same fix there, plus the microphone can no longer stay open forever while recognition is dead.'},
  '9.11':{tr:'🎤 <b>Sesle takip artık sessizce ölmüyor</b>: tanıma açılıp hiç ses gelmezse 6 saniye içinde sebebini söylüyor — kamera açıksa mikrofonu paylaştığını ve kamerasız kipi denemeni yazıyor. Önceden hiçbir şey olmuyordu ve sebebi görünmüyordu.<br><b>Alt kumandalar üst üste binmiyor</b>: hız hapı, durum satırı ve düğme çubuğu birbirinin üstüne yazıyordu — dar telefonlarda durum satırı iki satıra çıkınca daha da kötüleşiyordu. Üçü artık tek bir dikey yığında ve konumları çubuğun gerçek yüksekliğinden hesaplanıyor.<br>Aynı kusur daha önce de olmuş ve düzeltmesi sabit piksel değeriyle kilitlenmişti; o yüzden sessizce geri gelmiş. Artık her çekim karesinde çakışan kumanda SAYILIYOR.<br><b>Gizliliği artık tarayıcı da koruyor</b>: uygulama hiçbir adrese ağ isteği gönderemiyor. Bu bir söz değil, tarayıcının uyguladığı bir kural. Tek istisna yine sesle takip ve o da varsayılan kapalı.<br><b>Ekran okuyucu</b>: 39 ayar kaydırıcısının adı yoktu (hız, okuma çizgisi, yazı boyutu, altyazı boyutu, budama uçları); hepsi adlandırıldı.',

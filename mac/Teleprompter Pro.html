@@ -1298,7 +1298,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.12';   // telefon sürümüyle aynı numaralama
+  const VER='9.13';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -2735,12 +2735,23 @@ const MMSG={
   function trimGuncelle(){
     const d=trimSure();
     trimA=Math.min(+$('#rrTrimA').value/1000*d, d);
-    trimB=Math.max(+$('#rrTrimB').value/1000*d, trimA+0.3);
-    $('#rrTrimAV').textContent=trimA.toFixed(1)+' sn';
-    $('#rrTrimBV').textContent=trimB.toFixed(1)+' sn';
+    /* TELEFONLA AYNI KUSUR BURADA DA VARDI (ölçüldü, 2026-08-15): "en az
+       0,3 sn" yalnız ALT sınırı kuruyordu, üst sınır yoktu. Başlangıcı sona
+       sürükleyince ya da video 0,3 sn'den kısaysa seçim VİDEONUN SONUNU
+       AŞIYORDU; kullanıcıya yazılan süre ile elde kalan çekim ayrışıyordu.
+       Sıra önemli: önce üst sınır, sonra alt sınır. */
+    trimB=Math.min(Math.max(+$('#rrTrimB').value/1000*d, trimA+0.3), d);
+    if(trimB-trimA<0.3) trimA=Math.max(0, trimB-0.3);
+    /* Birim ve bilgi satırı da çevrilmeli: burası telefondan daha kötüydü,
+       bilgi satırının TAMAMI sabit Türkçeydi ve İngilizce arayüzde de öyle
+       görünüyordu. Mac artık iki dilli (A.2d), metin geride kalmıştı. */
+    const br = L==='tr' ? ' sn' : ' s';
+    $('#rrTrimAV').textContent=trimA.toFixed(1)+br;
+    $('#rrTrimBV').textContent=trimB.toFixed(1)+br;
     const sec=Math.max(0,trimB-trimA);
-    $('#rrTrimInfo').textContent='Seçilen: '+sec.toFixed(1)+' sn (toplam '+d.toFixed(1)+
-      ' sn) · kesme işlemi yaklaşık '+Math.ceil(sec)+' sn sürer';
+    $('#rrTrimInfo').textContent = (L==='tr'
+      ? 'Seçilen: '+sec.toFixed(1)+' sn (toplam '+d.toFixed(1)+' sn) · kesme işlemi yaklaşık '+Math.ceil(sec)+' sn sürer'
+      : 'Selected: '+sec.toFixed(1)+'s of '+d.toFixed(1)+'s · cutting takes about '+Math.ceil(sec)+'s');
   }
   function trimAc(){
     /* Desteklenmiyorsa kutuyu HİÇ AÇMA — açıp sonra "olmuyor" demek,
@@ -3311,6 +3322,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',

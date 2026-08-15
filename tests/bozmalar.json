@@ -866,5 +866,47 @@
   "kaynak": "mac",
   "bul": "      srFails=0; srSonuc=true;        // sonuç geldi: tanıma gerçekten çalışıyor\n",
   "koy": ""
+ },
+ {
+  "ad": "T59 budamanın üst sınırı söküldü (seçim videonun sonunu aşar)",
+  "test": "148-budama-siniri.js",
+  "kaynak": "telefon",
+  "bul": "trimB=Math.min(Math.max(+$('#trimB').value/1000*d, trimA+0.3), d);",
+  "koy": "trimB=Math.max(+$('#trimB').value/1000*d, trimA+0.3);"
+ },
+ {
+  "ad": "T59 kısa videoda başlangıç geri çekilmiyor (A>B olur)",
+  "test": "148-budama-siniri.js",
+  "kaynak": "telefon",
+  "bul": "  if(trimB-trimA<0.3) trimA=Math.max(0, trimB-0.3);\n",
+  "koy": ""
+ },
+ {
+  "ad": "T59 birim yine sabit Türkçe (İngilizce arayüzde 'sn' görünür)",
+  "test": "148-budama-siniri.js",
+  "kaynak": "telefon",
+  "bul": "const br = L==='tr' ? ' sn' : ' s';",
+  "koy": "const br = ' sn';"
+ },
+ {
+  "ad": "T59 en az 0,3 sn kuralı kalktı (boş seçim kesilebilir)",
+  "test": "148-budama-siniri.js",
+  "kaynak": "telefon",
+  "bul": "if(sel<0.3){ toast(m('trimShort')); return; }",
+  "koy": "if(sel<0){ toast(m('trimShort')); return; }"
+ },
+ {
+  "ad": "T59 Mac budamasının üst sınırı söküldü (iki platform farklı keser)",
+  "test": "148-budama-siniri.js",
+  "kaynak": "mac",
+  "bul": "trimB=Math.min(Math.max(+$('#rrTrimB').value/1000*d, trimA+0.3), d);",
+  "koy": "trimB=Math.max(+$('#rrTrimB').value/1000*d, trimA+0.3);"
+ },
+ {
+  "ad": "T59 Mac bilgi satırı yine sabit Türkçe",
+  "test": "148-budama-siniri.js",
+  "kaynak": "mac",
+  "bul": "    $('#rrTrimInfo').textContent = (L==='tr'",
+  "koy": "    $('#rrTrimInfo').textContent = (true"
  }
 ]

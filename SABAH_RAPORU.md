@@ -2,6 +2,27 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## v9.13 — budama seçimi videonun dışına taşıyordu (B4 turunun ilk kalemi)
+
+Kapsam ölçümü, testlerin hiç anmadığı 46 fonksiyonun çoğunun **kayıt ve sonuç yolunda**
+toplandığını göstermişti — kırılınca bedeli *kaybedilen çekim* olan yer. Budama oradaydı ve
+ölçünce iki kusur çıktı, üstelik ikisi de kapının **göremeyeceği** yerdeydi (budama kutusu
+çekimden sonra "Kes" denene kadar gizli, yani `kontrast.py`nin çizdiği hiçbir durumda yok):
+
+- **Seçim videonun sonunu aşabiliyordu.** "En az 0,3 sn" kuralı yalnız alt sınırı kuruyordu.
+  Ölçüldü: 60 sn'lik çekimde başlangıcı sona sürükleyince seçim **60,00–60,30**, 0,2 sn'lik
+  çekimde **0,00–0,30**. Var olmayan bölge kesilmeye çalışılıyor; `doTrim` beklediği ana hiç
+  ulaşamıyor ve iş zaman aşımıyla bitiyor — ekranda yazan süre ile eldeki çekim ayrışıyor.
+- **Birim çevrilmiyordu**: iki etiket de dile bakmadan " sn" yazıyordu.
+
+**Mac'te aynısı vardı ve orası daha kötüydü**: bilgi satırının **tamamı** sabit Türkçeydi
+(telefonda hiç değilse dile bakıyordu). İkisi de düzeltildi ve `tests/148` iki kabuğun
+**aynı matematiği** kullandığını 363 birleşimde ölçüyor.
+
+Kilit: 1.100'den fazla kaydırıcı birleşimi taranıyor, üç değişmez aranıyor (0 ≤ A ≤ B ≤ süre)
++ **6 kasıtlı bozma**. Bozma turu yine kendi iddiamı düzeltti: "metin kaynakta var mı" diye
+bakan i18n iddiası, dalın koşulu `true` yapılınca susuyordu — artık **çizilen metne** bakıyor.
+
 ## 🔴 v9.12 — iPhone: ses durunca sesle takip ölüyordu (Erdal bildirdi)
 
 **Bildirim:** "iPhone, ses durunca sesli takip çalışmıyor."
@@ -321,7 +342,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.11 CANLIDA ve doğrulandı** · **v9.12 hazır** — **1 commit yayınlanmamış**, `main` dalında
-- **4885 test** (gece başında 732) · yeni test dosyası: 39–147
+- **v9.12 CANLIDA ve doğrulandı** · **v9.13 hazır** — **1 commit yayınlanmamış**, `main` dalında
+- **4911 test** (gece başında 732) · yeni test dosyası: 39–148
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz
