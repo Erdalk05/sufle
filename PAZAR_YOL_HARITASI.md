@@ -131,12 +131,12 @@ Taşımanın **birebir** olduğu md5 ile kanıtlandı (I18N 19.016 karakter, MSG
 aynı); telefon davranışı değişmedi. `tests/121` artık pariteyi de kilitliyor: **tr 240 · en 240 · eksik 0**,
 ve kabukta `I18N`/`MSG` **tam olarak birer kez** tanımlı (ikinci tanım JS'te sessizce gölgeler).
 
-**A.2b** ⏳ **BÜYÜK KISMI BİTTİ** — Mac artık sözlüğü kullanıyor: `data-i18n` **0 → 85**.
+**A.2b** ✅ **BİTTİ** — Mac artık sözlüğü kullanıyor: `data-i18n` **0 → 85**.
 27 yeni anahtar + 8 Mac'e özel anahtar sözlüğe eklendi (TR/EN parite **275/275**).
 `applyLang()` yazıldı ve başlatmaya bağlandı; **Türkçede hiçbir şeyi değiştirmediği ölçüldü**
 (85 ögenin 85'inde işaretleme metni sözlük değeriyle birebir).
 
-**A.2c** ⏳ 21 yeni anahtar + 28 öznitelik bağlandı (`data-i18n-title` / `data-i18n-ph` / `data-aria`);
+**A.2c** ⏳ **etiketler bitti, MESAJLAR açık.** 21 yeni anahtar + 28 öznitelik bağlandı (`data-i18n-title` / `data-i18n-ph` / `data-aria`);
 `applyLang` artık `title` ve `aria-label` da çeviriyor. Parite **296/296**.
 **Kapsam 69 → 41** (aynı ölçütle önceki commit'e karşı ölçüldü).
 
@@ -428,7 +428,7 @@ Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 
 **Kalan F.4:** ekran görüntüleri (plan yazıldı, görseller üretilmedi).
 **F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
-**F.6** ✅ **meta katmanı BİTTİ.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
+**F.6** ⏳ **meta katmanı bitti, vitrin sayfası açık.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
 `og:`/`twitter:`/JSON-LD/canonical **hiç yoktu**.
 Eklendi: anahtar kelimeli başlık (**40 karakter**, sınır 60), açıklama (**157**, sınır 160),
 canonical, 6 `og:` + 4 `twitter:` etiketi, `SoftwareApplication` JSON-LD (dört platform, iki dil,
@@ -488,3 +488,31 @@ karşılığına bağlı (kanıtlandı — "yapay zekâ senaryo yazarı" yazıl�
 | 29 | 2026-08-15 | F.4 mağaza metni + F.1 ön ölçümü | 20 söz koda bağlı · abartma engeli kanıtlı · iOS sesle takip engeli bulundu | ✅ 8/8 YEŞİL |
 | 30 | 2026-08-15 | **v9.9 YAYINLANDI** — Erdal onayıyla | canlı VER=9.9 · sw v81 · md5 birebir · 11/11 özellik izi canlıda sayıldı | ✅ canlı |
 | 31 | 2026-08-15 | F.6 SEO meta katmanı · v9.10 hazır | başlık 40/60 · açıklama 157/160 · abartma engeli kanıtlı · 39 bozma | ✅ 8/8 YEŞİL |
+
+---
+
+## 🔍 Denetim turu (Tur 32) — bu gecenin işini kendi kapımla ölçtüm
+
+Üç eksen ölçüldü; **iki gerçek eksik** çıktı ve ikisi de kapatıldı.
+
+**(a) Kapıda kanıtlı bozma:** gecenin 14 test dosyasından **12'sinde** vardı.
+`122` ve `132` için bozmayı elle denemiş ama **kalıcı kayda geçirmemiştim** —
+yani o iki test bir gün sessizce kör olsa kimse fark etmezdi. İkisi de eklendi
+ve kapıda kanıtlandı; `MAGAZA.md` bozma koşturucusuna yeni kaynak olarak tanıtıldı
+(abartma engelinin çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır).
+**Şimdi 14/14.**
+
+**(b) Platform asimetrisi:** 11 ortak özelliğin **11'i iki kabukta da var**.
+Kalan 4 fark bilinçli ve gerekçeli (mod rozeti, karşılama eylemi, SVG ikon,
+SEO — Mac'te karşılığı ya var ya da anlamsız).
+
+**(c) 🔴 YOL HARİTASI GERÇEĞİ SÖYLEMİYORDU — iki yönde birden:**
+· `F.6` **✅ diyordu ama içinde "Kalan" yazıyordu** → ⏳ yapıldı.
+· `A.2b` ⏳ görünüyordu ama **gerçekte bitmişti** (kapsam 0, dil düğmesi var) → ✅.
+· **Asıl bulgu:** `A.2c` "bitti" sanılıyordu; ölçünce **Mac'te `m()` hiç yok** ve
+**71 toast Türkçe sabit** çıktı. Yani Mac'te dil düğmesi var ama İngilizceye geçen
+kullanıcı **düğmeleri İngilizce, uyarıları Türkçe** görüyor — yarım özellik.
+`tests/122`'ye **çevrilmemiş mesaj sayacı** eklendi (taban **67**, `kapsam.py`
+mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak azaltır → taban sıkışır).
+
+| 32 | 2026-08-15 | **Denetim turu** — kendi gecemi kapımla ölçtüm | 12/14 → **14/14** kanıtlı bozma · asimetri 0 · yol haritası 3 yerde gerçeği söylemiyordu · Mac 67 çevrilmemiş mesaj bulundu |  ✅ 8/8 YEŞİL |

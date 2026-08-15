@@ -14,7 +14,16 @@ const {telefonYolu, macYolu, oku, REPO}=require('./kaynak.js');
 
 const tel = oku(telefonYolu());
 const mac = oku(macYolu());
-const mag = fs.readFileSync(path.join(REPO,'MAGAZA.md'),'utf8').replace(/\s+/g,' ');
+/* Bozma turu metni geçici kopyada bozup yolu SUFLE_MAGAZA ile veriyor;
+   bu satır olmadan test hep depodaki temiz metni okur ve abartma engelinin
+   çalıştığı KANITLANAMAZ. SUFLE_JETON/SOZLUK/DOCX ile aynı kural. */
+const magYolu = (() => {
+  const v = process.env.SUFLE_MAGAZA;
+  if (v && !fs.existsSync(v))
+    throw new Error('Verilen yol yok: ' + v + ' (SUFLE_MAGAZA) — bozma hiçbir şey ölçmez.');
+  return v || path.join(REPO,'MAGAZA.md');
+})();
+const mag = fs.readFileSync(magYolu,'utf8').replace(/\s+/g,' ');
 const tek = fs.readFileSync(path.join(REPO,'MAGAZA_TEKNIK.md'),'utf8').replace(/\s+/g,' ');
 
 /* ---------- METİNDEKİ İDDİALARIN KARŞILIĞI ---------- */

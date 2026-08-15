@@ -29,6 +29,9 @@ KAYNAK = {
     'jeton': (os.path.join(REPO, 'cekirdek', 'jetonlar.css'), 'SUFLE_JETON'),
     'sozluk': (os.path.join(REPO, 'cekirdek', 'sozluk.js'), 'SUFLE_SOZLUK'),
     'docx': (os.path.join(REPO, 'cekirdek', 'docx.js'), 'SUFLE_DOCX'),
+    # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
+    # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
+    'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),
 }
 
 

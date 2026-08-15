@@ -271,5 +271,19 @@
   "kaynak": "telefon",
   "bul": "\"Word dosyası içe aktarma\"",
   "koy": "\"Yapay zeka senaryo yazarı\""
+ },
+ {
+  "ad": "A2 Mac etiketi sözlükten koparıldı (i18n kapsamı düşer)",
+  "test": "122-mac-i18n-kapsami.js",
+  "kaynak": "mac",
+  "bul": "<span data-i18n=\"mSwEye\">🎯 Göz çizgisi</span>",
+  "koy": "<span>🎯 Göz çizgisi</span>"
+ },
+ {
+  "ad": "F4 mağaza metnine olmayan özellik yazıldı (abartma)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza",
+  "bul": "Arayüz Türkçe ve İngilizce.",
+  "koy": "Yapay zekâ senaryo yazarı ve bulut senkron dahildir. Arayüz Türkçe ve İngilizce."
  }
 ]

@@ -34,7 +34,7 @@ ok('kayıt boş değil ('+kayit.length+' bozma)', kayit.length>=15);
   /* Kaynak kümesi bozma.py'deki KAYNAK eşlemesiyle AYNI olmalı. Uydurma bir
      ad yazmak bozmayı sessizce hiç koşturmaz — A.1'de tam bunu yaptım,
      'cekirdek' diye olmayan bir kaynak uydurdum ve kapı yakaladı. */
-  const KAYNAKLAR=['telefon','mac','jeton','sozluk','docx'];
+  const KAYNAKLAR=['telefon','mac','jeton','sozluk','docx','magaza'];
   ok('kaynak adı bozma.py KAYNAK eşlemesinde tanımlı',
      kayit.every(k=>KAYNAKLAR.includes(k.kaynak)));
   ok('hiçbir bozma boş değil (bul ile koy aynı olamaz)',

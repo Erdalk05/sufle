@@ -165,3 +165,41 @@ if (taban === null || eksik.length < taban) {
   ok("kapsam sıfırlanmadan dil düğmesi EKLENMEMİŞ (yarım özellik yasak)",
      eksik.length === 0 || !/id="langSwitch"/.test(mac));
 }
+
+/* ---------- MESAJLAR DA ÇEVRİLİYOR MU (A.2c kalanı) ----------
+   DENETİMDE BULUNDU (2026-08-15): Mac etiketlerde tam iki dilli ve dil
+   düğmesi var, AMA toast mesajları hâlâ Türkçe sabit. Yani İngilizceye geçen
+   Mac kullanıcısı düğmeleri İngilizce, uyarıları Türkçe görüyor — yarım
+   özellik, deponun 1 numaralı hata sınıfı.
+
+   Ölçüt kapsam.py ile aynı mantıkta: ÇEVRİLMEMİŞ MESAJ SAYISI, yüzde değil.
+   Yeni sabit mesaj eklemek sayıyı ARTIRIR (kırmızı), sözlüğe bağlamak
+   AZALTIR (taban sıkışır). Taban dosyası: tests/mac-mesaj-taban.json */
+{
+  const TABAN_MESAJ = path.join(REPO, 'tests', 'mac-mesaj-taban.json');
+  const kodM = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  const cagri = [...kodM.matchAll(/toast\(((?:[^()']|'(?:[^'\\]|\\.)*')*)\)/g)];
+  /* Sabit dize taşıyan çağrı = çevrilmemiş. m('anahtar') ya da değişken
+     kullananlar çevrilmiş sayılır. */
+  const sabit = cagri.filter(c => /^'/.test(c[1].trim()) && /[A-Za-zğüşıöçĞÜŞİÖÇ]{3,}/.test(c[1]));
+  console.log('   Mac toast: ' + cagri.length + ' · çevrilmemiş: ' + sabit.length);
+  ok('toast çağrıları sayılabildi (ölçmeyen kapı değil)', cagri.length > 40);
+
+  let tabanM = null;
+  try { tabanM = JSON.parse(fs.readFileSync(TABAN_MESAJ, 'utf8')).cevrilmemis; } catch (_) {}
+  if (tabanM === null) ok('mesaj tabanı ilk kez yazılıyor (' + sabit.length + ')', true);
+  else {
+    ok(`çevrilmemiş mesaj ARTMADI (taban ${tabanM} → ${sabit.length})`, sabit.length <= tabanM);
+    if (sabit.length < tabanM) console.log('   ✓ taban sıkışıyor: ' + tabanM + ' → ' + sabit.length);
+  }
+  /* Taban YALNIZ iyileşince yazılır; kötüleşince yazsaydı kapı kendini
+     gevşetir ve bir daha hiçbir şey yakalamazdı. */
+  if (tabanM === null || sabit.length < tabanM) {
+    try { fs.writeFileSync(TABAN_MESAJ, JSON.stringify({ cevrilmemis: sabit.length }, null, 1) + '\n'); }
+    catch (e) { console.log('   (taban yazılamadı: ' + e.message + ')'); }
+  }
+  /* Dil düğmesi VARKEN mesajların çevrilmemiş olması yarım özelliktir.
+     Sayı sıfırlanınca bu iddia da anlamını yitirir ve m() beklenir. */
+  ok('mesajlar bittiğinde m() de tanımlı olmalı',
+     sabit.length > 0 || /const m=k=>/.test(kodM));
+}
