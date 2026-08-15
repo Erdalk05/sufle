@@ -183,12 +183,22 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
   iOS'ta **kayıt sonrası karıştırma** yolu ölçülecek, olmuyorsa sebebi arayüzde yazacak.
 - **Kabul:** iOS'ta sessiz kayıt üretme riski **sıfır** olduğu kanıtlanmadan açılmaz.
 
-### G.6 — Klip üreteci (Auto-Shorts karşılığı, AI'sız) · **P1**
+### G.6 — Klip üreteci (Auto-Shorts karşılığı, AI'sız) · **P1** · ✅ **BİTTİ (v9.14)**
 - **Ne:** çekimden sonra "paylaşılabilir 3 klip" önerisi — **bölüm işaretleri + `(2)` vurguları +
   zorlanma haritası + kelime zamanları** ile kesim noktaları; her klip için hazır başlık/etiket.
 - **Neden:** BIGVU bunu sunucuda LLM ile yapıyor; bizde **senaryonun kendisi** bu bilgiyi taşıyor.
-- **Kabul:** klip sınırları kelime ortasına düşmesin; her klip 15–60 sn; öneri **sebebini yazsın**
-  ("bölüm 2, en yüksek vurgu"). Uydurma başlık yok — abartma engeli (tests/132) geçerli.
+- **Yapıldı:** çekimden sonra sonuç ekranında 3 klip önerisi; hesap `cekirdek/klip.js`de.
+  Sınırlar **cümle sonuna** oturuyor (oturmuyorsa klip hiç önerilmiyor), süre **15–60 sn**,
+  öneriler çakışmıyor ve her biri **sebebini** yazıyor (bölüm başlangıcı · N vurgu işareti ·
+  açılış · cümle sınırı).
+- **Başlık uydurulmuyor:** bölüm adı ya da klibin kendi ilk kelimeleri **birebir**; test her
+  kelimenin çekimde ve **aynı sırada** geçtiğini ölçüyor.
+- **Zaman damgası yoksa öneri yok:** sufle akmamış demektir, zamanı uydurmak olmayan bir
+  ölçümü varmış gibi göstermek olurdu.
+- **Yeni kesme yolu açılmadı:** seçilen klip var olan budama kutusuna yükleniyor, kullanıcı
+  sınırları değiştirebiliyor.
+- **Kapı:** `tests/155` **117 iddia** + **12 kasıtlı bozma** (toplam 207). Bozma turu testimin
+  iki veri kusurunu buldu (ölçmeyen damga verisi ve hiç koşmayan başlık iddiası).
 
 ### G.7 — Intro/outro + alt bant animasyonu · **P2**
 - **Kabul:** kayıt boru hattını yavaşlatmayacak; yalnız çekim sonrası uygulanacak.

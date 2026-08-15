@@ -155,6 +155,30 @@ ve ikisi de teste bağlandı.
 kodun **biçimine** kilitliydi ve davranış değişmediği hâlde kırıldı; dördü de iddiaya taşındı,
 biri (`tests/145`) yine süslü parantez sayan çıkarıcıya geçirildi (gecenin üçüncü vakası).
 
+### ✅ G.6 — Klip önerileri: Auto-Shorts karşılığı, yapay zekâ YOK · v9.14
+
+BIGVU uzun videodan kısa klipleri **buluttaki modelle** çıkarıyor. Bizde tahmin gerekmiyor:
+`cekimAltyazi` her kelimenin okuma çizgisinden geçtiği anı, senaryo da bölüm başlıklarını ve
+vurgu işaretlerini zaten taşıyor. Kesim noktaları **ölçülü ve açıklanabilir**.
+
+**Üç dürüstlük sınırı koda ve teste bağlandı:**
+- **Başlık uydurulmaz** — bölüm adı varsa o, yoksa klibin kendi ilk kelimeleri **birebir**.
+  Test, başlığın her kelimesinin çekimde ve **aynı sırada** geçtiğini ölçüyor.
+- **Her klip sebebini taşır** — bölüm başlangıcı · N vurgu işareti · çekimin açılışı ·
+  cümle sınırı. Vurgu sayısı gerçekten sayılıyor (uydurma sayı testte kırılıyor).
+- **Kesim yarım cümlede bitmez** — sınır cümle sonuna oturmuyorsa klip **hiç önerilmiyor**.
+
+**Yeni kesme yolu yazılmadı:** seçilen klip var olan ve sınanmış **budama kutusuna** yükleniyor,
+kullanıcı sınırları görüp değiştirebiliyor. Öneri karar değil, başlangıç noktası.
+
+**Bozma turu testimi İKİ yerde çürüttü ve ikisi de veri kusuruydu:** ① "zaman damgası yoksa
+öneri yok" iddiasında tüm damgaları `null` yapmıştım — bozuk mantık da aynı sonucu veriyordu,
+yani veri hiçbir şey ölçmüyordu; artık çekimin ilk yarısı damgasız, ikinci yarısı damgalı ve
+klibin damgasız bölgeden başlamadığı ölçülüyor. ② "başlık uydurulmuyor" iddiası bölüm başlıklı
+veriyle koşuyordu ve seçilen kliplerin hepsi bölüm sebepli çıkınca **iddia hiç çalışmıyordu**.
+
+`tests/155` **117 iddia** + **12 kasıtlı bozma** (toplam 207).
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -544,10 +568,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **7 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **8 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5542 test** (gece başında 732) · yeni test dosyası: 39–154
+- **5661 test** (gece başında 732) · yeni test dosyası: 39–155
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

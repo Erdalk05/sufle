@@ -1363,5 +1363,89 @@
   "kaynak": "telefon",
   "bul": "  $$('.sw').forEach(s=>{ if(!s.dataset.t) return; const a=!!st[s.dataset.t];",
   "koy": "  $$('.sw').forEach(s=>{ const a=!!st[s.dataset.t];"
+ },
+ {
+  "ad": "G.6 klip yarım cümlede bitiyor (cümle sonu aranmıyor)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "      if(sure>=enAz && klipCumleSonu(k[j].s)){ bit=j; break; }",
+  "koy": "      if(sure>=enAz){ bit=j; break; }"
+ },
+ {
+  "ad": "G.6 klip üst sınırı aşıyor (Shorts kabul etmez)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "      if(sure>enCok) break;",
+  "koy": "      if(false) break;"
+ },
+ {
+  "ad": "G.6 çok kısa klip öneriliyor",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "const KLIP_EN_AZ = 15;      // saniye — bundan kısa klip sosyal videoda tutmaz",
+  "koy": "const KLIP_EN_AZ = 0;      // saniye"
+ },
+ {
+  "ad": "G.6 zaman damgası olmayan kelimeler de kullanılıyor (uydurma zaman)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "  const k=(kelimeler||[]).filter(w=>w && typeof w.t==='number' && isFinite(w.t));",
+  "koy": "  const k=(kelimeler||[]).map(w=>({s:w.s, ln:w.ln, t:+w.t||0}));"
+ },
+ {
+  "ad": "G.6 başlık UYDURULUYOR (senaryoda olmayan cümle)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "      sebep, vurgu, baslik: bolumAdi || ilkler.join(' '),",
+  "koy": "      sebep, vurgu, baslik: bolumAdi || 'İzleyiciyi yakalayan giriş',"
+ },
+ {
+  "ad": "G.6 vurgu sayısı ölçülmeden yazılıyor",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "    for(let j=bas;j<=bit;j++) if(klipVurguMu(k[j].s)) vurgu++;",
+  "koy": "    vurgu=3;"
+ },
+ {
+  "ad": "G.6 öneriler çakışıyor (aynı an iki klipte)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "    if(secilen.some(s=>c.bas < s.bit && c.bit > s.bas)) continue;",
+  "koy": "    if(false) continue;"
+ },
+ {
+  "ad": "G.6 öneri sayısı sınırsız",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "    if(secilen.length>=sayi) break;",
+  "koy": "    if(false) break;"
+ },
+ {
+  "ad": "G.6 vurgu işareti tanınmıyor (sebep hep cümle sınırı olur)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "klip",
+  "bul": "  return /^\\(\\d+(?:[.,]\\d+)?s?\\)$/.test(s) || /\\*/.test(s);",
+  "koy": "  return false;"
+ },
+ {
+  "ad": "G.6 telefonda kesilemeyen cihazda da öneri gösteriliyor",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "telefon",
+  "bul": "  if(!canTrim()) return;                    // kesilemeyen cihazda öneri anlamsız",
+  "koy": "  if(false) return;"
+ },
+ {
+  "ad": "G.6 telefonda bölüm başlığın kendi satırına bağlanıyor (ilk saniye boşa gider)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "telefon",
+  "bul": "    if(t) harita[i+1]=t;",
+  "koy": "    if(t) harita[i]=t;"
+ },
+ {
+  "ad": "G.6 Macte bölüm başlığın kendi satırına bağlanıyor",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "mac",
+  "bul": "      if(t) harita[i+1]=t;",
+  "koy": "      if(t) harita[i]=t;"
  }
 ]

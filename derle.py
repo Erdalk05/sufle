@@ -77,6 +77,10 @@ PLAN = [
     # G.4 — marka kiti yerleşimi ve okunurluk hesabı. Logosu telefonda sağ
     # üstte, masaüstünde kaymış duran bir ürün marka tutarlılığı satamaz.
     ('marka.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.6 — klip önerisi. Hesap iki kabukta da aynı olmalı: aynı çekim için
+    # telefonda ve masaüstünde farklı klipler önermek, kullanıcıya hangisine
+    # güveneceğini sordurur.
+    ('klip.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

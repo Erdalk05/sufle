@@ -7,7 +7,9 @@
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
+ tr:{klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',
+  klipSecildi:'Klip seçildi: {a} — sınırları değiştirip Kes ve uygula diyebilirsin',
+  logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
   logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',
   logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',
   logoCleared:'Logo kaldırıldı',
@@ -78,7 +80,9 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{logoTur:'That file is not an image — pick a PNG or a JPEG',
+ en:{klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',
+  klipSecildi:'Clip selected: {a} — adjust the edges if you like, then Cut and apply',
+  logoTur:'That file is not an image — pick a PNG or a JPEG',
   logoBuyuk:'The logo is too large — pick a smaller or simpler image',
   logoSet:'Logo added — it is burned into the video while the composite is on',
   logoCleared:'Logo removed',

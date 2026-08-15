@@ -528,6 +528,14 @@
   /* G.3 — ÖNİZLEME KARTLARI. Ayarın ADINI değil SONUCUNU seçtiriyor.
      Kart tuvali uygulamanın kendi çizimiyle doluyor; zemin, kamera açıksa
      senin görüntün, değilse jetonlardan gelen düz bir yüzey. */
+  /* G.6 — klip önerileri: her satır bir öneri, sebebi yazılı. */
+  .klipler{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+  .klip{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    background:var(--s-raised);border:1px solid var(--s-line);border-radius:var(--rad-md);
+    padding:10px 12px;min-height:var(--tap);color:var(--t-hi);cursor:pointer}
+  .klip .sr{font-size:var(--tx-xs);color:var(--t-mid);white-space:nowrap}
+  .klip .ad{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .klip:focus-visible{outline:none;box-shadow:var(--ring)}
   .kartlar{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;-webkit-overflow-scrolling:touch}
   .kart{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;
     background:var(--s-raised);border:1px solid var(--s-line);border-radius:var(--rad-md);
@@ -1291,6 +1299,7 @@
   <h2><span data-i18n="takeReady">Çekim hazır</span> <span id="rSize"></span></h2>
   <video id="resultVid" controls playsinline></video>
   <div id="provaBox" class="hidden"></div>
+  <div id="klipBox" class="hidden"></div>
   <div id="trimBox" class="hidden">
     <div class="row"><label for="trimA" data-i18n="trimStart">Baştan kes</label><span class="v" id="vTrimA">0.0 sn</span></div>
     <input type="range" id="trimA" min="0" max="1000" value="0">
@@ -1476,6 +1485,8 @@ const I18N={
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
   capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',
+  klipTitle:'Klip önerileri',
+  klipHint:'Öneriler senaryonun kendisinden çıkarıldı — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alındı. Dokununca budama kutusuna yüklenir, sınırları değiştirebilirsin.',
   markaTitle:'Marka kiti',logoPick:'Logo seç',logoClear:'Logoyu kaldır',logoPos:'Logo konumu',
   lpSagUst:'Sağ üst',lpSolUst:'Sol üst',lpSagAlt:'Sağ alt',lpSolAlt:'Sol alt',
   logoSize:'Logo boyutu (%)',markaRenk:'Marka rengi',tgBant:'Alt bant (ad ve unvan)',
@@ -1605,6 +1616,8 @@ const I18N={
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
   capTema:'Caption look',kartOrnek:'You record as you read',
+  klipTitle:'Clip suggestions',
+  klipHint:'The suggestions come from the script itself — section headings, emphasis marks and reading times. No AI, and the titles are taken from your script word for word. Tap one to load it into the trim box, where you can still adjust the edges.',
   markaTitle:'Brand kit',logoPick:'Pick a logo',logoClear:'Remove the logo',logoPos:'Logo position',
   lpSagUst:'Top right',lpSolUst:'Top left',lpSagAlt:'Bottom right',lpSolAlt:'Bottom left',
   logoSize:'Logo size (%)',markaRenk:'Brand colour',tgBant:'Lower third (name and title)',
@@ -1682,7 +1695,9 @@ const I18N={
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
+ tr:{klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',
+  klipSecildi:'Klip seçildi: {a} — sınırları değiştirip Kes ve uygula diyebilirsin',
+  logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
   logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',
   logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',
   logoCleared:'Logo kaldırıldı',
@@ -1753,7 +1768,9 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{logoTur:'That file is not an image — pick a PNG or a JPEG',
+ en:{klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',
+  klipSecildi:'Clip selected: {a} — adjust the edges if you like, then Cut and apply',
+  logoTur:'That file is not an image — pick a PNG or a JPEG',
   logoBuyuk:'The logo is too large — pick a smaller or simpler image',
   logoSet:'Logo added — it is burned into the video while the composite is on',
   logoCleared:'Logo removed',
@@ -4504,6 +4521,7 @@ function showResult(blob){
   $('#editBtn').style.display = ct ? '' : 'none';
   $('#trimSteps').style.display = ct ? 'none' : '';
   $('#result').classList.add('open'); arkayiKilitle();
+  klipleriGoster();
   try{ v.play().catch(()=>{}); }catch(e){}
 }
 function closeResult(){
@@ -4548,6 +4566,66 @@ function trimUpdate(){
   $('#trimInfo').textContent = (L==='tr'
     ? 'Seçilen: '+sel.toFixed(1)+' sn (toplam '+d.toFixed(1)+' sn) · kesme işlemi yaklaşık '+Math.ceil(sel)+' sn sürer'
     : 'Selected: '+sel.toFixed(1)+'s of '+d.toFixed(1)+'s · cutting takes about '+Math.ceil(sel)+'s');
+}
+/* G.6 — KLİP ÖNERİLERİ.
+   Veri zaten elimizde: `cekimAltyazi` kelime zamanlarını, senaryo bölüm
+   başlıklarını taşıyor. Hesap çekirdekte; burada yalnız senaryo yapısı
+   toplanıp sonuç listeleniyor. */
+function klipBasliklari(){
+  const lns=[...scroller.querySelectorAll('.ln')];
+  const harita={};
+  lns.forEach((el,i)=>{
+    if(!el.classList.contains('h')) return;
+    const t=(el.textContent||'').replace(/^#+\s*/,'').trim();
+    /* Bölüm BAŞLIĞIN ARDINDAN başlar: başlık satırı okunan metin değil,
+       ayraçtır. Klibi başlıktan başlatmak, ilk saniyeyi boşa harcardı. */
+    if(t) harita[i+1]=t;
+  });
+  return harita;
+}
+function klipSebepMetni(k){
+  if(k.sebep==='bolum') return m('klipBolum');
+  if(k.sebep==='vurgu') return m('klipVurgu').replace('{n}', k.vurgu);
+  if(k.sebep==='acilis') return m('klipAcilis');
+  return m('klipCumle');
+}
+function klipleriGoster(){
+  const kutu=$('#klipBox'); if(!kutu) return;
+  kutu.innerHTML=''; kutu.classList.add('hidden');
+  if(!canTrim()) return;                    // kesilemeyen cihazda öneri anlamsız
+  const oneriler=klipOnerileri(cekimAltyazi, {basliklar:klipBasliklari(), sure:trimDur()});
+  if(!oneriler.length) return;
+  const bas=document.createElement('div');
+  bas.className='row'; bas.innerHTML='<label>'+t('klipTitle')+'</label>';
+  kutu.appendChild(bas);
+  const liste=document.createElement('div'); liste.className='klipler';
+  oneriler.forEach(k=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='klip';
+    const ad=document.createElement('span'); ad.className='ad'; ad.textContent=k.baslik;
+    const sr=document.createElement('span'); sr.className='sr';
+    sr.textContent=Math.round(k.sure)+(L==='tr'?' sn · ':'s · ')+klipSebepMetni(k);
+    b.appendChild(ad); b.appendChild(sr);
+    b.onclick=()=>klipSec(k);
+    liste.appendChild(b);
+  });
+  kutu.appendChild(liste);
+  const not=document.createElement('div');
+  not.className='hint'; not.textContent=t('klipHint');
+  kutu.appendChild(not);
+  kutu.classList.remove('hidden');
+}
+/* Seçilen klip BUDAMA KUTUSUNA yükleniyor: yeni bir kesme yolu yazmıyoruz,
+   var olan ve sınanmış olanı kullanıyoruz. Kullanıcı sınırları görüp
+   değiştirebiliyor — öneri karar değil, başlangıç noktası. */
+function klipSec(k){
+  const d=trimDur(); if(!d) return;
+  $('#trimA').value=Math.max(0, Math.min(1000, Math.round(k.bas/d*1000)));
+  $('#trimB').value=Math.max(0, Math.min(1000, Math.round(k.bit/d*1000)));
+  trimUpdate();
+  $('#trimBox').classList.remove('hidden');
+  $('#trimBox').scrollIntoView({block:'nearest'});
+  toast(m('klipSecildi').replace('{a}', k.baslik));
 }
 function openTrim(){
   if(!canTrim()){ toast(m('trimNo')); return; }
@@ -6709,6 +6787,119 @@ function duzMetin(t){
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:metin.js== */
+/* ==CEKIRDEK:klip.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* KLİP ÖNERİSİ — "Auto-Shorts" karşılığı, YAPAY ZEKÂ YOK (G.6).
+
+   BIGVU uzun videodan kısa klipleri buluttaki modelle çıkarıyor. Bizde o
+   veriye zaten sahibiz ve TAHMİN GEREKMİYOR: `cekimAltyazi` her kelimenin
+   okuma çizgisinden geçtiği anı taşıyor, senaryo bölüm başlıklarını ve
+   vurgu işaretlerini zaten söylüyor. Yani kesim noktaları ÖLÇÜLÜ, sonuç da
+   açıklanabilir.
+
+   ÜÇ DÜRÜSTLÜK SINIRI — hepsi test tarafından tutuluyor:
+   ① BAŞLIK UYDURULMAZ. Klibin adı senaryodan birebir alınır (bölüm başlığı
+      ya da klibin ilk cümlesi). "İzleyiciyi yakalayan giriş" gibi bir cümle
+      üretmek, ölçmediğimiz bir şeyi biliyormuş gibi konuşmak olurdu.
+   ② HER KLİP SEBEBİNİ TAŞIR: hangi ölçüme dayanarak önerildiği yazılıdır.
+   ③ KESİM KELİMENİN ORTASINA DÜŞMEZ. Sınırlar cümle sonlarına oturur;
+      oturmuyorsa klip önerilmez — yarım cümleyle biten bir klip, izleyiciye
+      "bir şey eksik" hissi verir ve paylaşılmaz. */
+
+const KLIP_EN_AZ = 15;      // saniye — bundan kısa klip sosyal videoda tutmaz
+const KLIP_EN_COK = 60;     // saniye — Shorts/Reels üst sınırı
+const KLIP_SAYI = 3;
+
+/* Cümle sonu: nokta/ünlem/soru + kapanış tırnak/parantez. Kısaltmalar
+   (vb. Dr. T.C.) burada BİLEREK ele alınmıyor — altyazı bölmesinde ayrı bir
+   kısaltma listesi var ve klip sınırı için fazladan bir cümle sonu kaçırmak
+   zararsız, YANLIŞ yerde kesmek zararlıdır. */
+function klipCumleSonu(kelime){
+  return /[.!?…]["')\]]?$/.test(String(kelime||''));
+}
+
+/* Vurgu işareti: senaryodaki (2) beklemesi ya da *vurgu* yıldızları.
+   Kelime metni suflede işaretler ayıklanmış hâlde gelebildiği için ham
+   senaryo satırı da sorulabiliyor. */
+function klipVurguMu(kelime){
+  const s=String(kelime||'');
+  return /^\(\d+(?:[.,]\d+)?s?\)$/.test(s) || /\*/.test(s);
+}
+
+/* Klip önerileri.
+   `kelimeler`: [{s, ln, t}] — s metin, ln satır no, t saniye (null olabilir)
+   `ayar`: {basliklar:{satirNo:'Bölüm adı'}, enAz, enCok, sayi, sure}
+
+   Yöntem (tamamen açıklanabilir, rastgelelik yok):
+     1. Zamanı olan kelimeler alınır; zaman damgası olmayan çekimde klip
+        önerilmez (sufle akmamış demektir).
+     2. Aday başlangıçlar: bölüm başlığının ilk kelimesi + çekimin başı.
+     3. Her adaydan ileri gidilerek EN AZ süreyi geçen ilk CÜMLE SONU aranır;
+        üst sınırı aşarsa aday düşer.
+     4. Adaylar çakışmayacak şekilde puanına göre seçilir. */
+function klipOnerileri(kelimeler, ayar){
+  const a=ayar||{};
+  const enAz=+a.enAz||KLIP_EN_AZ, enCok=+a.enCok||KLIP_EN_COK, sayi=+a.sayi||KLIP_SAYI;
+  const basliklar=a.basliklar||{};
+  const k=(kelimeler||[]).filter(w=>w && typeof w.t==='number' && isFinite(w.t));
+  if(k.length<2) return [];
+
+  const adaylar=[];
+  const bolumBasi={};                     // satır no → o satırın ilk kelime indeksi
+  for(let i=0;i<k.length;i++){
+    const ln=k[i].ln;
+    if(bolumBasi[ln]===undefined) bolumBasi[ln]=i;
+  }
+  const baslangiclar=new Set([0]);
+  for(const satir of Object.keys(basliklar)){
+    const i=bolumBasi[satir];
+    if(i!==undefined) baslangiclar.add(i);
+  }
+  /* Cümle sonlarının HEMEN ARDI da aday: bölüm işareti olmayan senaryoda
+     tek aday (çekimin başı) kalırdı ve özellik boş dönerdi. */
+  for(let i=0;i<k.length-1;i++) if(klipCumleSonu(k[i].s)) baslangiclar.add(i+1);
+
+  for(const bas of baslangiclar){
+    const t0=k[bas].t;
+    let bit=-1;
+    for(let j=bas+1;j<k.length;j++){
+      const sure=k[j].t-t0;
+      if(sure>enCok) break;
+      if(sure>=enAz && klipCumleSonu(k[j].s)){ bit=j; break; }
+    }
+    if(bit<0) continue;
+    const sure=k[bit].t-t0;
+    let vurgu=0;
+    for(let j=bas;j<=bit;j++) if(klipVurguMu(k[j].s)) vurgu++;
+    const bolumAdi=basliklar[k[bas].ln];
+    /* SEBEP ÖLÇÜME DAYANIR — sıralama da bu: bölüm başı en güçlü sinyal
+       (yazar orada yeni bir konuya geçtiğini kendi söylemiş), sonra vurgu
+       yoğunluğu, sonra çekimin açılışı. */
+    const sebep = bolumAdi ? 'bolum' : (vurgu>0 ? 'vurgu' : (bas===0 ? 'acilis' : 'cumle'));
+    const puan = (bolumAdi?100:0) + vurgu*10 + (bas===0?5:0) + Math.min(10, sure/10);
+    /* BAŞLIK UYDURULMAZ: bölüm adı varsa o, yoksa klibin ilk kelimeleri. */
+    const ilkler=[]; for(let j=bas;j<=bit && ilkler.length<7;j++) ilkler.push(k[j].s);
+    adaylar.push({
+      bas:t0, bit:k[bit].t, sure,
+      ilkKelime:bas, sonKelime:bit,
+      sebep, vurgu, baslik: bolumAdi || ilkler.join(' '),
+      baslikKaynak: bolumAdi ? 'bolum' : 'metin', puan
+    });
+  }
+  adaylar.sort((x,y)=>y.puan-x.puan);
+  const secilen=[];
+  for(const c of adaylar){
+    if(secilen.length>=sayi) break;
+    /* ÇAKIŞMA YOK: aynı anı iki klipte önermek, kullanıcıya iki kez aynı
+       videoyu kestirmek demektir. */
+    if(secilen.some(s=>c.bas < s.bit && c.bit > s.bas)) continue;
+    secilen.push(c);
+  }
+  return secilen.sort((x,y)=>x.bas-y.bas);
+}
+/* ==/CEKIRDEK:klip.js== */
 /* ==CEKIRDEK:marka.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/marka.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -7226,8 +7417,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.'},
  '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
        en:'<b>Trimming no longer runs past the end of the video.</b> Dragging the start to the very end, or a very short take, could select a region that does not exist, so the duration on screen and the take in your hand could drift apart. The selection now always stays inside the video.<br><b>Duration unit is correct in English too</b>: the trim labels used the Turkish unit regardless of language.<br><b>Desktop</b>: both fixes landed there as well, where the whole info line had stayed Turkish.'},
  '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',
