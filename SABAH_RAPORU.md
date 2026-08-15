@@ -22,7 +22,7 @@ otomatik yedek · disleksi yazı tipi · yüksek kontrast · hareket azaltma · 
 tavana 1.271 senaryo sığıyor — risk teorik), OpenDyslexic gömme (~150 KB/ağırlık),
 `ffmpeg.wasm`, `mammoth.js`, sanal kamera (tarayıcıdan **yazılamaz**).
 
-Kapı **8 adım**, 38 kanıtlı bozma, 30 kanıtlı test dosyası. Ulaşılabilirlik denetimi: **18/18 kapı
+Kapı **9 adım**, 56 kanıtlı bozma, 37 kanıtlı test dosyası. Ulaşılabilirlik denetimi: **18/18 kapı
 açık, 329 sözlük anahtarının 0'ı ölü**.
 
 **Yayın yapıldı ve canlıdan doğrulandı:** `VER='9.9'` · `sufle-v81` · canlı dosya deponun
@@ -39,7 +39,8 @@ verilmeden kurmayacağım.
 ## Tek cümlede
 
 Gecenin **bütün P0'ları** kapandı, ardından **78 P1** işlendi. Testler **732 → 3808**,
-kapı **5 adımdan 8 adıma** çıktı (fonksiyon kapsamı, kasıtlı bozma turu, derleme tazeliği eklendi).
+kapı **5 adımdan 9 adıma** çıktı (fonksiyon kapsamı, kasıtlı bozma turu, derleme tazeliği ve
+çizilmiş arayüzde kontrast denetimi eklendi).
 Kapı yeşil. **v9.5 sabah yayınlandı**, bana bıraktığın üç karar verildi ve **v9.6 olarak yayınlandı**.
 İkisi de canlıdan doğrulandı. Yayınlanmamış iş kalmadı.
 
@@ -250,4 +251,4 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 - **v9.7 canlıda** (v9.5 sabah · v9.6 kararlar · v9.7 masaüstü donma düzeltmesi) · yayınlanmamış iş yok
 - **4430 test** (gece başında 732) · yeni test dosyası: 39–137
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 8 adım yeşil · 4 ayna birebir · `denetim.py` temiz
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

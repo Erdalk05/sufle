@@ -272,8 +272,24 @@ bağlamında altın değerinde" dediği özellik masaüstünde eksikti. Eklendi,
 yani şu ana dek **ölü bir çeviriydi**. Ölçülen kazanç: kenarlık kontrastı **1,29:1 → 21:1**,
 vurgu 15,6:1. İşletim sistemi tercihi **bir kez** devralınıyor (`hiconSoruldu` bayrağı olmasaydı
 kullanıcının kapattığı ayar her açılışta geri açılırdı). Tarayıcıda doğrulandı.
-**B.8 kapandı.** Kalan tek kalem: kontrast denetiminin kapıya bağlanması (jetonlar için `tests/121`
-zaten hesaplıyor; kabuk kuralları için ayrı bir tarayıcı-tabanlı ölçüm gerekir).
+**B.8 ✅ TAMAMEN KAPANDI (Tur 38).** Son kalem "kontrast denetimi kapıya bağlansın" idi ve
+*"tarayıcı-tabanlı ölçüm gerekir"* diye ertelenmişti; Tur 34'te `ekran.py` ile o tezgâh kurulunca
+engel kalktı. `kontrast.py` **çizilmiş arayüzü** denetliyor: dört yüzeyde (telefon giriş/ayarlar/
+senaryolar + Mac ana) **357 metin ölçüldü**, alfa bileşimiyle gerçek zemin hesaplanıyor, metnin
+kendi `opacity`'si zemine karıştırılıyor, büyük metin eşiği (24px / 18.66px+kalın → 3:1) ayrı
+uygulanıyor. Kapının **9. adımı** oldu (Chrome yoksa "ATLANDI" der — sessizce yeşil geçmez).
+
+**Bir gerçek kusur ve bir kendi yalanım:**
+· **Gerçek:** `#verTop` (sürüm etiketi) jeton yerine sabit `#6b7075` kullanıyordu — **3,67:1**,
+  AA altında. `var(--t-low)` (#868E9E) ile değiştirildi.
+· **Aracın kendi yalanı:** Mac kayıt düğmesini **1,86:1** ile ihlal saydı. Ölçünce düğme
+  `disabled` ve `opacity:.45` çıktı — kamera açılmadığı için kasıtlı olarak soluk. WCAG 1.4.3
+  devre dışı bileşenleri **açıkça muaf** tutuyor. Ölçen aracın yanlış alarmı gerçek kusuru
+  gürültüye gömerdi; muafiyet eklendi ve gerekçesi koda yazıldı.
+
+**Ayırt ettiği kanıtlandı:** `--t-low` jetonu elenmiş eski griye düşürülünce denetim tam o ögeyi
+**2,89 < 4,5** ile yakaladı. Taban `tests/kontrast-taban.json` (dört yüzeyde de 0); ihlal artarsa
+kapı kırmızı.
 **Bitti ölçütü:** ilk açılışta görünen kontrol sayısı ≤ 5; kontrast denetimi 0 ihlal; dört platformda aynı.
 
 ---
@@ -642,3 +658,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 35 | 2026-08-15 | **F.6 vitrin sayfası** — tanitim.html, iddialar koda bağlı | 63 iddia · 3 genişlikte taşma **0** · TR+EN · jetonlar tek kaynaktan (derle.py 3. kabuk) · uygulamadan keşif yolu açıldı · 4 kanıtlı bozma · tests/115 kopya listeden çıkarıma geçti · **4358 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 36 | 2026-08-15 | **C.3 yeniden değerlendirildi** — erteleme sürüyor, iki gerçek kusur kapandı | 800 senaryo **7,4 ms** (perf gerekçesi çürüdü) · telefonda arama+kapat dipte ulaşılamazdı → yapışkan başlık · **Mac'te senaryo araması hiç yoktu** → eklendi (Türkçe katlama ölçüldü) · gözlenemez tetikleyici düzeltildi · tests/136 + 4 kanıtlı bozma · **4381 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 37 | 2026-08-15 | **E.4 prova raporu** — sunucusuz, yapay zekâsız · F.5 bedeli ölçüldü | veri zaten cihazdaydı (`cekimAltyazi`) · hız/duraklama/tempo/okunmayan kuyruk · **sesle takip kapalıyken sayı YAZILMIYOR** (kendi WPM ayarını geri söylerdi) · dolgu kelime bilerek yok (gizlilik) · 2 kez kendi kuralıma düştüm, ikisi de testle kapandı · tests/137 (33 iddia) + 4 kanıtlı bozma · **4430 test, 0 hata** | ✅ 8/8 YEŞİL |
+| 38 | 2026-08-15 | **B.8 kapandı** — kontrast denetimi kapının 9. adımı | çizilmiş arayüzde **357 metin** ölçüldü · `#verTop` 3,67:1 gerçek ihlaliydi → jetona bağlandı · aracın kendi yanlış alarmı (devre dışı düğme) WCAG muafiyetiyle kapandı · ayırt ettiği kanıtlandı (2,89 yakalandı) · **4413 test, 0 hata** | ✅ 9/9 YEŞİL |

@@ -21,7 +21,9 @@ Kapının 5. adımı dördünü de md5 ile karşılaştırır; bayat ayna = KIRM
 ## Her değişiklikten sonra
 
 ```bash
-./kapi.sh          # 5 adım: denetim.py · node --check · testler · sürüm · aynalar
+./kapi.sh          # 9 adım: derleme tazeliği · denetim.py · node --check · testler ·
+                   # sürüm · aynalar · fonksiyon kapsamı · kasıtlı bozma turu ·
+                   # kontrast (çizilmiş arayüz, Chrome yoksa ATLANDI der)
 ```
 Kapı yeşil değilse iş bitmemiştir. Yayından sonra kapı "VER son yayınla aynı" der — bu **doğru**, sonraki sürüm artışında yeşile döner.
 
