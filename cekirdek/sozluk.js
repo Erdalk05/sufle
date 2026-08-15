@@ -9,7 +9,7 @@
    yakalıyor ama eksik çeviri kullanıcıya boş etiket olarak görünür. */
 
 const I18N={
- tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
+ tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
   startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
@@ -127,7 +127,7 @@ const I18N={
   mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
   privTitle:'Gizlilik'},
- en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
+ en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',

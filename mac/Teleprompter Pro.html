@@ -298,9 +298,16 @@
   #scroller{
     padding:62% var(--pMargin);
     font-size:var(--pFont);line-height:var(--pLine);font-weight:650;color:var(--pText);
-    white-space:pre-wrap;word-wrap:break-word;text-align:center;will-change:transform;
+    /* KELİME ORTADAN BÖLÜNMEZ — telefonla aynı gerekçe ve aynı çözüm.
+       `word-wrap:break-word` kelimeyi satıra sığmadığında ikiye ayırıyordu
+       ("AKRANLARI / NDAN"); sufle okunurken en kötü şey budur. Sığmayan
+       kelime artık `kelimeSigdir()` ile ölçülüp küçültülüyor. */
+    white-space:pre-wrap;overflow-wrap:normal;word-break:keep-all;
+    text-align:center;will-change:transform;
     text-shadow:0 2px 14px rgba(0,0,0,.55);
   }
+  /* Kelime KENDİ İÇİNDE satır atlamaz; satır değişimi yalnız kelimeler arasında. */
+  #scroller .w{white-space:nowrap}
   #scroller .fam-serif{}
   body[data-fam=serif] #scroller{font-family:Georgia,"Times New Roman",serif}
   body[data-fam=mono] #scroller{font-family:"SF Mono",Menlo,Consolas,monospace}
@@ -884,7 +891,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
    yakalıyor ama eksik çeviri kullanıcıya boş etiket olarak görünür. */
 
 const I18N={
- tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
+ tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
   startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
@@ -1002,7 +1009,7 @@ const I18N={
   mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
   privTitle:'Gizlilik'},
- en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
+ en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
@@ -1672,7 +1679,41 @@ const MMSG={
       return n+(r.match(/\S+/g)||[]).length;
     },0);
   }
+  /* SIĞMAYAN KELİMEYİ BÖLME, KÜÇÜLT — telefondaki `kelimeSigdir()` ile aynı
+     mantık ve aynı taban. `word-break:keep-all` tek başına kelimeyi kesip
+     kenarda bırakırdı; okunamaz kelime bölünmüş kelimeden kötüdür.
+     Taban ORAN değil PİKSEL: oranla taban koymak, büyük yazı boyutu seçen
+     kullanıcıda gerçek Türkçe kelimeleri bile sığdıramıyordu (ölçüldü). */
+  const SIG_TABAN_PX=22;
+  let kucultulmus=[];
+  function kelimeSigdir(){
+    kucultulmus.forEach(w=>{ w.style.fontSize=''; w.style.whiteSpace=''; w.style.wordBreak=''; w.style.overflowWrap=''; });
+    kucultulmus=[];
+    if(!words || !words.length) return;
+    const cs=getComputedStyle(scroller);
+    const ic=scroller.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    if(!(ic>0)) return;
+    const tabanFs=parseFloat(cs.fontSize)||46;
+    const tabanYuzde=Math.min(100, SIG_TABAN_PX/tabanFs*100);
+    let aday=words;
+    for(let tur=0; tur<3 && aday.length; tur++){
+      const genis=aday.map(w=>w.getBoundingClientRect().width);
+      const kalan=[];
+      for(let i=0;i<aday.length;i++){
+        if(genis[i]<=ic-0.5) continue;
+        const w=aday[i];
+        const suan=parseFloat(w.style.fontSize)||100;
+        w.style.fontSize=Math.max(tabanYuzde, suan*(ic-1)/genis[i]).toFixed(1)+'%';
+        if(kucultulmus.indexOf(w)<0) kucultulmus.push(w);
+        kalan.push(w);
+      }
+      aday=kalan;
+    }
+    aday.forEach(w=>{ if(w.getBoundingClientRect().width>ic+0.5){
+      w.style.whiteSpace='normal'; w.style.wordBreak='break-word'; w.style.overflowWrap='anywhere'; } });
+  }
   function measure(){
+    kelimeSigdir();
     // ilk kelime tam okuma çizgisinde başlasın, son kelime çizgiye ulaşabilsin
     scroller.style.paddingTop=eyeOff()+'px';
     scroller.style.paddingBottom=Math.max(60,frameH()-eyeOff())+'px';

@@ -202,7 +202,15 @@
   #scroller{
     padding:0 var(--mg);
     font-size:var(--fs);line-height:var(--lh);font-weight:var(--weight);color:var(--pcolor);
-    letter-spacing:var(--ls);text-align:var(--align);white-space:normal;word-wrap:break-word;
+    /* KELİME ORTADAN BÖLÜNMEZ. Eskiden `word-wrap:break-word` vardı: kelime
+       satıra sığmadığında tarayıcı onu ikiye ayırıyordu ("AKRANLARI /
+       NDAN"). Sufle okunurken en kötü şey budur — göz kelimeyi arar.
+       ÖLÇÜLDÜ (430 px genişlik, satır içi 370 px): yazı boyutu 46'da 3,
+       60'ta 5, 110'da 10 kelime bölünüyordu.
+       Artık kelime hiç bölünmüyor; sığmayan kelime `kelimeSigdir()` ile
+       KÜÇÜLTÜLÜYOR. Yalnız CSS ile yapılamaz, ölçüm gerekir. */
+    letter-spacing:var(--ls);text-align:var(--align);white-space:normal;
+    overflow-wrap:normal;word-break:keep-all;
     will-change:transform;text-shadow:0 2px 18px rgba(0,0,0,.75);
   }
   body.noshadow #scroller{text-shadow:none}
@@ -214,6 +222,9 @@
   #scroller .ln{display:block;min-height:.2em}
   #scroller .h{color:var(--accent);font-size:.78em;letter-spacing:.08em;text-transform:uppercase;opacity:.9;padding:.5em 0 .1em}
   #scroller .note{opacity:.45;font-style:italic;font-weight:500;font-size:.72em}
+  /* Kelimenin KENDİ İÇİNDE satır atlaması yasak; satır değişimi yalnız
+     kelimeler ARASINDA olur. Sığmayan kelimeyi `kelimeSigdir()` küçültür. */
+  #scroller .w{white-space:nowrap}
   #scroller .w.active{color:var(--accent);text-shadow:0 0 26px rgba(0,200,83,.5)}
   #scroller .w.em{font-weight:900;color:#ffe14d}
   #scroller .w.em.active{color:var(--accent)}
@@ -1353,7 +1364,7 @@ const cam=$('#cam'), scroller=$('#scroller'), VER='9.13';
    yakalıyor ama eksik çeviri kullanıcıya boş etiket olarak görünür. */
 
 const I18N={
- tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
+ tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
   startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
@@ -1471,7 +1482,7 @@ const I18N={
   mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
   privTitle:'Gizlilik'},
- en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
+ en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
@@ -2174,8 +2185,64 @@ function markup(raw){
 }
 function H(){ return window.innerHeight; }
 function eyeOff(){ return H()*(st.eyePos/100); }
+/* SIĞMAYAN KELİMEYİ BÖLME, KÜÇÜLT.
+   `word-break:keep-all` kelimeyi bölünmekten kurtarır ama tek başına yeni bir
+   kusur doğurur: sığmayan kelime satırdan TAŞAR ve kenardan kesilir — okunamaz
+   bir kelime, bölünmüş kelimeden kötüdür. O yüzden ölçüp küçültüyoruz.
+   Küçültme YALNIZ sığmayan kelimeye uygulanır: kullanıcının seçtiği yazı boyutu
+   metnin geri kalanında aynen korunur.
+   TABAN ORAN DEĞİL PİKSEL. İlk yazışımda taban "%45" idi ve ölçüm bunu
+   çürüttü: kullanıcı 110 px seçtiğinde %45 sınırı "Cumhurbaşkanlığı" gibi
+   GERÇEK bir Türkçe kelimeyi bile sığdıramıyordu (417/370 px taşıyordu).
+   Oysa oradaki %40, 44 px demek — gayet okunur. Taban artık uygulamanın
+   kendi en küçük yazı boyutu (22 px): bunun altına inmek kelimeyi gerçekten
+   okunmaz yapar, üstünde kalmak ise serbest.
+   Taban bile yetmezse (uydurma uzunlukta bir kelime) o kelimenin bölünmesine
+   izin veriliyor — kenardan kesip kaybetmektense bölmek dürüst olan. */
+const SIG_TABAN_PX=22;
+let kucultulmus=[];
+function kelimeSigdir(){
+  kucultulmus.forEach(w=>{ w.style.fontSize=''; w.style.whiteSpace=''; w.style.wordBreak=''; w.style.overflowWrap=''; });
+  kucultulmus=[];
+  if(!words.length) return;
+  const cs=getComputedStyle(scroller);
+  const ic=scroller.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  if(!(ic>0)) return;
+  /* ÖNCE HEPSİNİ OKU, SONRA YAZ. Okuma ile yazmayı karıştırmak her kelimede
+     yeniden düzen hesaplatır (layout thrashing) ve uzun senaryoda takılma
+     olarak hissedilir; ölçüm maliyeti zaten bu döngüde.
+     TEK GEÇİŞ YETMİYOR — ölçüldü: oranla küçültmek %1 kadar şaşıyor (glif
+     ölçüleri boyutla tam orantılı değil) ve "akranlarından" 373/370 px ile
+     hâlâ taşıyordu. O yüzden ölç-daralt en çok üç tur dönüyor; ikinci turdan
+     sonra yalnız hâlâ taşan birkaç kelime okunuyor, maliyet ihmal edilebilir. */
+  const tabanFs=parseFloat(cs.fontSize)||46;
+  const tabanYuzde=Math.min(100, SIG_TABAN_PX/tabanFs*100);
+  let aday=words;
+  for(let tur=0; tur<3 && aday.length; tur++){
+    const genis=aday.map(w=>w.getBoundingClientRect().width);
+    const kalan=[];
+    for(let i=0;i<aday.length;i++){
+      if(genis[i]<=ic-0.5) continue;
+      const w=aday[i];
+      const suan=parseFloat(w.style.fontSize)||100;
+      /* 1 px pay: kesirli piksel yuvarlaması tam sınırda taşmaya çeviriyor. */
+      const yeni=Math.max(tabanYuzde, suan*(ic-1)/genis[i]);
+      w.style.fontSize=yeni.toFixed(1)+'%';
+      if(kucultulmus.indexOf(w)<0) kucultulmus.push(w);
+      kalan.push(w);
+    }
+    aday=kalan;
+  }
+  /* Taban bile yetmediyse bölünmesine izin ver. `white-space` tek başına
+     YETMEZ — ölçüldü: `#scroller` üstündeki `word-break:keep-all` kelimeyi
+     yine bölmüyor ve kelime kenardan kesilerek okunmaz kalıyordu. Bu yüzden
+     kural o kelimede açıkça geri alınıyor. */
+  aday.forEach(w=>{ if(w.getBoundingClientRect().width>ic+0.5){
+    w.style.whiteSpace='normal'; w.style.wordBreak='break-word'; w.style.overflowWrap='anywhere'; } });
+}
 function measure(){
   const t0m=performance.now();
+  kelimeSigdir();
   const pt=$('#padTop'), pb=$('#padBot');
   if(pt) pt.style.height=eyeOff()+'px';
   if(pb) pb.style.height=Math.max(60,H()-eyeOff())+'px';
@@ -2836,7 +2903,7 @@ function drawEyeLine(w,h){
   el.style.width=Math.round(w)+'px'; el.style.height=Math.round(h)+'px';
   el.innerHTML='<i style="top:33.3%"></i><i style="top:66.6%;opacity:.35"></i>'+
     '<u style="left:33.3%"></u><u style="left:66.6%"></u>'+
-    '<b>'+(L==='tr'?'gözler burada':'eyes here')+'</b>';
+    '<b>'+(L==='tr'?'kadraj: gözler bu hizada':'framing: eyes on this line')+'</b>';
 }
 function drawSafe(){
   body.classList.toggle('safeOn', !!st.safe && !!curMode().safe);

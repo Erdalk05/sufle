@@ -908,5 +908,61 @@
   "kaynak": "mac",
   "bul": "    $('#rrTrimInfo').textContent = (L==='tr'",
   "koy": "    $('#rrTrimInfo').textContent = (true"
+ },
+ {
+  "ad": "T60 kelime kırma kuralı geri geldi (AKRANLARI/NDAN)",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "overflow-wrap:normal;word-break:keep-all;",
+  "koy": "word-wrap:break-word;"
+ },
+ {
+  "ad": "T60 kelime ögesi yine kendi içinde satır atlıyor",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "  #scroller .w{white-space:nowrap}\n",
+  "koy": ""
+ },
+ {
+  "ad": "T60 sığdırma ölçümden koparıldı (sığmayan kelime kenardan kesilir)",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "  const t0m=performance.now();\n  kelimeSigdir();",
+  "koy": "  const t0m=performance.now();"
+ },
+ {
+  "ad": "T60 taban yine ORAN oldu (büyük yazıda gerçek kelime sığmaz)",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "Math.min(100, SIG_TABAN_PX/tabanFs*100)",
+  "koy": "45"
+ },
+ {
+  "ad": "T60 eski küçültme temizlenmiyor (küçülme birikir)",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "kucultulmus.forEach(w=>{ w.style.fontSize=''; w.style.whiteSpace=''; w.style.wordBreak=''; w.style.overflowWrap=''; });",
+  "koy": "/* temizlik yok */"
+ },
+ {
+  "ad": "T60 kamera etiketi yine belirsiz ('buraya bak')",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "sozluk",
+  "bul": "lookHere:'kameraya bak'",
+  "koy": "lookHere:'buraya bak'"
+ },
+ {
+  "ad": "T60 göz hattı etiketi yine kamera işaretiyle yarışıyor",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "telefon",
+  "bul": "'kadraj: gözler bu hizada'",
+  "koy": "'gözler burada'"
+ },
+ {
+  "ad": "T60 Mac kırma kuralı geri geldi (yarım düzeltme)",
+  "test": "149-kelime-bolunmesin.js",
+  "kaynak": "mac",
+  "bul": "white-space:pre-wrap;overflow-wrap:normal;word-break:keep-all;",
+  "koy": "white-space:pre-wrap;word-wrap:break-word;"
  }
 ]

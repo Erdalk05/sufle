@@ -2,6 +2,40 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## v9.13 — kelime ortadan bölünüyordu (Erdal bildirdi, ekran görüntüsüyle)
+
+Ekranda **"AKRANLARI / NDAN DAHA"** görünüyordu. Sebep `#scroller` üstündeki
+`word-wrap:break-word`: kural kelimeyi keyfî bölmez, **satıra sığmadığında** böler — yani
+eksik olan CSS değil, *sığmayan kelime için plan*dı. Sufle okunurken en kötü şey budur:
+göz kelimenin devamını arar.
+
+**Ölçüldü** (gerçek tarayıcı, 430 px cihaz, satır içi 370 px):
+
+| yazı boyutu | bölünen kelime |
+|---|---|
+| 46 | 3 (`Cumhurbaşkanlığı`, `elektroensefalografi`…) |
+| 60 | 5 (`akranlarından`, `kararnamesiyle`…) |
+| 110 | 10 (`Yaşıtları`, `düşünme`…) |
+
+**Çözüm iki parçalı** — tek başına hiçbiri yetmiyor: ① `word-break:keep-all` +
+`.w{white-space:nowrap}` (kelime kendi içinde satır atlayamaz) ② `kelimeSigdir()` sığmayan
+kelimeyi **ölçüp küçültür**. ① olmadan kelime bölünür, ② olmadan kenardan kesilip okunmaz
+kalır — kesilmiş kelime bölünmüşten kötüdür.
+
+**İki ölçüm yön değiştirtti:** tek geçişlik oran %1 şaşıyor (`akranlarından` 373/370 px hâlâ
+taşıyordu) → ölç-daralt döngüsü; ve taban **oran olamaz** — "%45 taban" 110 px seçen
+kullanıcıda `Cumhurbaşkanlığı`yı sığdıramıyordu, oysa oradaki %40 = 44 px gayet okunur.
+Taban artık **mutlak 22 px**. Sonuç: 22–110 px arasında bölünen ve taşan kelime **yok**;
+tek istisna 70 harflik uydurma bir kelime (22 px'te bile fiziken sığmıyor, orada bölünmesine
+izin veriliyor). Maliyet ölçüldü: 1.349 kelimede kurulum 9 → 15 ms, kare başına maliyet yok.
+
+**Kılavuz etiketleri yarışıyordu.** Erdal ikisini aynı anda görüp "hangisi doğru" diye sordu:
+kameranın altında "buraya bak", okuma çizgisinin altında "gözler burada". İkisi de doğruydu
+ama farklı şeyler söylüyordu: biri **bakılacak yeri**, diğeri **kadrajda gözün duracağı
+hizayı**. Adlar netleşti: **"kameraya bak"** ve **"kadraj: gözler bu hizada"**.
+
+Mac'te de aynı `word-wrap:break-word` vardı — hizalandı. `tests/149` (29 iddia) + **8 bozma**.
+
 ## v9.13 — budama seçimi videonun dışına taşıyordu (B4 turunun ilk kalemi)
 
 Kapsam ölçümü, testlerin hiç anmadığı 46 fonksiyonun çoğunun **kayıt ve sonuç yolunda**
@@ -343,6 +377,6 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 ## Sayılar
 
 - **v9.12 CANLIDA ve doğrulandı** · **v9.13 hazır** — **1 commit yayınlanmamış**, `main` dalında
-- **4911 test** (gece başında 732) · yeni test dosyası: 39–148
+- **4941 test** (gece başında 732) · yeni test dosyası: 39–149
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz
