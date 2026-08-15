@@ -306,5 +306,33 @@
   "kaynak": "telefon",
   "bul": "justify-content:space-between;flex-wrap:wrap;",
   "koy": "justify-content:space-between;flex-wrap:nowrap;"
+ },
+ {
+  "ad": "F6 vitrine olmayan özellik yazıldı (abartma)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": "<h3 data-i=\"k6b\">Kendi metinlerinle çalış</h3>",
+  "koy": "<h3 data-i=\"k6b\">PDF ve bulut senkron</h3>"
+ },
+ {
+  "ad": "F6 vitrine CDN yazı tipi eklendi (sıfır bağımlılık sözü kırılır)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": "<link rel=\"icon\" href=\"icon-192.png\">",
+  "koy": "<link rel=\"icon\" href=\"icon-192.png\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Inter\">"
+ },
+ {
+  "ad": "F6 vitrinde sesle takip istisnası saklandı (yanlış beyan)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": " gxB:['Tek istisna: sesle takip.','The one exception: voice follow.'],",
+  "koy": " gxB:['Hicbir veri cihazdan cikmaz.','Nothing ever leaves your device.'],"
+ },
+ {
+  "ad": "F6 vitrine ulasan bağlantı söküldü (ölü sayfa)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "telefon",
+  "bul": "<a href=\"tanitim.html\" target=\"_blank\" rel=\"noopener\">sufle tanıtım</a>",
+  "koy": "sufle tanıtım"
  }
 ]

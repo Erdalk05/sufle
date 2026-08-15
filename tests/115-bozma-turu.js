@@ -34,9 +34,18 @@ ok('kayıt boş değil ('+kayit.length+' bozma)', kayit.length>=15);
   /* Kaynak kümesi bozma.py'deki KAYNAK eşlemesiyle AYNI olmalı. Uydurma bir
      ad yazmak bozmayı sessizce hiç koşturmaz — A.1'de tam bunu yaptım,
      'cekirdek' diye olmayan bir kaynak uydurdum ve kapı yakaladı. */
-  const KAYNAKLAR=['telefon','mac','jeton','sozluk','docx','magaza'];
-  ok('kaynak adı bozma.py KAYNAK eşlemesinde tanımlı',
-     kayit.every(k=>KAYNAKLAR.includes(k.kaynak)));
+  /* Liste ELLE KOPYALANMIYOR, bozma.py'den ÇIKARILIYOR. Kopya olduğu sürece
+     yeni bir kaynak eklendiğinde (bugün 'vitrin') bu test kaynak doğru
+     tanımlanmış olmasına rağmen kırmızı veriyordu — yani kusuru değil,
+     kendi bayatlığını bildiriyordu. */
+  const bozmaPy = fs.readFileSync(path.join(REPO,'bozma.py'),'utf8');
+  const govde = (bozmaPy.match(/KAYNAK\s*=\s*\{([\s\S]*?)\n\}/)||['',''])[1];
+  const KAYNAKLAR = [...govde.matchAll(/^\s*'([a-z]+)':/gm)].map(m=>m[1]);
+  ok('bozma.py KAYNAK eşlemesi okunabildi (ölçmeyen kapı değil) — '+KAYNAKLAR.length,
+     KAYNAKLAR.length >= 6 && KAYNAKLAR.includes('telefon') && KAYNAKLAR.includes('mac'));
+  const uydurma = [...new Set(kayit.map(k=>k.kaynak))].filter(k=>!KAYNAKLAR.includes(k));
+  ok('kaynak adı bozma.py KAYNAK eşlemesinde tanımlı — uydurma: '+uydurma.join(','),
+     uydurma.length === 0);
   ok('hiçbir bozma boş değil (bul ile koy aynı olamaz)',
      kayit.every(k=>k.bul!==k.koy && k.bul.length>0));
   /* İki platform da temsil edilmeli — yoksa Mac tarafı hiç sınanmaz. */

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sufle — Türkçe Teleprompter Uygulaması | Ücretsiz</title>
+<meta name="description" content="Kameraya bakarken metnini oku. Sesle takip, hız denetimi, kamerayla kayıt. Hesap yok, sunucu yok, ücretsiz. iPhone, Android, Mac ve Windows.">
+<link rel="canonical" href="https://erdalk05.github.io/sufle/tanitim.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sufle — Türkçe Teleprompter Uygulaması">
+<meta property="og:description" content="Kameraya bakarken metnini oku. Sesle takip, kamerayla kayıt, hesap yok. Ücretsiz.">
+<meta property="og:url" content="https://erdalk05.github.io/sufle/tanitim.html">
+<meta property="og:image" content="https://erdalk05.github.io/sufle/magaza/ekranlar/02-konustukca-akar.png">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sufle — Türkçe Teleprompter Uygulaması">
+<meta name="twitter:description" content="Kameraya bakarken metnini oku. Sesle takip, kamerayla kayıt, hesap yok.">
+<meta name="twitter:image" content="https://erdalk05.github.io/sufle/magaza/ekranlar/02-konustukca-akar.png">
+<link rel="icon" href="icon-192.png">
+<style>
+/* ==CEKIRDEK:jetonlar.css== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/jetonlar.css
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SUFLE tasarım jetonları — TEK KAYNAK, iki kabuğa da derle.py gömer.
+   Elle düzenlenecek yer BURASI; index.html ve mac/*.html içindeki kopyalar üretilmiştir.
+
+   NEDEN ROL BAZLI: bugün tek bir --accent:#00C853 her işi görüyor — birincil
+   düğme, aktif sekme, saat, KAYIT. Kullanıcı ekranda beş yeşil görüp hangisinin
+   asıl eylem olduğunu ayırt edemiyor. Rakip analizindeki 25. kategori (UI/görsel
+   tasarım) 3 puan alıyor ve kaybın büyük kısmı bu.
+
+   ⚠️ BU DOSYA ŞU AN HİÇBİR KURALI DEĞİŞTİRMİYOR — yalnız değişken tanımlıyor.
+   Amaç boru hattını GÖRSEL DEĞİŞİKLİK OLMADAN kanıtlamak. Kuralların jetonlara
+   geçişi B.1'de tek tek, ölçerek yapılacak. Bir jetonu bugün kullanan yoksa
+   ekranda hiçbir şey değişmez; bu kasıtlıdır.
+
+   KONTRAST ÖLÇÜLDÜ, seçilmedi (WCAG 2.1 nispi parlaklık, en zor zemin
+   --s-raised #1C1C22). tests/121 bu oranları her koşuda yeniden hesaplıyor.
+
+   ÖLÇÜMÜN ORTAYA ÇIKARDIĞI ŞEY: metin olarak okunan kırmızı ile ÜSTÜNE BEYAZ
+   YAZI GELEN kırmızı aynı renk OLAMIYOR. #FF4D4F koyu zeminde yazı olarak 5,19
+   (geçer) ama dolgu yapılıp üstüne beyaz yazılınca 3,27 (kalır). Bu yüzden
+   rollerin dolgu ve metin biçimleri AYRI jeton; tek renkle idare etmek
+   erişilebilirliği sessizce kırardı. */
+
+:root{
+  /* --- yüzeyler --- */
+  --s-bg:#08090C;          /* en arka zemin */
+  --s-surface:#141418;     /* sayfa/panel */
+  --s-raised:#1C1C22;      /* kart, yükseltilmiş kutu */
+  --s-line:#2A2A32;        /* ayraç */
+
+  /* --- metin --- */
+  --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
+  --t-mid:#9AA0A6;         /*  6,42 : yardımcı metin */
+  --t-low:#868E9E;         /*  5,15 : en soluk okunabilir. #6B7280 ÖLÇÜLDÜ 3,51 = KALDI */
+
+  /* --- roller: DOLGU (üstündeki yazıyla birlikte AA) --- */
+  --r-action:#00D47E;      --on-action:#04210F;   /* 8,72 — asıl eylem, ekranda TEK olmalı */
+  --r-record:#D93036;      --on-record:#FFFFFF;   /* 4,74 — kayıt/yıkıcı */
+  --r-info:#2563EB;        --on-info:#FFFFFF;     /* 5,17 — bilgi/ikincil */
+  --r-warn:#FFB020;        --on-warn:#231704;     /* 9,60 — uyarı */
+
+  /* --- roller: METİN/İKON biçimi (koyu yüzey üstünde) --- */
+  --r-action-t:#00D47E;    /* 8,65 */
+  --r-record-t:#FF4D4F;    /* 5,19 — dolgu biçiminden BİLEREK farklı */
+  --r-info-t:#6BA6FF;      /* 6,88 — dolgu biçiminden BİLEREK farklı */
+  --r-warn-t:#FFB020;      /* 9,27 */
+
+  /* --- tipografi: 5 adım. Bugün 11/12/13/14/15px karışık kullanılıyor. --- */
+  --tx-xs:11px;            /* ALL CAPS etiket */
+  --tx-sm:13px;            /* yardımcı metin */
+  --tx-md:15px;            /* gövde, düğme */
+  --tx-lg:19px;            /* panel başlığı */
+  --tx-xl:26px;            /* sayaç, WPM */
+  /* Sufle metninin kendi ölçeği ayrı yaşar — kullanıcı onu elle ayarlıyor. */
+
+  /* --- boşluk: 4px ritmi. Bugün 6/7/9/11/14px karışık. --- */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px;
+
+  /* --- biçim --- */
+  --rad-sm:8px; --rad-md:12px; --rad-lg:16px; --rad-full:999px;
+  --ring:0 0 0 3px rgba(0,212,126,.45);   /* klavye odağı — görünür olmak ZORUNDA */
+  --tap:44px;                              /* en küçük dokunma hedefi */
+}
+
+/* Sayısal göstergeler zıplamasın (süre, WPM, sayaç).
+   Tek görsel etkisi olan kural bu ve KASITLI: rakamların genişliği eşitlenir,
+   sayaç her saniye sağa sola oynamaz. Ölçüsü değişmez, yalnız hizası. */
+.tnum,[data-tnum]{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+/* ==/CEKIRDEK:jetonlar.css== */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--s-bg);color:var(--t-hi);
+  font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--r-action);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* --- üst şerit --- */
+header{position:sticky;top:0;z-index:9;background:rgba(8,9,12,.86);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--s-line)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 0;flex-wrap:wrap}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo i{color:var(--r-action);font-style:normal}
+.hact{display:flex;align-items:center;gap:8px}
+.lang{display:flex;border:1px solid var(--s-line);border-radius:999px;overflow:hidden}
+.lang button{background:none;border:0;color:var(--t-mid);font:inherit;font-size:13px;
+  font-weight:700;padding:6px 13px;cursor:pointer}
+.lang button.on{background:var(--r-action);color:var(--on-action)}
+
+/* --- düğmeler --- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:48px;padding:13px 24px;border-radius:14px;font-weight:750;font-size:16px;
+  border:1px solid transparent;cursor:pointer}
+.btn.pri{background:var(--r-action);color:var(--on-action)}
+.btn.sec{background:var(--s-raised);color:var(--t-hi);border-color:var(--s-line)}
+
+/* --- kahraman --- */
+.hero{padding:64px 0 40px;display:grid;gap:44px;grid-template-columns:1fr}
+h1{font-size:clamp(34px,7vw,56px);line-height:1.08;letter-spacing:-.025em;margin:0 0 18px}
+h1 em{font-style:normal;color:var(--r-action)}
+.lede{font-size:clamp(17px,2.4vw,20px);color:var(--t-mid);margin:0 0 26px;max-width:36em}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.plat{margin-top:22px;color:var(--t-low);font-size:14px}
+.shot{border:1px solid var(--s-line);border-radius:22px;overflow:hidden;
+  background:var(--s-surface);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.shot.tel{max-width:300px;margin:0 auto}
+
+/* --- bölümler --- */
+section{padding:52px 0;border-top:1px solid var(--s-line)}
+h2{font-size:clamp(25px,4vw,34px);letter-spacing:-.02em;margin:0 0 10px}
+.sub{color:var(--t-mid);margin:0 0 30px;max-width:44em}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+.card{background:var(--s-raised);border:1px solid var(--s-line);border-radius:18px;padding:22px}
+.card h3{margin:0 0 8px;font-size:18px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--t-mid);font-size:15px}
+.card .em{font-size:23px;line-height:1;display:block;margin-bottom:12px}
+
+/* --- gizlilik --- */
+.priv{background:var(--s-surface);border:1px solid var(--s-line);border-radius:20px;padding:26px}
+.priv ul{margin:0;padding-left:20px;color:var(--t-mid)}
+.priv li{margin:7px 0}
+.istisna{margin-top:18px;padding:16px 18px;border-radius:14px;
+  background:rgba(255,176,32,.09);border:1px solid rgba(255,176,32,.32)}
+.istisna b{color:var(--r-warn)}
+.istisna p{margin:6px 0 0;color:var(--t-mid);font-size:15px}
+
+/* --- masaüstü --- */
+.two{display:grid;gap:30px;grid-template-columns:1fr;align-items:center}
+
+footer{padding:40px 0 60px;border-top:1px solid var(--s-line);color:var(--t-low);font-size:14px}
+footer nav{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+
+@media (min-width:760px){
+  .hero{grid-template-columns:1.15fr .85fr;align-items:center;padding:84px 0 56px}
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .two{grid-template-columns:1fr 1fr;gap:44px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .btn{transition:filter .15s}
+  .btn:hover{filter:brightness(1.08)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hrow">
+    <div class="logo">Sufle<i> ·</i> <span data-i="urun">Teleprompter</span></div>
+    <div class="hact">
+      <div class="lang" role="group" aria-label="Dil / Language">
+        <button id="tr" class="on" aria-pressed="true">TR</button>
+        <button id="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn pri" href="./index.html" data-i="ac">Uygulamayı aç</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1><span data-i="h1a">Kameraya bakarken</span> <em data-i="h1b">metnini oku.</em></h1>
+      <p class="lede" data-i="lede">Sufle telefonunu ya da bilgisayarını bir sufle cihazına çeviriyor. Metnin kameranın hemen altında akar, böylece okurken bile göz teması bozulmaz.</p>
+      <div class="cta">
+        <a class="btn pri" href="./index.html" data-i="ac2">Uygulamayı aç</a>
+        <a class="btn sec" href="#gizlilik" data-i="nasil">Verilerim ne oluyor?</a>
+      </div>
+      <p class="plat" data-i="plat">iPhone · Android · Mac · Windows — kurulum gerekmez, tarayıcıda açılır. Hesap yok, ücretsiz.</p>
+    </div>
+    <div class="shot tel">
+      <img src="magaza/ekranlar/02-konustukca-akar.png" width="1290" height="2796"
+           alt="Sufle telefonda: metin ekranda akarken durum satırında sesle takip görünüyor" loading="eager">
+    </div>
+  </div>
+
+  <section id="ozellikler">
+    <h2 data-i="ozBas">Okuduğun belli olmasın</h2>
+    <p class="sub" data-i="ozAlt">Sufle'nin yaptığı tek iş bu: metni doğru yere koymak ve senin hızınla akıtmak.</p>
+    <div class="grid">
+      <div class="card"><span class="em">🎤</span>
+        <h3 data-i="k1b">Konuştukça akar</h3>
+        <p data-i="k1p">Sesle takip açıkken sufle senin hızına uyar; duraksarsan bekler, hızlanırsan yetişir. İstemezsen kapat, dakikadaki kelime (WPM) ile sabit hızda aksın.</p></div>
+      <div class="card"><span class="em">⏺</span>
+        <h3 data-i="k2b">Çekimi burada yaparsın</h3>
+        <p data-i="k2p">Kamera ve mikrofon uygulamanın içinde: okurken kaydedersin, ayrı bir uygulamaya geçmen gerekmez.</p></div>
+      <div class="card"><span class="em">📐</span>
+        <h3 data-i="k3b">Yazın arayüzün altında kalmaz</h3>
+        <p data-i="k3p">Reels, Shorts, Story ve YouTube oranları hazır; platform arayüzünün kapatacağı alanlar ekranda işaretli.</p></div>
+      <div class="card"><span class="em">👁</span>
+        <h3 data-i="k4b">Okumayı kolaylaştıran araçlar</h3>
+        <p data-i="k4p">Okuma şeridi, göz çizgisi, nefes işaretleri, biyonik okuma ve disleksi yazı tipi. Yüksek kontrast teması ve hareket azaltma desteklenir.</p></div>
+      <div class="card"><span class="em">✂️</span>
+        <h3 data-i="k5b">Çekimden sonrası da hazır</h3>
+        <p data-i="k5p">Videoyu baştan ve sondan kesebilir, altyazı dosyasını senaryodan üretebilirsin — metin zaten elinde, bu yüzden yazım her zaman doğru.</p></div>
+      <div class="card"><span class="em">📄</span>
+        <h3 data-i="k6b">Kendi metinlerinle çalış</h3>
+        <p data-i="k6p">Word dosyası (.docx), düz metin ve altyazı dosyalarını doğrudan alır. Bütün senaryolarını tek dosyaya yedekleyip geri yükleyebilirsin.</p></div>
+    </div>
+  </section>
+
+  <section id="masaustu">
+    <div class="two">
+      <div>
+        <h2 data-i="msBas">Masaüstünde daha fazlası</h2>
+        <p class="sub" data-i="msAlt">Harici kamera seçimi, kayıtta panellerin kendiliğinden kapanması, telefonundan uzaktan kumanda ve kumanda ekranında kameranın gördüğü kare — tek başına çekim yaparken kadrajını görebilirsin. OBS ve vMix kullananlar için şeffaf zeminli yayın kipi var.</p>
+      </div>
+      <div class="shot">
+        <img src="magaza/ekranlar/06-masaustu-paneller.png" width="2880" height="1800"
+             alt="Sufle masaüstü sürümü: sağ panelde metin, çekim ve ayarlar sekmeleri" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="gizlilik">
+    <h2 data-i="gzBas">Verilerin sende kalır</h2>
+    <p class="sub" data-i="gzAlt">Bu bir pazarlama cümlesi değil, ölçülen bir sınır. Kaynak kodda sayıldı:</p>
+    <div class="priv">
+      <ul>
+        <li data-i="g1">Bize ait sunucuya giden ağ çağrısı: <b>0</b></li>
+        <li data-i="g2">Analitik, izleme, çökme raporu aracı: <b>0</b></li>
+        <li data-i="g3">Reklam kimliği, parmak izi, çerez: <b>0</b></li>
+        <li data-i="g4">Üçüncü taraf kütüphane: <b>0</b> — uygulama tek dosya, dışarıdan kod yüklemiyor</li>
+        <li data-i="g5">Hesap, e-posta, telefon numarası: <b>istenmiyor</b></li>
+      </ul>
+      <div class="istisna">
+        <b data-i="gxB">Tek istisna: sesle takip.</b>
+        <p data-i="gxP">Sesle takip açıkken konuşmanız tarayıcınızın kendi ses tanıma servisine gider; Chrome ve Safari bunu üreticinin sunucusunda işler. Bunu saklamak yerine yazıyoruz. Ayar <b>varsayılan olarak kapalıdır</b> ve kapalıyken diğer bütün özellikler tam çalışır.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="basla">
+    <h2 data-i="bsBas">Kurulum yok, kayıt yok</h2>
+    <p class="sub" data-i="bsAlt">Bağlantıyı aç, metnini yapıştır, çekmeye başla. Ana ekrana ekleyebilirsin; çevrimdışı da çalışır.</p>
+    <div class="cta">
+      <a class="btn pri" href="./index.html" data-i="ac3">Uygulamayı aç</a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav>
+      <a href="./index.html" data-i="fUyg">Uygulama</a>
+      <a href="./GIZLILIK.md" data-i="fGiz">Gizlilik politikası</a>
+      <a href="mailto:erdalkiziroglu@gmail.com" data-i="fIlt">İletişim</a>
+    </nav>
+    <div data-i="fAlt">Sufle — Türkçe ve İngilizce arayüz. Hesap yok, sunucu yok, ücretsiz.</div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication",
+"name":"Sufle — Teleprompter","applicationCategory":"MultimediaApplication",
+"operatingSystem":"iOS, Android, macOS, Windows","inLanguage":["tr","en"],
+"url":"https://erdalk05.github.io/sufle/tanitim.html",
+"description":"Kameraya bakarken metnini okumanı sağlayan sufle uygulaması. Sesle takip, hız denetimi, kamerayla kayıt.",
+"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"}}
+</script>
+
+<script>
+/* Vitrin metni İKİ DİLDE. Uygulamanın kendisi iki dilli olduğu hâlde tanıtım
+   sayfası tek dilde kalsaydı, İngilizce arayan biri ürünün İngilizce
+   konuştuğunu hiç öğrenemezdi.
+   Sözlük burada gömülü: sayfa file:// altında da, çevrimdışı da açılmalı ve
+   dışarıdan hiçbir kaynak yüklememeli — gizlilik bölümündeki "üçüncü taraf
+   kütüphane 0" sözü bu sayfa için de geçerli. */
+const S={
+ urun:['Teleprompter','Teleprompter'],
+ ac:['Uygulamayı aç','Open the app'],
+ ac2:['Uygulamayı aç','Open the app'],
+ ac3:['Uygulamayı aç','Open the app'],
+ nasil:['Verilerim ne oluyor?','What about my data?'],
+ h1a:['Kameraya bakarken','Look at the lens'],
+ h1b:['metnini oku.','while you read.'],
+ lede:['Sufle telefonunu ya da bilgisayarını bir sufle cihazına çeviriyor. Metnin kameranın hemen altında akar, böylece okurken bile göz teması bozulmaz.',
+       'Sufle turns your phone or computer into a teleprompter. Your text scrolls just under the camera, so your eye contact holds even while you read.'],
+ plat:['iPhone · Android · Mac · Windows — kurulum gerekmez, tarayıcıda açılır. Hesap yok, ücretsiz.',
+       'iPhone · Android · Mac · Windows — no install needed, it opens in your browser. No account, free.'],
+ ozBas:['Okuduğun belli olmasın','Nobody should notice you are reading'],
+ ozAlt:["Sufle'nin yaptığı tek iş bu: metni doğru yere koymak ve senin hızınla akıtmak.",
+        'That is all Sufle does: put the text in the right place and move it at your pace.'],
+ k1b:['Konuştukça akar','It follows your voice'],
+ k1p:['Sesle takip açıkken sufle senin hızına uyar; duraksarsan bekler, hızlanırsan yetişir. İstemezsen kapat, dakikadaki kelime (WPM) ile sabit hızda aksın.',
+      'With voice follow on, the prompter matches your pace: it waits when you pause and catches up when you speed up. Prefer a fixed pace? Turn it off and scroll by words per minute.'],
+ k2b:['Çekimi burada yaparsın','Record right here'],
+ k2p:['Kamera ve mikrofon uygulamanın içinde: okurken kaydedersin, ayrı bir uygulamaya geçmen gerekmez.',
+      'Camera and microphone are built in, so you read and record in one place.'],
+ k3b:['Yazın arayüzün altında kalmaz','Your text never ends up under a caption bar'],
+ k3p:['Reels, Shorts, Story ve YouTube oranları hazır; platform arayüzünün kapatacağı alanlar ekranda işaretli.',
+      'Reels, Shorts, Story and YouTube ratios are ready, and the areas each platform covers with its own interface are marked on screen.'],
+ k4b:['Okumayı kolaylaştıran araçlar','Tools that make reading easier'],
+ k4p:['Okuma şeridi, göz çizgisi, nefes işaretleri, biyonik okuma ve disleksi yazı tipi. Yüksek kontrast teması ve hareket azaltma desteklenir.',
+      'Reading band, eye line, breath marks, bionic reading and a dyslexia typeface. High contrast theme and reduced motion are supported.'],
+ k5b:['Çekimden sonrası da hazır','Ready for what comes after'],
+ k5p:['Videoyu baştan ve sondan kesebilir, altyazı dosyasını senaryodan üretebilirsin — metin zaten elinde, bu yüzden yazım her zaman doğru.',
+      'Trim the start and end of a take, and generate a subtitle file straight from the script — the spelling is always right.'],
+ k6b:['Kendi metinlerinle çalış','Bring your own text'],
+ k6p:['Word dosyası (.docx), düz metin ve altyazı dosyalarını doğrudan alır. Bütün senaryolarını tek dosyaya yedekleyip geri yükleyebilirsin.',
+      'Word files (.docx), plain text and subtitle files import directly. Back every script up into one file and restore it later.'],
+ msBas:['Masaüstünde daha fazlası','More on the desktop'],
+ msAlt:['Harici kamera seçimi, kayıtta panellerin kendiliğinden kapanması, telefonundan uzaktan kumanda ve kumanda ekranında kameranın gördüğü kare — tek başına çekim yaparken kadrajını görebilirsin. OBS ve vMix kullananlar için şeffaf zeminli yayın kipi var.',
+        'External camera selection, panels that clear themselves while recording, remote control from your phone, and a live camera preview on that remote so you can check your framing when shooting alone. For OBS and vMix there is a transparent streaming mode.'],
+ gzBas:['Verilerin sende kalır','Your data stays with you'],
+ gzAlt:['Bu bir pazarlama cümlesi değil, ölçülen bir sınır. Kaynak kodda sayıldı:',
+        'This is not a marketing line but a measured limit. Counted in the source code:'],
+ g1:['Bize ait sunucuya giden ağ çağrısı: <b>0</b>','Network calls to any server of ours: <b>0</b>'],
+ g2:['Analitik, izleme, çökme raporu aracı: <b>0</b>','Analytics, tracking or crash reporting: <b>0</b>'],
+ g3:['Reklam kimliği, parmak izi, çerez: <b>0</b>','Advertising identifiers, fingerprints, cookies: <b>0</b>'],
+ g4:['Üçüncü taraf kütüphane: <b>0</b> — uygulama tek dosya, dışarıdan kod yüklemiyor',
+     'Third-party libraries: <b>0</b> — the app is a single file and loads no external code'],
+ g5:['Hesap, e-posta, telefon numarası: <b>istenmiyor</b>','Account, e-mail, phone number: <b>never asked</b>'],
+ gxB:['Tek istisna: sesle takip.','The one exception: voice follow.'],
+ gxP:['Sesle takip açıkken konuşmanız tarayıcınızın kendi ses tanıma servisine gider; Chrome ve Safari bunu üreticinin sunucusunda işler. Bunu saklamak yerine yazıyoruz. Ayar <b>varsayılan olarak kapalıdır</b> ve kapalıyken diğer bütün özellikler tam çalışır.',
+      "While voice follow is on, your speech is sent to your browser's own speech recognition service; in Chrome and Safari that runs on the vendor's servers. We state it openly instead of hiding it. The setting is <b>off by default</b>, and every other feature works fully without it."],
+ bsBas:['Kurulum yok, kayıt yok','No install, no sign-up'],
+ bsAlt:['Bağlantıyı aç, metnini yapıştır, çekmeye başla. Ana ekrana ekleyebilirsin; çevrimdışı da çalışır.',
+        'Open the link, paste your script, start recording. Add it to your home screen; it works offline too.'],
+ fUyg:['Uygulama','The app'],
+ fGiz:['Gizlilik politikası','Privacy policy'],
+ fIlt:['İletişim','Contact'],
+ fAlt:['Sufle — Türkçe ve İngilizce arayüz. Hesap yok, sunucu yok, ücretsiz.',
+       'Sufle — Turkish and English interface. No account, no server, free.']
+};
+const BASLIK=['Sufle — Türkçe Teleprompter Uygulaması | Ücretsiz',
+              'Sufle — Teleprompter for iPhone, Android, Mac and Windows'];
+
+function dil(k){
+  const i = k==='en' ? 1 : 0;
+  document.documentElement.lang = k;
+  document.title = BASLIK[i];
+  for (const anahtar in S){
+    /* innerHTML: birkaç metin <b> taşıyor (gizlilik sayıları). Sözlük bu
+       dosyada gömülü ve dışarıdan veri almıyor, o yüzden enjeksiyon yüzeyi
+       yok. */
+    document.querySelectorAll('[data-i="'+anahtar+'"]').forEach(e=>{
+      e.innerHTML = S[anahtar][i];
+    });
+  }
+  const t=document.getElementById('tr'), e=document.getElementById('en');
+  t.classList.toggle('on', k==='tr'); e.classList.toggle('on', k==='en');
+  t.setAttribute('aria-pressed', String(k==='tr'));
+  e.setAttribute('aria-pressed', String(k==='en'));
+  try{ localStorage.setItem('sufleVitrinDil', k); }catch(_){}
+}
+document.getElementById('tr').onclick=()=>dil('tr');
+document.getElementById('en').onclick=()=>dil('en');
+
+/* Tarayıcı dili İngilizceyse İngilizce açılsın. Kullanıcının seçimi
+   önceliklidir: bir kez seçtiyse tarayıcı dili artık karışmaz. */
+let secili=null;
+try{ secili=localStorage.getItem('sufleVitrinDil'); }catch(_){}
+dil(secili || (/^en/i.test(navigator.language||'') ? 'en' : 'tr'));
+</script>
+</body>
+</html>

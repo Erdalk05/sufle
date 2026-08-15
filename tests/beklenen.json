@@ -113,7 +113,7 @@
  "112-mac-riskli-bes.js": 71,
  "113-kapsam-kapisi.js": 36,
  "114-test-kalitesi.js": 15,
- "115-bozma-turu.js": 29,
+ "115-bozma-turu.js": 30,
  "116-sabah-raporu.js": 24,
  "117-cmd-origin.js": 17,
  "118-hedef-ve-kontrast.js": 33,
@@ -132,5 +132,6 @@
  "131-magaza-hazirlik.js": 40,
  "132-magaza-metni.js": 34,
  "133-seo-vitrin.js": 33,
- "134-kumanda-cubugu-sigiyor.js": 11
+ "134-kumanda-cubugu-sigiyor.js": 11,
+ "135-vitrin-sayfasi.js": 64
 }

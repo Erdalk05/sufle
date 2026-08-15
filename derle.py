@@ -37,7 +37,10 @@ CEKIRDEK = os.path.join(REPO, 'cekirdek')
 # "tek kaynak" tam olarak bu demek.
 PLAN = [
     # (modül dosyası, gömüleceği kabuklar)
-    ('jetonlar.css', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Vitrin sayfası da AYNI jetonları kullanır: renkler tek kaynaktan
+    # gelmezse tanıtım ile ürün zamanla birbirinden ayrılır ve kimse
+    # fark etmez.
+    ('jetonlar.css', ['index.html', 'mac/Teleprompter Pro.html', 'tanitim.html']),
     # A.2b'den beri Mac de sözlüğü KULLANIYOR (85 data-i18n), o yüzden
     # ona da gömülüyor. Daha önce yalnız telefondaydı: kullanılmayan 250
     # satır ölü kod olurdu ve denetim.py haklı olarak bağırırdı.
@@ -49,9 +52,6 @@ PLAN = [
     ('ikonlar.html', ['index.html']),
     # .docx okuyucu iki kabukta da kullanılıyor (D.1).
     ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
-    # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
-    # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
-    ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

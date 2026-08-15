@@ -32,6 +32,9 @@ KAYNAK = {
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),
+    # Vitrin sayfası da: kullanıcının uygulamayı açmadan ÖNCE okuduğu
+    # sözler burada; abartma engeli ancak abartarak kanıtlanır.
+    'vitrin': (os.path.join(REPO, 'tanitim.html'), 'SUFLE_VITRIN'),
 }
 
 

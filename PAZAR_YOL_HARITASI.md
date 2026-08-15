@@ -476,7 +476,29 @@ kilitliyor; bir gün ücretli katman gelirse başlık, açıklama ve JSON-LD fiy
 söyler ve kapı önce kırılır.
 **Abartma engeli** mağaza metnindekiyle aynı: JSON-LD `featureList`'teki her madde koddaki
 karşılığına bağlı (kanıtlandı — "yapay zekâ senaryo yazarı" yazılınca kapı kırılıyor).
-**Kalan F.6:** ayrı vitrin sayfası ve içerik — bu tur yalnız uygulamanın kendi meta katmanıydı.
+**F.6 vitrin sayfası ✅ (Tur 35)** — `tanitim.html`: tek dosya, sıfır bağımlılık, TR+EN, kendi
+canonical/og/JSON-LD katmanı. Görseller Tur 34'te üretilen **mağazaya hazır** karelerden
+(taslaklar vitrine girmiyor, test kilitliyor). Renkler `cekirdek/jetonlar.css`'ten geliyor —
+`derle.py`'ye üçüncü kabuk olarak eklendi, çünkü elle yazılan renkler tanıtımla ürünü zamanla
+ayırır ve kimse fark etmez. Tarayıcıda ölçüldü: 1280 / 430 / 375 px'te **taşma 0**, yatay
+kaydırma yok, iki dil de çalışıyor.
+
+**Sayfa ÖLÜ DOĞMASIN diye keşif yolu açıldı:** uygulamanın gizlilik özetinden vitrine bağlantı
+kondu (iki dilde de, `rel=noopener` ile). Hiçbir yerden bağlantı almayan sayfa bu deponun 1
+numaralı hata sınıfıdır; `tests/135` bağlantının iki dilde de durduğunu kilitliyor.
+
+`tests/135` (63 iddia) sayfadaki **her somut sözü koddaki karşılığına** bağlıyor (mağaza metni
+disiplininin aynısı) ve dört bozma kanıtlandı: abartma · CDN yazı tipi · istisnayı saklamak ·
+bağlantıyı sökmek.
+
+*Bu turun dersi:* "sesle takip istisnası saklandı" bozması ilk denemede **yakalanmadı** ve suç
+testte değil bendeydi — işaretlemedeki metni bozmuştum, oysa sayfa yüklenince `dil()` sözlükten
+`innerHTML` yazıyor, yani işaretlemedeki kopya kullanıcıya bir kez bile görünmüyor. Bozma da
+iddia da kullanıcının GERÇEKTEN OKUDUĞU yere, sözlüğe taşındı.
+
+*İki bayat kopya daha temizlendi:* `derle.py`'de Tur 33'ten kalan yinelenmiş `mac-mesajlar.js`
+kaydı, ve `tests/115`'teki **elle kopyalanmış** kaynak listesi — yeni kaynak eklenince kusuru
+değil kendi bayatlığını bildiriyordu; artık `bozma.py`'den çıkarılıyor.
 
 ---
 
@@ -556,3 +578,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 32 | 2026-08-15 | **Denetim turu** — kendi gecemi kapımla ölçtüm | 12/14 → **14/14** kanıtlı bozma · asimetri 0 · yol haritası 3 yerde gerçeği söylemiyordu · Mac 67 çevrilmemiş mesaj bulundu |  ✅ 8/8 YEŞİL |
 | 33 | 2026-08-15 | **A.2c kapandı** — Mac uyarıları sözlüğe; testler forma değil cümleye bağlandı | çevrilmemiş toast **67 → 0** (83 çağrının 83'ü) · TR/EN 68/68 · 11 test `macMetni()` ile onarıldı · 121 yorum sızıntısını ayırt ediyor (kanıtlandı) · **4282 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 34 | 2026-08-15 | **F.4 kareleri** — tezgâh kuruldu, kareler gerçek bir kusuru açığa çıkardı | 6 kare gerçek arayüzden (2 hazır · 4 taslak) · tezgâhın 3 kendi hatası ölçülüp kapatıldı · **kayıtta ▶ düğmesi 430 px iPhone'da ekran dışındaydı** → 5 genişlikte taşma **0** · tests/134 + 3 kanıtlı bozma · **4293 test, 0 hata** | ✅ 8/8 YEŞİL |
+| 35 | 2026-08-15 | **F.6 vitrin sayfası** — tanitim.html, iddialar koda bağlı | 63 iddia · 3 genişlikte taşma **0** · TR+EN · jetonlar tek kaynaktan (derle.py 3. kabuk) · uygulamadan keşif yolu açıldı · 4 kanıtlı bozma · tests/115 kopya listeden çıkarıma geçti · **4358 test, 0 hata** | ✅ 8/8 YEŞİL |
