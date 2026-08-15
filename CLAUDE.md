@@ -32,7 +32,10 @@ Kapı yeşil değilse iş bitmemiştir. Yayından sonra kapı "VER son yayınla 
 1. `index.html` içinde `VER` **ve** `sw.js` içinde `CACHE` artır (ikisi birden)
 2. Aynaları eşitle → `./kapi.sh` yeşil
 3. **Erdal onayı al** → `git push`
-4. Canlıdan doğrula: `curl -s "https://erdalk05.github.io/sufle/index.html?x=$RANDOM" | grep -oE "VER='[0-9.]+'"`
+4. Canlıdan doğrula — **dosyayı DOĞRUDAN DİSKE ÇEK** (`curl -o`), asla komut
+   ikamesiyle (`X=$(curl …)`) değil: değişkenden diske yazınca baytlar bozuluyor
+   ve v9.10 yayınında bu bana "dize satır sonuna bölünmüş, uygulama açılmaz"
+   diye **yanlış alarm** verdirdi. `curl -o` ile fark sıfır çıktı. Ölçüt md5: `curl -s "https://erdalk05.github.io/sufle/index.html?x=$RANDOM" | grep -oE "VER='[0-9.]+'"`
    Sürüm etiketi yetmez — düzeltmenin izini de say (ör. `grep -c kapanistaYaz`)
 5. **Ancak ondan sonra** `.son-yayin` dosyasına `<VER> <cache>` yaz
 
