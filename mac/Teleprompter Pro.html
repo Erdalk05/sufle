@@ -744,7 +744,9 @@ const I18N={
   /* Mac panel sekmesi (B.3) */
   mTabShoot:'Çekim',
   /* Durum satırı — hangi moddayım (B.5) */
-  modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle'},
+  modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle',
+  /* Kısayol kartı (B.6) */
+  keysTitle:'Klavye kısayolları'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -840,7 +842,9 @@ const I18N={
   /* Mac panel sekmesi (B.3) */
   mTabShoot:'Shooting',
   /* Durum satırı — hangi moddayım (B.5) */
-  modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual'}
+  modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual',
+  /* Kısayol kartı (B.6) */
+  keysTitle:'Keyboard shortcuts'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -857,9 +861,13 @@ const I18N={
      DEĞİŞTİRMEDİĞİ ölçüldü: 85 ögenin 85'inde işaretlemedeki metin sözlükteki
      değerle BİREBİR aynı. Yani bu blok bugün görünümü değiştirmiyor. */
   let L='tr';
-  /* t() ve m() BİLEREK yok: bugün kullanan yok, tanımlansa ölü kod olurdu
-     (denetim.py ölü fonksiyon dedektörü haklı olarak bağırır). Mesajlar
-     sözlüğe bağlanınca (A.2c) m() ile birlikte gelecek. */
+  /* t(): B.6'da GERÇEK kullanıcısı doğdu (kısayol kartı başlığı). Daha önce
+     bilerek yazılmamıştı — kullanan olmadan tanımlamak ölü koddur.
+     I18N[L].x biçimi yerine t('x') kullanılıyor çünkü denetim.py kullanımı
+     bu biçimden tarıyor; doğrudan erişim anahtarı "hiç kullanılmıyor"
+     gösterip ölü anahtar alarmı veriyordu.
+     m() hâlâ yok: Mac mesajları henüz sözlüğe bağlı değil (A.2c kalanı). */
+  const t=k=>(I18N[L][k]||I18N.tr[k]||k);
   function applyLang(){
     document.documentElement.lang=L;
     $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; const v=I18N[L][k];
@@ -2611,6 +2619,18 @@ const I18N={
     $('#bilgiKapat').focus();
   }
   function bilgiKapat(){ $('#bilgi').classList.remove('open'); }
+  /* Kart SABİT LİSTE DEĞİL: kısayolları durum çubuğundaki gerçek ipuçlarından
+     okur. Sabit yazılsaydı bir kısayol değişince kart sessizce yalan söylerdi
+     ve kimse fark etmezdi — bu deponun en sevdiği kusur biçimi. */
+  function kisayolKarti(){
+    const satirlar=[...document.querySelectorAll('#statusbar span')]
+      .map(sp=>{ const tuslar=[...sp.querySelectorAll('kbd')].map(k=>k.textContent).join(' / ');
+                 const ad=sp.textContent.replace(/\s+/g,' ').trim()
+                          .replace(tuslar.split(' / ').join(''),'').trim();
+                 return tuslar? tuslar+'  —  '+ad : ''; })
+      .filter(Boolean);
+    bilgiGoster(t('keysTitle'), satirlar.join('\n') || '—');
+  }
 
   function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200); }
 
@@ -2677,6 +2697,12 @@ const I18N={
      edebilirsin ama kapatmanın klavye yolu da olmalı. */
   window.addEventListener('keydown', e=>{
     if(e.key==='Escape' && $('#bilgi').classList.contains('open')){ e.stopPropagation(); bilgiKapat(); }
+    /* B.6 KISAYOL KARTI. Durum çubuğu kısayolları gösteriyor AMA 820 pikselin
+       altında `#statusbar{display:none}` — dar pencerede tek keşif yolu
+       kayboluyordu. '?' her genişlikte çalışır.
+       Yazı alanındayken YOK SAYILIR: kullanıcı '?' yazıyordur. */
+    const tag=(e.target&&e.target.tagName||'').toLowerCase();
+    if(e.key==='?' && tag!=='textarea' && tag!=='input'){ e.preventDefault(); kisayolKarti(); }
   }, true);
   playBtn.onclick=togglePlay;
   $('#resetBtn').onclick=reset;

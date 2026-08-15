@@ -158,3 +158,31 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
   ok('stopVoice arayüz global\'ine bağlı DEĞİL (yalıtım korunuyor)',
      !/function stopVoice\(\)\{[^}]*updateHud/.test(kodTel));
 }
+
+/* ---------- 7. KISAYOL KARTI (B.6) ---------- */
+{
+  const mkod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  /* Mac: durum çubuğu kısayolları gösteriyor AMA 820 pikselin altında
+     display:none — dar pencerede tek keşif yolu kayboluyordu. '?' her
+     genişlikte çalışır. Tarayıcıda doğrulandı: 7 satır, gerçek bağlardan. */
+  ok('Mac: ? tuşu kısayol kartını açıyor', /e\.key==='\?'[\s\S]{0,120}kisayolKarti\(\)/.test(mkod));
+  ok('Mac: yazı alanındayken ? yok sayılıyor (kullanıcı ? yazıyordur)',
+     /tag!=='textarea' && tag!=='input'/.test(mkod));
+  /* KART SABİT LİSTE OLMAMALI: bir kısayol değişince sabit kart sessizce
+     yalan söyler ve kimse fark etmez. Kaynağı durum çubuğunun kendisi. */
+  ok('Mac: kart gerçek bağlardan üretiliyor (sabit liste değil)',
+     /querySelectorAll\('#statusbar span'\)/.test(mkod));
+  /* t('x') biçimi ŞART: denetim.py kullanımı bu biçimden tarıyor, doğrudan
+     I18N[L].x erişimi anahtarı "hiç kullanılmıyor" gösterip ölü anahtar
+     alarmı veriyordu — kapı yakaladı. */
+  ok('Mac: kart başlığı sözlükten, t() biçimiyle', /bilgiGoster\(t\('keysTitle'\)/.test(mkod));
+
+  /* Telefon: içerik zaten vardı (renderMap aktif haritayı çiziyor) ama tek
+     girişi "Uzaktan kumanda" paneliydi — klavye kullanan orada aramaz. */
+  ok('telefon: ? kumanda haritasını açıyor',
+     /if\(e\.key==='\?' && !anySheet\(\)\)/.test(kodTel));
+  ok('telefon: kart açılırken harita TAZELENİYOR (bayat liste gösterme)',
+     /renderMap\(\);\s*\n\s*openSheet\('#remoteSheet'\)/.test(kodTel));
+  ok('telefon: öğrenme modu kapalı açılıyor (kart okumak için, öğretmek için değil)',
+     /learning=false; learnKey=null; renderLearn\(\); renderMap\(\);/.test(kodTel));
+}

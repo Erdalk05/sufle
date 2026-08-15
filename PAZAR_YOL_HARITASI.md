@@ -228,7 +228,14 @@ göremez. Tarayıcıda doğrulandı (Elle → Otomatik + rol sınıfı).
 İki ders: ① rozet **senkron** güncelleniyor — rAF'a bırakılınca arka plan sekmesinde hiç koşmuyordu
 (deponun 2 numaralı ölçüm tuzağı); ② tazeleme **arayüz katmanında**, `stopVoice`'un içinde değil —
 o fonksiyon `tests/36`'da yalıtılmış koşuyor ve global bağımlılık **6 iddiayı birden düşürmüştü**.
-**B.6 Klavye + kısayol kartı.** `↑↓` hız, `M` ayna, `R` kayıt, `F` tam ekran, `?` kart.
+**B.6 Klavye + kısayol kartı.** ✅ **BİTTİ** — `?` her iki kabukta da kartı açıyor.
+**Kart sabit liste DEĞİL:** Mac'te durum çubuğunun gerçek `<kbd>` bağlarından üretiliyor
+(tarayıcıda doğrulandı: 7 kısayol), telefonda `renderMap()` ile **kullanıcının kendi öğrettiği**
+kumanda haritası çiziliyor. Sabit yazılsaydı bir kısayol değişince kart sessizce yalan söylerdi.
+Neden gerekliydi: Mac'te `#statusbar` 820 pikselin altında `display:none` — dar pencerede tek keşif
+yolu kayboluyordu; telefonda içerik vardı ama **tek girişi "Uzaktan kumanda" paneliydi**
+(analizdeki "jargon = görünmezlik"). Yazı alanındayken `?` yok sayılıyor.
+Mac'e `t()` bu turda eklendi — ilk gerçek kullanıcısı doğduğu için.
 **B.7 Onboarding.** 4 adım, atlanabilir, bir kez.
 **B.8 Erişilebilirlik sütunu.** OpenDyslexic + Lexend, kontrast temaları, AA 4.5:1 zorunlu, ekran okuyucu.
 **Bitti ölçütü:** ilk açılışta görünen kontrol sayısı ≤ 5; kontrast denetimi 0 ihlal; dört platformda aynı.
@@ -307,3 +314,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 12 | 2026-08-14 | B.4 Mac: kayıtta paneller oto-kapanır, düzen geri gelir | sıra iddiası kilitli · 29 bozma kanıtlı · 14 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 13 | 2026-08-14 | **v9.8 yayın hazırlığı** — VER 9.8 · cache v80 · TR+EN sürüm notları | **KAPI 8/8 YEŞİL** — kampanyanın ilk tam yeşili; push Erdal onayı bekliyor | ✅ 8/8 |
 | 14 | 2026-08-15 | B.5 telefon: mod rozeti (Elle/Otomatik/Sesle+dil) | tarayıcıda geçiş kanıtlı · senkron güncelleme · 30 bozma · **KAPI 8/8 YEŞİL** | ✅ 8/8 |
+| 15 | 2026-08-15 | B.6 kısayol kartı (iki kabuk) | Mac kartı 7 satır, gerçek bağlardan · telefon kullanıcının haritasını gösteriyor · 51 iddia | ✅ 8/8 YEŞİL |
