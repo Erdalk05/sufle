@@ -3,6 +3,14 @@ const {telefonYolu,oku,cikar}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
+/* SÜZGEÇ ARTIK ÇEKİRDEKTE (D.3, Tur 45): aynı profil dosyası hem telefona hem
+   Mac'e girebiliyor, kural iki yerde ayrı yaşarsa biri düzeltilip diğeri
+   unutulur. Tezgâh gerçek çekirdeği yüklüyor — kopya değil. */
+function cekirdek(){
+  const fs2=require('fs'), path2=require('path');
+  return fs2.readFileSync(path2.join(require('./kaynak.js').REPO,'cekirdek','kumanda.js'),'utf8');
+}
+
 /* KUMANDA PROFİLİ: DIŞA AKTARMA VARDI, İÇE AKTARMA YOKTU
    "⬆︎ Profili dışa aktar" düğmesi vardı ve kodundaki yorum amacı açıkça
    yazıyordu: "aynı kumandayı ikinci cihazda baştan öğretmek zorunda kalma".
@@ -24,8 +32,9 @@ ok('dışa aktarma bozulmadı', /\$\('#mapExport'\)\.onclick=async\(\)=>\{/.test
 
 /* ---------- SÜZGEÇ: yalnız tanınan eşleme geçiyor ---------- */
 const suz=new Function(
-  cikar(kod,/const GECERLI_EYLEM=new Set\(\[[^\]]*\]\);/,'GECERLI_EYLEM')+'\n'+
-  cikar(kod,/function eslemeSuz\(o\)\{[\s\S]*?\n\}/,'eslemeSuz')+'; return eslemeSuz;')();
+  cekirdek()+'\n'+
+  cikar(kod,/const GECERLI_EYLEM=KUMANDA_EYLEMLERI;/,'GECERLI_EYLEM')+'\n'+
+  cikar(kod,/function eslemeSuz\(o\)\{[^\n]*\}/,'eslemeSuz')+'; return eslemeSuz;')();
 ok('geçerli eşleme aynen geçiyor',
    JSON.stringify(suz({KeyA:'toggle',KeyB:'rec'})) === JSON.stringify({KeyA:'toggle',KeyB:'rec'}));
 ok('tanınmayan eylem eleniyor (ölü tuş olmasın)',
@@ -58,8 +67,9 @@ function yukle(icerik,{okumaHatasi=false}={}){
     }
     const e={target:{files:[{name:'x.json'}],value:'x'}};
     const $=k=>({onchange:null,click(){}, });
-    ${cikar(kod,/const GECERLI_EYLEM=new Set\(\[[^\]]*\]\);/,'GECERLI_EYLEM')}
-    ${cikar(kod,/function eslemeSuz\(o\)\{[\s\S]*?\n\}/,'eslemeSuz')}
+    ${cekirdek()}
+    ${cikar(kod,/const GECERLI_EYLEM=KUMANDA_EYLEMLERI;/,'GECERLI_EYLEM')}
+    ${cikar(kod,/function eslemeSuz\(o\)\{[^\n]*\}/,'eslemeSuz')}
     let __h=null;
     ${isleyici.replace(/^\$\('#mapFile'\)\.onchange=/,'__h=')}
     __h(e);

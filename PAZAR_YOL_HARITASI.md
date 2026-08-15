@@ -520,8 +520,23 @@ Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavram�
 Yani **Mac savunmasız değil**: piyasadaki sunum kumandalarının ve sayfa çevirici pedalların
 gönderdiği tuşlar zaten karşılanıyor. Eksik olan yalnız *alışılmadık* bir tuşu öğretebilmek.
 `tests/138` **bugünkü garantiyi** kilitliyor — sabit eşleme sessizce daralırsa masaüstünde pedal
-çalışmayı bırakır ve kimse fark etmez. Öğrenmeli eşlemenin Mac'e taşınması ayrı bir tur işi;
-kapsam farkı burada yazılı olduğu için "unutulmuş iş" değil **verilmiş karar**.
+çalışmayı bırakır ve kimse fark etmez. **✅ Öğrenmeli eşleme Mac'e taşındı (Tur 45).** Sabit `switch` **tabloya** çevrildi (davranış
+birebir korundu, `tests/138` kilitliyor) ve üstüne öğrenme kondu: tuşa bas → eylemi seç → tablo →
+tek tek kaldır ya da sıfırla, `state.tusEsleme` içinde kalıcı.
+
+**Tarayıcıda gerçek tuş olayıyla doğrulandı** (CDP `Input.dispatchKeyEvent`):
+`PageDown → ▶︎/⏸` (varsayılan sürüyor) · öğretilmemiş `F13` **hiçbir şey yapmıyor** ·
+öğretildikten sonra depoya `{"F13":"reset"}` yazıldı ve `F13 → ⟲` çalıştı · sıfırlayınca depo
+`null`, tablo sebebini söylüyor.
+
+*Kurallar ortak çekirdekte:* `cekirdek/kumanda.js` — geçerli eylem kümesi, tuş etiketi
+(`Boşluk`/`Space`), varsayılan+öğrenilen birleştirme ve **profil süzgeci**. Süzgeç önce telefonda
+ayrı yaşıyordu; aynı profil dosyası iki kabuğa da girebildiği için tek yere alındı. Varsayılan
+TABLO kabuğa özel kaldı (telefonda `lock`, Mac'te `mirror`/`fullscreen` var).
+
+**Kapsam sınırı bilinçli:** Mac'te çift basış ve profil dışa/içe aktarma **yok** — arayüz onları
+**vaat de etmiyor**, yani yarım özellik değil, daha küçük ama bütün bir yetenek. `tests/139`
+(58 iddia) bunu da kilitliyor: Mac'te `data-tap` ya da profil düğmesi görünürse kırmızı.
 **D.4 Uzak önizleme:** ✅ **BİTTİ.** Tek başına çekim yapanın en büyük acısı — kadraja girip
 girmediğini görememek. Mac kamera karesini **320 piksele** küçültüp JPEG olarak **kendi yerel
 sunucusuna** gönderiyor, kumanda sayfası gösteriyor. **Yeni altyapı kurulmadı**: sunucu ve kumanda
@@ -797,3 +812,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 42 | 2026-08-15 | **i18n kör noktası** — TR/EN çizim karşılaştırması kapıya bağlandı | 16 şüpheliden **7 gerçek kusur**: telefonda 5 title hiç çevrilmiyordu, Mac karşılama penceresi baştan sona Türkçeydi, 4 metin "yazılı ama tazelenmiyor" · beş yüzeyde **0** · denetleyicinin kendi kör noktası da kapandı · 4 kanıtlı bozma (**67**) · **4458 test, 0 hata** | ✅ 9/9 YEŞİL |
 | 43 | 2026-08-15 | **B.1 tipografi + boşluk** — ölçek ölü jetondan gerçeğe | ölçüldü: 7 punto/12 iç kenar, ölçeğe uyan 3 · **yarım piksel ikizler** tekleştirildi (7→6, 4 gizli vaka daha) · `--tx-*`/`--sp-*` **0 kullanımdan** 23+12 ve 19+16'ya · görsel değişiklik yok (kontrast 0, taşma 0) · 2 kanıtlı bozma (**69**) · **4481 test** | ✅ 9/9 YEŞİL |
 | 44 | 2026-08-15 | **B.2 kapandı · D.3 ölçüldü** — ikisi de "iş yok/iş bu kadar" diye kanıtlandı | sekme düğmelerinde emoji **0** (iş yok, yeni ikon üretilmedi) · başlıktaki 3 emojinin 2'si sözlükten (sınır korunuyor) · Mac sunum kumandası tuşlarını **zaten** karşılıyormuş, eksik olan yalnız tanınmayan tuşu öğretmek · tests/138 bugünkü garantiyi kilitliyor · 3 kanıtlı bozma (**72**) · **4502 test** | ✅ 9/9 YEŞİL |
+| 45 | 2026-08-15 | **D.3 kapandı** — Mac'te öğrenmeli tuş eşleme | sabit switch → tablo (davranış korundu) + öğrenme/tablo/sıfırlama · **gerçek tuş olayıyla doğrulandı** (F13 öğretilmeden ölü, öğretilince çalışıyor, kalıcı) · kurallar `cekirdek/kumanda.js`'e (süzgeç iki kabukta tek yerden) · vaat edilmeyen çift basış/profil GÖSTERİLMİYOR · 5 kanıtlı bozma (**77**) · **4560 test** | ✅ 9/9 YEŞİL |

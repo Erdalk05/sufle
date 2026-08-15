@@ -1077,7 +1077,7 @@
       <button data-tap="2" data-i18n="tap2">Çift basış</button>
     </div>
     <div class="seg" id="actSeg">
-      <button data-act="toggle" aria-label="Başlat veya duraklat">▶︎/⏸</button>
+      <button data-act="toggle" aria-label="Başlat veya duraklat" data-aria="actToggle">▶︎/⏸</button>
       <button data-act="prevLine">↑ satır</button>
       <button data-act="nextLine">↓ satır</button>
       <button data-act="faster">hız +</button>
@@ -1334,7 +1334,7 @@ const I18N={
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mRemoteKeys:'🎛 Kumanda tuşları',mRemoteKeysHint:'Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.',mActNone:'yok',mActPrev:'↑ satır',mActNext:'↓ satır',mActFaster:'hız +',mActSlower:'hız −',mActRec:'● kayıt',mActReset:'⟲ başa',actToggle:'Başlat veya duraklat',mLearnPress:'Kumandanın tuşuna bas…',mLearnPick:'Bu tuş ne yapsın?',mLearned:'Öğrenildi:',mMapEmpty:'Öğrenilmiş tuş yok — varsayılanlar geçerli',mMapRemove:'Kaldır',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1452,7 +1452,7 @@ const I18N={
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mRemoteKeys:'🎛 Remote keys',mRemoteKeysHint:'Connect a presenter remote or page-turner pedal. If it sends an unrecognised key, teach it.',mActNone:'none',mActPrev:'↑ line',mActNext:'↓ line',mActFaster:'faster',mActSlower:'slower',mActRec:'● record',mActReset:'⟲ restart',actToggle:'Play or pause',mLearnPress:'Press a key on your remote…',mLearnPick:'What should this key do?',mLearned:'Learned:',mMapEmpty:'No learned keys — defaults apply',mMapRemove:'Remove',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -6004,15 +6004,78 @@ const ACTIONS={
   lock:()=>setLock(!body.classList.contains('locked')),
   none:()=>{}
 };
+/* ==CEKIRDEK:kumanda.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/kumanda.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* KUMANDA TUŞ EŞLEMESİ — ORTAK ÇEKİRDEK.
+
+   İki kabuk da aynı soruyu soruyor: "bu tuş hangi eylemi çalıştırır?" Cevabın
+   kuralları (geçerli eylem nedir, tuş nasıl yazılır, öğrenilen eşleme
+   varsayılanın üstüne nasıl biner) tek yerde durmalı. Kopyalansaydı biri
+   düzeltilip diğeri unutulurdu — bu deponun en pahalı hata sınıfı.
+
+   VARSAYILAN EŞLEME KABUĞA ÖZELDİR ve burada DEĞİL: telefonda `lock`
+   (ekran kilidi) diye bir eylem var, Mac'te yok; Mac'te `mirror` ve
+   `fullscreen` var, telefonda yok. Ortak olan kurallar, liste değil.
+
+   `EYLEMLER` her iki kabuğun eylem kimliklerinin BİRLEŞİMİ. Kabuk kendi
+   sözlüğünde olmayan bir kimliği zaten çalıştıramaz (tabloda karşılığı yok),
+   ama profil dosyası bir kabuktan diğerine taşınabildiği için doğrulama
+   birleşim üzerinden yapılıyor: bilinmeyen kimlik reddedilir, bilinen ama o
+   kabukta karşılığı olmayan kimlik sessizce yok sayılır. */
+
+const KUMANDA_EYLEMLERI = new Set([
+  'toggle',     // başlat / duraklat
+  'nextLine',   // sonraki satır
+  'prevLine',   // önceki satır
+  'faster',     // hızlan
+  'slower',     // yavaşla
+  'rec',        // kayıt başlat / durdur
+  'reset',      // başa dön
+  'lock',       // ekranı kilitle (telefon)
+  'mirror',     // ayna (Mac)
+  'fullscreen', // tam ekran (Mac)
+  'none',       // bilerek boş: tuşu ETKİSİZLEŞTİRMEK de bir seçim
+]);
+
+/* Kullanıcı "Boşluk"a bastığını görmeli; ekranda boş bir hücre "tuş gelmedi"
+   gibi okunur ve şikâyetin yarısı bu geri bildirimin yokluğundan çıkıyor. */
+function tusEtiketi(k, dil){
+  if (k === ' ') return dil === 'en' ? 'Space' : 'Boşluk';
+  return k;
+}
+
+/* Öğrenilen eşleme varsayılanın ÜSTÜNE biner. Kopya döner: çağıran taraf
+   sonucu değiştirirse varsayılan tablo bozulmasın (telefonda tam bu yüzden
+   `Object.assign({},...)` kullanılıyordu). */
+function tusEslemesi(varsayilan, ogrenilen){
+  return Object.assign({}, varsayilan || {}, ogrenilen || {});
+}
+
+/* Dışarıdan gelen eşleme (profil dosyası, eski kayıt) GÜVENİLMEZ: bilinmeyen
+   eylem kimliği taşıyan girdi sessizce çalışmayan bir tuş üretir. Süzülüyor. */
+function tusEslemesiSuz(ham){
+  const temiz = {};
+  if (!ham || typeof ham !== 'object') return temiz;
+  for (const k of Object.keys(ham)) {
+    if (typeof k !== 'string' || !k) continue;
+    const a = ham[k];
+    if (typeof a === 'string' && KUMANDA_EYLEMLERI.has(a)) temiz[k] = a;
+  }
+  return temiz;
+}
+/* ==/CEKIRDEK:kumanda.js== */
+
 const DEFAULT_MAP={
   ' ':'toggle', 'Enter':'toggle', 'PageDown':'toggle', 'F5':'toggle', 'b':'toggle', '.':'toggle',
   'PageUp':'prevLine', 'ArrowLeft':'prevLine', 'ArrowRight':'nextLine',
   'ArrowUp':'faster', 'ArrowDown':'slower',
   'r':'rec', 'R':'rec', 'Home':'reset', 'End':'lock'
 };
-function keyMap(){ return Object.assign({},DEFAULT_MAP,st.remoteMap||{}); }
+function keyMap(){ return tusEslemesi(DEFAULT_MAP, st.remoteMap); }
 let learnKey=null;           // öğrenme modunda bekleyen tuş
-function keyLabel(k){ return k===' '?'Boşluk':k; }
+function keyLabel(k){ return tusEtiketi(k, L); }
 let gotKey=false, remoteWatch=0, yazidaYutuldu=false;
 window.addEventListener('keydown',e=>{
   const tag=(e.target.tagName||'').toLowerCase();
@@ -6364,18 +6427,13 @@ $('#mapExport').onclick=async()=>{
    Bozuk dosya bu yolun asıl riski: kullanıcı yanlış dosya seçebilir ya da
    dosya bir başkasının uygulamasından gelebilir. O yüzden gelen her şey
    DOĞRULANIYOR ve profil ancak geçerli bir şey varsa değiştiriliyor. */
-const GECERLI_EYLEM=new Set(['toggle','nextLine','prevLine','faster','slower','rec','reset','lock','none']);
-function eslemeSuz(o){
-  /* Yalnız "tuş → BİLİNEN eylem" çiftlerini al. Tanınmayan eylem sessizce
-     hiçbir şey yapan ölü bir tuş olurdu; kullanıcı basar, bir şey olmaz. */
-  const out={};
-  if(!o || typeof o!=='object' || Array.isArray(o)) return out;
-  for(const k of Object.keys(o)){
-    const v=o[k];
-    if(typeof k==='string' && k && typeof v==='string' && GECERLI_EYLEM.has(v)) out[k]=v;
-  }
-  return out;
-}
+/* Doğrulama çekirdekten: iki kabuk aynı kimlikleri tanısın (D.3). */
+const GECERLI_EYLEM=KUMANDA_EYLEMLERI;
+/* Yalnız "tuş → BİLİNEN eylem" çiftlerini al. Tanınmayan eylem sessizce
+   hiçbir şey yapan ölü bir tuş olurdu; kullanıcı basar, bir şey olmaz.
+   Süzgeç D.3'te ÇEKİRDEĞE taşındı: aynı profil dosyası iki kabuğa da
+   girebiliyor, kural iki yerde ayrı yaşarsa biri düzeltilip diğeri unutulur. */
+function eslemeSuz(o){ return Array.isArray(o) ? {} : tusEslemesiSuz(o); }
 $('#mapImport').onclick=()=>$('#mapFile').click();
 $('#mapFile').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;

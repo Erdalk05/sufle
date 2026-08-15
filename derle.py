@@ -57,6 +57,9 @@ PLAN = [
     # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip
     # Mac'te unutulan bir eşik, iki platformun farklı sayı göstermesi demek.
     ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Kumanda eşleme KURALLARI iki kabukta da aynı olmalı; varsayılan
+    # TABLO kabuğa özeldir ve çekirdekte değil (D.3).
+    ('kumanda.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

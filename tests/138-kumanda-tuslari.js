@@ -24,7 +24,11 @@ const mac = macMetni();
 
 /* ---------- MAC: SUNUM KUMANDASI TUŞLARI KARŞILANIYOR MU ---------- */
 {
-  const blok = cikar(mac, /document\.addEventListener\('keydown',e=>\{[\s\S]*?\n  \}\);/,
+  /* T45'te sabit `switch` TABLOYA çevrildi (öğrenmeli eşleme için). Davranış
+     aynı kaldı; iddia artık tabloya bakıyor — biçime değil, hangi tuşun
+     karşılandığına. */
+  const blok = cikar(mac, /const MAC_VARSAYILAN=\{[\s\S]*?\};/, 'Mac varsayılan eşleme')
+             + cikar(mac, /document\.addEventListener\('keydown',e=>\{[\s\S]*?\n  \}\);/,
                      'Mac kısayol dağıtıcısı');
   ok('Mac kısayol dağıtıcısı çıkarılabildi (ölçmeyen kapı değil)', blok.length > 300);
 
@@ -39,7 +43,7 @@ const mac = macMetni();
                            ['ArrowUp', 'hızlan'],
                            ['ArrowDown', 'yavaşla']])
     ok('Mac kumanda tuşu karşılanıyor: ' + tus + ' (' + ne + ')',
-       new RegExp("case '" + (tus === ' ' ? ' ' : tus) + "':").test(blok));
+       new RegExp("'" + tus + "':'").test(blok));
 
   /* Yazı yazarken kısayol tetiklenmemeli: metin düzenleyicide "k" yazan
      kullanıcı kaydı başlatmamalı. */
@@ -48,8 +52,9 @@ const mac = macMetni();
 
   /* Tarayıcının kendi kaydırmasını bastırmadan ok tuşları sayfayı kaydırır
      ve sufle iki kez hareket eder. */
-  const onle = (blok.match(/e\.preventDefault\(\)/g) || []).length;
-  ok('varsayılan davranış bastırılıyor (' + onle + ' yerde)', onle >= 6);
+  /* Tabloya geçince tek bir `preventDefault()` bütün tuşları kapsıyor —
+     sayı iddiası biçime bağlıydı, iddia DAVRANIŞA çevrildi. */
+  ok('varsayılan davranış bastırılıyor', /e\.preventDefault\(\);/.test(blok));
 }
 
 /* ---------- TELEFON: ÖĞRENMELİ EŞLEME AYAKTA MI ---------- */

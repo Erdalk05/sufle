@@ -708,6 +708,37 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <div class="toggle"><span data-i18n="mSwDim">🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
       <div class="toggle"><span data-i18n="mSwHl">✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
       <div class="toggle"><span data-i18n="mSwCount">⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
+
+      <!-- D.3 — ÖĞRENMELİ TUŞ EŞLEME. Sabit tablo piyasadaki kumandaları
+           karşılıyor ama ALIŞILMADIK tuş gönderen pedal için kullanıcının
+           yapabileceği bir şey yoktu. Telefondaki yetenek buraya taşındı. -->
+      <div class="field" style="margin-top:10px">
+        <label data-i18n="mRemoteKeys">🎛 Kumanda tuşları</label>
+        <div class="meta" data-i18n="mRemoteKeysHint">Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.</div>
+        <div class="row" style="margin-top:6px">
+          <span data-i18n="lastKeyL">Gelen son tuş</span>
+          <b id="macLastKey">—</b>
+        </div>
+        <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-top:6px">
+          <button class="btn" id="macLearn" data-i18n="learnStart">🎯 Tuş öğret</button>
+          <button class="btn" id="macMapReset" data-i18n="mapReset">↺ Varsayılana dön</button>
+        </div>
+        <div id="macLearnBox" class="hidden" style="margin-top:8px">
+          <div class="meta" id="macLearnMsg"></div>
+          <div class="seg" id="macActSeg" style="margin-top:6px;flex-wrap:wrap">
+            <button data-mact="toggle" aria-label="Başlat veya duraklat" data-aria="actToggle">▶︎/⏸</button>
+            <button data-mact="prevLine" data-i18n="mActPrev">↑ satır</button>
+            <button data-mact="nextLine" data-i18n="mActNext">↓ satır</button>
+            <button data-mact="faster" data-i18n="mActFaster">hız +</button>
+            <button data-mact="slower" data-i18n="mActSlower">hız −</button>
+            <button data-mact="rec" data-i18n="mActRec">● kayıt</button>
+            <button data-mact="reset" data-i18n="mActReset">⟲ başa</button>
+            <button data-mact="none" data-i18n="mActNone">yok</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px"><span data-i18n="mapList">Eşleme tablosu</span></div>
+        <div id="macMapList"></div>
+      </div>
     </div>
 
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
@@ -886,7 +917,7 @@ const I18N={
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mRemoteKeys:'🎛 Kumanda tuşları',mRemoteKeysHint:'Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.',mActNone:'yok',mActPrev:'↑ satır',mActNext:'↓ satır',mActFaster:'hız +',mActSlower:'hız −',mActRec:'● kayıt',mActReset:'⟲ başa',actToggle:'Başlat veya duraklat',mLearnPress:'Kumandanın tuşuna bas…',mLearnPick:'Bu tuş ne yapsın?',mLearned:'Öğrenildi:',mMapEmpty:'Öğrenilmiş tuş yok — varsayılanlar geçerli',mMapRemove:'Kaldır',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1004,7 +1035,7 @@ const I18N={
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mRemoteKeys:'🎛 Remote keys',mRemoteKeysHint:'Connect a presenter remote or page-turner pedal. If it sends an unrecognised key, teach it.',mActNone:'none',mActPrev:'↑ line',mActNext:'↓ line',mActFaster:'faster',mActSlower:'slower',mActRec:'● record',mActReset:'⟲ restart',actToggle:'Play or pause',mLearnPress:'Press a key on your remote…',mLearnPick:'What should this key do?',mLearned:'Learned:',mMapEmpty:'No learned keys — defaults apply',mMapRemove:'Remove',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1143,8 +1174,8 @@ async function docxMetni(dosya){
    Sonu boşlukla biten anahtarlar değer eklenerek kullanılıyor; o boşluk
    KASITLI, silinirse metin sayıya yapışır. */
 const MMSG={
- tr:{bkNone:'Otomatik yedek yok',bkUnread:'Yedek okunamadı',lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.',scBusyRec:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',resumed:'Kaldığın yerden',noTrash:'Geri getirilecek senaryo yok',trashBack:'↺ Senaryo geri geldi',lastOne:'En az bir senaryo kalmalı',sureDel:'⚠️ Emin misin? Silmek için tekrar bas',noChange:'Değişiklik gerekmedi',camBusyChange:'Kayıt sürerken kamera değiştirilemez',camDenied:'📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile',camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\\\'u kapat ve tekrar dene',camNone:'📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç',camFirstPl:'Önce kamerayı açın',noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek',cropFail:'⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor',recCut:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',cropDied:'⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat',noWebGL:'Yeşil ekran için WebGL yok — yalnız kırpma',camFirst:'Önce kamerayı aç',noTake:'Kaydedilecek çekim yok',noArchive:'Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de',noNumber:'Numara bulunamadı',deleted:'Silindi',noVideo:'Bu çekimin videosu bulunamadı',noPip:'Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)',pipOn:'Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle',trimNo:'Bu tarayıcı kesmeye izin vermiyor',trimShort:'Seçim çok kısa',trimFail:'Kesilemedi — çekim olduğu gibi duruyor',shareCancel:'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin',newTab:'Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet',audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',noteDown:'📝 Yayın notu indirildi',noCaps:'Altyazı yok — kayıt sırasında sufle akmamış',pipBusyRec:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.',undone:'↺ Geri alındı',ratio916:'Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor',bgCleared:'Arka plan görseli kaldırıldı',bgTooBig:'Görsel çok büyük',bgLoaded:'Arka plan görseli yüklendi',voiceLost:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',voiceNo:'Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın',micDenied:'🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile',voiceOn:'Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"',noWifi:'📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.',exported:'Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)',impEmpty:'Dosyada senaryo yok',impBad:'Dosya okunamadı — Sufle yedeği mi?',fileBad:'Dosya okunamadı',fileEmpty:'Dosya boş',docxBad:'Word dosyası okunamadı — gerçekten .docx mi?',obsCopied:'Adres kopyalandı',obsCopyFail:'Kopyalanamadı — adresi elle seçebilirsin',bkBack:'Yedekten dönüldü — ',eyeMoved:'👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar',textEnd:'Metin bitti',camOn:'Kamera açık — ',camNoAccess:'Kameraya erişilemedi: ',recFail:'Kayıt başlatılamadı: ',pipFail:'Yüzen pencere açılamadı: ',trimDone:'Kesildi — yeni süre ',downloading:'İndiriliyor: ',saveFail:'Kaydedilemedi: ',imported:'İçe aktarıldı: ',scNoHit:'Eşleşen senaryo yok'},
- en:{bkNone:'No automatic backup yet',bkUnread:'The backup could not be read',lsFull:'⚠️ Storage is full — the script was NOT saved. Delete scripts you no longer use.',scBusyRec:'You cannot switch scripts while recording — stop the recording first',resumed:'Resumed where you left off',noTrash:'There is no deleted script to restore',trashBack:'↺ Script restored',lastOne:'At least one script must remain',sureDel:'⚠️ Are you sure? Press again to delete',noChange:'Nothing needed changing',camBusyChange:'You cannot switch cameras while recording',camDenied:'📷 Camera permission was not granted — allow it from the camera icon in the address bar, then reload the page',camBusy:'📷 The camera is in use by another app — close FaceTime, Zoom or Photo Booth and try again',camNone:'📷 No suitable camera found — if another camera is connected, select it',camFirstPl:'Turn the camera on first',noMic:'🔇 No microphone — the video will be recorded without sound',cropFail:'⚠️ Cropped recording could not start — recording at the camera ratio instead',recCut:'⛔ The recording stopped early — everything up to that point is kept',vidDied:'⛔ VIDEO STOPPED — audio continues but the video froze, end the recording',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the recording',cropDied:'⚠️ Cropping failed (memory) — stop the recording and start again',noWebGL:'No WebGL for the green screen — cropping only',camFirst:'Turn the camera on first',noTake:'There is no take to save',noArchive:'The archive is empty — use ⭐ Keep in archive on the result screen',noNumber:'Number not found',deleted:'Deleted',noVideo:'The video for this take could not be found',noPip:'This browser does not support the floating window — open it in Chrome or Edge (Safari does not support it)',pipOn:'Floating prompter opened — drag the window over your call',trimNo:'This browser does not allow trimming',trimShort:'The selection is too short',trimFail:'Could not trim — your take is untouched',shareCancel:'Sharing was cancelled — the file is still there, you can try again',newTab:'Opened in a new tab — right click, then Save Video As',audClip:'⚠️ The audio is clipping — move back from the microphone or speak more calmly',noteDown:'📝 Publish note downloaded',noCaps:'No subtitles — the prompter did not scroll during the recording',pipBusyRec:'⛔ This window cannot open while recording — the prompter and the video would freeze. Stop the recording first.',undone:'↺ Undone',ratio916:'Ratio set to 9:16 — this feature does not work at the free ratio',bgCleared:'Background image removed',bgTooBig:'The image is too large',bgLoaded:'Background image loaded',voiceLost:'⛔ Voice follow disconnected — turn it back on with 🎤',voiceNo:'This browser does not support voice follow — please use Chrome',micDenied:'🎤 No microphone permission — allow it from the icon in the address bar, then reload the page',voiceOn:'Speak — the text follows you · commands: "prompter start / stop / faster / rewind"',noWifi:'📵 The Wi-Fi address of this Mac was not found — your phone cannot reach it. Connect the Mac to Wi-Fi and restart the server.',exported:'Exported — open it on your phone with Scripts, then Import (Shift-click here to import)',impEmpty:'There are no scripts in the file',impBad:'The file could not be read — is it a Sufle backup?',fileBad:'The file could not be read',fileEmpty:'The file is empty',docxBad:'The Word file could not be read — is it really a .docx?',obsCopied:'Address copied',obsCopyFail:'Could not copy — you can select the address by hand',bkBack:'Restored from backup — ',eyeMoved:'👁 The reading line moved under the camera — step back a little as well, distance helps most',textEnd:'End of the text',camOn:'Camera on — ',camNoAccess:'The camera could not be opened: ',recFail:'The recording could not start: ',pipFail:'The floating window could not open: ',trimDone:'Trimmed — new length ',downloading:'Downloading: ',saveFail:'Could not save: ',imported:'Imported: ',scNoHit:'No matching script'}
+ tr:{bkNone:'Otomatik yedek yok',bkUnread:'Yedek okunamadı',lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.',scBusyRec:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',resumed:'Kaldığın yerden',noTrash:'Geri getirilecek senaryo yok',trashBack:'↺ Senaryo geri geldi',lastOne:'En az bir senaryo kalmalı',sureDel:'⚠️ Emin misin? Silmek için tekrar bas',noChange:'Değişiklik gerekmedi',camBusyChange:'Kayıt sürerken kamera değiştirilemez',camDenied:'📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile',camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\\\'u kapat ve tekrar dene',camNone:'📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç',camFirstPl:'Önce kamerayı açın',noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek',cropFail:'⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor',recCut:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',cropDied:'⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat',noWebGL:'Yeşil ekran için WebGL yok — yalnız kırpma',camFirst:'Önce kamerayı aç',noTake:'Kaydedilecek çekim yok',noArchive:'Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de',noNumber:'Numara bulunamadı',deleted:'Silindi',noVideo:'Bu çekimin videosu bulunamadı',noPip:'Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)',pipOn:'Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle',trimNo:'Bu tarayıcı kesmeye izin vermiyor',trimShort:'Seçim çok kısa',trimFail:'Kesilemedi — çekim olduğu gibi duruyor',shareCancel:'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin',newTab:'Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet',audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',noteDown:'📝 Yayın notu indirildi',noCaps:'Altyazı yok — kayıt sırasında sufle akmamış',pipBusyRec:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.',undone:'↺ Geri alındı',ratio916:'Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor',bgCleared:'Arka plan görseli kaldırıldı',bgTooBig:'Görsel çok büyük',bgLoaded:'Arka plan görseli yüklendi',voiceLost:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',voiceNo:'Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın',micDenied:'🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile',voiceOn:'Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"',noWifi:'📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.',exported:'Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)',impEmpty:'Dosyada senaryo yok',impBad:'Dosya okunamadı — Sufle yedeği mi?',fileBad:'Dosya okunamadı',fileEmpty:'Dosya boş',docxBad:'Word dosyası okunamadı — gerçekten .docx mi?',obsCopied:'Adres kopyalandı',obsCopyFail:'Kopyalanamadı — adresi elle seçebilirsin',bkBack:'Yedekten dönüldü — ',eyeMoved:'👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar',textEnd:'Metin bitti',camOn:'Kamera açık — ',camNoAccess:'Kameraya erişilemedi: ',recFail:'Kayıt başlatılamadı: ',pipFail:'Yüzen pencere açılamadı: ',trimDone:'Kesildi — yeni süre ',downloading:'İndiriliyor: ',saveFail:'Kaydedilemedi: ',imported:'İçe aktarıldı: ',scNoHit:'Eşleşen senaryo yok',mapResetOk:'Tuş eşlemesi varsayılana döndü'},
+ en:{bkNone:'No automatic backup yet',bkUnread:'The backup could not be read',lsFull:'⚠️ Storage is full — the script was NOT saved. Delete scripts you no longer use.',scBusyRec:'You cannot switch scripts while recording — stop the recording first',resumed:'Resumed where you left off',noTrash:'There is no deleted script to restore',trashBack:'↺ Script restored',lastOne:'At least one script must remain',sureDel:'⚠️ Are you sure? Press again to delete',noChange:'Nothing needed changing',camBusyChange:'You cannot switch cameras while recording',camDenied:'📷 Camera permission was not granted — allow it from the camera icon in the address bar, then reload the page',camBusy:'📷 The camera is in use by another app — close FaceTime, Zoom or Photo Booth and try again',camNone:'📷 No suitable camera found — if another camera is connected, select it',camFirstPl:'Turn the camera on first',noMic:'🔇 No microphone — the video will be recorded without sound',cropFail:'⚠️ Cropped recording could not start — recording at the camera ratio instead',recCut:'⛔ The recording stopped early — everything up to that point is kept',vidDied:'⛔ VIDEO STOPPED — audio continues but the video froze, end the recording',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the recording',cropDied:'⚠️ Cropping failed (memory) — stop the recording and start again',noWebGL:'No WebGL for the green screen — cropping only',camFirst:'Turn the camera on first',noTake:'There is no take to save',noArchive:'The archive is empty — use ⭐ Keep in archive on the result screen',noNumber:'Number not found',deleted:'Deleted',noVideo:'The video for this take could not be found',noPip:'This browser does not support the floating window — open it in Chrome or Edge (Safari does not support it)',pipOn:'Floating prompter opened — drag the window over your call',trimNo:'This browser does not allow trimming',trimShort:'The selection is too short',trimFail:'Could not trim — your take is untouched',shareCancel:'Sharing was cancelled — the file is still there, you can try again',newTab:'Opened in a new tab — right click, then Save Video As',audClip:'⚠️ The audio is clipping — move back from the microphone or speak more calmly',noteDown:'📝 Publish note downloaded',noCaps:'No subtitles — the prompter did not scroll during the recording',pipBusyRec:'⛔ This window cannot open while recording — the prompter and the video would freeze. Stop the recording first.',undone:'↺ Undone',ratio916:'Ratio set to 9:16 — this feature does not work at the free ratio',bgCleared:'Background image removed',bgTooBig:'The image is too large',bgLoaded:'Background image loaded',voiceLost:'⛔ Voice follow disconnected — turn it back on with 🎤',voiceNo:'This browser does not support voice follow — please use Chrome',micDenied:'🎤 No microphone permission — allow it from the icon in the address bar, then reload the page',voiceOn:'Speak — the text follows you · commands: "prompter start / stop / faster / rewind"',noWifi:'📵 The Wi-Fi address of this Mac was not found — your phone cannot reach it. Connect the Mac to Wi-Fi and restart the server.',exported:'Exported — open it on your phone with Scripts, then Import (Shift-click here to import)',impEmpty:'There are no scripts in the file',impBad:'The file could not be read — is it a Sufle backup?',fileBad:'The file could not be read',fileEmpty:'The file is empty',docxBad:'The Word file could not be read — is it really a .docx?',obsCopied:'Address copied',obsCopyFail:'Could not copy — you can select the address by hand',bkBack:'Restored from backup — ',eyeMoved:'👁 The reading line moved under the camera — step back a little as well, distance helps most',textEnd:'End of the text',camOn:'Camera on — ',camNoAccess:'The camera could not be opened: ',recFail:'The recording could not start: ',pipFail:'The floating window could not open: ',trimDone:'Trimmed — new length ',downloading:'Downloading: ',saveFail:'Could not save: ',imported:'Imported: ',scNoHit:'No matching script',mapResetOk:'Key map reset to defaults'}
 };
 /* ==/CEKIRDEK:mac-mesajlar.js== */
 
@@ -1201,6 +1232,7 @@ const MMSG={
     $$('.sw2').forEach(sw=>{ const et=sw.parentElement && sw.parentElement.querySelector('span');
       if(et) sw.setAttribute('aria-label', et.textContent.trim()); });
     bilgiTazele();          // açık kip penceresi de dille yenilensin
+    macMapCiz(); macOgrenmeCiz();   // D.3 tablosu ve öğrenme metni de dille
     $$('#langSwitch button').forEach(b=>{
       b.classList.toggle('on', b.dataset.lang===L);
       b.setAttribute('aria-pressed', b.dataset.lang===L ? 'true' : 'false');
@@ -3323,6 +3355,17 @@ function provaRapor(kaynak, sesle){
     $('#editor').value=undoText; undoText=null; syncEditorToState(); buildWords(); updateStats(); save();
     $('#undoTool').style.display='none'; toast(m('undone')); };
   $('#scriptFind').oninput=()=>renderScripts();
+  /* D.3 kumanda öğrenme */
+  $('#macLearn').onclick=()=>{ macOgrenme=!macOgrenme; macBekleyenTus=null; macOgrenmeCiz(); };
+  $$('#macActSeg button').forEach(b=>b.onclick=()=>{
+    if(!macBekleyenTus) return;
+    const y=Object.assign({}, tusEslemesiSuz(state.tusEsleme));
+    y[macBekleyenTus]=b.dataset.mact;
+    state.tusEsleme=y; save();
+    toast(t('mLearned')+' '+tusEtiketi(macBekleyenTus, L)+' → '+(MAC_EYLEM_ADI[b.dataset.mact]||b.dataset.mact));
+    macBekleyenTus=null; macOgrenme=false; macOgrenmeCiz(); macMapCiz();
+  });
+  $('#macMapReset').onclick=()=>{ state.tusEsleme=null; save(); macMapCiz(); toast(m('mapResetOk')); };
   $('#newScript').onclick=newScript;
   $('#fsBtn').onclick=()=>{ if(!document.fullscreenElement) stageWrap.requestFullscreen?.(); else document.exitFullscreen(); };
   $('#hideBtn').onclick=()=>app.classList.toggle('full');
@@ -3493,24 +3536,161 @@ function provaRapor(kaynak, sesle){
   }
 
   // klavye
+  /* ==CEKIRDEK:kumanda.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/kumanda.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* KUMANDA TUŞ EŞLEMESİ — ORTAK ÇEKİRDEK.
+
+   İki kabuk da aynı soruyu soruyor: "bu tuş hangi eylemi çalıştırır?" Cevabın
+   kuralları (geçerli eylem nedir, tuş nasıl yazılır, öğrenilen eşleme
+   varsayılanın üstüne nasıl biner) tek yerde durmalı. Kopyalansaydı biri
+   düzeltilip diğeri unutulurdu — bu deponun en pahalı hata sınıfı.
+
+   VARSAYILAN EŞLEME KABUĞA ÖZELDİR ve burada DEĞİL: telefonda `lock`
+   (ekran kilidi) diye bir eylem var, Mac'te yok; Mac'te `mirror` ve
+   `fullscreen` var, telefonda yok. Ortak olan kurallar, liste değil.
+
+   `EYLEMLER` her iki kabuğun eylem kimliklerinin BİRLEŞİMİ. Kabuk kendi
+   sözlüğünde olmayan bir kimliği zaten çalıştıramaz (tabloda karşılığı yok),
+   ama profil dosyası bir kabuktan diğerine taşınabildiği için doğrulama
+   birleşim üzerinden yapılıyor: bilinmeyen kimlik reddedilir, bilinen ama o
+   kabukta karşılığı olmayan kimlik sessizce yok sayılır. */
+
+const KUMANDA_EYLEMLERI = new Set([
+  'toggle',     // başlat / duraklat
+  'nextLine',   // sonraki satır
+  'prevLine',   // önceki satır
+  'faster',     // hızlan
+  'slower',     // yavaşla
+  'rec',        // kayıt başlat / durdur
+  'reset',      // başa dön
+  'lock',       // ekranı kilitle (telefon)
+  'mirror',     // ayna (Mac)
+  'fullscreen', // tam ekran (Mac)
+  'none',       // bilerek boş: tuşu ETKİSİZLEŞTİRMEK de bir seçim
+]);
+
+/* Kullanıcı "Boşluk"a bastığını görmeli; ekranda boş bir hücre "tuş gelmedi"
+   gibi okunur ve şikâyetin yarısı bu geri bildirimin yokluğundan çıkıyor. */
+function tusEtiketi(k, dil){
+  if (k === ' ') return dil === 'en' ? 'Space' : 'Boşluk';
+  return k;
+}
+
+/* Öğrenilen eşleme varsayılanın ÜSTÜNE biner. Kopya döner: çağıran taraf
+   sonucu değiştirirse varsayılan tablo bozulmasın (telefonda tam bu yüzden
+   `Object.assign({},...)` kullanılıyordu). */
+function tusEslemesi(varsayilan, ogrenilen){
+  return Object.assign({}, varsayilan || {}, ogrenilen || {});
+}
+
+/* Dışarıdan gelen eşleme (profil dosyası, eski kayıt) GÜVENİLMEZ: bilinmeyen
+   eylem kimliği taşıyan girdi sessizce çalışmayan bir tuş üretir. Süzülüyor. */
+function tusEslemesiSuz(ham){
+  const temiz = {};
+  if (!ham || typeof ham !== 'object') return temiz;
+  for (const k of Object.keys(ham)) {
+    if (typeof k !== 'string' || !k) continue;
+    const a = ham[k];
+    if (typeof a === 'string' && KUMANDA_EYLEMLERI.has(a)) temiz[k] = a;
+  }
+  return temiz;
+}
+/* ==/CEKIRDEK:kumanda.js== */
+
+  /* D.3 — TUŞ EŞLEMESİ ARTIK TABLO, switch DEĞİL.
+     Eskiden sabit bir `switch(e.key)` vardı: piyasadaki sunum kumandalarının
+     gönderdiği tuşlar (PageDown/PageUp/Home/oklar) karşılanıyordu ama
+     ALIŞILMADIK bir tuş gönderen pedal hiçbir şey yapamıyordu ve kullanıcının
+     yapabileceği bir şey yoktu. Telefonda öğrenmeli eşleme vardı, Mac'te yok.
+     Varsayılan tablo eski switch'in BİREBİR karşılığı — davranış değişmedi. */
+  const MAC_VARSAYILAN={
+    ' ':'toggle', 'Enter':'toggle', 'PageDown':'toggle',
+    'PageUp':'prevLine', 'ArrowLeft':'prevLine', 'ArrowRight':'nextLine',
+    'ArrowUp':'faster', 'ArrowDown':'slower',
+    'Home':'reset', 'r':'reset', 'R':'reset',
+    'k':'rec', 'K':'rec',
+    'h':'fullscreen', 'H':'fullscreen', 'f':'fullscreen', 'F':'fullscreen',
+    'm':'mirror', 'M':'mirror'
+  };
+  const MAC_EYLEM={
+    toggle:  ()=>togglePlay(),
+    prevLine:()=>jumpLine(-1),
+    nextLine:()=>jumpLine(1),
+    faster:  ()=>{ state.speed=Math.min(320,state.speed+5); applyAll(); save(); },
+    slower:  ()=>{ state.speed=Math.max(0,state.speed-5); applyAll(); save(); },
+    rec:     ()=>toggleRec(),
+    reset:   ()=>reset(),
+    mirror:  ()=>{ state.mirror=!state.mirror; applyAll(); save(); },
+    fullscreen:()=>$('#fsBtn').click(),
+    none:    ()=>{}
+  };
+  /* Öğrenilen eşleme SÜZÜLEREK okunur: eski kayıtta ya da telefondan gelen
+     profilde bu kabukta karşılığı olmayan bir eylem varsa sessizce çalışmayan
+     bir tuş üretirdi. */
+  function macEsleme(){
+    const ogr=tusEslemesiSuz(state.tusEsleme);
+    return tusEslemesi(MAC_VARSAYILAN, ogr);
+  }
+  let macOgrenme=false, macBekleyenTus=null;
+
+  /* Tuşun uygulamaya ULAŞTIĞINI görünür kıl: "çalışmıyor" şikâyetinin yarısı
+     bu geri bildirimin yokluğundan çıkıyor (telefonda ölçülmüştü). */
+  function macSonTus(k, act){
+    const el=$('#macLastKey'); if(!el) return;
+    el.textContent=tusEtiketi(k, L)+(act?' → '+(MAC_EYLEM_ADI[act]||act):'');
+  }
+  const MAC_EYLEM_ADI={toggle:'▶︎/⏸',prevLine:'↑',nextLine:'↓',faster:'hız +',
+    slower:'hız −',rec:'●',reset:'⟲',mirror:'🪞',fullscreen:'⛶',none:'—'};
+
+  function macTusYakala(k){
+    macBekleyenTus=k;
+    macSonTus(k, null);
+    $('#macLearnMsg').textContent=t('mLearnPick')+' ('+tusEtiketi(k, L)+')';
+  }
+  function macOgrenmeCiz(){
+    $('#macLearnBox').classList.toggle('hidden', !macOgrenme);
+    $('#macLearn').classList.toggle('primary', macOgrenme);
+    if(macOgrenme && !macBekleyenTus) $('#macLearnMsg').textContent=t('mLearnPress');
+  }
+  function macMapCiz(){
+    const kutu=$('#macMapList'); if(!kutu) return;
+    kutu.innerHTML='';
+    const ogr=tusEslemesiSuz(state.tusEsleme);
+    const anahtarlar=Object.keys(ogr);
+    if(!anahtarlar.length){
+      const b=document.createElement('div'); b.className='meta';
+      b.textContent=t('mMapEmpty'); kutu.appendChild(b); return;
+    }
+    for(const k of anahtarlar){
+      const sat=document.createElement('div');
+      sat.className='row'; sat.style.marginTop='4px';
+      sat.innerHTML='<span>'+escapeHtml(tusEtiketi(k, L))+' → '
+        +escapeHtml(MAC_EYLEM_ADI[ogr[k]]||ogr[k])+'</span>';
+      const sil=document.createElement('button');
+      sil.className='iconbtn'; sil.textContent='✕';
+      sil.setAttribute('aria-label', t('mMapRemove'));
+      sil.onclick=()=>{ const y=Object.assign({}, tusEslemesiSuz(state.tusEsleme));
+        delete y[k]; state.tusEsleme=y; save(); macMapCiz(); };
+      sat.appendChild(sil); kutu.appendChild(sat);
+    }
+  }
+
   document.addEventListener('keydown',e=>{
     const tag=document.activeElement.tagName;
     if(tag==='TEXTAREA'||tag==='INPUT') return;
-    switch(e.key){
-      case ' ': case 'Enter': e.preventDefault(); togglePlay(); break;
-      case 'ArrowUp': e.preventDefault(); state.speed=Math.min(320,state.speed+5); applyAll(); save(); break;
-      case 'ArrowDown': e.preventDefault(); state.speed=Math.max(0,state.speed-5); applyAll(); save(); break;
-      // sunum kumandası / pedal tuşları
-      case 'PageDown': e.preventDefault(); togglePlay(); break;
-      case 'PageUp': case 'ArrowLeft': e.preventDefault(); jumpLine(-1); break;
-      case 'ArrowRight': e.preventDefault(); jumpLine(1); break;
-      case 'Home': e.preventDefault(); reset(); break;
-      case 'k': case 'K': e.preventDefault(); toggleRec(); break;
-      case 'r': case 'R': reset(); break;
-      case 'h': case 'H': app.classList.toggle('full'); break;
-      case 'm': case 'M': state.mirror=!state.mirror; applyAll(); save(); break;
-      case 'f': case 'F': $('#fsBtn').click(); break;
-    }
+    /* ÖĞRENME MODU EN ÖNDE: Escape ya da PageDown gönderen bir kumanda,
+       eylemi çalıştırıp öğretilemez hâle gelirdi. */
+    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }
+    const act=macEsleme()[e.key];
+    if(!act || !MAC_EYLEM[act]) return;
+    e.preventDefault();
+    /* Basılı tutmada yalnız hız tuşları tekrar etsin: kayıt ve başlat/duraklat
+       tekrarı tehlikeli (telefonda da aynı kural). */
+    if(e.repeat && act!=='faster' && act!=='slower') return;
+    MAC_EYLEM[act]();
+    macSonTus(e.key, act);
   });
   // pencere/tam ekran değişince yalnız çerçeve yeniden boyutlanıyordu; metnin baş boşluğu
   // ve bitiş konumu eski ölçüyle kalıyor, hizalama kayıyordu → yeniden ölç

@@ -32,6 +32,7 @@ KAYNAK = {
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),
+    'kumanda': (os.path.join(REPO, 'cekirdek', 'kumanda.js'), 'SUFLE_KUMANDA'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

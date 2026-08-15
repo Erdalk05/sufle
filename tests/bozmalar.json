@@ -486,7 +486,7 @@
   "ad": "D3 Macte pedal tuşu düştü (sunum kumandası sessizce ölür)",
   "test": "138-kumanda-tuslari.js",
   "kaynak": "mac",
-  "bul": "      case 'PageDown': e.preventDefault(); togglePlay(); break;\n",
+  "bul": "'PageDown':'toggle',",
   "koy": ""
  },
  {
@@ -500,7 +500,42 @@
   "ad": "D3 Macte yazı kutusundayken kısayol tetikleniyor",
   "test": "138-kumanda-tuslari.js",
   "kaynak": "mac",
-  "bul": "    if(tag==='TEXTAREA'||tag==='INPUT') return;\n    switch(e.key){",
-  "koy": "    switch(e.key){"
+  "bul": "    if(tag==='TEXTAREA'||tag==='INPUT') return;\n    /* ÖĞRENME MODU EN ÖNDE",
+  "koy": "    /* ÖĞRENME MODU EN ÖNDE"
+ },
+ {
+  "ad": "D3 Macte öğrenme modu dağıtımdan SONRA (Escape gönderen kumanda öğretilemez)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }\n    const act=macEsleme()[e.key];",
+  "koy": "    const act=macEsleme()[e.key];\n    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }"
+ },
+ {
+  "ad": "D3 Macte öğrenilen eşleme kaydedilmiyor (oturumda kaybolur)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "    state.tusEsleme=y; save();\n    toast(t('mLearned')",
+  "koy": "    state.tusEsleme=y;\n    toast(t('mLearned')"
+ },
+ {
+  "ad": "D3 varsayılan tablodan sunum kumandası tuşu düştü",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "'PageUp':'prevLine', ",
+  "koy": ""
+ },
+ {
+  "ad": "D3 çekirdek süzgeci uydurma eylemi geçiriyor (ölü tuş)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "kumanda",
+  "bul": "    if (typeof a === 'string' && KUMANDA_EYLEMLERI.has(a)) temiz[k] = a;",
+  "koy": "    if (typeof a === 'string') temiz[k] = a;"
+ },
+ {
+  "ad": "D3 çekirdek birleştirici varsayılan tabloyu bozuyor",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "kumanda",
+  "bul": "  return Object.assign({}, varsayilan || {}, ogrenilen || {});",
+  "koy": "  return Object.assign(varsayilan || {}, ogrenilen || {});"
  }
 ]
