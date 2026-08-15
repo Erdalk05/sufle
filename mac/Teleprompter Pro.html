@@ -611,6 +611,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwChroma">Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="tgKaraoke">Konuşulan kelimeyi vurgula</span><div class="sw2" data-t="capKaraoke"></div></div>
         <div class="field" style="margin-top:10px">
           <div class="top"><label data-i18n="fxTitle">Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
           <div class="seg" id="fxSeg">
@@ -957,6 +958,8 @@ const I18N={
   lastKeyL:'Gelen son tuş',learnStart:'Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
+  tgKaraoke:'Konuşulan kelimeyi vurgula',
+  kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
   profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
@@ -1075,6 +1078,8 @@ const I18N={
   lastKeyL:'Last key received',learnStart:'Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
+  tgKaraoke:'Highlight the spoken word',
+  kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
   profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
@@ -1305,7 +1310,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.13';   // telefon sürümüyle aynı numaralama
+  const VER='9.14';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -1358,7 +1363,7 @@ const MMSG={
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,capKaraoke:true,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -2409,18 +2414,44 @@ const MMSG={
   /* ALTYAZI DÜZENİ HER KAREDE YENİDEN HESAPLANIYORDU (telefonla aynı kural).
      Metin konuşma temposuyla, çizim kare hızıyla değişiyor: 150 kelime
      dakika temposunda 24 kat gereksiz measureText işi çıkıyordu. */
-  let capOnbellek={txt:'', W:0, size:0, lines:null};
+  /* G.1 — KARAOKE VURGUSU (telefonla AYNI kural, aynı gerekçe).
+     Vurgulanacak kelime her zaman cue'nun sonuncusudur çünkü `liveCue`
+     kelimeleri okuma çizgisinden geçtikçe ekliyor — tahmin yok, ASR yok.
+     Söylenmemiş kelime GÖSTERİLMEZ. */
+  function kkParcala(measure, ln){
+    const parts=String(ln||'').split(' ').filter(Boolean);
+    if(!parts.length) return null;
+    const bosluk=measure(' ');
+    const gen=parts.map(p=>measure(p));
+    const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
+    const xs=[]; let x=-toplam/2;
+    for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
+    return {parts, xs, gen, toplam};
+  }
+  let kkRenkOnb='';
+  function kkRenk(){
+    if(kkRenkOnb) return kkRenkOnb;
+    let v='';
+    try{ v=getComputedStyle(document.documentElement).getPropertyValue('--r-warn').trim(); }
+  catch(e){ logErr('kkRenk',e); }   /* boş catch YASAK: sessiz yutma kapıda kırmızı verir */
+    kkRenkOnb = v || '#FFB020';
+    return kkRenkOnb;
+  }
+  let capOnbellek={txt:'', W:0, size:0, lines:null, kk:null};
   function drawCaption(ctx,W,Hh){
     const txt=liveCue(); if(!txt) return;
     const size=Math.round(42*(W/1080));
     ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
     let lines;
+    let kkp;
     if(capOnbellek.lines && capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size){
-      lines=capOnbellek.lines;
+      lines=capOnbellek.lines; kkp=capOnbellek.kk;
     } else {
       lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
-      capOnbellek={txt, W, size, lines};
+      /* Karaoke parçalaması da önbellekte (telefonla aynı gerekçe). */
+      kkp=(state.capKaraoke!==false) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1]) : null;
+      capOnbellek={txt, W, size, lines, kk:kkp};
     }
     const lh=size*1.25, blockH=lines.length*lh, baseY=Hh-Hh*0.16-blockH/2;
     ctx.save();
@@ -2428,8 +2459,19 @@ const MMSG={
     ctx.fillRect(0, baseY-blockH/2-size*0.35, W, blockH+size*0.7);
     ctx.lineWidth=Math.max(3,size*0.14); ctx.strokeStyle='rgba(0,0,0,.9)';
     ctx.fillStyle='#fff'; ctx.lineJoin='round';
+    const kk = state.capKaraoke!==false;
     lines.forEach((ln,i)=>{ const y=baseY-blockH/2+lh*(i+0.5);
-      ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); });
+      const p = (kk && i===lines.length-1) ? kkp : null;
+      if(!p){ ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); return; }
+      const eskiHiza=ctx.textAlign; ctx.textAlign='left';
+      p.parts.forEach((w,j)=>{
+        const x=W/2+p.xs[j];
+        ctx.strokeText(w,x,y);
+        ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';
+        ctx.fillText(w,x,y);
+      });
+      ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;
+    });
     ctx.restore();
   }
   function stopFx(){
@@ -3363,6 +3405,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',

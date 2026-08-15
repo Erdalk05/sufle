@@ -992,6 +992,8 @@
       </div>
       <div class="row"><label for="capMaxW" data-i18n="capMaxW">Satırda en fazla kelime</label><span class="v" id="vCapW">7</span></div>
       <input type="range" id="capMaxW" min="3" max="12" value="7">
+      <div class="tog"><span data-i18n="tgKaraoke">Konuşulan kelimeyi vurgula</span><div class="sw" data-t="capKaraoke"></div></div>
+      <div class="hint" data-i18n="kkHint">Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.</div>
       </div>
       <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
       <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
@@ -1346,7 +1348,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.13';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.14';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -1430,6 +1432,8 @@ const I18N={
   lastKeyL:'Gelen son tuş',learnStart:'Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
+  tgKaraoke:'Konuşulan kelimeyi vurgula',
+  kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
   profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
@@ -1548,6 +1552,8 @@ const I18N={
   lastKeyL:'Last key received',learnStart:'Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
+  tgKaraoke:'Highlight the spoken word',
+  kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
   profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
@@ -1920,6 +1926,14 @@ const DEF={
   hideUI:true,
   target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
+  /* G.1: karaoke vurgusu VARSAYILAN AÇIK. Eski kullanıcının kaydında bu alan
+     yok ama Object.assign varsayılanın üstüne yazdığı için EKSİK ALAN
+     VARSAYILANI KORUR; yani "yeni eklenen alan eski kayıtta yok sayılır"
+     tuzağı burada işlemiyor (ölçüldü: alansız durum nesnesiyle, tests/150).
+     NOT: bu yoruma durum nesnesinin adını nokta ile yazmak YASAK — tests/13
+     kaynakta gecen her okumayı sayıyor ve yorumdaki örnek HAYALET ANAHTAR
+     üretip kapıyı kırıyor (bugün oldu). */
+  capKaraoke:true,
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
@@ -3316,18 +3330,58 @@ function wrapLines(measure, txt, maxW){
    yaklaşık 20 yetiyor. measureText ucuz değil: her çağrı yazı biçimleme
    demek ve bu iş TAM DA KAYIT SÜRERKEN yapılıyor.
    Anahtar üçlü tam: aynı metin + aynı genişlik + aynı punto = aynı satırlar. */
-let capOnbellek={txt:'', W:0, size:0, lines:null};
+/* G.1 — KARAOKE VURGUSU (konuşulan kelime renkli).
+   BIGVU'nun vitrin özelliği bu ve orada BULUT ASR ile TAHMİN ediliyor
+   (temiz seste %92-95 doğruluk, internet şart, ücretsiz katmanda kilitli).
+   Bizde tahmin yok: `liveCue()` kelimeleri okuma çizgisinden GEÇTİKÇE
+   ekliyor, yani vurgulanacak kelime her zaman cue'nun SONUNCUSUDUR.
+   Kayma sıfır, ağ da model de gerekmiyor.
+   DÜRÜSTLÜK SINIRI: gelecek kelimeleri soluk gösterip vurguyu üstlerinde
+   gezdirmek daha "gösterişli" olurdu ama altyazıda HENÜZ SÖYLENMEMİŞ sözü
+   göstermek demek. Prova raporunda verilen kararın aynısı: ölçemediğini
+   ya da olmayanı göstermektense yazmamak.
+   Satırı parçalara ayırmak AYRI FONKSİYON çünkü tuval olmadan sınanabilsin
+   (wrapLines'ta olduğu gibi) — ölçüm sayısı satırdaki kelime kadar ve
+   sonuç aynı önbellekte tutuluyor, yani kare başına yeni maliyet yok. */
+function kkParcala(measure, ln){
+  const parts=String(ln||'').split(' ').filter(Boolean);
+  if(!parts.length) return null;
+  const bosluk=measure(' ');
+  const gen=parts.map(p=>measure(p));
+  const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
+  const xs=[]; let x=-toplam/2;
+  for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
+  return {parts, xs, gen, toplam};
+}
+/* Vurgu rengi JETONDAN gelir. Elle yazılan renk, jeton dosyasını ölü ayara
+   çevirir — bu depoda bir kez oldu (jetonlar.css yüzey renkleri). */
+let kkRenkOnb='';
+function kkRenk(){
+  if(kkRenkOnb) return kkRenkOnb;
+  let v='';
+  try{ v=getComputedStyle(document.documentElement).getPropertyValue('--r-warn').trim(); }
+  catch(e){ logErr('kkRenk',e); }   /* boş catch YASAK: sessiz yutma kapıda kırmızı verir */
+  kkRenkOnb = v || '#FFB020';
+  return kkRenkOnb;
+}
+let capOnbellek={txt:'', W:0, size:0, lines:null, kk:null};
 function drawCaption(ctx,W,Hh){
   const txt=liveCue(); if(!txt) return;
   const size=Math.round((st.capSize||42)*(W/1080));
   ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
   let lines;
+  let kkp;
   if(capOnbellek.lines && capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size){
-    lines=capOnbellek.lines;
+    lines=capOnbellek.lines; kkp=capOnbellek.kk;
   } else {
     lines=wrapLines(s=>ctx.measureText(s).width, txt, W*0.86);
-    capOnbellek={txt, W, size, lines};
+    /* KARAOKE PARÇALAMASI DA ÖNBELLEĞE GİRİYOR. Her karede yapılsaydı
+       tam da bu dosyada bir kez kapatılmış olan "24 kat gereksiz
+       measureText" kusurunu geri açardım — düzen gibi parçalama da
+       yalnız metin/genişlik/punto değişince değişir. */
+    kkp=(st.capKaraoke!==false) ? kkParcala(s=>ctx.measureText(s).width, lines[lines.length-1]) : null;
+    capOnbellek={txt, W, size, lines, kk:kkp};
   }
   const lh=size*1.25, blockH=lines.length*lh;
   const baseY = st.capPos==='middle' ? Hh*0.5 : Hh-Hh*0.16-blockH/2;
@@ -3336,9 +3390,21 @@ function drawCaption(ctx,W,Hh){
   ctx.fillRect(0, baseY-blockH/2-size*0.35, W, blockH+size*0.7);
   ctx.lineWidth=Math.max(3,size*0.14); ctx.strokeStyle='rgba(0,0,0,.9)';
   ctx.fillStyle='#fff'; ctx.lineJoin='round';
+  const kk = st.capKaraoke!==false;
   lines.forEach((ln,i)=>{
     const y=baseY-blockH/2+lh*(i+0.5);
-    ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y);
+    /* Vurgu YALNIZ son satırın son kelimesinde: cue büyüyerek ilerlediği
+       için o kelime tam da şu an okunan kelimedir. */
+    const p = (kk && i===lines.length-1) ? kkp : null;
+    if(!p){ ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); return; }
+    const eskiHiza=ctx.textAlign; ctx.textAlign='left';
+    p.parts.forEach((w,j)=>{
+      const x=W/2+p.xs[j];
+      ctx.strokeText(w,x,y);
+      ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';
+      ctx.fillText(w,x,y);
+    });
+    ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;
   });
   ctx.restore();
 }
@@ -6550,6 +6616,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.'},
  '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
        en:'<b>Trimming no longer runs past the end of the video.</b> Dragging the start to the very end, or a very short take, could select a region that does not exist, so the duration on screen and the take in your hand could drift apart. The selection now always stays inside the video.<br><b>Duration unit is correct in English too</b>: the trim labels used the Turkish unit regardless of language.<br><b>Desktop</b>: both fixes landed there as well, where the whole info line had stayed Turkish.'},
  '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',

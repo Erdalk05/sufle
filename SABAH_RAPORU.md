@@ -2,6 +2,47 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🌙 15/16 Ağustos gecesi — FAZ G başladı (BIGVU ve teleprompter.com ölçüldü)
+
+Erdal iki iş verdi: **v9.13 yayınlansın** (yapıldı, canlıdan doğrulandı) ve **rakiplerin
+her özelliği incelenip Sufle onların üstüne çıkarılsın**. Rakip ölçümü
+`BIGVU_KARSILASTIRMA_VE_PLAN.md` dosyasında; gecenin işi oradaki **FAZ G** sırasıdır.
+
+### ✅ G.1 — Karaoke altyazı (konuşulan kelime vurgulu) · v9.14 hazır
+
+**Neden ilk madde:** BIGVU bunu vitrin özelliği yapmış ve **paraya bağlamış**; orada
+altyazı **buluttaki ASR ile TAHMİN ediliyor** (temiz seste %92-95, internet şart).
+Sufle tahmin etmiyor: metni kullanıcı okuyor ve `liveCue()` kelimeleri okuma çizgisinden
+geçtikçe ekliyor. Yani **vurgulanacak kelime her zaman cue'nun sonuncusu** — kayma sıfır,
+ağ yok, model yok, kelime doğruluğu %100. Rakibin en pahalı modülünü sunucusuz karşıladık.
+
+**Dürüstlük sınırı (bilerek seçildi):** gelecek kelimeleri soluk gösterip vurguyu üstlerinde
+gezdirmek daha gösterişli olurdu ama altyazıda **henüz söylenmemiş sözü** göstermek demekti.
+Prova raporunda verilen kararın aynısı. `tests/150` bunu ayrıca kilitliyor: 7 konumda
+söylenmemiş kelimenin altyazıya sızmadığı ölçülüyor.
+
+**Kendi kusurumu ölçerek yakaladım:** ilk hâlde parçalama **her karede** yapılıyordu, yani
+bu dosyada bir kez kapatılmış olan "kare başına gereksiz measureText" kusurunu geri
+açıyordum. Parçalama düzenle aynı önbelleğe alındı. **Ölçüldü: 300 karede 127 çağrı**
+(önbelleksiz 2.400+ olurdu, karaoke kapalıyken 57).
+
+**İki kabuk da aynı**: Mac paritesi ilk turda yazıldı, aynı matematik, aynı jeton rengi.
+Vurgu rengi **jetondan** okunuyor (`--r-warn`), elle yazılmış renk jeton dosyasını ölü
+ayara çevirirdi. Kontrast ölçüldü: **siyah zeminde 11,48:1**, beyazdan ayrımı 1,83:1.
+
+`tests/150` **92 iddia** + **10 kasıtlı bozma** (hepsi kanıtlandı, toplam 148).
+
+**Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
+1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
+2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
+   anahtar sınıfı. Yorumun kendisi kapıyı kırabiliyor.
+3. **İşaretleme iddialarını yorumu ayıklanmış metinde aradım**; kaba ayıklayıcı araya giren
+   işaretlemeyi de siliyordu, yani test kodun değil KENDİ kusurunu bildirdi.
+4. `tests/103`ün iki iddiası kodun **biçimine** kilitliydi (önbellek nesnesinin yazılışı);
+   davranış hiç değişmediği hâlde kırmızı verdi — desen iddiaya gevşetildi, kapı zayıflamadı
+   (karaoke yolunun maliyeti artık `tests/150`de ayrıca ölçülüyor).
+
+
 ## v9.13 — kelime ortadan bölünüyordu (Erdal bildirdi, ekran görüntüsüyle)
 
 Ekranda **"AKRANLARI / NDAN DAHA"** görünüyordu. Sebep `#scroller` üstündeki
@@ -383,7 +424,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **1 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **4942 test** (gece başında 732) · yeni test dosyası: 39–149
+- **5034 test** (gece başında 732) · yeni test dosyası: 39–150
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

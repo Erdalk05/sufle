@@ -29,10 +29,16 @@ const macKod=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/
 
 /* ---------- ÖNBELLEK VAR MI VE ANAHTARI TAM MI ---------- */
 for(const [ad,k] of [['telefon',kod],['masaüstü',macKod]]){
-  ok(ad+': altyazı düzeni önbelleğe alınıyor', /let capOnbellek=\{txt:'', W:0, size:0, lines:null\};/.test(k));
+  /* DESEN GEVŞETİLDİ (G.1): karaoke parçalaması da aynı önbelleğe girdi ve
+     nesneye `kk` alanı eklendi. Eski desen nesnenin BİÇİMİNE kilitliydi;
+     iddia ise "düzen önbelleğe alınıyor ve anahtarı metin+genişlik+punto".
+     Alanların varlığı aranıyor, yazılış sırası/uzunluğu değil. */
+  ok(ad+': altyazı düzeni önbelleğe alınıyor',
+     /let capOnbellek=\{[^}]*txt:''[^}]*W:0[^}]*size:0[^}]*lines:null[^}]*\}/.test(k));
   ok(ad+': önbellek anahtarı metin, genişlik ve puntoyu birlikte tutuyor',
      /capOnbellek\.lines && capOnbellek\.txt===txt && capOnbellek\.W===W && capOnbellek\.size===size/.test(k));
-  ok(ad+': ıskalayınca yeniden hesaplanıp saklanıyor', /capOnbellek=\{txt, W, size, lines\};/.test(k));
+  ok(ad+': ıskalayınca yeniden hesaplanıp saklanıyor',
+     /capOnbellek=\{txt, W, size, lines[,}]/.test(k));
   /* Yazı biçimi HER KAREDE kurulmalı: çizim çağrıları buna bağlı, onu
      önbelleğe almak yanlış olurdu. */
   ok(ad+': yazı biçimi yine her karede kuruluyor', /ctx\.font='800 '\+size\+'px/.test(k));
@@ -45,7 +51,18 @@ function tezgah(k){
   if(!mW||!mD) return null;
   return (d)=>new Function('__d', `
     ${mW[0]}
-    const st={capSize:__d.punto||42, capPos:'bottom'};
+    /* KARAOKE BU TEZGÂHTA KAPALI. Bu dosyanın iddiası DÜZEN ÖNBELLEĞİ ve
+       satır sayımı ('yazi:' izlerini 2ye bölerek satır çıkarıyor); karaoke
+       son satırı kelime kelime çizdiği için o sayım anlamını yitirirdi.
+       Karaoke yolunun kendi maliyeti ve doğruluğu tests/150de ölçülüyor. */
+    const st={capSize:__d.punto||42, capPos:'bottom', capKaraoke:false};
+    /* Mac kabugu durumu state diye adlandiriyor, telefon st diye. Tezgah iki
+       kabugu da kosturdugu icin ikisi de tanimli olmali; yoksa test kodun
+       kusurunu degil KENDI eksigini bildirir.
+       NOT: bu yorumda TERS TIRNAK yok - burasi bir sablon dizesinin ICI ve
+       ters tirnak dizeyi kesip "missing ) after argument list" veriyor
+       (CLAUDE.md bu tuzagi ucuncu kez kaydediyor, bu dorduncu). */
+    const state=st;
     let __idx=0;
     const liveCue=()=>__d.metinler[__idx];
     ${mD[0]}

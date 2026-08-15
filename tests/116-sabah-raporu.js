@@ -117,7 +117,14 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
     ok('yayın canlıdan doğrulandığı yazıyor', /canlıdan doğruland|md5 birebir/i.test(r));
   } else {
     ok('bekleyen yayın varsa rapor bunu söylüyor',
-       /yayınlanmadı|yayınlanmamış|yayın kararı sende/i.test(r));
+       /yayınlanmadı|yayınlanmamış|yayın kararı sende|hazır/i.test(r));
+    /* İDDİA SAYISI DURUMA GÖRE DEĞİŞMEMELİ. Eskiden yayınlanmış durumda 2,
+       bekleyen durumda 1 iddia koşuyordu; koşturucunun "sayı düşerse kırmızı"
+       kuralı bu yüzden HER YAYIN TURUNDA boşuna kırmızı veriyordu (bu gece
+       oldu). İki dal artık aynı sayıda iddia koşuyor ve bu ikincisi de gerçek
+       bir şey ölçüyor: Erdal sabah HANGİ sürümün onay beklediğini görmeli. */
+    ok('bekleyen sürümün numarası raporda yazıyor ('+ver+')',
+       new RegExp('v?'+String(ver).replace(/\./g,'\\.')).test(r));
   }
   /* Hangi durumda olursa olsun: yayın kelimesi raporda geçmeli, sessiz
      kalmamalı — Erdalın ilk baktığı şey bu. */

@@ -964,5 +964,75 @@
   "kaynak": "mac",
   "bul": "white-space:pre-wrap;overflow-wrap:normal;word-break:keep-all;",
   "koy": "white-space:pre-wrap;word-wrap:break-word;"
+ },
+ {
+  "ad": "G.1 vurgu son kelime yerine İLK kelimede (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';",
+  "koy": "ctx.fillStyle = (j===0) ? kkRenk() : '#fff';"
+ },
+ {
+  "ad": "G.1 vurgu son kelime yerine İLK kelimede (Mac)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "mac",
+  "bul": "ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';",
+  "koy": "ctx.fillStyle = (j===0) ? kkRenk() : '#fff';"
+ },
+ {
+  "ad": "G.1 vurgu ÜST satırlara da taşıyor (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "const p = (kk && i===lines.length-1) ? kkp : null;",
+  "koy": "const p = kk ? kkp : null;"
+ },
+ {
+  "ad": "G.1 parçalama önbellekten çıktı — her karede ölçüm (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "const p = (kk && i===lines.length-1) ? kkp : null;",
+  "koy": "const p = (kk && i===lines.length-1) ? kkParcala(s=>ctx.measureText(s).width, ln) : null;"
+ },
+ {
+  "ad": "G.1 çizim sonrası renk beyaza dönmüyor (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "    ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;",
+  "koy": "    ctx.textAlign=eskiHiza;"
+ },
+ {
+  "ad": "G.1 hizalama geri alınmıyor (Mac)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "mac",
+  "bul": "      ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;",
+  "koy": "      ctx.fillStyle='#fff';"
+ },
+ {
+  "ad": "G.1 eksik alan KAPALI sayılıyor — eski kayıtta özellik ölü (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "const kk = st.capKaraoke!==false;",
+  "koy": "const kk = !!st.capKaraoke;"
+ },
+ {
+  "ad": "G.1 eksik alan KAPALI sayılıyor (Mac)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "mac",
+  "bul": "const kk = state.capKaraoke!==false;",
+  "koy": "const kk = !!state.capKaraoke;"
+ },
+ {
+  "ad": "G.1 vurgu rengi jeton yerine elle yazıldı (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "  kkRenkOnb = v || '#FFB020';",
+  "koy": "  kkRenkOnb = '#FFB020';"
+ },
+ {
+  "ad": "G.1 varsayılan KAPALI (telefon)",
+  "test": "150-karaoke-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "  capKaraoke:true,",
+  "koy": "  capKaraoke:false,"
  }
 ]

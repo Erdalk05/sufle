@@ -106,12 +106,24 @@ ve bu iş liderin (BIGVU 65,3) üstüne çıkmaya yeter. FAZ G bu 18,9 puanın p
 Her madde: *ne · neden · kabul ölçütü (ölçülebilir) · kapı bağı.*
 Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 
-### G.1 — Karaoke altyazı (kelime kelime senkron vurgu) · **P0**
-- **Ne:** gömülü altyazıda ve `.srt`/`.ass` çıktısında, konuşulan kelime **o an vurgulansın**.
-- **Neden:** BIGVU'nun vitrin özelliği; bizde veri (`cekimAltyazi[i].t`) **zaten var**, ASR yok.
-- **Kabul:** 3 tempoda (120/160/200 WPM) vurgulanan kelime ile ses arasındaki kayma **≤120 ms**
-  ölçülsün; kelime atlanmasın; 0 kelime kaybı. Emoji/Türkçe harf bölünmesi 0 (tests/66+ korunur).
-- **Kapı:** yeni test — kaynaktan `cikar()` ile alınan zamanlayıcı sanal saatle koşturulur + 4 bozma.
+### G.1 — Karaoke altyazı (kelime kelime senkron vurgu) · **P0** · ✅ **BİTTİ (v9.14)**
+- **Ne yapıldı:** gömülü altyazıda okunan kelime **jetondan gelen renkle** vurgulanıyor,
+  gerisi beyaz kalıyor. Ayar: "Konuşulan kelimeyi vurgula" (varsayılan **açık**), gömme
+  bağımlıları grubunun içinde (ön koşulu olan ayar = ölü ayar kuralı).
+- **Kayma sorunu hiç doğmadı — mimari sayesinde.** Kabul ölçütünü "±120 ms kayma" diye
+  yazmıştım; ölçünce **kayma diye bir şey olmadığı** çıktı: `liveCue()` kelimeleri okuma
+  çizgisinden geçtikçe ekliyor, yani vurgulanacak kelime her zaman cue'nun **sonuncusu**.
+  Zamanlayıcı da tahmin de yok. BIGVU aynı şeyi bulut ASR ile tahmin ediyor (%92-95).
+- **Dürüstlük sınırı:** gelecek kelimeler **gösterilmiyor**. Soluk gösterip vurguyu üstlerinde
+  gezdirmek daha gösterişli olurdu ama söylenmemiş sözü altyazıda göstermek demekti.
+  `tests/150` 7 konumda sızma olmadığını ölçüyor.
+- **Ölçülen maliyet:** parçalama düzenle aynı önbellekte — 300 karede **127 measureText**
+  (karaoke kapalıyken 57; önbelleksiz 2.400+ olurdu). İlk hâlimde her karede ölçüyordum,
+  yani bu dosyada bir kez kapatılmış olan kusuru geri açıyordum; ölçüm yakaladı.
+- **Kontrast:** vurgu rengi `--r-warn` (#FFB020) siyah zeminde **11,48:1**, beyazdan ayrımı 1,83:1.
+- **Parite:** iki kabuk aynı matematiği kullanıyor (tek kaynak değil ama aynı test tezgâhında
+  koşuyor; `tests/150` ikisini de aynı iddialarla ölçüyor).
+- **Kapı:** `tests/150` **92 iddia** + **10 kasıtlı bozma** (hepsi kanıtlandı; toplam 148).
 
 ### G.2 — Altyazı stil paketi (font · renk · animasyon · konum) · **P0**
 - **Ne:** bugünkü 2 stil → **en az 6 hazır tema** + konum 3 + kelime vurgu rengi + 3 animasyon
