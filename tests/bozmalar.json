@@ -380,7 +380,7 @@
  {
   "ad": "E4 az kelimede de rapor üretiliyor (yanıltıcı istatistik)",
   "test": "137-prova-raporu.js",
-  "kaynak": "telefon",
+  "kaynak": "prova",
   "bul": "  if(okunan.length<12) return null;",
   "koy": "  if(okunan.length<0) return null;"
  },
@@ -390,5 +390,26 @@
   "kaynak": "telefon",
   "bul": "  provaYaz();                         // E.4",
   "koy": "  // provaYaz();                      // E.4"
+ },
+ {
+  "ad": "E4 Macte rapor sonuç ekranına bağlı değil (yarım özellik)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    provaYaz();                         // E.4",
+  "koy": "    // provaYaz();                    // E.4"
+ },
+ {
+  "ad": "E4 Macte sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    } else {\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
+  "koy": "    } else {\n      h+=sat('Gerçek hız', r.wpm+' wpm');\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
+ },
+ {
+  "ad": "E4 Mac altyazısı anlık görüntü yerine canlı metinden üretiliyor",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    const kaynak = cekimAltyazi\n      ? cekimAltyazi\n      : words.map",
+  "koy": "    const kaynak = false\n      ? cekimAltyazi\n      : words.map"
  }
 ]

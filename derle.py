@@ -52,6 +52,9 @@ PLAN = [
     ('ikonlar.html', ['index.html']),
     # .docx okuyucu iki kabukta da kullanılıyor (D.1).
     ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip
+    # Mac'te unutulan bir eşik, iki platformun farklı sayı göstermesi demek.
+    ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

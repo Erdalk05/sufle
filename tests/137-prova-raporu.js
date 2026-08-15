@@ -1,5 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, oku, cikar}=require('./kaynak.js');
+const fs=require('fs'), path=require('path');
+const {telefonYolu, oku, cikar, macMetni, REPO}=require('./kaynak.js');
 
 /* E.4 — PROVA RAPORU (çekimden sonra "nasıl okudum").
 
@@ -18,6 +19,15 @@ const {telefonYolu, oku, cikar}=require('./kaynak.js');
    Kod KOPYALANMIYOR, kaynaktan çıkarılıp koşturuluyor. */
 
 const src = oku(telefonYolu());
+const mac = macMetni();
+
+/* AÇIKÇA VERİLEN YOL YANLIŞSA SESSİZCE DEPOYA DÜŞME. Bozma turu geçici bir
+   kopya yazıp SUFLE_PROVA ile gösteriyor; test depo dosyasını okusaydı bozma
+   HİÇBİR ŞEY ölçmeden "geçti" görünürdü — nitekim ilk koşuda tam bu oldu. */
+const acikProva = process.env.SUFLE_PROVA;
+if (acikProva && !fs.existsSync(acikProva))
+  throw new Error('Verilen prova yolu yok: ' + acikProva);
+const PROVA_YOL = acikProva || path.join(REPO, 'cekirdek/prova.js');
 
 /* ---------- KAYNAK DÜZEYİ: BAYRAK GERÇEKTEN KURULUYOR MU ---------- */
 {
@@ -37,15 +47,32 @@ const src = oku(telefonYolu());
   ok('eşleştirici bölümü ayrılabildi (ölçmeyen kapı değil)', esles.length > 60);
   ok('bayrak eşleştiricinin içinde DEĞİL', !/cekimSesle/.test(esles));
   /* Rapor sonuç ekranına bağlı olmalı — bağlanmamış rapor ölü koddur. */
-  ok('rapor sonuç ekranında çağrılıyor', /\n  provaYaz\(\);/.test(src));
+  ok('rapor sonuç ekranında çağrılıyor', /^\s*provaYaz\(\);/m.test(src));
   ok('rapor kutusu işaretlemede var', /id="provaBox"/.test(src));
 }
 
+/* ---------- HESAP TEK YERDE Mİ ---------- */
+{
+  /* Kopyalanmış bir hesap, biri düzeltilip diğeri unutulunca iki platformun
+     farklı sayı göstermesi demektir — bu deponun en pahalı hata sınıfı.
+     Tur 40'ta ortak çekirdeğe taşındı. */
+  ok('prova hesabı ortak çekirdekte', fs.existsSync(PROVA_YOL));
+  ok('telefon çekirdeği gömüyor', /==CEKIRDEK:prova\.js==/.test(src));
+  ok('Mac de aynı çekirdeği gömüyor', /==CEKIRDEK:prova\.js==/.test(mac));
+  /* Gömülen kopya kaynakla AYNI olmalı — bayat gömme sessiz sapmadır. */
+  const cek = fs.readFileSync(PROVA_YOL, 'utf8');
+  const imza = (cek.match(/const PROVA_DURAKLAMA=([\d.]+)/) || [])[1];
+  ok('çekirdekte eşik okunabildi — ' + imza, !!imza);
+  for (const [ad, k] of [['telefon', src], ['Mac', mac]])
+    ok(ad + ' gömülü eşiği kaynakla aynı',
+       new RegExp('const PROVA_DURAKLAMA=' + imza.replace('.', '\\.')).test(k));
+}
+
 /* ---------- GERÇEK FONKSİYONU ÇIKAR VE KOŞTUR ---------- */
-const govde = cikar(src, /const PROVA_DURAKLAMA=[\s\S]*?\n\}\nfunction provaYaz/, 'provaRapor');
-const kod = govde.replace(/\nfunction provaYaz$/, '');
-const provaRapor = new Function(kod + '\n return provaRapor;')();
-ok('provaRapor kaynaktan çıkarılıp koşturulabildi', typeof provaRapor === 'function');
+const govde = cikar(fs.readFileSync(PROVA_YOL, 'utf8'),
+                    /const PROVA_DURAKLAMA=[\s\S]*$/, 'provaRapor');
+const provaRapor = new Function(govde + '\n return provaRapor;')();
+ok('provaRapor çekirdekten çıkarılıp koşturulabildi', typeof provaRapor === 'function');
 
 /* Yardımcı: t saniyelerinden kelime listesi kurar. */
 const kelimeler = (zamanlar, kuyruk = 0) => {
@@ -151,4 +178,36 @@ const kelimeler = (zamanlar, kuyruk = 0) => {
   ok('rapor dolgu kelime saymayı vaat etmiyor',
      !/dolgu kelime|filler word/i.test(temiz.slice(temiz.indexOf('function provaYaz'),
                                                    temiz.indexOf('function srtText'))));
+}
+
+/* ---------- MAC PARİTESİ ---------- */
+{
+  /* Telefonda olup Mac'te olmayan özellik = yarım özellik, bu deponun 1
+     numaralı hata sınıfı. E.4 iki kabukta da olmalı. */
+  ok('Macte rapor kutusu var', /id="provaBox"/.test(mac));
+  ok('Macte rapor çiziliyor', /function provaYaz\(\)\{/.test(mac));
+  /* SATIR BAŞINA DEMİRLE: `provaYaz\(\);\s*\/\/ E\.4` deseni
+     `// provaYaz();   // E.4` ile de eşleşiyordu, yani çağrıyı yoruma almak
+     testten geçiyordu. Bozma turu yakaladı. */
+  ok('Mac sonuç ekranında rapor çağrılıyor', /^\s*provaYaz\(\);/m.test(mac));
+  ok('Macte de sesle bayrağı var', /cekimSesle=voiceOn;/.test(mac));
+  ok('Macte de çekim ortasında açılış yakalanıyor',
+     /recorder\.state==='recording'\)\s*cekimSesle=true;/.test(mac));
+
+  /* Mac'in çizimi de aynı dürüstlük sınırına uymalı. */
+  const yz = mac.slice(mac.indexOf('function provaYaz(){'), mac.indexOf('function showResult'));
+  ok('Mac çizimi ayrılabildi (ölçmeyen kapı değil)', yz.length > 400);
+  ok('Macte bayrak kontrol ediliyor', /if\(r\.sesle\)\{/.test(yz));
+  const kapaliDal = yz.slice(yz.indexOf('} else {'), yz.indexOf('if(r.okunmayan'));
+  ok('Macte sesle kapalıyken hız yazılmıyor', !/r\.wpm/.test(kapaliDal));
+  ok('Macte sesle kapalıyken SEBEBİ yazılıyor',
+     /ÖLÇÜLEMEDİ/.test(kapaliDal) && /NOT measured/.test(kapaliDal));
+
+  /* ÇEKİMİN ANLIK GÖRÜNTÜSÜ: telefonda vardı, Mac'te yoktu. Olmayınca
+     çekimden sonra senaryoya dokunmak altyazıyı ve raporu BAŞKA bir metne
+     göre üretiyordu. */
+  ok('Macte çekim anlık görüntüsü alınıyor',
+     /cekimAltyazi = words\.length \? words\.map/.test(mac));
+  ok('Mac altyazısı anlık görüntüden üretiliyor',
+     /const kaynak = cekimAltyazi/.test(mac));
 }

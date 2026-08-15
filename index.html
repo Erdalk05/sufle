@@ -4066,7 +4066,15 @@ function tc(s,sep){
   const p=(n,l)=>String(n).padStart(l,'0');
   return p(h,2)+':'+p(mi,2)+':'+p(sec,2)+sep+p(ms,3);
 }
-/* ============ E.4 · PROVA RAPORU ============
+/* ==CEKIRDEK:prova.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/prova.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* E.4 · PROVA RAPORU — ORTAK ÇEKİRDEK.
+   İki kabuk da aynı hesabı kullanır. Kopyalansaydı biri düzeltilip diğeri
+   unutulurdu; bu depoda en pahalı hata sınıfı tam olarak budur.
+   Çizim (provaYaz) kabuğa özeldir — DOM'ları farklı.
+
    Rakip matrisinde bu satır BOŞ: on bir üründen hiçbirinde çekimden sonra
    "nasıl okudum" cevabı yok. Sunucu da yapay zekâ da gerekmiyor — veri zaten
    cihazda: `cekimAltyazi` her kelimenin okuma çizgisinden geçtiği anı taşıyor
@@ -4125,6 +4133,7 @@ function provaRapor(kaynak, sesle){
   }
   return r;
 }
+/* ==/CEKIRDEK:prova.js== */
 function provaYaz(){
   const box=$('#provaBox'); if(!box) return;
   const r=provaRapor(cekimAltyazi, cekimSesle);

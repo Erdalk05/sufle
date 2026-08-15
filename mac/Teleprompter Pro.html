@@ -689,6 +689,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     <div class="rr-head"><span data-i18n="mRrHead">🎬 Çekim hazır</span> <span id="rrSize"></span></div>
     <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
     <video id="rrVideo" controls playsinline></video>
+    <div id="provaBox" class="hidden"></div>
     <!-- D.6 BUDAMA. Telefonda tam çalışıyordu, Mac'te HİÇ YOKTU — üstelik
          sözlükte trimStart/trimEnd/trimGo anahtarları duruyordu, yani yine
          ölü çeviri. Kutu varsayılan gizli: budama yalnız tarayıcı
@@ -1945,6 +1946,7 @@ const MMSG={
   }
   function startRec(){
     chunks=[]; capTimes=new Array(words.length).fill(null);
+    cekimAltyazi=null; cekimSesle=voiceOn;   // E.4
     if(!stream.getAudioTracks().length) toast(m('noMic'));
     const mime=pickMime();
     const opts=Object.assign(mime?{mimeType:mime}:{},{videoBitsPerSecond:9000000,audioBitsPerSecond:128000});
@@ -2003,6 +2005,8 @@ const MMSG={
   }
   function stopRec(){
     recStop=performance.now();
+    /* recT/words sıfırlanmadan ÖNCE al. */
+    cekimAltyazi = words.length ? words.map((w,i)=>({s:w.textContent, ln:wordLine[i], t:capTimes[i]})) : null;
     setTimeout(stopCrop,400);
     if(recorder&&recorder.state!=='inactive') recorder.stop();
     stopAudioMonitor();
@@ -2638,6 +2642,34 @@ const MMSG={
     trimming=false; $('#rrTrimGo').textContent=t('trimGo');
   }
 
+  /* E.4 — çizim kabuğa özel (DOM farklı), hesap ortak çekirdekte.
+     Telefonla AYNI dürüstlük sınırı: sesle takip kapalıyken damgalar suflenin
+     kendi sabit akışını ölçer, yani "gerçek hız" kullanıcının kendi WPM ayarı
+     olurdu — o durumda sayı yazılmaz, sebebi yazılır. */
+  function provaYaz(){
+    const box=$('#provaBox'); if(!box) return;
+    const r=provaRapor(cekimAltyazi, cekimSesle);
+    if(!r){ box.classList.add('hidden'); box.innerHTML=''; return; }
+    const tr=L==='tr';
+    const sat=(a,b)=>'<div class="kv"><span>'+a+'</span><b>'+b+'</b></div>';
+    let h='<div class="row"><label>📊 '+(tr?'Prova raporu':'Rehearsal report')+'</label></div>';
+    h+=sat(tr?'Okunan kelime':'Words read', r.kelime);
+    h+=sat(tr?'Okuma süresi':'Reading time', fmtTime(r.sure));
+    if(r.sesle){
+      h+=sat(tr?'Gerçek hız':'Actual pace', r.wpm+' '+(tr?'kelime/dk':'wpm'));
+      h+=sat(tr?'Duraklama':'Pauses', r.duraklama+(r.duraklama?' · '+fmtTime(r.duraklamaToplam):''));
+      if(r.enUzun) h+='<div class="meta">'+(tr?'En uzun duraklama '+r.enUzun.sn.toFixed(1)+' sn — "'+r.enUzun.sonra+'" kelimesinden sonra'
+                                              :'Longest pause '+r.enUzun.sn.toFixed(1)+'s — after "'+r.enUzun.sonra+'"')+'</div>';
+      if(r.pencere) h+='<div class="meta">'+(tr?'Tempo '+r.enYavas+'–'+r.enHizli+' kelime/dk arasında değişti'
+                                               :'Pace ranged '+r.enYavas+'–'+r.enHizli+' wpm')+'</div>';
+    } else {
+      h+='<div class="meta">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ: sesle takip kapalıydı, sufle sabit hızla aktı — ölçülen şey senin okuman değil, kendi WPM ayarın olurdu. 🎤 açıkken çekersen bu bölüm dolar.'
+                                 :'Pace and pauses were NOT measured: voice follow was off, so the prompter scrolled at a fixed speed — the numbers would just echo your own WPM setting. Record with 🎤 on and this section fills in.')+'</div>';
+    }
+    if(r.okunmayan>0) h+='<div class="meta">'+(tr?'Senaryonun son '+r.okunmayan+' kelimesi okunmadan kayıt bitti'
+                                                :'The take ended with the last '+r.okunmayan+' words unread')+'</div>';
+    box.innerHTML=h; box.classList.remove('hidden');
+  }
   function showResult(){
     if(!lastBlob) return;
     if(lastUrl) URL.revokeObjectURL(lastUrl);
@@ -2648,6 +2680,7 @@ const MMSG={
     $('#rrDownload').textContent='⬇︎ İndir (.'+ext.toLowerCase()+')';
     setTimeout(trimAc,150);   // süre metadata ile geliyor
     const ai=$('#audInfo'); if(ai) ai.textContent=audSummary();
+    provaYaz();                         // E.4 — prova raporu
     // Goruntu sesten kisa mi? Donma buradan kesin anlasilir.
     (function(){
       const vv=document.createElement('video'); vv.preload='metadata'; vv.muted=true;
@@ -2801,11 +2834,91 @@ const MMSG={
     if(/^(\p{Lu}\.)+\p{Lu}$/u.test(g)) return false;   // T.C. · A.Ş.
     return true;
   }
+  /* ==CEKIRDEK:prova.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/prova.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* E.4 · PROVA RAPORU — ORTAK ÇEKİRDEK.
+   İki kabuk da aynı hesabı kullanır. Kopyalansaydı biri düzeltilip diğeri
+   unutulurdu; bu depoda en pahalı hata sınıfı tam olarak budur.
+   Çizim (provaYaz) kabuğa özeldir — DOM'ları farklı.
+
+   Rakip matrisinde bu satır BOŞ: on bir üründen hiçbirinde çekimden sonra
+   "nasıl okudum" cevabı yok. Sunucu da yapay zekâ da gerekmiyor — veri zaten
+   cihazda: `cekimAltyazi` her kelimenin okuma çizgisinden geçtiği anı taşıyor
+   (altyazı bundan üretiliyor).
+
+   DÜRÜSTLÜK SINIRI: damgalar çizgiyi KİMİN sürdüğünü ölçer. Sesle takip
+   açıkken konuşmacıyı, kapalıyken suflenin sabit akışını. Kapalıyken "gerçek
+   hız" kullanıcının kendi WPM ayarıdır ve rapor ona kendi ayarını geri söyler
+   — bu yüzden o durumda hız ve duraklama YAZILMIYOR, sebebi söyleniyor.
+
+   DOLGU KELİME (şey/yani/ııı) BİLEREK YOK: onu ölçmek için konuşmanın
+   METNİNİ saklamak gerekir. Tanıma metni bugün hiçbir yere yazılmıyor ve
+   gizlilik metnimiz "konuşmanız cihazda tutulmaz" diyor. Ölçemediğimiz şeyi
+   ölçüyormuş gibi göstermek yerine yazmıyoruz. */
+const PROVA_DURAKLAMA=1.2;   // sn — bundan uzun boşluk kullanıcıya duraklama gibi gelir
+function provaRapor(kaynak, sesle){
+  if(!Array.isArray(kaynak)) return null;
+  const okunan=kaynak.filter(w=>w.t!=null);
+  /* Az kelimeyle istatistik yanıltır: 8 kelimelik bir çekimde tek duraklama
+     "hızın çok değişken" der. Eşiğin altında rapor GÖSTERİLMİYOR. */
+  if(okunan.length<12) return null;
+  const bas=okunan[0].t, son=okunan[okunan.length-1].t, sure=son-bas;
+  if(!(sure>1)) return null;
+  const r={kelime:okunan.length, sure, sesle,
+           okunmayan:kaynak.length-okunan.length};
+  r.wpm=Math.round(okunan.length/sure*60);
+
+  /* Duraklamalar: ardışık iki kelime damgası arasındaki boşluk. */
+  const dur=[];
+  for(let i=1;i<okunan.length;i++){
+    const d=okunan[i].t-okunan[i-1].t;
+    if(d>=PROVA_DURAKLAMA) dur.push({sn:d, sonra:okunan[i-1].s, t:okunan[i-1].t});
+  }
+  dur.sort((a,b)=>b.sn-a.sn);
+  r.duraklama=dur.length;
+  r.duraklamaToplam=dur.reduce((a,b)=>a+b.sn,0);
+  r.enUzun=dur[0]||null;
+
+  /* Tempo tutarlılığı: 10 saniyelik pencerelerde hız. Tek bir ortalama,
+     "başta yavaş sonda koşuyor" durumunu tümden gizler. */
+  const P=10, kova={};
+  okunan.forEach(w=>{ const k=Math.floor((w.t-bas)/P); kova[k]=(kova[k]||0)+1; });
+  const anahtar=Object.keys(kova).map(Number).sort((a,b)=>a-b);
+  /* Son pencere yarım kalmış olabilir. İlk yazımda onu tümden atıyordum ve
+     19,75 saniyelik bir çekimde ikinci pencere %97 dolu olmasına rağmen
+     düşüyordu — tempo hiç raporlanmıyordu (test yakaladı). Artık pencere
+     GERÇEK süresiyle oranlanıyor; yalnız yarıdan kısa kalan son parça
+     atılıyor, çünkü 1-2 saniyelik bir kuyruk uçuk bir hız üretir. */
+  const hizlar=anahtar.map(k=>{
+    const span=Math.min(sure,(k+1)*P)-k*P;
+    return span>=P*0.5 ? Math.round(kova[k]/span*60) : null;
+  }).filter(v=>v!=null);
+  if(hizlar.length>=2){
+    r.enYavas=Math.min(...hizlar); r.enHizli=Math.max(...hizlar);
+    r.pencere=hizlar.length;
+  }
+  return r;
+}
+/* ==/CEKIRDEK:prova.js== */
+
+  /* E.4 — ÇEKİMİN KENDİ ANLIK GÖRÜNTÜSÜ. Telefonda bu zaten vardı, Mac'te
+     YOKTU: `buildCues` canlı `words`/`capTimes` okuyordu, yani çekimden sonra
+     senaryoya dokunan her şey (düzenleme, senaryo değiştirme) altyazıyı ve
+     raporu başka bir metne göre üretiyordu. Çekim biterken görüntü alınıyor. */
+  let cekimAltyazi=null, cekimSesle=false;
+
   function buildCues(){
     const off=(state.capOffset||0), list=[];
-    for(let i=0;i<words.length;i++){
-      if(capTimes[i]==null) continue;
-      list.push({t:Math.max(0,capTimes[i]+off), s:words[i].textContent, ln:wordLine[i]});
+    /* Çekimin anlık görüntüsü varsa ONDAN üret; yoksa (henüz çekim yok)
+       ekrandaki metinden. Telefondaki C.1 ilkesinin aynısı. */
+    const kaynak = cekimAltyazi
+      ? cekimAltyazi
+      : words.map((w,i)=>({s:w.textContent, ln:wordLine[i], t:capTimes[i]}));
+    for(let i=0;i<kaynak.length;i++){
+      if(kaynak[i].t==null) continue;
+      list.push({t:Math.max(0,kaynak[i].t+off), s:kaynak[i].s, ln:kaynak[i].ln});
     }
     if(!list.length) return [];
     const cues=[]; let cur=null;
@@ -3393,6 +3506,10 @@ const MMSG={
     rec.onend=()=>{ if(voiceOn) restartVoice(); };
     try{ rec.start(); }catch(e){ logErr('voice',e); restartVoice(); }
     voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceBtn').textContent='🎤 Ses: Açık';
+    /* E.4 — çekim ortasında açılırsa da bu çekim "sesle sürüldü" sayılır.
+       Bayrak eşleştiricinin İÇİNDE değil: telefonda oraya konunca yalıtılmış
+       test tezgâhı çökmüştü. */
+    if(recorder && recorder.state==='recording') cekimSesle=true;
     $('#voiceBtn').title='Sesle takip + sesli komut: "sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"';
     toast(m('voiceOn'));
     easeLoop();

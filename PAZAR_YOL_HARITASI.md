@@ -503,6 +503,22 @@ artık orada OLMADIĞINI da kilitliyor. ② tempo penceresinde son parçayı tü
 19,75 saniyelik çekimde ikinci pencere %97 dolu olmasına rağmen düşüyor ve tempo hiç
 raporlanmıyordu; test yakaladı, pencere artık gerçek süresiyle oranlanıyor.
 
+**E.4 Mac paritesi ✅ (Tur 40).** Telefonda olup Mac'te olmayan özellik yarım özelliktir — bu
+deponun 1 numaralı hata sınıfı. Hesap `cekirdek/prova.js`'e taşındı ve **iki kabuğa da gömülüyor**;
+kopyalansaydı biri düzeltilip diğeri unutulurdu. Çizim kabuğa özel kaldı (DOM'lar farklı), ama
+dürüstlük sınırı birebir aynı: Mac'te de sesle takip kapalıyken sayı yazılmıyor, sebebi yazılıyor.
+Gerçek Mac çekimiyle uçtan uca doğrulandı.
+
+**Yan kazanç — Mac'te duran bir kusur kapandı:** telefonda çekim biterken **anlık görüntü**
+alınıyordu, Mac'te alınmıyordu; `buildCues` canlı metni okuyordu, yani çekimden sonra senaryoya
+dokunan her şey (düzenleme, senaryo değiştirme) **altyazıyı başka bir metne göre** üretiyordu.
+Mac de artık görüntü alıyor.
+
+*İki bozma ilk turda yakalanmadı ve ikisi de testimin kusuruydu:* ① test `SUFLE_PROVA` yolunu
+okumuyordu, yani bozma turu geçici kopyayı yazıyor ama test depo dosyasını sınıyordu — ölçmeyen
+kapı; ② `provaYaz\(\);\s*// E.4` deseni **yoruma alınmış satırla da eşleşiyordu**, yani çağrıyı
+yoruma almak testten geçiyordu. İkisi de satır başına demirlenerek kapatıldı.
+
 **E.1 · E.2 · E.3 → Erdal kararı** (sunucu/anahtar gerektirir, CLAUDE.md gereği kendiliğinden
 başlatılmaz).
 
@@ -691,3 +707,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 37 | 2026-08-15 | **E.4 prova raporu** — sunucusuz, yapay zekâsız · F.5 bedeli ölçüldü | veri zaten cihazdaydı (`cekimAltyazi`) · hız/duraklama/tempo/okunmayan kuyruk · **sesle takip kapalıyken sayı YAZILMIYOR** (kendi WPM ayarını geri söylerdi) · dolgu kelime bilerek yok (gizlilik) · 2 kez kendi kuralıma düştüm, ikisi de testle kapandı · tests/137 (33 iddia) + 4 kanıtlı bozma · **4430 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 38 | 2026-08-15 | **B.8 kapandı** — kontrast denetimi kapının 9. adımı | çizilmiş arayüzde **357 metin** ölçüldü · `#verTop` 3,67:1 gerçek ihlaliydi → jetona bağlandı · aracın kendi yanlış alarmı (devre dışı düğme) WCAG muafiyetiyle kapandı · ayırt ettiği kanıtlandı (2,89 yakalandı) · **4413 test, 0 hata** | ✅ 9/9 YEŞİL |
 | 39 | 2026-08-15 | **B.1 rol ayrımı** — dolu yeşil = tek eylem, seçili = tonal | Mac ana **9 → 1**, telefon giriş **3 → 1** · kural kapıya bağlandı (2 kural: >1 yok + tabandan artmaz) · örtüşme kontrolü kendi değişikliğimi çürüttü, geri alındı · Mac ana ekran hiç ölçülmüyormuş, eklendi (5 yüzey/456 metin) · kontrast 0 ihlal | ✅ 9/9 YEŞİL |
+| 40 | 2026-08-15 | **E.4 Mac paritesi** — hesap ortak çekirdeğe, Mac'te de rapor | `cekirdek/prova.js` iki kabuğa gömülüyor · Mac'te **çekim anlık görüntüsü yoktu**, altyazı canlı metinden üretiliyordu → kapandı · gerçek Mac çekimiyle doğrulandı · 2 bozma ilk turda yakalanmadı (ikisi de testin kusuru) → 7/7 kanıtlı · **59 bozma** | ✅ 9/9 YEŞİL |
