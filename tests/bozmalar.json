@@ -1265,5 +1265,103 @@
   "kaynak": "telefon",
   "bul": "  if(!st.target){ toast(m('fitNoTarget')); return; }",
   "koy": "  if(!st.target){ return; }"
+ },
+ {
+  "ad": "G.4 logo oranı bozuluyor (marka sıkışıyor)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  const lw=hedefW, lh=gh*olcek;",
+  "koy": "  const lw=hedefW, lh=hedefW*0.5;"
+ },
+ {
+  "ad": "G.4 logo kenar boşluğu yok (kadraj dışına taşar)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  const m=kisa*MARKA_KENAR;",
+  "koy": "  const m=-kisa*MARKA_KENAR;"
+ },
+ {
+  "ad": "G.4 logo boyutu sınırsız (kadrajı yutar)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  const hedefW=kisa*Math.max(0.03, Math.min(0.35, (+yuzde||12)/100));",
+  "koy": "  const hedefW=kisa*((+yuzde||12)/100);"
+ },
+ {
+  "ad": "G.4 okunur metin hep beyaz (açık marka renginde görünmez)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  return beyaz>=siyah ? '#ffffff' : '#111111';",
+  "koy": "  return '#ffffff';"
+ },
+ {
+  "ad": "G.4 kontrast hesabı ters (koyu-açık ayrımı kayboluyor)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);",
+  "koy": "  return (Math.min(x,y)+0.05)/(Math.max(x,y)+0.05);"
+ },
+ {
+  "ad": "G.4 dosya boyutu kapısı yok (bellek patlar)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  if((+boyut||0) > MARKA_LOGO_MAX) return {ok:false, sebep:'boyut'};",
+  "koy": "  if(false) return {ok:false, sebep:'boyut'};"
+ },
+ {
+  "ad": "G.4 görsel olmayan dosya kabul ediliyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  if(!/^image\\//.test(t)) return {ok:false, sebep:'tur'};",
+  "koy": "  if(false) return {ok:false, sebep:'tur'};"
+ },
+ {
+  "ad": "G.4 bant açık ama metin boşken de etkin sayılıyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  return !!m.logo || (!!m.bant && !!(String(m.ad||'').trim() || String(m.unvan||'').trim()));",
+  "koy": "  return !!m.logo || !!m.bant;"
+ },
+ {
+  "ad": "G.4 alt bant satır sayısı sınırsız (kadrajı kaplar)",
+  "test": "154-marka-kiti.js",
+  "kaynak": "marka",
+  "bul": "  const n=Math.max(1, Math.min(2, +satir||2));",
+  "koy": "  const n=Math.max(1, +satir||2);"
+ },
+ {
+  "ad": "G.4 telefonda koyu marka rengi okunmadan yazılıyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "telefon",
+  "bul": "        ctx.fillStyle=(o!==null && o>=4.5) ? (mk.renk||'#00D47E') : okunurMetin(zemin);",
+  "koy": "        ctx.fillStyle=mk.renk||'#00D47E';"
+ },
+ {
+  "ad": "G.4 Macte koyu marka rengi okunmadan yazılıyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "mac",
+  "bul": "          ctx.fillStyle=(o!==null && o>=4.5) ? (mk.renk||'#00D47E') : okunurMetin(zemin);",
+  "koy": "          ctx.fillStyle=mk.renk||'#00D47E';"
+ },
+ {
+  "ad": "G.4 telefonda marka yalnız altyazı açıkken çiziliyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "telefon",
+  "bul": "    if(st.burnCaps || markaAktif(st.marka)){",
+  "koy": "    if(st.burnCaps){"
+ },
+ {
+  "ad": "G.4 telefonda dosya kabulü atlanıyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "telefon",
+  "bul": "  const kabul=markaDosyaKabul(f.type, f.size);",
+  "koy": "  const kabul={ok:true,sebep:null};"
+ },
+ {
+  "ad": "G.4 genel anahtar yenileyicisi marka bandını sıfırlıyor",
+  "test": "154-marka-kiti.js",
+  "kaynak": "telefon",
+  "bul": "  $$('.sw').forEach(s=>{ if(!s.dataset.t) return; const a=!!st[s.dataset.t];",
+  "koy": "  $$('.sw').forEach(s=>{ const a=!!st[s.dataset.t];"
  }
 ]

@@ -159,13 +159,22 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
   kendiliğinden çıkar; elle yazılmış altı düğme olsaydı yedinci tema görünmezdi.
 - **Kapı:** `tests/152` **86 iddia** + **12 kasıtlı bozma** (toplam 170).
 
-### G.4 — Marka kiti (logo · renk · alt bant) · **P1**
+### G.4 — Marka kiti (logo · renk · alt bant) · **P1** · ✅ **BİTTİ (v9.14)**
 - **Ne:** cihazdan seçilen logo (PNG/SVG) çekime yakılabilsin; marka rengi altyazı+alt banda
   uygulansın; **alt bant** (ad/unvan) şablonu.
 - **Neden:** BIGVU'da bu **en pahalı katmana kilitli**; bizde ücretsiz olması doğrudan rekabet silahı.
-- **Kabul:** logo **belleğe kopyalanmadan** çizilsin (arka plan fotoğrafı dersinin aynısı: 12 MP'de
-  51 MB tuzağı); kayıt sırasında kare maliyeti **+1 ms**'i geçmesin; logo kadraj dışına taşmasın (4 genişlik).
-- **Kapı:** parite (Mac'te de olacak) + boyut kapısı testi.
+- **Yapıldı:** dört köşeden birine boyutu ayarlanabilen logo · marka rengi · ad+unvan alt bandı
+  (kayıt başladıktan sonra birkaç saniye görünüp kayboluyor). Hesap `cekirdek/marka.js`de.
+- **Kural koda bağlandı:** marka rengi okunurluğu bozamaz — koyu renk koyu bandın üstünde
+  görünmez olur; kontrast ölçülüp okunur renge düşülüyor, **şerit yine kullanıcının rengi**.
+- **Bellek dersi uygulandı:** dosya belleğe kopyalanmıyor (nesne adresi), 256 px'e küçültülüyor,
+  saydamlık için PNG, iki ayrı sınır sebebiyle söyleniyor (tür ve boyut).
+- **Yan kazanç:** telefon gömme hatasını **sessizce yutuyormuş** (`catch(e){}`); Mac ile aynı
+  hata yoluna bağlandı ve **parite muafiyet listesi bu bayatlığı kendi yakaladı**.
+- **Gerçek tarayıcı iki kusurumu yakaladı:** köprü fonksiyonu yanlış kapsamda kalıp `apply()`i
+  yarıda kesiyordu; genel anahtar yenileyicisi `data-t` taşımayan anahtarı sıfırlıyordu.
+- **Kapı:** `tests/154` **169 iddia** + **14 kasıtlı bozma** (toplam 195). Dört eski testin
+  biçime kilitli deseni iddiaya taşındı.
 
 ### G.5 — Müzik yatağı · **P1**
 - **Ne:** cihazdan seçilen ses dosyası kayda karışsın, konuşma altında **otomatik kısılma** (ducking).

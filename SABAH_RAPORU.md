@@ -118,6 +118,43 @@ oynattı ve ikisi de **gevşetilmeden** taşındı: `tests/16`nın sıfıra böl
 çekirdekte ölçülüyor, `tests/114` benim yeni testimde bir "iç dize birleştirmesi kilidi"
 yakaladı (haklıydı) ve iddia hesaba bağlandı.
 
+### ✅ G.4 — Marka kiti: logo · marka rengi · alt bant · v9.14
+
+**Neden bu madde:** BIGVU marka kitini **en pahalı katmana kilitlemiş**, teleprompter.com hiç
+sunmuyor. Bizde ücretsiz olması doğrudan rekabet silahı.
+
+**Gelen:** dört köşeden birine, boyutu ayarlanabilen **logo**; **marka rengi**; ad ve unvan
+yazan **alt bant**. Bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor — sürekli
+duran alt bant yayıncılıkta değil, amatör videoda olur.
+
+**Kural koda bağlandı:** marka rengi okunurluğu **bozamaz**. Koyu bir marka rengi koyu bandın
+üstünde neredeyse görünmez olur; kontrast ölçülüp eşiğin altındaysa okunur renge düşülüyor,
+ama **şerit yine kullanıcının rengi** kalıyor (marka kaybolmuyor).
+
+**Bellek dersi tekrar uygulandı:** logo dosyası belleğe **kopyalanmıyor** (nesne adresi),
+256 px'e küçültülüyor, saydamlık için PNG olarak saklanıyor ve **iki ayrı sınır** kullanıcıya
+sebebiyle söyleniyor. Bu deponun ölçülmüş dersi: 12 MP fotoğrafta tepe 51 MB.
+
+**Yan kazanç — telefon bir hatayı sessizce yutuyormuş:** gömme sırasında bir şey patlarsa
+telefonda `catch(e){}` vardı, yani hiçbir yerde iz kalmıyordu. Marka katmanı aynı tuvale
+eklenirken telefon da Mac ile aynı hata yoluna bağlandı; **parite muafiyet listesi bu
+bayatlığı kendi kendine yakaladı** — listenin var olma sebebi tam olarak bu.
+
+**Bozma turu testimin kusurunu buldu:** logo oranı iddiasında 400×200 (tam 2:1) veri
+seçmiştim ve "yüksekliği genişliğin yarısı yap" diyen bozuk formül de aynı sonucu veriyordu.
+Artık üç farklı oran sınanıyor. Bu, deponun `İstanbul` / `gözlüğümü` dersinin aynısı.
+
+**Gerçek tarayıcı iki kusur daha yakaladı, ikisi de benim:** ① köprü fonksiyonunu yanlış
+kapsama koymuşum, `apply()` onu göremeyip **istisna atıyor ve ayarların geri kalanını
+çizmeden bırakıyordu** (ölçülen öge 104 → 60 düştü, üç etiket eski dilde kaldı); ② genel
+anahtar yenileyicisi `data-t` taşımayan anahtarı da işliyordu ve `st[undefined]` hep falsy
+olduğu için **marka bandı her `apply()` çağrısında sessizce kapanıyordu**. İkisi de kapandı
+ve ikisi de teste bağlandı.
+
+`tests/154` **169 iddia** + **14 kasıtlı bozma** (toplam 195). Dört eski testin deseni
+kodun **biçimine** kilitliydi ve davranış değişmediği hâlde kırıldı; dördü de iddiaya taşındı,
+biri (`tests/145`) yine süslü parantez sayan çıkarıcıya geçirildi (gecenin üçüncü vakası).
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -507,10 +544,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **6 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **7 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5373 test** (gece başında 732) · yeni test dosyası: 39–153
+- **5542 test** (gece başında 732) · yeni test dosyası: 39–154
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

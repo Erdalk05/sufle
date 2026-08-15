@@ -101,7 +101,11 @@ const mac = fs.readFileSync(macYolu(), 'utf8');
      değişince eski dilde kalıyordu. `#result` T49'da kapatılmıştı; ışık
      denetçisi ve konuşulabilirlik denetimi 2026-08-15'te kapıya ayar
      sekmeleri eklenince yakalandı. */
-  const al = tel.match(/function applyLang\(\)\{[\s\S]*?\n\}/);
+  /* ÇIKARIM SÜSLÜ PARANTEZ SAYARAK: regex deseni fonksiyonun İÇİNDEKİ ilk
+     kapanışa takılıp yarım kod çıkarıyordu ve iddia kodun kusurunu değil
+     kendi eksikliğini bildiriyordu (bu gece üçüncü vakası). */
+  const govde = require('./kaynak').blokKes(tel, 'function applyLang()');
+  const al = govde ? [govde] : null;
   ok('applyLang bulundu', !!al);
   if (al) {
     ok('dil değişince ışık denetçisi çıktısı yenileniyor',

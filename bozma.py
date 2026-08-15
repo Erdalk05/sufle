@@ -39,6 +39,7 @@ KAYNAK = {
     # burada yaşıyor, yani bozulabilmesi şart.
     'altyazi': (os.path.join(REPO, 'cekirdek', 'altyazi.js'), 'SUFLE_ALTYAZI'),
     'tempo': (os.path.join(REPO, 'cekirdek', 'tempo.js'), 'SUFLE_TEMPO'),
+    'marka': (os.path.join(REPO, 'cekirdek', 'marka.js'), 'SUFLE_MARKA'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

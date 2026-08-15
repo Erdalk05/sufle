@@ -159,8 +159,12 @@ for(const [ad,k] of [['telefon',kod],['masaüstü',macKod]]){
 }
 
 /* ---------- KALDIRILAMAYAN MALİYET YERİNDE DURUYOR ---------- */
-ok('altyazı yakma yalnız anahtar açıkken çalışıyor', /if\(st\.burnCaps\)\{/.test(kod));
+/* G.4: aynı tuval marka katmanı için de kuruluyor, o yüzden DIŞ koşul
+   genişledi. İDDİA AYNI: altyazı ancak anahtar açıkken ÇİZİLİYOR. */
+ok('altyazı yakma yalnız anahtar açıkken çalışıyor', /if\(st\.burnCaps\) drawCaption\(/.test(kod));
 ok('çıktı tuvali yalnız boyut değişince yeniden kuruluyor',
    /if\(oc\.width!==cv\.width\|\|oc\.height!==cv\.height\)\{ oc\.width=cv\.width; oc\.height=cv\.height; \}/.test(kod));
+/* İDDİA: kopyalama ve çizim TEK try içinde — biri patlarsa kare atlanır ama
+   döngü ölmez. Bloğun içindeki satır sayısı iddianın parçası değil. */
 ok('kopya ve altyazı tek denemede (hata çizimi durdurmasın)',
-   /try\{ o\.drawImage\(cv,0,0\); drawCaption\(o,oc\.width,oc\.height\); \}catch\(e\)\{\}/.test(kod));
+   /try\{\s*o\.drawImage\(cv,0,0\);[\s\S]{0,200}?drawCaption\(o,oc\.width,oc\.height\);[\s\S]{0,200}?\}catch/.test(kod));

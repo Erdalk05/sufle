@@ -172,7 +172,12 @@ const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voi
    sayfayı yerel sunucudan (localhost) alıyor; telefonda ne o sunucu var ne
    de tarayıcı kaynağı kavramı. `remote` ve `pip` ile aynı sınıf: kavram
    karşı platformda YOK, eksiklik değil. Taban BİLEREK 6→7. */
-const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb','cams','obs']);
+/* burn: MUAFİYET KALKTI (G.4). Telefon bu hatayı SESSİZCE YUTUYORDU
+   (catch(e){}), yani gömme sırasında bir şey patlarsa hiçbir yerde iz
+   kalmıyordu; marka katmanı aynı tuvale eklenirken telefon da Mac ile aynı
+   hata yoluna bağlandı. Muafiyet listesi kendi denetimini yaptığı için bu
+   bayatlığı kapı yakaladı — listenin var olma sebebi tam olarak bu. */
+const SADECE_MAC     = new Set(['pip','remote','pos','idb','cams','obs']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));
 const macFazla = [...mE].filter(x => !tE.has(x) && !SADECE_MAC.has(x));

@@ -1014,6 +1014,27 @@
       <div class="tog"><span data-i18n="tgKaraoke">Konuşulan kelimeyi vurgula</span><div class="sw" data-t="capKaraoke"></div></div>
       <div class="hint" data-i18n="kkHint">Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.</div>
       </div>
+      <div class="row" style="margin-top:14px"><label data-i18n="markaTitle">Marka kiti</label></div>
+      <div class="sheetbtns">
+        <button class="cancel" id="logoPick" data-i18n="logoPick">Logo seç</button>
+        <button class="cancel" id="logoClear" data-i18n="logoClear">Logoyu kaldır</button>
+      </div>
+      <input type="file" id="logoFile" accept="image/*" class="hidden">
+      <div class="row"><label data-i18n="logoPos">Logo konumu</label></div>
+      <div class="seg" id="logoPosSeg">
+        <button data-lp="sagUst" class="on" data-i18n="lpSagUst">Sağ üst</button>
+        <button data-lp="solUst" data-i18n="lpSolUst">Sol üst</button>
+        <button data-lp="sagAlt" data-i18n="lpSagAlt">Sağ alt</button>
+        <button data-lp="solAlt" data-i18n="lpSolAlt">Sol alt</button>
+      </div>
+      <div class="row"><label for="logoSize" data-i18n="logoSize">Logo boyutu (%)</label><span class="v" id="vLogoSize">12</span></div>
+      <input type="range" id="logoSize" min="3" max="35" value="12">
+      <div class="row"><label for="markaRenk" data-i18n="markaRenk">Marka rengi</label><span class="v" id="vMarkaRenk">—</span></div>
+      <input type="color" id="markaRenk" value="#00D47E">
+      <div class="tog"><span data-i18n="tgBant">Alt bant (ad ve unvan)</span><div class="sw" id="markaBantSw"></div></div>
+      <input type="text" id="markaAd" data-i18n-ph="markaAd" placeholder="Adın">
+      <input type="text" id="markaUnvan" data-i18n-ph="markaUnvan" placeholder="Unvanın">
+      <div class="hint" data-i18n="markaHint">Logo ve alt bant videoya işlenir — kompozit açık olmalı. Alt bant kayıt başladıktan sonra birkaç saniye görünür, sonra kaybolur.</div>
       <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
       <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
     </div>
@@ -1455,6 +1476,11 @@ const I18N={
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
   capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',
+  markaTitle:'Marka kiti',logoPick:'Logo seç',logoClear:'Logoyu kaldır',logoPos:'Logo konumu',
+  lpSagUst:'Sağ üst',lpSolUst:'Sol üst',lpSagAlt:'Sağ alt',lpSolAlt:'Sol alt',
+  logoSize:'Logo boyutu (%)',markaRenk:'Marka rengi',tgBant:'Alt bant (ad ve unvan)',
+  markaAd:'Adın',markaUnvan:'Unvanın',
+  markaHint:'Logo ve alt bant videoya işlenir — kompozit açık olmalı. Alt bant kayıt başladıktan sonra birkaç saniye görünür, sonra kaybolur.',
   fitBtn:'Süreye sığdır',
   fitHint:'Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
   capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
@@ -1579,6 +1605,11 @@ const I18N={
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
   capTema:'Caption look',kartOrnek:'You record as you read',
+  markaTitle:'Brand kit',logoPick:'Pick a logo',logoClear:'Remove the logo',logoPos:'Logo position',
+  lpSagUst:'Top right',lpSolUst:'Top left',lpSagAlt:'Bottom right',lpSolAlt:'Bottom left',
+  logoSize:'Logo size (%)',markaRenk:'Brand colour',tgBant:'Lower third (name and title)',
+  markaAd:'Your name',markaUnvan:'Your title',
+  markaHint:'The logo and lower third are burned into the video — the composite must be on. The lower third shows for a few seconds after recording starts, then disappears.',
   fitBtn:'Fit to duration',
   fitHint:'Set a target duration and tap this: the pace is set so the script ends exactly then. Pause marks are taken into account.',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
   capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
@@ -1651,7 +1682,11 @@ const I18N={
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
+ tr:{logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
+  logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',
+  logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',
+  logoCleared:'Logo kaldırıldı',
+  fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
   fitNoText:'Senaryo boş — sığdırılacak metin yok',
   fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',
   fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',
@@ -1718,7 +1753,11 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
+ en:{logoTur:'That file is not an image — pick a PNG or a JPEG',
+  logoBuyuk:'The logo is too large — pick a smaller or simpler image',
+  logoSet:'Logo added — it is burned into the video while the composite is on',
+  logoCleared:'Logo removed',
+  fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
   fitNoText:'The script is empty — there is no text to fit',
   fitOk:'Pace set to {w} WPM — the script now takes about {s}',
   fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',
@@ -1975,6 +2014,10 @@ const DEF={
      kaynakta gecen her okumayı sayıyor ve yorumdaki örnek HAYALET ANAHTAR
      üretip kapıyı kırıyor (bugün oldu). */
   capKaraoke:true, capTema:'sade', capAnim:'yumusak',
+  /* G.4 — MARKA KİTİ. İç içe nesne; eski kayıtta alan hiç yok ve
+     Object.assign yüzeysel olduğu için varsayılan nesne bütün hâlde
+     korunuyor (ölçüldü: alansız kayıt nesnesiyle test). */
+  marka:{logo:null, renk:'#00D47E', ad:'', unvan:'', konum:'sagUst', boyut:12, bant:true, bantSn:6},
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
 };
@@ -3286,11 +3329,19 @@ function drawComp(){
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-    if(st.burnCaps){
+    /* G.4: marka katmanı altyazıdan BAĞIMSIZ açılabilir; boru hattı artık
+       ikisinden biri varsa kuruluyor. Yalnız burnCaps'e bakmak, logosunu
+       açan ama altyazı istemeyen kullanıcıda "açık ama hiçbir şey olmuyor"
+       demekti. */
+    if(st.burnCaps || markaAktif(st.marka)){
       const oc=$('#compOut');
       if(oc.width!==cv.width||oc.height!==cv.height){ oc.width=cv.width; oc.height=cv.height; }
       const o=oc.getContext('2d');
-      try{ o.drawImage(cv,0,0); drawCaption(o,oc.width,oc.height); }catch(e){}
+      try{
+        o.drawImage(cv,0,0);
+        if(st.burnCaps) drawCaption(o,oc.width,oc.height);
+        drawMarka(o,oc.width,oc.height);
+      }catch(e){ logErr('burn',e); }
     }
   }
   // KARE HIZI ÖLÇÜMÜ: "kompozit yavaşlatıyor mu / ısınıyor mu" sorusunun tek dürüst
@@ -3523,6 +3574,87 @@ function drawCaption(ctx,W,Hh,ops){
     ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;
   });
   ctx.restore();
+}
+
+/* G.4 — MARKA KATMANI: logo + alt bant.
+   Kompozit boru hattında altyazıyla aynı tuvale çiziliyor, yani KAYDA
+   giriyor — yalnız önizlemeye çizmek "gördüğün kaydedilmiyor" demek olurdu.
+   Alt bant kayıt başladıktan sonra ilk birkaç saniye görünür; sürekli duran
+   alt bant yayıncılıkta değil, amatör videoda olur. */
+let markaGorsel=null, markaGorselUrl='';
+function markaHazir(){
+  const mk=st.marka||{};
+  if(!mk.logo) return null;
+  if(markaGorselUrl!==mk.logo){
+    markaGorselUrl=mk.logo;
+    markaGorsel=new Image();
+    markaGorsel.onerror=()=>{ markaGorsel=null; logErr('markaLogo','yüklenemedi'); };
+    markaGorsel.src=mk.logo;
+  }
+  return (markaGorsel && markaGorsel.complete && markaGorsel.naturalWidth>0) ? markaGorsel : null;
+}
+function drawMarka(ctx, W, Hh, ops){
+  const mk=(ops&&ops.marka) || st.marka || {};
+  if(!markaAktif(mk)) return;
+  ctx.save();
+  const g=(ops&&ops.gorsel!==undefined) ? ops.gorsel : markaHazir();
+  if(mk.logo && g){
+    const k=logoKutusu(W, Hh, mk.konum, mk.boyut, g.naturalWidth||g.width, g.naturalHeight||g.height);
+    if(k){ try{ ctx.drawImage(g, k.x, k.y, k.w, k.h); }catch(e){ logErr('markaCiz',e); } }
+  }
+  const ad=String(mk.ad||'').trim(), unvan=String(mk.unvan||'').trim();
+  const bantGoster = (ops&&ops.bantGoster!==undefined) ? ops.bantGoster : markaBantGorunur();
+  if(mk.bant && (ad||unvan) && bantGoster){
+    const satir=(ad&&unvan)?2:1;
+    const b=altBantKutusu(W, Hh, Math.round(Math.min(W,Hh)*0.045), satir);
+    if(b){
+      ctx.fillStyle='rgba(0,0,0,.55)';
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      ctx.fillStyle=mk.renk||'#00D47E';
+      ctx.fillRect(b.x, b.y, b.seritW, b.h);
+      /* Yazı rengi HESAPLANIYOR: koyu zemin üstünde beyaz, ama ad satırı
+         marka renginde çizilirse o rengin kendi okunurluğu da ölçülmeli. */
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      const x=b.x+b.seritW+b.ic;
+      if(ad){
+        ctx.font='800 '+b.punto+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
+        ctx.fillStyle='#fff';
+        ctx.fillText(ad, x, b.y + (satir===2 ? b.h*0.36 : b.h*0.5));
+      }
+      if(unvan){
+        ctx.font='600 '+Math.round(b.punto*0.7)+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
+        /* MARKA RENGİ OKUNURLUĞU BOZAMAZ. Bandın zemini koyu; lacivert ya da
+           koyu mor bir marka rengi orada NEREDEYSE GÖRÜNMEZ olur. Kontrast
+           ölçülüyor ve eşiğin altındaysa okunur bir renge düşülüyor —
+           kullanıcının seçtiği renk yine şeritte duruyor, yani marka
+           kaybolmuyor, yalnız yazı okunur kalıyor. */
+        const zemin='#111111';
+        const o=kontrastOrani(mk.renk||'#00D47E', zemin);
+        ctx.fillStyle=(o!==null && o>=4.5) ? (mk.renk||'#00D47E') : okunurMetin(zemin);
+        ctx.fillText(unvan, x, b.y + (satir===2 ? b.h*0.70 : b.h*0.5));
+      }
+    }
+  }
+  ctx.restore();
+}
+/* Marka bandı anahtarı iç içe nesnede yaşıyor; genel anahtar mekanizması
+   yüzey alanları için yazılmış. Köprü ÜST DÜZEYDE durmak zorunda: ilk
+   yazışımda başka bir fonksiyonun içine düştü ve apply() onu göremeyince
+   ReferenceError atıp AYARLARIN GERİ KALANINI çizmeden bıraktı. Gerçek
+   tarayıcı ölçümü yakaladı (ölçülen öge 104 → 60 düştü, üç etiket eski
+   dilde kaldı) — istisna sessiz değildi ama görünür de değildi. */
+function markaBantAnahtari(){
+  const sw=$('#markaBantSw'); if(!sw) return;
+  const acik=!!(st.marka&&st.marka.bant);
+  sw.classList.toggle('on', acik);
+  sw.setAttribute('aria-checked', acik?'true':'false');
+  sw.onclick=()=>{ st.marka=Object.assign({}, st.marka, {bant:!(st.marka&&st.marka.bant)}); save(); markaBantAnahtari(); };
+}
+/* Bant ne zaman görünür: kayıt başladıktan sonraki ilk `bantSn` saniye. */
+function markaBantGorunur(){
+  const mk=st.marka||{};
+  if(!recT) return false;
+  return (performance.now()-recT)/1000 <= Math.max(1, +mk.bantSn||6);
 }
 
 /* G.3 — TEMA ÖNİZLEME KARTLARI.
@@ -6369,6 +6501,15 @@ function apply(){
   $$('#scSort button').forEach(b=>b.classList.toggle('on',b.dataset.ss===(st.scSort||'used')));
   $$('#capStyleSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cs===(st.capStyle||'clean')));
   temaKartlariCiz();
+  {
+    const mk=st.marka||{};
+    $$('#logoPosSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lp===(mk.konum||'sagUst')));
+    if($('#logoSize')){ $('#logoSize').value=mk.boyut||12; $('#vLogoSize').textContent=String(mk.boyut||12); }
+    if($('#markaRenk')){ $('#markaRenk').value=mk.renk||'#00D47E'; $('#vMarkaRenk').textContent=mk.renk||'#00D47E'; }
+    if($('#markaAd') && $('#markaAd').value!==(mk.ad||'')) $('#markaAd').value=mk.ad||'';
+    if($('#markaUnvan') && $('#markaUnvan').value!==(mk.unvan||'')) $('#markaUnvan').value=mk.unvan||'';
+    markaBantAnahtari();
+  }
   $$('#capAnimSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ka===(st.capAnim||'yumusak')));
   if($('#capMaxW')){ $('#capMaxW').value=st.capMaxW||7; $('#vCapW').textContent=st.capMaxW||7; }
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
@@ -6394,7 +6535,11 @@ function apply(){
   }
   /* aria-checked olmadan role="switch" durumunu söylemez: ekran okuyucu
      "anahtar" der ama açık mı kapalı mı belli olmaz. */
-  $$('.sw').forEach(s=>{ const a=!!st[s.dataset.t];
+  /* data-t taşımayan anahtarlar bu döngünün İŞİ DEĞİL: marka bandı iç içe
+     bir nesnede yaşıyor ve kendi köprüsü var. Korumasız hâlde st[undefined]
+     her zaman falsy döndüğü için o anahtar HER apply() çağrısında sessizce
+     kapanıyordu — gerçek tarayıcıda ölçülerek yakalandı. */
+  $$('.sw').forEach(s=>{ if(!s.dataset.t) return; const a=!!st[s.dataset.t];
     s.classList.toggle('on',a); s.setAttribute('aria-checked',a?'true':'false'); });
   $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
   $('#modeHint').textContent=modeLine();
@@ -6564,6 +6709,101 @@ function duzMetin(t){
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:metin.js== */
+/* ==CEKIRDEK:marka.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/marka.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* MARKA KİTİ — logo, marka rengi, alt bant. TEK KAYNAK (G.4).
+
+   NEDEN: BIGVU marka kitini (logo + marka renkleri + alt bant) EN PAHALI
+   katmana kilitlemiş; teleprompter.com sunmuyor. Bizde ücretsiz olması
+   doğrudan bir rekabet silahı. Hesap çekirdekte çünkü iki kabuk da aynı
+   yerleşimi çizmek zorunda: logosu telefonda sağ üstte, masaüstünde biraz
+   kaymış duran bir ürün "marka tutarlılığı" satamaz.
+
+   KURAL — MARKA RENGİ OKUNURLUĞU BOZAMAZ: kullanıcı sarı da seçebilir,
+   lacivert de. Bandın üstündeki yazının rengi seçilen renge göre HESAPLANIR
+   (WCAG bağıl parlaklık), elle yazılmaz. */
+
+/* Logo/bant kenar boşluğu: platform arayüzleri (Reels ölçüm çubuğu, YouTube
+   başlığı) kadrajın kenarını yiyor. Oranlar kısa kenara göre. */
+const MARKA_KENAR = 0.045;
+const MARKA_KONUMLAR = ['sagUst','solUst','sagAlt','solAlt'];
+
+/* Logonun çizileceği dikdörtgen. ORAN KORUNUR: sıkıştırılmış logo, marka
+   kitinin var olma sebebini bozar. `yuzde` kadrajın KISA kenarına göre. */
+function logoKutusu(W, H, konum, yuzde, gorselW, gorselH){
+  const w=+W||0, h=+H||0, gw=+gorselW||0, gh=+gorselH||0;
+  if(w<=0 || h<=0 || gw<=0 || gh<=0) return null;
+  const kisa=Math.min(w,h);
+  const hedefW=kisa*Math.max(0.03, Math.min(0.35, (+yuzde||12)/100));
+  const olcek=hedefW/gw;
+  const lw=hedefW, lh=gh*olcek;
+  const m=kisa*MARKA_KENAR;
+  const sag = w-m-lw, sol = m;
+  const ust = m, alt = h-m-lh;
+  const k = MARKA_KONUMLAR.indexOf(konum)>=0 ? konum : 'sagUst';
+  const x = (k==='sagUst'||k==='sagAlt') ? sag : sol;
+  const y = (k==='sagUst'||k==='solUst') ? ust : alt;
+  return {x, y, w:lw, h:lh};
+}
+
+/* WCAG bağıl parlaklık. Marka renginin üstüne beyaz mı siyah mı yazılacağı
+   TAHMİN EDİLMEZ, hesaplanır: hangi seçenek daha yüksek kontrast veriyorsa o. */
+function bagilParlaklik(hex){
+  const s=String(hex||'').replace('#','');
+  const t = s.length===3 ? s.split('').map(c=>c+c).join('') : s;
+  if(!/^[0-9a-fA-F]{6}$/.test(t)) return null;
+  const n=parseInt(t,16);
+  const f=v=>{ v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); };
+  return 0.2126*f((n>>16)&255) + 0.7152*f((n>>8)&255) + 0.0722*f(n&255);
+}
+function kontrastOrani(a, b){
+  const x=bagilParlaklik(a), y=bagilParlaklik(b);
+  if(x===null || y===null) return null;
+  return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);
+}
+function okunurMetin(hex){
+  const beyaz=kontrastOrani(hex,'#ffffff'), siyah=kontrastOrani(hex,'#111111');
+  if(beyaz===null || siyah===null) return '#ffffff';
+  return beyaz>=siyah ? '#ffffff' : '#111111';
+}
+
+/* Alt bant (lower third): ad + unvan. Sol altta, marka renginde ince bir
+   şerit ve onun sağında metin. Yükseklik puntodan türetiliyor ki 4K ile
+   1080p aynı görünsün. */
+function altBantKutusu(W, H, punto, satir){
+  const w=+W||0, h=+H||0;
+  if(w<=0 || h<=0) return null;
+  const p=Math.max(8, +punto||Math.round(Math.min(w,h)*0.045));
+  const n=Math.max(1, Math.min(2, +satir||2));
+  const ic=p*0.55;
+  const yukseklik=p*(n===2 ? 2.35 : 1.6) + ic;
+  const m=Math.min(w,h)*MARKA_KENAR;
+  return {x:m, y:h-m-yukseklik, w:Math.min(w-m*2, p*16), h:yukseklik,
+          punto:p, ic, seritW:Math.max(3, p*0.14)};
+}
+
+/* Dosya kabulü. İki ayrı sınır var ve ikisi de kullanıcıya AÇIKÇA söylenir:
+   ÇOK BÜYÜK dosya (belleği patlatır) ve DESTEKLENMEYEN tür. Bu deponun
+   ölçülmüş dersi: 12 MP fotoğrafta tepe 51 MB, 48 MPde 202 MB — logo için
+   o kadar büyük bir dosya zaten anlamsız. */
+const MARKA_LOGO_MAX = 8*1024*1024;
+function markaDosyaKabul(tur, boyut){
+  const t=String(tur||'');
+  if(!/^image\//.test(t)) return {ok:false, sebep:'tur'};
+  if((+boyut||0) > MARKA_LOGO_MAX) return {ok:false, sebep:'boyut'};
+  return {ok:true, sebep:null};
+}
+
+/* Marka katmanı çizilecek mi: logo ya da alt bant varsa. Ayar açık ama
+   içerik boşsa çizilecek bir şey yoktur — "açık ama hiçbir şey olmuyor"
+   sınıfına düşmemek için bunu tek yerden soruyoruz. */
+function markaAktif(m){
+  if(!m) return false;
+  return !!m.logo || (!!m.bant && !!(String(m.ad||'').trim() || String(m.unvan||'').trim()));
+}
+/* ==/CEKIRDEK:marka.js== */
 /* ==CEKIRDEK:tempo.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/tempo.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -6986,8 +7226,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.'},
  '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
        en:'<b>Trimming no longer runs past the end of the video.</b> Dragging the start to the very end, or a very short take, could select a region that does not exist, so the duration on screen and the take in your hand could drift apart. The selection now always stays inside the video.<br><b>Duration unit is correct in English too</b>: the trim labels used the Turkish unit regardless of language.<br><b>Desktop</b>: both fixes landed there as well, where the whole info line had stayed Turkish.'},
  '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',
@@ -7567,6 +7807,42 @@ $('#bgFile').onchange=e=>{
   }
 };
 $('#bgClear').onclick=()=>{ st.bgImg=null; comp.bgReady=false; save(); toast(m('bgCleared')); };
+
+/* G.4 — MARKA KİTİ DAVRANIŞI.
+   Logo yükleme, arka plan görselindeki ÖLÇÜLMÜŞ dersin aynısını uyguluyor:
+   dosya belleğe base64 olarak KOPYALANMIYOR (nesne adresi), küçültülüyor ve
+   iki ayrı sınır kullanıcıya AÇIKÇA söyleniyor. Fark: logo saydamlık
+   taşıyabilir, o yüzden JPEG değil PNG olarak saklanıyor. */
+$('#logoPick').onclick=()=>$('#logoFile').click();
+$('#logoFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  e.target.value='';
+  const kabul=markaDosyaKabul(f.type, f.size);
+  if(!kabul.ok){ toast(m(kabul.sebep==='tur' ? 'logoTur' : 'logoBuyuk')); return; }
+  const adres=URL.createObjectURL(f);
+  const img=new Image();
+  img.onload=()=>{
+    URL.revokeObjectURL(adres);
+    const mx=256, sc=Math.min(1, mx/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc));
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    let url; try{ url=c.toDataURL('image/png'); }catch(err){ toast(m('logoBuyuk')); return; }
+    /* localStorage tavanı ~5 MB ve orada senaryolar da duruyor: logo tek
+       başına ayarların kaydını bozmamalı. */
+    if(url.length>700000){ toast(m('logoBuyuk')); return; }
+    st.marka=Object.assign({}, st.marka, {logo:url});
+    save(); apply(); toast(m('logoSet'));
+  };
+  img.onerror=()=>{ URL.revokeObjectURL(adres); toast(m('logoTur')); };
+  img.src=adres;
+};
+$('#logoClear').onclick=()=>{ st.marka=Object.assign({}, st.marka, {logo:null}); markaGorsel=null; markaGorselUrl=''; save(); apply(); toast(m('logoCleared')); };
+$$('#logoPosSeg button').forEach(b=>b.onclick=()=>{ st.marka=Object.assign({}, st.marka, {konum:b.dataset.lp}); apply(); save(); });
+$('#logoSize').oninput=e=>{ st.marka=Object.assign({}, st.marka, {boyut:+e.target.value}); $('#vLogoSize').textContent=e.target.value; save(); };
+$('#markaRenk').oninput=e=>{ st.marka=Object.assign({}, st.marka, {renk:e.target.value}); $('#vMarkaRenk').textContent=e.target.value; save(); };
+$('#markaAd').oninput=e=>{ st.marka=Object.assign({}, st.marka, {ad:e.target.value}); save(); };
+$('#markaUnvan').oninput=e=>{ st.marka=Object.assign({}, st.marka, {unvan:e.target.value}); save(); };
 
 // senaryo düzenleyici
 $('#title').oninput=()=>{ pullEditor(); renderScripts(); };

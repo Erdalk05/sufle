@@ -7,7 +7,11 @@
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
+ tr:{logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
+  logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',
+  logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',
+  logoCleared:'Logo kaldırıldı',
+  fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
   fitNoText:'Senaryo boş — sığdırılacak metin yok',
   fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',
   fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',
@@ -74,7 +78,11 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
+ en:{logoTur:'That file is not an image — pick a PNG or a JPEG',
+  logoBuyuk:'The logo is too large — pick a smaller or simpler image',
+  logoSet:'Logo added — it is burned into the video while the composite is on',
+  logoCleared:'Logo removed',
+  fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
   fitNoText:'The script is empty — there is no text to fit',
   fitOk:'Pace set to {w} WPM — the script now takes about {s}',
   fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',

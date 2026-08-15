@@ -74,6 +74,9 @@ PLAN = [
     # göstermek zorunda: telefonda "sınıra uygun" görüp masaüstünde taşan
     # bir metin, kullanıcının hangi ekrana güveneceğini bilememesi demek.
     ('tempo.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.4 — marka kiti yerleşimi ve okunurluk hesabı. Logosu telefonda sağ
+    # üstte, masaüstünde kaymış duran bir ürün marka tutarlılığı satamaz.
+    ('marka.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

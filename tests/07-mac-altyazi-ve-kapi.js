@@ -46,7 +46,11 @@ ok('ilgisiz anahtara dokunmuyor', gate('safe',true,'free',false).fmt==='free');
 // ---------- MAC DÜŞMANCA TARAMA BULGULARI (v6.8) ----------
 const macSrc=macMetni();
 // Kayıt sürerken gömme kapatılırsa akış donmuş kareye düşüyordu.
-ok('kayıt boyunca boru hattı kilitleniyor', /if\(\(burnOn\(\)\|\|capLocked\)&&cropCv\)/.test(macSrc));
+/* G.4: boru hattı artık marka katmanı için de kuruluyor, yani koşula bir
+   şart daha eklendi. İDDİA AYNI: kayıt sürerken gömme kapatılsa bile
+   capLocked boru hattını ayakta tutuyor (yoksa akış donmuş kareye düşer). */
+ok('kayıt boyunca boru hattı kilitleniyor',
+   /if\(\(burnOn\(\)\|\|capLocked[\s\S]{0,60}?\)&&cropCv\)/.test(macSrc));
 ok('kilit kayıt kaynağı seçilirken kuruluyor', /capLocked=\(srcCv===capOut\)/.test(macSrc));
 ok('kilit kırpma bitince çözülüyor', /capOut=null, capLocked=false|capOut=null; capLocked=false/.test(macSrc));
 ok('kilit değişkeni tanımlı', /let capOut=null, capLocked=false;/.test(macSrc));
