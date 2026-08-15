@@ -121,6 +121,42 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
   for (const ikon of ['i-ayarlar','i-senaryo','i-hazir','i-mikrofon']) {
     ok('sembol tanımlı: ' + ikon, new RegExp('<symbol id="' + ikon + '"').test(tel));
   }
+
+  /* ---- MAC PARİTESİ (B.2 kalanı, Tur 41) ---- */
+  /* Aynı 4 ikon Mac'te de. Emoji her platformda başka çiziliyor; tek dosyadan
+     gelen SVG iki kabuğu da aynı gösteriyor. */
+  ok('Mac: ikon tanımları gömülü', /<!-- ==CEKIRDEK:ikonlar\.html== -->/.test(mac));
+  for (const [id, ikon] of [['leftToggle','i-senaryo'],['rightToggle','i-ayarlar'],
+                            ['readyBtn','i-hazir'],['voiceBtn','i-mikrofon']]) {
+    const m = mac.match(new RegExp('<button[^>]*id="' + id + '"[^>]*>([\\s\\S]*?)</button>'));
+    ok('Mac #' + id + ' SVG ikon kullanıyor (' + ikon + ')',
+       !!m && m[1].includes('href="#' + ikon + '"'));
+  }
+
+  /* İKONU SİLEN İKİ TUZAK — ikisi de ölçülerek bulundu:
+     ① `data-i18n` DÜĞMENİN ÜSTÜNDE olursa applyLang textContent yazıp SVG'yi
+        siler; dil değiştiren kullanıcı ikonu bir daha göremez. İç span'a
+        taşındı.
+     ② `#voiceBtn` etiketi çalışma zamanında yazılıyordu; düğmenin kendisine
+        yazmak ikonu siler. Ayrı bir `#voiceLbl` span'ına yazılıyor. */
+  const ready = mac.match(/<button[^>]*id="readyBtn"[^>]*>/);
+  ok('Mac #readyBtn üstünde data-i18n YOK (ikonu silerdi)',
+     !!ready && !/\bdata-i18n="/.test(ready[0]));
+  ok('Mac #readyBtn etiketi iç span üstünden çevriliyor',
+     /id="readyBtn"[\s\S]{0,200}<span data-i18n="mReady">/.test(mac));
+  ok('Mac #voiceBtn etiketi ayrı span üstünden yazılıyor',
+     /id="voiceLbl"/.test(mac) && /\$\('#voiceLbl'\)\.textContent=t\('mVoice/.test(mac));
+  ok('Mac sesle takip etiketi düğmeye DOĞRUDAN yazılmıyor',
+     !/\$\('#voiceBtn'\)\.textContent=/.test(mac));
+
+  /* ÇALIŞMA ZAMANI ETİKETİ ÇEVRİLİ Mİ — ölçülerek bulunan gerçek kusur:
+     etiket sabit Türkçeydi ('🎤 Sesle'), İngilizceye geçen kullanıcı Türkçe
+     görüyordu. i18n kapsam kapısı 0 diyordu çünkü yalnız İŞARETLEMEDEKİ
+     metni sayıyor — çalışma zamanı yazımları onun kör noktası. */
+  ok('Mac sesle takip etiketi sözlükten geliyor',
+     !/textContent='🎤 Ses/.test(mac));
+  ok('dil değişince çalışma zamanı etiketi de tazeleniyor',
+     /voiceLbl'\);\s*if\(vl\)\s*vl\.textContent=t\(voiceOn\?'mVoiceOn':'mVoiceIdle'\)/.test(mac));
 }
 
 /* ---------- 6. DURUM SATIRI: HANGİ MODDAYIM (B.5) ---------- */

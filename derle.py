@@ -48,8 +48,10 @@ PLAN = [
     # Mesajlar YALNIZ telefonda: Mac bugün m() kullanmıyor. Gömseydim
     # telefona özgü metinler ('Ayarlar → Safari') Mac dosyasına sızardı.
     ('mesajlar.js', ['index.html']),
-    # İkonlar şimdilik yalnız telefonda kullanılıyor (krom düğmeleri).
-    ('ikonlar.html', ['index.html']),
+    # B.2 — Mac krom düğmeleri de SVG ikona geçti (Tur 41); ikon seti artık
+    # iki kabukta da gömülü. Aynı 4 ikon, aynı çizim: platformlar arası
+    # tutarlılık tek dosyadan geliyor.
+    ('ikonlar.html', ['index.html', 'mac/Teleprompter Pro.html']),
     # .docx okuyucu iki kabukta da kullanılıyor (D.1).
     ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip

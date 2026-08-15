@@ -251,7 +251,23 @@ telefonun sadeliği korunması gereken varlık (test 123 §3 bunu kilitliyor: in
 (⚙︎📝✅🎤 → sliders/belge/onay/mikrofon), **tarayıcıda doğrulandı: 4/4 çizim, 22×22**,
 erişilebilir adlar korundu. Kapsam bilerek dar: `playBtn/pauseBtn` çalışma zamanında yazılıyor
 (▶︎/⏸ zaten tek renk), sözlük emoji önekleri İÇERİK — dokunmak i18n birebirlik iddialarını kırar.
-Kalan: Mac krom düğmeleri (çalışma zamanı yazımlarıyla birlikte), sekme/sheet başlık ikonları.
+**Mac krom düğmeleri ✅ BİTTİ (Tur 41).** Aynı 4 ikon Mac'e de geçti
+(`#leftToggle`/`#rightToggle`/`#voiceBtn`/`#readyBtn`); `ikonlar.html` artık iki kabuğa da
+gömülüyor, yani çizim tek dosyadan geliyor. **Tarayıcıda doğrulandı: 4/4 çizim, 18×18**, dil
+değişiminden sonra da duruyor, erişilebilir adlar korundu.
+
+*İkonu silen iki tuzak ölçülerek bulundu:* ① `data-i18n` düğmenin ÜSTÜNDEYSE `applyLang`
+`textContent` yazıp SVG'yi siliyor — dil değiştiren kullanıcı ikonu bir daha göremez; iç span'a
+taşındı. ② `#voiceBtn` etiketi çalışma zamanında düğmeye yazılıyordu, aynı sonuç; ayrı bir
+`#voiceLbl` span'ına yazılıyor.
+
+**🔴 Yan bulgu — çalışma zamanı etiketleri i18n kapsamının KÖR NOKTASI.** `#voiceBtn` metni sabit
+Türkçeydi (`'🎤 Sesle'` / `'🎤 Ses: Açık'`) ve **İngilizceye geçen kullanıcı Türkçe görüyordu**;
+tarayıcıda doğrulandı. `tests/122` kapsamı **0 eksik** diyordu çünkü yalnız İŞARETLEMEDEKİ metni
+sayıyor. Etiketler sözlüğe bağlandı (`mVoiceIdle`/`mVoiceOn`), `applyLang` dil değişiminde de
+tazeliyor. Bu, "kapsam sayısı yeşil" güvencesinin sınırını gösteriyor: **kapsam ölçer, kanıtlamaz.**
+
+Kalan: sekme/sheet başlık ikonları.
 **B.3 Aşamalı açılım.** ✅ **Mac paneli BİTTİ** — sağ panel 3 sekme (Okuma · Çekim · Görünüm),
 telefonla aynı katmanlar, sözlükten etiketli. **Tarayıcıda doğrulandı:** varsayılan sekmede Çekim'in
 27 kontrolü DOM akışından çıkıyor; sekme seçimi yeniden yüklemede korunuyor (`state.rtab`, eski
@@ -708,3 +724,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 38 | 2026-08-15 | **B.8 kapandı** — kontrast denetimi kapının 9. adımı | çizilmiş arayüzde **357 metin** ölçüldü · `#verTop` 3,67:1 gerçek ihlaliydi → jetona bağlandı · aracın kendi yanlış alarmı (devre dışı düğme) WCAG muafiyetiyle kapandı · ayırt ettiği kanıtlandı (2,89 yakalandı) · **4413 test, 0 hata** | ✅ 9/9 YEŞİL |
 | 39 | 2026-08-15 | **B.1 rol ayrımı** — dolu yeşil = tek eylem, seçili = tonal | Mac ana **9 → 1**, telefon giriş **3 → 1** · kural kapıya bağlandı (2 kural: >1 yok + tabandan artmaz) · örtüşme kontrolü kendi değişikliğimi çürüttü, geri alındı · Mac ana ekran hiç ölçülmüyormuş, eklendi (5 yüzey/456 metin) · kontrast 0 ihlal | ✅ 9/9 YEŞİL |
 | 40 | 2026-08-15 | **E.4 Mac paritesi** — hesap ortak çekirdeğe, Mac'te de rapor | `cekirdek/prova.js` iki kabuğa gömülüyor · Mac'te **çekim anlık görüntüsü yoktu**, altyazı canlı metinden üretiliyordu → kapandı · gerçek Mac çekimiyle doğrulandı · 2 bozma ilk turda yakalanmadı (ikisi de testin kusuru) → 7/7 kanıtlı · **59 bozma** | ✅ 9/9 YEŞİL |
+| 41 | 2026-08-15 | **B.2 Mac krom ikonları** — ve i18n kapsamının kör noktası | 4/4 ikon Mac'te çiziliyor (18×18, dil değişiminde kalıcı) · ikonu silen 2 tuzak kapandı (data-i18n üstte / çalışma zamanı yazımı) · **#voiceBtn İngilizcede Türkçe kalıyordu**, kapsam 0 dediği hâlde → sözlüğe bağlandı · 4 kanıtlı bozma (**63**) | ✅ 9/9 YEŞİL |

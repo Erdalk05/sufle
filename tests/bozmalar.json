@@ -411,5 +411,33 @@
   "kaynak": "mac",
   "bul": "    const kaynak = cekimAltyazi\n      ? cekimAltyazi\n      : words.map",
   "koy": "    const kaynak = false\n      ? cekimAltyazi\n      : words.map"
+ },
+ {
+  "ad": "B2 Mac readyBtn'e data-i18n geri kondu (applyLang ikonu siler)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\">",
+  "koy": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\" data-i18n=\"mReady\">"
+ },
+ {
+  "ad": "B2 Mac sesle etiketi düğmeye doğrudan yazılıyor (ikon silinir)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "$('#voiceLbl').textContent=t('mVoiceOn');",
+  "koy": "$('#voiceBtn').textContent='🎤 Ses: Açık';"
+ },
+ {
+  "ad": "B2 Mac krom düğmesi emojiye döndü",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "data-aria=\"settings\"><svg class=\"ic\" aria-hidden=\"true\"><use href=\"#i-ayarlar\"/></svg>",
+  "koy": "data-aria=\"settings\">⚙︎"
+ },
+ {
+  "ad": "B2 dil değişince çalışma zamanı etiketi tazelenmiyor",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "    const vl=$('#voiceLbl'); if(vl) vl.textContent=t(voiceOn?'mVoiceOn':'mVoiceIdle');\n",
+  "koy": ""
  }
 ]

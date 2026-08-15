@@ -185,6 +185,10 @@
   .btn.rec.active{animation:pulse 1.2s infinite}
   @keyframes pulse{50%{filter:brightness(.7)}}
   .pill{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  /* B.2 — SVG krom ikonları. `currentColor` sayesinde düğme durumu neyse
+     ikon o renk; emoji ise her platformda başka çiziliyordu. */
+  .ic{width:18px;height:18px;display:inline-block;vertical-align:-3px;flex:none}
+  .iconbtn .ic{width:20px;height:20px;vertical-align:-4px}
   .pill button{background:none;border:none;color:var(--muted);padding:8px 11px;font-size:12px;font-weight:600}
   /* Biçim seçici de SEÇİLİ DURUM — .seg ve #rtabs ile aynı kural (B.1). */
   .pill button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);font-weight:700}
@@ -382,11 +386,55 @@
 </style>
 </head>
 <body data-fam="system">
+<!-- ==CEKIRDEK:ikonlar.html== -->
+<!-- ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/ikonlar.html
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) -->
+<!-- SUFLE ikon tanımları — TEK KAYNAK (B.2). derle.py kabuğa gömer.
+
+     NEDEN SVG: renkli emoji her platformda başka çizilir (Apple/Google/
+     Windows ayrı setler), koyu arayüzde renk uyumu yoktur ve "amatör ürün"
+     algısının analizde ölçülen en büyük tekil kaynağıdır. Stroke ikonlar
+     currentColor kullanır: düğme rengi neyse ikon o renk — jeton sistemine
+     kendiliğinden uyar.
+
+     Kaynak: Feather Icons (MIT). 24×24 görünüm kutusu, 1.8 kalem, yuvarlak uç.
+     KURAL: yeni ikon eklerken sembole DEĞİL kullanan düğmeye aria-label ver;
+     SVG'nin kendisi aria-hidden kalır (ekran okuyucu düğme adını okur, çizimi
+     değil). -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-ayarlar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+    <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+    <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+    <line x1="17" y1="16" x2="23" y2="16"/>
+  </symbol>
+  <symbol id="i-senaryo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+  </symbol>
+  <symbol id="i-hazir" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </symbol>
+  <symbol id="i-mikrofon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+  </symbol>
+</svg>
+<!-- ==/CEKIRDEK:ikonlar.html== -->
 <div id="app">
 
   <!-- ===== ÜST ÇUBUK ===== -->
   <div id="topbar">
-    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar" data-i18n-title="scripts" aria-label="Senaryolar" data-aria="scripts">📝</button>
+    <button class="btn mobileOnly" id="leftToggle" title="Senaryolar" data-i18n-title="scripts" aria-label="Senaryolar" data-aria="scripts"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
     <div class="brand">Teleprompter <b>Pro</b></div>
     <button class="btn primary" id="playBtn">▶︎ Başlat</button>
     <button class="btn" id="resetBtn" title="Başa sar (R)" data-i18n-title="mTReset" aria-label="Başa sar (R)" data-aria="mTReset">⟲</button>
@@ -402,9 +450,12 @@
 
     <div class="spacer"></div>
 
-    <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle" data-i18n-title="mTVoice">🎤 Sesle</button>
+    <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle" data-i18n-title="mTVoice"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg> <span id="voiceLbl">Sesle</span></button>
     <button class="btn" id="camBtn">📷 Kamera</button>
-    <button class="btn" id="readyBtn" title="Çekime hazır mıyım?" data-i18n-title="mTReady" data-i18n="mReady">✅ Hazır mıyım</button>
+    <!-- B.2: data-i18n İÇ SPAN'da. Düğmenin kendisinde kalsaydı applyLang
+         textContent yazıp SVG ikonu SİLERDİ — dil değiştiren kullanıcı
+         ikonu bir daha göremezdi. -->
+    <button class="btn" id="readyBtn" title="Çekime hazır mıyım?" data-i18n-title="mTReady"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg> <span data-i18n="mReady">Hazır mıyım</span></button>
     <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
     <button class="btn" id="undoDelBtn" title="Son silinen senaryoyu geri getir" data-i18n-title="mTUndoDel" data-i18n="mUndoDel">↺ Geri getir</button>
     <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için" data-i18n-title="mTPip" data-i18n="mPip">🪟 Yüzen Sufle</button>
@@ -414,7 +465,7 @@
     <button class="btn" id="restoreBk" data-i18n="restoreBk" title="Otomatik yedekten dön" data-i18n-title="mTRestoreBk">🛟 Otomatik yedekten dön</button>
     <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n-title="mTFs" data-i18n="mFullscreen">⛶ Tam Ekran</button>
     <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)" data-i18n-title="mTHide" data-i18n="mCsClean">⇔ Sade</button>
-    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" data-i18n-title="settings" aria-label="Ayarlar" data-aria="settings">⚙︎</button>
+    <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" data-i18n-title="settings" aria-label="Ayarlar" data-aria="settings"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
   </div>
   <div id="backdrop"></div>
 
@@ -835,7 +886,7 @@ const I18N={
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'✅ Hazır mıyım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -953,7 +1004,7 @@ const I18N={
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'✅ Ready?',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1133,6 +1184,13 @@ const MMSG={
        TAMAMINI Türkçe duyardı. */
     $$('[data-i18n-title]').forEach(el=>{ const v=I18N[L][el.dataset.i18nTitle]; if(v) el.title=v; });
     $$('[data-aria]').forEach(el=>{ const v=I18N[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
+    /* Çalışma zamanında yazılan etiket dil değişince de tazelenmeli.
+       ÖLÇÜLDÜ (Tur 41): bu düğmenin metni sabit Türkçeydi ('🎤 Sesle' /
+       '🎤 Ses: Açık') ve İngilizceye geçen kullanıcı Türkçe görüyordu.
+       i18n kapsam kapısı 0 diyordu çünkü yalnız İŞARETLEMEDEKİ metni
+       sayıyor, çalışma zamanı yazımlarını görmüyordu — kapsam sayısının
+       kör noktası. */
+    const vl=$('#voiceLbl'); if(vl) vl.textContent=t(voiceOn?'mVoiceOn':'mVoiceIdle');
     $$('#langSwitch button').forEach(b=>{
       b.classList.toggle('on', b.dataset.lang===L);
       b.setAttribute('aria-pressed', b.dataset.lang===L ? 'true' : 'false');
@@ -3505,7 +3563,7 @@ function provaRapor(kaynak, sesle){
     };
     rec.onend=()=>{ if(voiceOn) restartVoice(); };
     try{ rec.start(); }catch(e){ logErr('voice',e); restartVoice(); }
-    voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceBtn').textContent='🎤 Ses: Açık';
+    voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceLbl').textContent=t('mVoiceOn');
     /* E.4 — çekim ortasında açılırsa da bu çekim "sesle sürüldü" sayılır.
        Bayrak eşleştiricinin İÇİNDE değil: telefonda oraya konunca yalıtılmış
        test tezgâhı çökmüştü. */
@@ -3517,7 +3575,7 @@ function provaRapor(kaynak, sesle){
   function stopVoice(){
     voiceOn=false; if(rec){ rec.onend=null; try{rec.stop();}catch(_){} }
     cancelAnimationFrame(vRaf);
-    $('#voiceBtn').classList.remove('primary'); $('#voiceBtn').textContent='🎤 Sesle';
+    $('#voiceBtn').classList.remove('primary'); $('#voiceLbl').textContent=t('mVoiceIdle');
   }
   /* ---------- SESLİ KOMUT ("sufle" + komut) ---------- */
   const WAKE={sufle:1,suffle:1,sufl:1,sufla:1,prompter:1,promter:1};
