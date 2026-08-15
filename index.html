@@ -1025,6 +1025,13 @@
   <div class="grab"></div>
   <h2><span data-i18n="help">Nasıl kullanılır?</span><button class="iconbtn" id="helpX" aria-label="Kapat" data-aria="helpX">✕</button></h2>
   <div id="helpBody" style="font-size:13.5px;line-height:1.75;color:#c9ccd0;padding-bottom:10px"></div>
+  <!-- F.4 GİZLİLİK ÖZETİ. Mağazalar bir gizlilik metni ZORUNLU kılıyor, ama
+       asıl sebep bu değil: gizlilik bu ürünün en güçlü satış argümanı ve
+       kullanıcının onu UYGULAMANIN İÇİNDE görmesi gerek. Yalnız depoda duran
+       bir GIZLILIK.md, kimsenin okumadığı ölü bir belge olurdu.
+       Sesle takip istisnası SAKLANMIYOR: metin onu ilk paragrafta söylüyor. -->
+  <div class="row" style="margin-top:18px"><label data-i18n="privTitle">🔒 Gizlilik</label></div>
+  <div class="hint" id="privBody"></div>
 </div>
 
 <!-- SONUÇ -->
@@ -1263,7 +1270,9 @@ const I18N={
   /* Yayın (OBS) kipi — D.5 */
   mObsTitle:'📡 Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala',
   /* Uzak önizleme — D.4 */
-  mPrevOn:'📱 Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.'},
+  mPrevOn:'📱 Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
+  /* Gizlilik özeti — F.4 */
+  privTitle:'🔒 Gizlilik'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1379,7 +1388,9 @@ const I18N={
   /* Yayın (OBS) kipi — D.5 */
   mObsTitle:'📡 Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address',
   /* Uzak önizleme — D.4 */
-  mPrevOn:'📱 Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.'}
+  mPrevOn:'📱 Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.',
+  /* Gizlilik özeti — F.4 */
+  privTitle:'🔒 Privacy'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1596,6 +1607,27 @@ async function docxMetni(dosya){
   return paras.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:docx.js== */
+/* Gizlilik özeti — uygulama içinde, tam metin GIZLILIK.md dosyasında.
+   Kısa tutuldu ama İSTİSNA gizlenmedi: sesle takip açıkken konuşma
+   tarayıcının kendi tanıma servisine gidiyor ve bu Chrome/Safari'de
+   üreticinin sunucusunda işleniyor. Bunu yazmamak, gizliliği satış
+   argümanı yapan bir üründe en ağır dürüstlük kusuru olurdu. */
+const PRIV={
+ tr:'Sufle sizin hakkınızda <b>hiçbir veri toplamıyor</b>: hesap yok, giriş yok, bize ait sunucu yok. '+
+    'Senaryolarınız, çekimleriniz ve ayarlarınız yalnız bu cihazda duruyor. Kamera ve mikrofon yalnız '+
+    'siz açtığınızda çalışır ve görüntü cihazdan çıkmaz.<br><br>'+
+    '<b>Tek istisna:</b> 🎤 sesle takip açıkken konuşmanız <b>tarayıcınızın kendi ses tanıma servisine</b> '+
+    'gönderilir; Chrome ve Safari bunu üreticinin sunucusunda işler. Bu ayar varsayılan olarak kapalıdır ve '+
+    'kapattığınız anda gönderim durur. Bu veri bizim elimize hiç geçmez.<br><br>'+
+    'Uygulamayı silmek her şeyi siler — <b>Senaryolar → Dosyaya yedekle</b> ile kendi yedeğinizi alın.',
+ en:'Sufle collects <b>no data about you</b>: no account, no sign-in, no server of ours. Your scripts, '+
+    'recordings and settings stay on this device only. The camera and microphone run only when you turn '+
+    'them on, and the video never leaves your device.<br><br>'+
+    '<b>One exception:</b> while 🎤 voice follow is on, your speech is sent to <b>your browser own speech '+
+    'recognition service</b>; Chrome and Safari process it on the vendor servers. This setting is off by '+
+    'default and sending stops the moment you turn it off. This data never reaches us.<br><br>'+
+    'Deleting the app deletes everything — use <b>Scripts → Back up to a file</b> to keep your own copy.'
+};
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
 <b>Ekran hareketleri</b><br>• Dokun = başlat/duraklat<br>• Yukarı-aşağı sürükle = metinde ileri-geri sar<br>• Sağ kenarda sürükle = hızı canlı değiştir<br>• İki kez dokun = kilidi aç/kapat<br><br>
@@ -1631,6 +1663,7 @@ function applyLang(){
     if(et) s.setAttribute('aria-label',et.textContent.trim()); });
   $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
   $('#helpBody').innerHTML=HELP[L];
+  $('#privBody').innerHTML=PRIV[L];
   $('#verLine').textContent='Sufle v'+VER;
   if($('#verChip')) $('#verChip').textContent='v'+VER;
   if($('#verTop')) $('#verTop').textContent='v'+VER;

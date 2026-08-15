@@ -395,7 +395,24 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 **F.1** iOS + Android: Capacitor kabuğu, aynı çekirdek. Kamera/mikrofon/dosya izinleri, gizlilik bildirimi.
 **F.2** Mac: imzalı `.app` (Tauri veya Capacitor Electron), notarize.
 **F.3** Windows: `.exe`/MSIX, Microsoft Store.
-**F.4** Mağaza varlıkları: ikon seti, ekran görüntüleri (4 platform), tanıtım metni TR+EN, gizlilik politikası.
+**F.4** ⏳ **gizlilik + manifest BİTTİ.** Ölçüm: manifest beklenenden dolgunmuş (ad, açıklama,
+kapsam, `display_override`, kategoriler, 192/512/maskable ikonlar, `share_target`, kısayollar).
+**Kısayollar ve paylaşım hedefi ÖLÜ DEĞİL** — `?go=cam`/`?go=takes` kodda gerçekten karşılanıyor
+(denetlendi). Eklenen: **`id`** (kalıcı uygulama kimliği; `start_url` değişirse tarayıcı kurulu
+kopyayı ayrı uygulama sanar) ve `dir`.
+**`screenshots` BİLEREK yazılmadı:** olmayan dosyaya işaret eden manifest kurulum ekranını bozar.
+
+**🔒 `GIZLILIK.md` yazıldı (TR+EN) ve uygulamanın İÇİNE kondu.** Yalnız depoda duran bir belge
+kimsenin okumadığı ölü kâğıt olurdu; metin artık "Nasıl kullanılır?" sayfasında da duruyor.
+**Ölçülerek yazıldı:** bize ait sunucuya giden ağ çağrısı **0**, analitik **0**, üçüncü taraf
+kütüphane **0**.
+**🔴 İSTİSNA SAKLANMADI:** sesle takip açıkken konuşma tarayıcının kendi tanıma servisine gidiyor ve
+Chrome/Safari bunu **üreticinin sunucusunda** işliyor. "Hiçbir veri toplamıyoruz" deyip bunu
+yazmamak mağaza başvurusunda **yanlış beyan** olurdu. Metin bunu ilk paragrafta söylüyor, varsayılan
+kapalı olduğunu da. `tests/131` (40 iddia) hem belgeyi hem iddiaların **hâlâ doğru olduğunu**
+kilitliyor — biri analitik eklerse belge yalan söylemeye başlar, kapı önce kırılır.
+
+**Kalan F.4:** ekran görüntüleri (4 platform), mağaza tanıtım metni.
 **F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
 **F.6** Web vitrin + Türkçe SEO ("sufle uygulaması", "teleprompter programı") — **rakipsiz alan**.
 
@@ -443,3 +460,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 25 | 2026-08-15 | D.5: yayın (OBS) kipi — şeffaf katman | gerçek sunucudan doğrulandı · 19 iddia · 36 bozma · parite tabanı mac 6→7 | ✅ 8/8 YEŞİL |
 | 26 | 2026-08-15 | D.4: uzak önizleme (telefonda kadraj) | 204/200/403/413 gerçek sunucuda ölçüldü · varsayılan kapalı · 22 iddia · 37 bozma | ✅ 8/8 YEŞİL |
 | 27 | 2026-08-15 | **v9.9 hazır** + ulaşılabilirlik denetimi | 18/18 kapı ulaşılabilir · 329 anahtarın 0'ı ölü · not tarayıcıda doğrulandı | ✅ 8/8 YEŞİL |
+| 28 | 2026-08-15 | F.4: gizlilik politikası + manifest kimliği | ağ çağrısı 0 / analitik 0 ölçüldü · istisna saklanmadı · 40 iddia · 38 bozma | ✅ 8/8 YEŞİL |

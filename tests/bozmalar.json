@@ -257,5 +257,12 @@
   "kaynak": "mac",
   "bul": "    if(!state.uzakOnizleme || !location.protocol.startsWith('http')) return;",
   "koy": ""
+ },
+ {
+  "ad": "F4 gizlilik metni ekranda boş kalıyor",
+  "test": "131-magaza-hazirlik.js",
+  "kaynak": "telefon",
+  "bul": "  $('#privBody').innerHTML=PRIV[L];",
+  "koy": ""
  }
 ]
