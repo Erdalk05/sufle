@@ -23,7 +23,7 @@
  "22-biyonik-okuma.js": 29,
  "23-erisilebilirlik.js": 34,
  "24-surum-siralamasi.js": 21,
- "25-surum-notu-gosterimi.js": 31,
+ "25-surum-notu-gosterimi.js": 34,
  "26-kayitta-diyalog.js": 14,
  "27-kapanista-kaydetme.js": 16,
  "28-service-worker.js": 22,
@@ -121,6 +121,6 @@
  "120-file-protokolu.js": 8,
  "121-jetonlar-ve-derleme.js": 35,
  "122-mac-i18n-kapsami.js": 11,
- "123-tasarim-yuzeyi.js": 51,
+ "123-tasarim-yuzeyi.js": 57,
  "124-odak-modu.js": 14
 }

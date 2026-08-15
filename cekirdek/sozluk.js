@@ -106,7 +106,9 @@ const I18N={
   /* Durum satırı — hangi moddayım (B.5) */
   modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle',
   /* Kısayol kartı (B.6) */
-  keysTitle:'Klavye kısayolları'},
+  keysTitle:'Klavye kısayolları',
+  /* Karşılama eylemi (B.7) */
+  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -204,5 +206,7 @@ const I18N={
   /* Durum satırı — hangi moddayım (B.5) */
   modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual',
   /* Kısayol kartı (B.6) */
-  keysTitle:'Keyboard shortcuts'}
+  keysTitle:'Keyboard shortcuts',
+  /* Karşılama eylemi (B.7) */
+  onbGo:'Paste my text',onbLater:'I will look around first'}
 };

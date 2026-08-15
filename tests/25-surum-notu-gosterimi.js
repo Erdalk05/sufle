@@ -27,7 +27,13 @@ function kos({seenVer, zamanlayiciCalissin}){
     const save=()=>__iz.push('save');
     const openSheet=id=>__iz.push('openSheet '+id);
     const showNews=()=>__iz.push('showNews');
-    const $=()=>({ set innerHTML(v){}, get innerHTML(){return '';} });
+    /* B.7'de firstRun karşılama EYLEM satırını da açıyor; taklit yalnız
+       innerHTML sağladığı için "classList of undefined" veriyordu. Taklit
+       gerçeğe uyduruldu ve dokunulan sınıflar İZ olarak kaydediliyor —
+       böylece eylem satırının yalnız ilk açılışta açıldığı da sınanabiliyor. */
+    const $=(sel)=>({ set innerHTML(v){}, get innerHTML(){return '';},
+      classList:{ remove:c=>__iz.push('goster '+sel+'.'+c),
+                  add:c=>__iz.push('gizle '+sel+'.'+c) } });
     const setTimeout=(f,ms)=>{ gecikme=ms; if(__calissin){ __iz.push('zamanlayici'); f(); } return 1; };
     ${firstRunSrc}
     firstRun();
@@ -42,6 +48,17 @@ const kapandi = kos({seenVer:'9.0', zamanlayiciCalissin:false});
 ok('1,4 sn dolmadan kapanınca "görüldü" damgası BASILMIYOR (eski kodda basılıyordu)',
    kapandi.st.seenVer === '9.0');
 ok('kapanınca hiçbir şey kaydedilmiyor', !kapandi.izler.includes('save'));
+/* B.7: karşılama eylem satırı YALNIZ gerçek ilk kurulumda açılmalı. Sürüm
+   güncellemesinde açılırsa "Metnimi yapıştır" mevcut kullanıcıyı yanlış
+   yönlendirir — sayfa iki amaca hizmet ediyor. */
+{
+  const ilk = kos({seenVer:undefined, zamanlayiciCalissin:true});
+  const guncel = kos({seenVer:'9.0', zamanlayiciCalissin:true});
+  ok('ilk kurulumda eylem satırı AÇILIYOR',
+     ilk.izler.includes('goster #onbActions.hidden'));
+  ok('sürüm güncellemesinde eylem satırı açılMIYOR',
+     !guncel.izler.includes('goster #onbActions.hidden'));
+}
 
 const ilkKurulumKapandi = kos({seenVer:'', zamanlayiciCalissin:false});
 ok('ilk kurulumda da kapanınca damga basılmıyor', ilkKurulumKapandi.st.seenVer === '');
@@ -81,8 +98,18 @@ ok('damga kaydediliyor (save çağrılıyor)', guncelleme.izler.includes('save')
    ekran kodda duruyor ama pratikte yok. Deponun "ulaşılamayan özellik =
    olmayan özellik" sınıfı. */
 ok('ayarlarda "Ne değişti" düğmesi var', /id="newsBtn"/.test(tel));
-ok('düğme showNews\'e bağlı',
-   /\$\('#newsBtn'\)\.onclick\s*=\s*showNews/.test(tel));
+/* Desen BİÇİME değil AMACA bağlı. Eskiden `onclick = showNews` birebir
+   aranıyordu; B.7'de araya meşru bir sarmalayıcı girdi (karşılama eylem
+   satırını önce gizlemesi gerekiyor) ve test kırıldı — oysa kullanıcı için
+   hiçbir şey değişmemişti, düğme yine sürüm notunu açıyor. İddia: düğme bir
+   işleyiciye bağlı VE o işleyici showNews çağırıyor. */
+{
+  const bag = tel.match(/\$\('#newsBtn'\)\.onclick\s*=\s*([A-Za-z_$][\w$]*)\s*;/);
+  ok('newsBtn bir işleyiciye bağlı', !!bag);
+  const govde = bag && tel.match(new RegExp('function ' + bag[1] + '\\(\\)\\{[^}]*\\}'));
+  ok('düğme showNews\'e bağlı (doğrudan ya da sarmalayıcıyla)',
+     !!bag && (bag[1] === 'showNews' || (!!govde && /showNews\(\)/.test(govde[0]))));
+}
 ok('düğmenin metni iki dilde de var (data-i18n)',
    /id="newsBtn"[^>]*data-i18n="newsTitle"/.test(tel) &&
    /newsTitle:'[^']+'/.test(tel));

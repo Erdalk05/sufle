@@ -186,3 +186,28 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
   ok('telefon: öğrenme modu kapalı açılıyor (kart okumak için, öğretmek için değil)',
      /learning=false; learnKey=null; renderLearn\(\); renderMap\(\);/.test(kodTel));
 }
+
+/* ---------- 8. KARŞILAMA EYLEMLE BİTİYOR (B.7) ---------- */
+{
+  /* ÇOK ADIMLI TUR YAZILMADI, bilinçli: her adım bir çıkış noktasıdır ve
+     kimse okumaz. 2026 pratiği açıklama değil AKTİVASYON — karşılama tek
+     birincil eylemle bitiyor: "Metnimi yapıştır" doğrudan senaryo sayfasını
+     açıyor. Tarayıcıda doğrulandı (eylem görünür → tık → senaryo açık,
+     karşılama kapalı). */
+  ok('karşılamada eylem satırı var', /<div class="sheetbtns hidden" id="onbActions">/.test(tel));
+  ok('birincil eylem senaryo sayfasını açıyor',
+     /\$\('#onbGo'\)\.onclick[\s\S]{0,600}openSheet\('#scriptsSheet'\)/.test(kodTel));
+  /* Odak da gitmeli, yoksa "yapıştır" düğmesi işini yarım yapar. Telefonun
+     metin alanı #text — ilk yazımda Mac'in #editor id'sini kopyalamıştım ve
+     `&&` guard'ı yüzünden sessizce hiçbir şey olmuyordu; denetim.py yakaladı. */
+  ok('birincil eylem metin alanına ODAK veriyor', /const ta=\$\('#text'\); if\(ta\) ta\.focus\(\)/.test(kodTel));
+  ok('ikincil eylem yalnız kapatıyor (baskı yok)',
+     /\$\('#onbLater'\)\.onclick=\(\)=>closeSheets\(\);/.test(kodTel));
+  ok('eylemler YALNIZ ilk açılışta gösteriliyor',
+     /\$\('#onbActions'\)\.classList\.remove\('hidden'\);\s*\n\s*openSheet\('#newsSheet'\)/.test(kodTel));
+  /* Aynı sayfa iki amaca hizmet ediyor; sürüm notu için elle açıldığında
+     "Metnimi yapıştır" yanlış yönlendirir. Gizlemeyi unutmak sessiz kusur. */
+  ok('sürüm notu elle açılınca eylemler GİZLENİYOR',
+     /function newsElle\(\)\{[^}]*#onbActions'\)\.classList\.add\('hidden'\)[^}]*showNews\(\)/.test(kodTel)
+     && /\$\('#newsBtn'\)\.onclick=newsElle;/.test(kodTel));
+}

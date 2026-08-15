@@ -998,6 +998,14 @@
   <div class="grab"></div>
   <h2><span data-i18n="newsTitle">🆕 Ne değişti?</span><button class="iconbtn" id="newsX" aria-label="Kapat">✕</button></h2>
   <div id="newsBody" class="hint"></div>
+  <!-- B.7: karşılama EYLEMLE bitiyor. Çok adımlı tur yazılmadı — kimse
+       okumuyor ve her adım bir çıkış noktası. 2026 pratiği: açıklama
+       değil aktivasyon. Bu satır YALNIZ ilk açılışta görünür; sürüm
+       notu için açıldığında saklanır (aşağıda sınıfla yönetiliyor). -->
+  <div class="sheetbtns hidden" id="onbActions">
+    <button class="save" id="onbGo" data-i18n="onbGo">Metnimi yapıştır</button>
+    <button class="cancel" id="onbLater" data-i18n="onbLater">Önce kendim bakayım</button>
+  </div>
 </div>
 
 <div class="sheet" id="helpSheet">
@@ -1224,7 +1232,9 @@ const I18N={
   /* Durum satırı — hangi moddayım (B.5) */
   modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle',
   /* Kısayol kartı (B.6) */
-  keysTitle:'Klavye kısayolları'},
+  keysTitle:'Klavye kısayolları',
+  /* Karşılama eylemi (B.7) */
+  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1322,7 +1332,9 @@ const I18N={
   /* Durum satırı — hangi moddayım (B.5) */
   modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual',
   /* Kısayol kartı (B.6) */
-  keysTitle:'Keyboard shortcuts'}
+  keysTitle:'Keyboard shortcuts',
+  /* Karşılama eylemi (B.7) */
+  onbGo:'Paste my text',onbLater:'I will look around first'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -5751,6 +5763,7 @@ function firstRun(){
       $('#newsBody').innerHTML=(L==='tr'
         ? '<b>Üç adımda başla:</b><br><br>1️⃣ <b>📝 Senaryolar</b>&#39;a metnini yapıştır.<br>2️⃣ Ana ekranda <b>−/+</b> ile hızını ayarla (kendi okuma hızını bul).<br>3️⃣ <b>✅ Hazır mıyım</b> ile ışığı ve sesi kontrol et, sonra <b>●</b> ile çek.<br><br>Gerisi isteğe bağlı — hepsini şimdi öğrenmen gerekmiyor.'
         : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>📝 Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>✅ Ready?</b>, then hit <b>●</b>.');
+      $('#onbActions').classList.remove('hidden');
       openSheet('#newsSheet');
     } else showNews();
     st.seenVer=VER; save();     // gösterildi, artık damgalanabilir
@@ -5759,7 +5772,17 @@ function firstRun(){
 $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
 /* Sürüm notlarına elle giriş. Tek girişi güncellemeden sonra kendiliğinden
    açılan sayfaydı; kapatan ya da kaçıran kullanıcı bir daha ulaşamıyordu. */
-$('#newsBtn').onclick=showNews;
+/* Sürüm notu ELLE açıldığında karşılama eylemleri GİZLENİR: "Metnimi
+   yapıştır" orada anlamsız ve yanlış yönlendirir. Aynı sayfayı iki amaç
+   için kullanmanın bedeli bu — gizlemeyi unutmak sessiz kusur olurdu. */
+function newsElle(){ $('#onbActions').classList.add('hidden'); showNews(); }
+$('#newsBtn').onclick=newsElle;
+$('#onbGo').onclick=()=>{ closeSheets(); rememberPos(); fillEditor(); renderScripts();
+  /* Telefonun metin alanı #text — #editor MAC'in id'si. Kopyalarken
+     karıştırdım; `&&` guard'ı yüzünden çökmüyordu ama odak hiç gitmiyordu,
+     yani "yapıştır" düğmesi işini yarım yapıyordu. denetim.py yakaladı. */
+  openSheet('#scriptsSheet'); const ta=$('#text'); if(ta) ta.focus(); };
+$('#onbLater').onclick=()=>closeSheets();
 /* ayarları sıfırla — senaryolara ve çekimlere dokunmaz, iki basış ister */
 let resetArm=0;
 $('#resetAll').onclick=()=>{

@@ -236,7 +236,12 @@ Neden gerekliydi: Mac'te `#statusbar` 820 pikselin altında `display:none` — d
 yolu kayboluyordu; telefonda içerik vardı ama **tek girişi "Uzaktan kumanda" paneliydi**
 (analizdeki "jargon = görünmezlik"). Yazı alanındayken `?` yok sayılıyor.
 Mac'e `t()` bu turda eklendi — ilk gerçek kullanıcısı doğduğu için.
-**B.7 Onboarding.** 4 adım, atlanabilir, bir kez.
+**B.7 Onboarding.** ✅ **BİTTİ — ama çok adımlı tur YAZILMADI.** CTO kararı: her adım bir çıkış
+noktasıdır ve kimse okumaz; 2026 pratiği açıklama değil **aktivasyon**. Karşılama tek birincil
+eylemle bitiyor: **"Metnimi yapıştır"** → senaryo sayfası açılıyor + metin alanına odak.
+İkincil "Önce kendim bakayım" yalnız kapatıyor (baskı yok). Eylem satırı **yalnız gerçek ilk
+kurulumda** görünür; sürüm notu için elle açıldığında gizleniyor (sayfa iki amaca hizmet ediyor).
+Tarayıcıda üç davranış da doğrulandı.
 **B.8 Erişilebilirlik sütunu.** OpenDyslexic + Lexend, kontrast temaları, AA 4.5:1 zorunlu, ekran okuyucu.
 **Bitti ölçütü:** ilk açılışta görünen kontrol sayısı ≤ 5; kontrast denetimi 0 ihlal; dört platformda aynı.
 
@@ -315,3 +320,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 13 | 2026-08-14 | **v9.8 yayın hazırlığı** — VER 9.8 · cache v80 · TR+EN sürüm notları | **KAPI 8/8 YEŞİL** — kampanyanın ilk tam yeşili; push Erdal onayı bekliyor | ✅ 8/8 |
 | 14 | 2026-08-15 | B.5 telefon: mod rozeti (Elle/Otomatik/Sesle+dil) | tarayıcıda geçiş kanıtlı · senkron güncelleme · 30 bozma · **KAPI 8/8 YEŞİL** | ✅ 8/8 |
 | 15 | 2026-08-15 | B.6 kısayol kartı (iki kabuk) | Mac kartı 7 satır, gerçek bağlardan · telefon kullanıcının haritasını gösteriyor · 51 iddia | ✅ 8/8 YEŞİL |
+| 16 | 2026-08-15 | B.7 karşılama eylemle bitiyor (tur yerine aktivasyon) | tarayıcıda 3 davranış kanıtlı · 57 iddia · kapsam tabanı gevşetilmedi | ✅ 8/8 YEŞİL |
