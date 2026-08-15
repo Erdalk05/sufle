@@ -261,7 +261,15 @@
 
   /* HUD */
   /* rozetler altta — üstte "📷 buraya bak" ve kayıt noktasıyla çakışıyordu */
-  #hud{position:absolute;left:12px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:7;display:flex;gap:6px;
+  /* YAPISAL ÇÖZÜM, SİHİRLİ SAYI DEĞİL. Önce iki katmanı çubuğun yüksekliğine
+     bağladım; 430 ve 393 px'te düzeldi ama 375 px'te durum satırı İKİ SATIRA
+     sarıp yukarı büyüdü ve hız hapına girdi (ölçüldü). Sabit boşluk, boyu
+     değişen bir ögeyi güvene alamaz. Artık ikisi çubuğun üstünde tek bir
+     DİKEY YIĞIN içinde: sarma olsa da üst üste binemezler. */
+  #altYigin{position:absolute;left:0;right:0;bottom:calc(var(--barH) + 6px);z-index:8;
+    display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-2);
+    pointer-events:none}
+  #hud{z-index:7;display:flex;gap:6px;margin-left:12px;
     font-size:var(--tx-xs);font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
   #hud span{background:rgba(0,0,0,.45);padding:var(--sp-1) 9px;border-radius:20px;backdrop-filter:blur(6px)}
   #hud .warn{color:#ffb300}
@@ -282,8 +290,8 @@
     padding:10px 6px;font-size:12px;font-weight:800;color:var(--accent);writing-mode:vertical-rl}
 
   /* ana ekranda görünür hız kontrolü — kenar sürükleme keşfedilemiyordu */
-  #speedCtl{position:absolute;left:50%;transform:translateX(-50%);
-    bottom:calc(96px + env(safe-area-inset-bottom));z-index:8;display:none;align-items:center;gap:0;
+  #speedCtl{align-self:center;pointer-events:auto;
+    z-index:8;display:none;align-items:center;gap:0;
     background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);border-radius:26px;
     backdrop-filter:blur(10px);overflow:hidden}
   body.started #speedCtl{display:flex}
@@ -324,8 +332,18 @@
      "2 px küçük düğme" ile "ekran dışında düğme" arasında; küçüğü seçiyoruz.
      `flex-wrap:wrap` son emniyet: 355 px'in altında çubuk iki satıra iniyor,
      hiçbir kumanda ekranın dışına ÇIKMIYOR. */
+  /* ÇUBUĞUN YÜKSEKLİĞİ ARTIK SİHİRLİ SAYI DEĞİL — ölçüldü (2026-08-15).
+     T34'te kumanda çubuğunu dar telefonlara sığdırırken düğmeleri ve iç
+     kenarı değiştirdim; çubuk 95 px oldu. Üstündeki iki katman ise hâlâ
+     SABİT sayıya dayanıyordu (`#hud` 86px, `#speedCtl` 96px) ve üçü
+     birbirine girdi: hız hapı ↔ durum satırı 7 px, durum satırı ↔ çubuk
+     9 px çakışıyordu. Erdal ekran görüntüsüyle bildirdi, tarayıcıda
+     sayıldı. Yükseklik artık ÜRETİLİYOR: iç kenar + en yüksek düğme
+     (kayıt = --cb × 1,37) + alt iç kenar + güvenli alan. Düğme boyu
+     değişirse üstteki katmanlar KENDİLİĞİNDEN kayar. */
+  body{--cb:clamp(42px, calc((100vw - 48px) / 7.37), 54px);
+    --barH:calc(10px + var(--cb) * 1.37 + 14px + env(safe-area-inset-bottom))}
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
-    --cb:clamp(42px, calc((100vw - 48px) / 7.37), 54px);
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
     gap:var(--sp-1);
     padding:10px 10px calc(14px + env(safe-area-inset-bottom));
@@ -582,17 +600,21 @@
   <div id="eyeline"></div>
   <div id="recFrame"></div>
   <div id="progress"></div>
-  <div id="hud"><span id="hMode">✋ Elle</span><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
   <div id="recDot"><i></i><span id="recLbl" role="status" aria-live="polite">KAYITTA</span><span id="recTime" class="tnum">00:00</span></div>
   <div id="audBadge"></div>
   <div id="speedRail"><div id="railV" class="tnum">140</div></div>
   <div id="railHint"></div>
+  <!-- 3-2-1 sayacı YIĞININ DIŞINDA kalmalı: `inset:0` ile sahneyi kaplıyor,
+       yığının içine girerse yalnız yığını kaplar ve sayaç küçülür. -->
+  <div id="count" class="tnum">3</div>
+  <div id="altYigin">
   <div id="speedCtl">
     <button id="spDown" aria-label="Yavaşlat" data-aria="spDown">−</button>
     <span id="spVal" class="tnum">140<small data-i18n="spLabel">HIZ · WPM</small></span>
     <button id="spUp" aria-label="Hızlandır" data-aria="spUp">+</button>
   </div>
-  <div id="count" class="tnum">3</div>
+  <div id="hud"><span id="hMode">✋ Elle</span><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
+  </div>
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)</div>
 </div>
 
@@ -1237,7 +1259,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.10';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.11';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -6301,6 +6323,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.11':{tr:'📐 <b>Alt kumandalar üst üste binmiyor</b>: hız hapı, durum satırı ve düğme çubuğu birbirinin üstüne yazıyordu — dar telefonlarda durum satırı iki satıra çıkınca daha da kötüleşiyordu. Üçü artık tek bir dikey yığında ve konumları çubuğun gerçek yüksekliğinden hesaplanıyor.<br>🔎 Aynı kusur daha önce de olmuş ve düzeltmesi sabit piksel değeriyle kilitlenmişti; o yüzden sessizce geri gelmiş. Artık her çekim karesinde çakışan kumanda SAYILIYOR.',
+       en:'📐 <b>Bottom controls no longer overlap</b>: the pace pill, status row and button bar were drawing on top of each other, and it got worse on narrow phones when the status row wrapped. All three now sit in one vertical stack whose position is computed from the real height of the bar.<br>🔎 The same defect had happened before and its fix was locked to a fixed pixel value, so it came back silently. Overlapping controls are now counted on every capture.'},
  '6.4':{tr:'🎚 <b>Ses Stüdyosu</b>: uğultu kesme, 50 Hz şebeke çentiği, gürültü kapısı ve seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan yenilik bu.<br>🎨 <b>Görüntü filtreleri</b>: 6 hazır ayar + şiddet. Kompozit açıkken videoya işleniyor.<br>🔎 Ayarlarda ve senaryolarda arama · ⚡ Reels/YouTube/Sunum hazır kurulumları · ◐ yüksek kontrast · 🛟 otomatik yedek.',
        en:'🎚 <b>Audio Studio</b>: rumble cut, 50 Hz mains notch, noise gate and levelling.<br>🎨 <b>Video filters</b>: 6 presets + intensity.<br>🔎 Search in settings and scripts · ⚡ quick setups · ◐ high contrast · 🛟 auto-backup.'},
  '9.1':{tr:'🔊 <b>“Ses çok kısık” yanlış uyarısı düzeltildi</b>: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor — ses yokken yargılamıyor, gerçekten kısıkken uyarıyor.<br>⚡ <b>Biyonik okuma artık Mac’te de var</b> (kelime başları kalın).<br>♿ <b>Klavye ve ekran okuyucu</b>: ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor, adları ve açık/kapalı durumları sesli okunuyor. Liste satırlarındaki simge düğmeleri adlandırıldı.<br>🎬 <b>Çekim sırasında açılan pencereler görüntüyü donduruyordu</b>: kayıt sürerken arşiv ya da yeniden adlandırma penceresi açılınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.<br>📍 <b>"Kaldığın yer" artık gerçekten hatırlanıyor</b>: uygulamayı kapatınca konum ve son düzenlemelerin kaydedilmeden kaybolabiliyordu.<br>🆕 Sürüm notlarına ayarlardan istediğin zaman ulaşabilirsin.',

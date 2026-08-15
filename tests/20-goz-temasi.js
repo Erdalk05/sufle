@@ -52,7 +52,27 @@ ok('sebebi kodda yazılı', /senaryonun ilk satırlarını kapatıyordu/.test(sr
 // ipucu 150px, hız hapı bottom:22%. Ekranda hepsi birbirinin üstüne yazıyordu.
 const px = re => { const m=src.match(re); return m ? m[1] : null; };
 ok('ses şeridi çiplerin üstüne çıkarıldı', /#vHud\{[^}]*bottom:calc\(env\(safe-area-inset-bottom,0px\) \+ 130px\)/.test(src));
-ok('durum çipleri yerinde kaldı', /#hud\{[^}]*bottom:calc\(86px/.test(src));
+/* AYNI HATA İKİNCİ KEZ OLDU — ve bu satır onu YAKALAYAMADI.
+   v8.6'da dört öge alt bantta çakışmıştı; düzeltme PİKSEL DEĞERİ olarak
+   kilitlendi (`bottom:calc(86px`). T34'te kumanda çubuğunu dar telefonlara
+   sığdırınca çubuk 95 px'e çıktı ve 86 px yetmez oldu: hız hapı ↔ durum
+   satırı 7 px, durum satırı ↔ çubuk 9 px yeniden çakıştı. Test yeşil kaldı,
+   çünkü sayı DEĞİŞMEMİŞTİ — yanlış olan sayının kendisiydi.
+   Artık YAPI kilitleniyor: iki katman çubuğun üstünde tek bir dikey yığında
+   ve konumları çubuğun HESAPLANAN yüksekliğinden türüyor. Gerçek çakışma
+   ölçümü tarayıcıda (`ekran.py`, her karede çakışan öge sayısı). */
+ok('alt katmanlar tek bir dikey yığında', /#altYigin\{[^}]*flex-direction:column/.test(src));
+ok('yığın çubuğun üstünde duruyor', /#altYigin\{[^}]*bottom:calc\(var\(--barH\)/.test(src));
+ok('durum satırı yığının içinde', /<div id="altYigin">[\s\S]*<div id="hud"/.test(src));
+ok('hız hapı da yığının içinde', /<div id="altYigin">[\s\S]*<div id="speedCtl">/.test(src));
+/* Çubuğun yüksekliği ÜRETİLİYOR: düğme boyu değişirse üst katmanlar
+   kendiliğinden kayar. Sihirli sayıya geri dönülürse aynı kusur geri gelir. */
+ok('çubuk yüksekliği türetiliyor (sihirli sayı değil)',
+   /--barH:calc\(10px \+ var\(--cb\) \* 1\.37/.test(src));
+ok('durum satırında sabit alt konum kalmadı', !/#hud\{[^}]*bottom:calc\(\d+px/.test(src));
+/* 3-2-1 sayacı yığının DIŞINDA kalmalı: `inset:0` ile sahneyi kaplıyor,
+   yığının içine girerse yalnız yığını kaplar. */
+ok('sayaç yığının dışında', /<div id="count"[\s\S]{0,200}<div id="altYigin">/.test(src));
 ok('şerit ile çipler arasında boşluk var (130 > 86)', 130-86>=40);
 ok('ipucu hız hapının üstüne alındı', /\.tapnote\{[^}]*bottom:calc\(22% \+ 78px\)/.test(src));
 ok('ipucu artık okuma alanında değil', !/\.tapnote\{[^}]*top:52%/.test(src));

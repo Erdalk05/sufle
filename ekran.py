@@ -355,11 +355,41 @@ def kare_uret(t, k):
         const b=e.getBoundingClientRect();
         return b.width>0 && b.right>de.clientWidth+0.5;}).length;})()""")
 
+    # ÇAKIŞAN KUMANDA SAYACI (T53). Erdal ekran görüntüsüyle bildirdi: hız hapı,
+    # durum satırı ve kumanda çubuğu birbirinin üstüne biniyordu — üstelik AYNI
+    # KUSUR v8.6'da da olmuş ve düzeltmesi piksel değeriyle kilitlenmişti, o
+    # yüzden ikinci kez sessizce geri geldi. Sayı artık HER KAREDE ölçülüyor:
+    # kaynak düzeyi bir test bunu göremez, ancak çizilmiş ekran gösterir.
+    cakisan = t.js("""(()=>{
+      const gor=e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();
+        return s.display!=='none'&&s.visibility!=='hidden'&&parseFloat(s.opacity)>0.1
+               &&b.width>2&&b.height>2;};
+      /* Yalnız KUMANDA katmanları: metin akışı ve kamera görüntüsü bilerek
+         üst üste (sufle zaten görüntünün üstünde duruyor). */
+      /* TAM EKRAN KAPLAYAN ÖGE KUMANDA DEĞİLDİR. İlk koşuda 5 "çakışma"
+         çıktı ve beşi de `#recFrame` ile: o bir kayıt ÇERÇEVESİ, sahneyi
+         baştan sona kaplıyor ve her şeyin üstünde durması TASARIM. Onu
+         çakışma saymak, aracın kendisinin yalancı alarm vermesi olurdu —
+         bu oturumda benzerine iki kez düştüm. */
+      const vpA=innerWidth*innerHeight;
+      const list=[...document.querySelectorAll('#speedCtl,#hud,#hud>span,#bar,#audBadge,#recFrame')]
+        .filter(gor)
+        .filter(e=>{const b=e.getBoundingClientRect(); return (b.width*b.height) < vpA*0.8;});
+      let n=0;
+      for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){
+        const a=list[i],b=list[j];
+        if(a.contains(b)||b.contains(a)) continue;
+        const A=a.getBoundingClientRect(),B=b.getBoundingClientRect();
+        const x=Math.max(0,Math.min(A.right,B.right)-Math.max(A.left,B.left));
+        const y=Math.max(0,Math.min(A.bottom,B.bottom)-Math.max(A.top,B.top));
+        if(x>4&&y>4) n++;}
+      return n;})()""")
+
     png = t.cagir('Page.captureScreenshot', format='png')['data']
     yol = os.path.join(CIKTI, k['ad'] + ('.png' if k['magaza'] else '.taslak.png'))
     with open(yol, 'wb') as f:
         f.write(base64.b64decode(png))
-    return yol, tasan
+    return yol, tasan, cakisan
 
 
 def main():
@@ -379,6 +409,7 @@ def main():
 
     isteneler = [k for k in KARELER if sadece is None or k['no'] in sadece]
     sonuc = []
+    kirmizi = [False]
     for k in isteneler:
         # KARE BAŞINA TEMİZ TARAYICI. Aynı örneği yeniden kullanınca bir
         # önceki karenin kamera akışı serbest kalmıyordu ve sonraki kare
@@ -386,14 +417,17 @@ def main():
         # yanlış bir mağaza karesinin bedelinden ucuz.
         t = Tarayici(cekim)
         try:
-            yol, tasan = kare_uret(t, k)
+            yol, tasan, cakisan = kare_uret(t, k)
             boy = os.path.getsize(yol)
             durum = 'MAĞAZAYA HAZIR' if (k['magaza'] or cekim) else 'TASLAK (çekim gerek)'
-            print('  %d · %-24s %s · %d bayt · taşan öge %d'
-                  % (k['no'], k['ad'], durum, boy, tasan))
+            print('  %d · %-24s %s · %d bayt · taşan %d · çakışan kumanda %d'
+                  % (k['no'], k['ad'], durum, boy, tasan, cakisan))
             sonuc.append((k, yol, tasan))
             if tasan:
                 print('     ⚠ %d öge viewport dışına taşıyor' % tasan)
+            if cakisan:
+                print('     ⛔ %d kumanda çifti ÜST ÜSTE BİNİYOR' % cakisan)
+                kirmizi[0] = True
         finally:
             t.kapat()
 
@@ -403,6 +437,9 @@ def main():
     if not cekim:
         print('Taslakları mağazaya hazır hâle getirmek için:'
               '  python3 ekran.py --cekim <yuz.y4m>')
+    if kirmizi[0]:
+        print('\n⛔ ÇAKIŞAN KUMANDA VAR — düzen kırık')
+        return 1
     return 0
 
 

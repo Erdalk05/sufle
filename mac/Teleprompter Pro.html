@@ -1261,7 +1261,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.10';   // telefon sürümüyle aynı numaralama
+  const VER='9.11';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -3270,6 +3270,7 @@ function provaRapor(kaynak, sesle){
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
    '9.4':'Arşiv deposu bazen hiç cevap vermeden takılabiliyordu; artık her depo işi belirli sürede düşüyor ve akış donmuyor. (Telefonda bu, çekim bitince sonuç ekranının hiç açılmamasına yol açıyordu.)',
+   '9.11':'Bu sürümde masaüstü tarafında görsel bir değişiklik yok; düzeltme telefon düzeninde. Masaüstünde bu turda kumanda tuşu öğretme ve zorlanma haritası eklenmişti.',
    '9.10':'Bu sürümde masaüstü tarafında bir değişiklik yok. Sürüm numarası telefon sürümüyle aynı kalsın diye artırıldı; telefonda bağlantı paylaşımının önizlemesi düzeltildi.',
    '9.9':'BU SÜRÜMDE MASAÜSTÜ ÇOK ŞEY KAZANDI.\n\nKAMERA SEÇİMİ: birden fazla kameran varsa (harici webcam, yakalama kartı, iPhone Sürekli Kamera) artık Çekim sekmesinden seçebiliyorsun. Eskiden hep dahili kamera açılıyordu.\n\nVİDEO BUDAMA: çekimden sonra baştan ve sondan kesebiliyorsun. Seçimi önce oynatıp bakabilirsin. Kesme işlemi seçtiğin süre kadar sürer ve bunu ekranda yazıyor.\n\nTELEFONDA ÖNİZLEME: kumanda sayfasında kameranın gördüğü kare beliriyor, tek başına çekim yaparken kadrajını kontrol edebiliyorsun. Ayarı Kumanda bölümünden açman gerekiyor; kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.\n\nYAYIN KİPİ: OBS veya vMix kullanıyorsan Tarayıcı Kaynağı ekleyip Kumanda bölümündeki adresi yapıştır. Sufle şeffaf zeminde görünür ve kameranın üstüne biner.\n\nWORD DOSYASI: senaryo başlığındaki dosya simgesiyle .docx açabiliyorsun.\n\nOTOMATİK YEDEK: senaryolar artık kendiliğinden yedekleniyor, Kumanda bölümündeki düğmeyle geri alabilirsin.\n\nERİŞİLEBİLİRLİK: disleksi yazı tipi ve yüksek kontrast teması eklendi, hareket azaltma tercihi artık gözetiliyor.\n\nAyrıca kısayolları görmek için soru işareti tuşuna basabilirsin.',
    '9.8':'ARAYÜZ YENİLENDİ: sağdaki ayar paneli üç sekmeye ayrıldı (Okuma - Çekim - Görünüm); 53 kontrol aynı anda görünmüyor artık, aradığın şey kendi sekmesinde. Kayıt başlayınca yan paneller kendiliğinden kapanıyor, kayıt bitince düzenin aynen geri geliyor.\n\nDurum çubuğuna TR/EN dil düğmesi eklendi: arayüz artık tamamen İngilizce de kullanılabiliyor. Süre ve sayaç göstergeleri titremiyor, vurgu rengi daha okunur bir tona alındı.',

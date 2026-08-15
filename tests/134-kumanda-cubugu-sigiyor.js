@@ -39,7 +39,11 @@ ok('çubukta düğmeler sayılabildi (ölçmeyen kapı değil) — ' + dugmeler.
    dugmeler.length >= 6 && kayitDugmesi === 1);
 
 /* ---------- CSS SAYILARI ---------- */
-const barCss = (s.match(/#bar\{[^}]*--cb[^}]*\}/) || [''])[0];
+/* `--cb` T53'te `body`'ye taşındı: çubuğun ÜSTÜNDEKİ katmanlar da çubuk
+   yüksekliğini hesaplayabilsin diye. Aritmetik aynı; jetonlar iki bloktan
+   toplanıyor. */
+const barCss = (s.match(/body\{[^}]*--cb[^}]*\}/) || [''])[0]
+              + (s.match(/#bar\{[^}]*\}/) || [''])[0];
 ok('çubuk CSS bloğu bulundu', barCss.length > 60);
 
 /* HER OKUMA GÖRÜNÜR OLSUN. Önce yalnız BAŞARISIZKEN satır basıyordu; iddia
