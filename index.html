@@ -370,7 +370,9 @@
   #langSwitch{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;display:flex;gap:6px}
   #langSwitch button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;
     border-radius:10px;padding:7px 11px;font-size:12px;font-weight:700}
-  #langSwitch button.on{background:var(--accent);color:var(--accent-d);border-color:transparent}
+  /* Dil rozeti SEÇİLİ DURUM, eylem değil — tonal (B.1). Dolu yeşil olduğunda
+     giriş ekranında asıl eylemle (Kamerayı Aç) yarışıyordu. */
+  #langSwitch button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45)}
 
   /* ===== SHEET ===== */
   #backdrop{position:absolute;inset:0;z-index:29;background:rgba(0,0,0,.45);
@@ -408,7 +410,8 @@
   .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;background:var(--sheetbg);padding:6px 0;z-index:2}
   .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:#cfd0d4;border-radius:11px;
     padding:11px 0;font-size:13px;font-weight:700}
-  .tabs button.on{background:var(--accent);color:var(--accent-d);border-color:transparent}
+  /* Ayar sekmeleri de SEÇİLİ DURUM — .seg, #langSwitch ile aynı kural (B.1). */
+  .tabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
   .tab{display:none}.tab.on{display:block}
   .row{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px;gap:10px}
   /* İşletim sisteminde "hareketi azalt" açıksa vurgu/geçiş animasyonlarını kapat.
@@ -473,7 +476,17 @@
   .seg{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
   .seg button{flex:1 1 60px;background:var(--card);border:1px solid var(--line);color:#fff;border-radius:11px;
     padding:12px 4px;font-size:13px;font-weight:600}
-  .seg button.on{background:var(--accent);color:var(--accent-d);border-color:transparent}
+  /* B.1 — SEÇİLİ ≠ EYLEM. `jetonlar.css` kendi kuralını yazıyor:
+     "--r-action ... asıl eylem, ekranda TEK olmalı". Ölçtüm, kural çiğneniyordu:
+     Mac ana ekranda 9, telefon girişte 3 dolu yeşil AYNI ANDA görünüyordu ve
+     üçü farklı şey söylüyordu (asıl eylem, seçili sekme, açık anahtar).
+     Kullanıcı hangisinin eylem olduğunu ayırt edemez.
+     Çözüm 2026 pratiği: DOLU dolgu = tek asıl eylem, TONAL dolgu = seçili
+     durum. Marka yeşili korunuyor, hiyerarşi geliyor.
+     Anahtarlara (pill + topuz) DOKUNULMADI: biçimleri zaten düğmeden farklı
+     ve dolu yeşil orada yerleşik bir alışkanlık — onları da tonal yapmak
+     tanınırlığı bozardı, hiyerarşiyi düzeltmezdi. */
+  .seg button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
   .tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px;border-top:1px solid var(--line);gap:12px;cursor:pointer}
   .tog span{font-size:14px}
   .sw{width:48px;height:29px;border-radius:20px;background:#33333a;position:relative;transition:.15s;flex:none}

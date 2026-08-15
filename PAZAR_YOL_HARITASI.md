@@ -209,7 +209,38 @@ Ek kaynaklar: Elgato (odak modu), BIGVU (çekim sonrası akış), Video Teleprom
 **B.1 Tasarım jetonları.** ⏳ **başladı** — `--accent` iki kabukta da `var(--r-action)`'a bağlandı
 (#00C853 → #00D47E, ölçülmüş kontrast 8,21 → 8,65); 12 sayısal gösterge `tabular-nums` aldı
 (HUD, kayıt süresi, hız, geri sayım, Mac saat/sayaç). `tests/123` kilitliyor (15 iddia).
-Kalan: rol ayrımı (kayıt kırmızı ayrı jetonda ama vurgu hâlâ tek yeşil), tipografi ölçeği, boşluk ritmi.
+**Rol ayrımı ✅ BİTTİ (Tur 39).** `jetonlar.css` kuralı kendisi yazıyordu — *"--r-action … asıl
+eylem, ekranda TEK olmalı"* — ama hiçbir yer onu denetlemiyordu. Ölçtüm, kural çiğneniyordu:
+
+| yüzey | önce | sonra |
+|---|---|---|
+| Mac ana | **9** dolu yeşil | **1** |
+| telefon giriş | **3** | **1** |
+| telefon ayarlar | **2** | **0** (kip penceresi) |
+
+Aynı yeşil üç ayrı şey söylüyordu: asıl eylem, seçili sekme, açık anahtar. Çözüm 2026 pratiği:
+**dolu dolgu = tek asıl eylem, tonal dolgu (%16 + yeşil metin) = seçili durum.** Marka yeşili
+korundu, hiyerarşi geldi. Değişen yüzeyler: telefon `.seg`/`.tabs`/`#langSwitch`, Mac
+`.seg`/`#rtabs`/`.pill`. **Anahtarlara dokunulmadı** — pill+topuz biçimi düğmeden zaten ayrı ve
+dolu yeşil orada yerleşik bir alışkanlık; onları da tonal yapmak tanınırlığı bozar, hiyerarşiyi
+düzeltmezdi.
+
+Kural artık kapıda: `kontrast.py` aynı koşuda dolu eylem düğmelerini de sayıyor (ek tarayıcı
+maliyeti yok). **İki kural birden:** ekranda >1 olamaz **ve** taban değerinden artamaz — yalnız
+">1" bakmak yetmiyordu, çünkü kip penceresi açıkken arkadaki her şey örtülü kalıyor ve sekme dolu
+yeşile döndüğünde sayı 0'dan 1'e çıkıp fark edilmiyordu. Ayırt ettiği kanıtlandı.
+
+*Ölçüm kendi değişikliğimi çürüttü:* Mac'te `#bilgiKapat`'ı "iki birincil düğme yarışıyor" diye
+ikincile indirmiştim. Sonra denetime **örtüşme kontrolü** ekleyince ikisinin hiçbir zaman aynı
+anda yarışmadığı çıktı — o düğme bir kip penceresinin içinde, `▶︎ Başlat` arkasında kalıyor.
+Pencerenin kendi onay düğmesi o an ekrandaki tek eylemdir ve birincil olması doğrudur.
+**Değişiklik geri alındı** ve sebebi koda yazıldı.
+
+Ayrıca `kontrast.py` Mac'in ana ekranını hiç ölçmüyormuş: kurulum yalnız `#newsX`'e basıyordu ama
+Mac'in sürüm penceresi `#bilgiKapat` ile kapanıyor, yani pencere açık kalıyordu. İki durum da
+ölçülüyor artık (**5 yüzey, 456 metin**).
+
+Kalan: tipografi ölçeği, boşluk ritmi.
 
 **📏 B.3 ölçümü tarayıcıda yapıldı — analizin iddiası telefon için YANLIŞ çıktı:**
 telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.com disiplini telefonda
@@ -659,3 +690,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 36 | 2026-08-15 | **C.3 yeniden değerlendirildi** — erteleme sürüyor, iki gerçek kusur kapandı | 800 senaryo **7,4 ms** (perf gerekçesi çürüdü) · telefonda arama+kapat dipte ulaşılamazdı → yapışkan başlık · **Mac'te senaryo araması hiç yoktu** → eklendi (Türkçe katlama ölçüldü) · gözlenemez tetikleyici düzeltildi · tests/136 + 4 kanıtlı bozma · **4381 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 37 | 2026-08-15 | **E.4 prova raporu** — sunucusuz, yapay zekâsız · F.5 bedeli ölçüldü | veri zaten cihazdaydı (`cekimAltyazi`) · hız/duraklama/tempo/okunmayan kuyruk · **sesle takip kapalıyken sayı YAZILMIYOR** (kendi WPM ayarını geri söylerdi) · dolgu kelime bilerek yok (gizlilik) · 2 kez kendi kuralıma düştüm, ikisi de testle kapandı · tests/137 (33 iddia) + 4 kanıtlı bozma · **4430 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 38 | 2026-08-15 | **B.8 kapandı** — kontrast denetimi kapının 9. adımı | çizilmiş arayüzde **357 metin** ölçüldü · `#verTop` 3,67:1 gerçek ihlaliydi → jetona bağlandı · aracın kendi yanlış alarmı (devre dışı düğme) WCAG muafiyetiyle kapandı · ayırt ettiği kanıtlandı (2,89 yakalandı) · **4413 test, 0 hata** | ✅ 9/9 YEŞİL |
+| 39 | 2026-08-15 | **B.1 rol ayrımı** — dolu yeşil = tek eylem, seçili = tonal | Mac ana **9 → 1**, telefon giriş **3 → 1** · kural kapıya bağlandı (2 kural: >1 yok + tabandan artmaz) · örtüşme kontrolü kendi değişikliğimi çürüttü, geri alındı · Mac ana ekran hiç ölçülmüyormuş, eklendi (5 yüzey/456 metin) · kontrast 0 ihlal | ✅ 9/9 YEŞİL |

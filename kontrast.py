@@ -46,8 +46,14 @@ DURUMLAR = [
     ('telefon-senaryo',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#scriptsBtn').click();"),
-    ('mac-ana',          MAC,    1440, 900, 2,
+    ('mac-pencere',      MAC,    1440, 900, 2,
      "(document.querySelector('#newsX')||{click(){}}).click();"),
+    # Mac'in sürüm penceresi #bilgiKapat ile kapanıyor; yalnız #newsX'e
+    # basmak pencereyi AÇIK bırakıyordu ve ana ekran hiç ölçülmüyordu —
+    # ölçmeyen denetim. İki durum da ölçülüyor.
+    ('mac-ana',          MAC,    1440, 900, 2,
+     "(document.querySelector('#newsX')||{click(){}}).click();"
+     "(document.querySelector('#bilgiKapat')||{click(){}}).click();"),
 ]
 
 # Tarayıcıda koşan ölçüm. Tek parça JS: her tur için ayrı ayrı gönderilir.
@@ -148,7 +154,34 @@ OLC = r"""
                    esik, px: +px.toFixed(1), kalin });
     }
   }
-  return JSON.stringify({ olculen, ihlal, atlanan });
+  /* B.1 — EKRANDA TEK ASIL EYLEM. `jetonlar.css` bu kuralı kendisi yazıyor
+     ("--r-action ... asıl eylem, ekranda TEK olmalı") ama hiçbir yer onu
+     denetlemiyordu. Ölçtüm: Mac ana ekranda 9, telefon girişte 3 dolu yeşil
+     aynı anda görünüyordu ve üçü farklı şey söylüyordu (eylem, seçili sekme,
+     açık anahtar). Kullanıcı hangisinin eylem olduğunu ayırt edemez.
+     Sayılan şey: DÜĞME biçimli, TAM OPAK marka yeşili dolgu. Tonal dolgu
+     (rgba .16) seçili durumdur, sayılmaz. Anahtarlar da sayılmaz: pill+topuz
+     biçimi düğmeden ayrıdır ve orada dolu yeşil yerleşik bir alışkanlık. */
+  const eylem = [];
+  for (const el of document.querySelectorAll('button,a,[role="button"]')) {
+    const s = getComputedStyle(el), b = el.getBoundingClientRect();
+    if (s.display === 'none' || s.visibility === 'hidden') continue;
+    if (parseFloat(s.opacity) < 0.1) continue;
+    if (b.width < 2 || b.height < 2 || b.bottom < 0 || b.top > innerHeight) continue;
+    /* ÖRTÜLEN ÖGE RAKİP DEĞİLDİR. Karşılama sayfası açıkken `#startCam`
+       perdenin ARKASINDA kalıyor ve araç onu ikinci bir eylem sanıp kırmızı
+       verdi — oysa kullanıcı o an yalnız sayfanın kendi düğmesini görüyor.
+       Gerçek örtüşme sınanıyor: ögenin merkezinde en üstte duran şey kendisi
+       (ya da çocuğu) değilse, o öge kapalıdır. */
+    const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+    const ust = document.elementFromPoint(cx, cy);
+    if (!ust || !(el === ust || el.contains(ust))) { continue; }
+    const bg = s.backgroundColor;
+    if (bg.includes('0, 212, 126') && !/rgba\([^)]*0\.\d/.test(bg))
+      eylem.push((el.id ? '#' + el.id : '.' + String(el.className).split(' ')[0])
+                 + ' "' + el.textContent.trim().slice(0, 18) + '"');
+  }
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem });
 })()
 """
 
@@ -184,8 +217,9 @@ def main():
         n = len(r['ihlal'])
         yeni[ad] = n
         atl = ' · '.join('%s:%d' % (k, v) for k, v in sorted(r['atlanan'].items()))
-        print('%-18s ölçülen %4d · ihlal %2d%s' % (ad, r['olculen'], n,
-                                                   ('  (atlanan ' + atl + ')') if atl else ''))
+        print('%-18s ölçülen %4d · ihlal %2d · eylem düğmesi %d%s'
+              % (ad, r['olculen'], n, len(r['eylem']),
+                 ('  (atlanan ' + atl + ')') if atl else ''))
         # ÖLÇMEYEN DENETİM OLMASIN: hiç metin ölçülmediyse "0 ihlal" yalandır.
         if r['olculen'] < 5:
             print('   ⛔ yalnız %d metin ölçüldü — denetim bir şey ölçmüyor' % r['olculen'])
@@ -194,6 +228,21 @@ def main():
             print('   ✗ %-28s %5.2f < %.1f  %spx%s  "%s"'
                   % (i['yol'], i['oran'], i['esik'], i['px'],
                      ' kalın' if i['kalin'] else '', i['metin']))
+        e = len(r['eylem'])
+        yeni[ad + '~eylem'] = e
+        eskiE = taban.get(ad + '~eylem')
+        # İKİ KURAL BİRDEN. Yalnız ">1" bakmak yetmiyordu: ayar sayfası bir kip
+        # penceresi olduğu için arkadaki her şey örtülü kalıyor ve sekme dolu
+        # yeşile döndüğünde sayı 0'dan 1'e çıkıyor, "TEK olmalı" kuralı bunu
+        # yakalamıyordu. Taban karşılaştırması o gerilemeyi de kapatıyor.
+        if e > 1:
+            print('   ⛔ ekranda %d dolu eylem düğmesi — TEK olmalı: %s'
+                  % (e, ' · '.join(r['eylem'])))
+            kirmizi = True
+        elif eskiE is not None and e > eskiE:
+            print('   ⛔ dolu eylem düğmesi ARTTI: %d → %d (%s)'
+                  % (eskiE, e, ' · '.join(r['eylem'])))
+            kirmizi = True
         eski = taban.get(ad)
         if eski is not None and n > eski:
             print('   ⛔ ihlal ARTTI: %d → %d' % (eski, n))
