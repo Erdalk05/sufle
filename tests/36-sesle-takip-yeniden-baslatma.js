@@ -19,7 +19,12 @@ const tel=oku(telefonYolu());
    Düzeltme: sayaç yalnız GERÇEKTEN çalıştığında sıfırlanır — ya sonuç geldi
    (onresult) ya da oturum kayda değer süre yaşadı (uzun sessizlik arıza değil). */
 
-const restart = cikar(tel, /function restartVoice\(\)\{[\s\S]*?\n\}/, 'restartVoice');
+/* İMZA DEĞİŞTİ (2026-08-15): `restartVoice` artık sağlıklı/arızalı ayrımını
+   parametre olarak alıyor, çünkü iPhone tanımayı her sessizlikte kapatıyor ve
+   eski mantık bunu arıza sayıp özelliği altıncı duraklamada kapatıyordu
+   (bkz. tests/147). Desen parametreye kapalı yazıldığı için çıkarım çöküyordu —
+   iddia değil ÇIKARIM güncellendi. */
+const restart = cikar(tel, /function restartVoice\([^)]*\)\{[\s\S]*?\n\}/, 'restartVoice');
 
 /* Gerçek restartVoice'u sahte zamanlayıcıyla koşturur.
    hemenOlur=true → tanıyıcı her başlatmada anında onend veriyor (arıza).
@@ -35,6 +40,7 @@ function kos({hemenOlur=true, sonucGeliyor=false, yasaMs=0, tavan=400}={}){
        bu tezgah yeniden BASLATMAYI siniyor, nobetciyi degil. */
     let sesGeldi=false, sessizNobet=null;
     const SR_SAGLIKLI_MS=3000;
+    const SR_HIZLI_MS=150;   // sağlıklı bitişte hızlı dönüş (bkz. tests/147)
     let saat=0;
     const performance={ now:()=>saat };
     const clearTimeout=()=>{};
@@ -49,11 +55,14 @@ function kos({hemenOlur=true, sonucGeliyor=false, yasaMs=0, tavan=400}={}){
     sr.start=()=>{};
     const onend=()=>{
       saat+=__yasa;                       // oturum start ile onend ARASINDA yaşar
-      if(srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS) srFails=0;
-      if(__sonuc) srFails=0;
-      if(voiceOn && __iz.tur<__tavan){ __iz.tur++; restartVoice(); }
+      /* Gerçek onend ile aynı karar: sağlık ÜRETİME ya da kayda değer süreye
+         bakar; sağlıklıysa sayaç sıfırlanır ve restartVoice bunu bilir.
+         (Gerçek onend'in kendisi tests/147'de kaynaktan çıkarılıp koşuyor.) */
+      const saglikli = __sonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);
+      if(saglikli) srFails=0;
+      if(voiceOn && __iz.tur<__tavan){ __iz.tur++; restartVoice(saglikli); }
     };
-    restartVoice();
+    restartVoice(false);
     while(voiceOn && __iz.tur<__tavan && __hemen) onend();
     __iz.srFails=srFails;
   `)(iz, hemenOlur, sonucGeliyor, yasaMs, tavan);
@@ -90,8 +99,14 @@ ok('sayaç start() döndüğünde SIFIRLANMIYOR (eski hata)',
 ok('sayaç sonuç gelince sıfırlanıyor',
    /sr\.onresult=e=>\{\s*\n?\s*srFails=0;/.test(kod));
 ok('sağlıklı oturum eşiği tanımlı', /const SR_SAGLIKLI_MS=\d+;/.test(kod));
+/* İDDİA AYNI, BİÇİM DEĞİL: "sağlıklı oturum sayacı düşürür". Eskiden bu tek
+   satırdı ve desen o satıra kilitliydi; şimdi karar `saglikli` değişkeninde
+   toplanıp hem sayaca hem yeniden başlatma hızına besleniyor. */
 ok('onend sağlıklı oturumu sayaçtan düşüyor',
-   /performance\.now\(\)-srBasladi >= SR_SAGLIKLI_MS\) srFails=0/.test(kod));
+   /const saglikli = srSonuc \|\| \(srBasladi && performance\.now\(\)-srBasladi >= SR_SAGLIKLI_MS\);/.test(kod)
+   && /if\(saglikli\) srFails=0;/.test(kod));
+ok('sağlık ölçütü ARTIK ÜRETİME de bakıyor (iPhone duraklaması arıza değil)',
+   /srSonuc \|\|/.test(kod));
 ok('deneme sınırı hâlâ var', /\+\+srFails>5/.test(kod));
 ok('artan gecikme hâlâ var', /250\*srFails/.test(kod));
 ok('vazgeçince özellik gerçekten kapatılıyor',

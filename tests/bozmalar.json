@@ -803,5 +803,68 @@
   "kaynak": "gizlilik",
   "bul": "**Tek istisna** sesle takip özelliğidir",
   "koy": "**Hicbir istisna** yoktur ve sesle takibin sozu"
+ },
+ {
+  "ad": "T58 sağlık yine yalnız SÜREYE bakıyor (iPhone duraklamada ölür)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "const saglikli = srSonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);",
+  "koy": "const saglikli = (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);"
+ },
+ {
+  "ad": "T58 sağlıklı bitiş de sayacı artırıyor (koruma aşırı tetiklenir)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "if(!saglikli && ++srFails>5)",
+  "koy": "if(++srFails>5)"
+ },
+ {
+  "ad": "T58 sonuç geldiği hâlde oturum sağlıklı işaretlenmiyor",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "srFails=0; srSonuc=true;",
+  "koy": "srFails=0;"
+ },
+ {
+  "ad": "T58 yeniden başlarken sonuç dizisi sıfırlanmıyor (ilk kelimeler atlanır)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "srSonuc=false; srIdx=-1; srSeen='';",
+  "koy": "srSonuc=false;"
+ },
+ {
+  "ad": "T58 arıza koruması söküldü (mikrofon açık kalır, pil biter)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "if(!saglikli && ++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }",
+  "koy": "if(false){ toast(m('voiceDied')); stopVoice(); return; }"
+ },
+ {
+  "ad": "T58 sağlıklı dönüş de artan gecikmeye bağlandı (duraklama sonrası kelime kaybı)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "telefon",
+  "bul": "saglikli?SR_HIZLI_MS:250*srFails",
+  "koy": "250*(srFails+4)"
+ },
+ {
+  "ad": "T58 Mac sağlığı yine yalnız süreye bağlandı (duraklama arıza sayılır)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "mac",
+  "bul": "const saglikli = srSonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);",
+  "koy": "const saglikli = (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);"
+ },
+ {
+  "ad": "T58 Mac sayacı yine başlatmada sıfırlanıyor (arıza koruması hiç tetiklenmez)",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "mac",
+  "bul": "      try{ rec.start(); srBasladi=performance.now(); srSonuc=false; }\n      catch(e){ logErr('voice',e); restartVoice(); }",
+  "koy": "      try{ rec.start(); srFails=0; }\n      catch(e){ logErr('voice',e); restartVoice(); }"
+ },
+ {
+  "ad": "T58 Mac sonuç geldiğinde oturumu sağlıklı işaretlemiyor",
+  "test": "147-sesle-takip-ios-sessizlik.js",
+  "kaynak": "mac",
+  "bul": "      srFails=0; srSonuc=true;        // sonuç geldi: tanıma gerçekten çalışıyor\n",
+  "koy": ""
  }
 ]

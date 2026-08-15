@@ -1335,7 +1335,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.11';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.12';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -5471,6 +5471,7 @@ function renderVad(){
 /* ============ SESLE TAKİP ============ */
 let sr=null, voiceOn=false, vRaf=null, vTarget=0, vptr=0, normWords=[], voicePaused=false;
 let srFails=0, srRetryT=null, srBasladi=0;
+let srSonuc=false;                      // bu oturum hiç sonuç verdi mi (iOS: kısa ama verimli)
 let sesGeldi=false, sessizNobet=null;   // sessiz ölüm nöbetçisi
 /* SAYAÇ NEYE GÖRE SIFIRLANIR — burası kritikti.
    Eskiden sr.start() istisna atmadan dönünce srFails=0 yapılıyordu. Ama
@@ -5482,13 +5483,39 @@ let sesGeldi=false, sessizNobet=null;   // sessiz ölüm nöbetçisi
    Artık sayaç yalnız GERÇEKTEN ÇALIŞTIĞINDA sıfırlanıyor:
    ya bir sonuç geldi (onresult) ya da oturum kayda değer süre yaşadı. */
 const SR_SAGLIKLI_MS=3000;
-function restartVoice(){
+/* Sağlıklı bitişten sonra hemen dönülür. Bu süre boyunca mikrofon dinlemiyor,
+   yani duraklama sonrası ilk hecede kayıp riski var; 0 yazılamaz çünkü iOS
+   `onend`in hemen içinde `start()` çağrılırsa InvalidStateError atabiliyor.
+   150 ms, kaybı fark edilmez tutup istisnadan kaçınan aralık. */
+const SR_HIZLI_MS=150;
+/* iOS'TA TANIMA HER SESSİZLİKTE BİTER — bu bir arıza DEĞİL.
+   `continuous=true` iPhone tarafında sürmez: kullanıcı cümlesini bitirip
+   nefes alınca oturum kapanır. Eski mantık sağlığı SÜREYE bakarak ölçüyordu
+   (3 sn'den kısa yaşadıysa arıza) ve her duraklamada srFails artıyordu.
+   ÖLÇÜLDÜ (gerçek kaynak çıkarılıp sanal saatle koşturuldu, 2026-08-15):
+     · 1,5 sn'lik oturumlar → özellik 12,8 saniyede KENDİNİ KAPATIYOR
+     · 0,8 sn'lik oturumlar → 8,6 saniyede kapanıyor
+     · 30 sn'lik oturumlar (Chrome) → ayakta kalıyor
+   Yani kusur iPhone'a özeldi ve masaüstünde hiç görünmüyordu — Erdal'ın
+   bildirdiği "ses durunca sesle takip çalışmıyor" tam olarak budur.
+   Üstelik ölmeden önce de zarar veriyordu: gecikme 250·srFails büyüdüğü için
+   toplam 3.750 ms boyunca hiç dinlenmiyor, duraklamadan sonraki ilk kelimeler
+   kayboluyordu.
+   Ölçüt artık SÜRE değil ÜRETİM: oturum sonuç verdiyse sağlıklıdır, bir
+   saniye bile yaşasa. Sağlıklı bitiş sayacı artırmaz ve hemen yeniden başlar.
+   Gerçek arıza (hiç sonuç vermeden peş peşe kapanma) eskisi gibi sayılıyor,
+   altıncıda özellik görünür şekilde kapanıyor — o koruma KALDI. */
+function restartVoice(saglikli){
   if(!voiceOn||!sr) return;
-  if(++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }
+  if(!saglikli && ++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }
   clearTimeout(srRetryT);
   srRetryT=setTimeout(()=>{ if(!voiceOn||!sr) return;
-    try{ sr.start(); srBasladi=performance.now(); }
-    catch(e){ logErr('voice',e); restartVoice(); } }, 250*srFails);
+    /* Yeni oturum = yeni sonuç dizisi. srIdx/srSeen sıfırlanmazsa yeni
+       oturumun 0. sonucu eskisiyle karşılaştırılıp "tanıyıcı metni yeniden
+       yazdı" dalına düşüyor ve yalnız son üç kelime işleniyordu: duraklama
+       sonrası ilk kelimeler sessizce atlanırdı. */
+    try{ sr.start(); srBasladi=performance.now(); srSonuc=false; srIdx=-1; srSeen=''; }
+    catch(e){ logErr('voice',e); restartVoice(); } }, saglikli?SR_HIZLI_MS:250*srFails);
 }
 let srIdx=-1, srSeen='', vPrev={i:-1,t:0};
 const FOLD={'ç':'c','ğ':'g','ı':'i','İ':'i','ş':'s','ö':'o','ü':'u','â':'a','ê':'e','î':'i','ô':'o','û':'u','é':'e','á':'a','ñ':'n'};
@@ -5513,7 +5540,7 @@ function startVoice(){
   sr=new SR(); sr.lang=st.voiceLang; sr.continuous=true; sr.interimResults=true;
   srIdx=-1; srSeen='';
   sr.onresult=e=>{
-    srFails=0;                       // sonuç geldi: tanıma gerçekten çalışıyor
+    srFails=0; srSonuc=true;         // sonuç geldi: tanıma gerçekten çalışıyor
     sesGeldi=true; clearTimeout(sessizNobet); sessizNobet=null;
     const i=e.results.length-1, txt=(e.results[i][0].transcript||'');
     // YALNIZ YENİ EKLENEN KISMI işle. Ara sonuçlar büyüyerek geliyor; tamamını her seferinde
@@ -5543,11 +5570,14 @@ function startVoice(){
     if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
   };
   sr.onend=()=>{
-    /* Uzun sessizlikte de onend gelir; o bir ARIZA değil. Oturum kayda değer
-       süre yaşadıysa sağlıklı sayılır, yoksa "hemen ölüyor" demektir. */
-    if(srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS) srFails=0;
-    if(voiceOn) restartVoice(); };
-  try{ sr.start(); srBasladi=performance.now(); }catch(e){ logErr('voice',e); restartVoice(); }
+    /* SAĞLIKLI BİTİŞ = bu oturum SONUÇ ÜRETTİ, ya da kayda değer süre yaşadı.
+       Yalnız süreye bakmak iPhone'u arızalı sanıyordu: orada tanıma her
+       sessizlikte biter ve oturumlar 1-2 saniyedir — kısa ama VERİMLİ.
+       Ölçüm ve sonuçları restartVoice'un üstünde yazılı. */
+    const saglikli = srSonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);
+    if(saglikli) srFails=0;
+    if(voiceOn) restartVoice(saglikli); };
+  try{ sr.start(); srBasladi=performance.now(); srSonuc=false; }catch(e){ logErr('voice',e); restartVoice(); }
   /* SESSİZ ÖLÜM NÖBETÇİSİ. Tanıma "başladı" der, hata da atmaz, ama hiç sonuç
      göndermez — kullanıcı 🎤 basar, metin akmaz ve EKRANDA HİÇBİR ŞEY YAZMAZ.
      Erdal tam bunu bildirdi ("önceden çalışıyordu, şimdi çalışmıyor") ve
@@ -6437,6 +6467,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',
+       en:'<b>Voice follow no longer dies when you pause.</b> iPhone ends recognition on every silence; the app treated that as a failure and switched the feature off after the sixth pause — measured, it took about 13 seconds. Pauses no longer count as failures: recognition returns within 150 ms and the first words after a pause are not skipped any more.<br><b>The real failure guard stays</b>: if recognition starts and no audio ever arrives, it still tells you why and stops.<br><b>Desktop</b>: same fix there, plus the microphone can no longer stay open forever while recognition is dead.'},
  '9.11':{tr:'🎤 <b>Sesle takip artık sessizce ölmüyor</b>: tanıma açılıp hiç ses gelmezse 6 saniye içinde sebebini söylüyor — kamera açıksa mikrofonu paylaştığını ve kamerasız kipi denemeni yazıyor. Önceden hiçbir şey olmuyordu ve sebebi görünmüyordu.<br><b>Alt kumandalar üst üste binmiyor</b>: hız hapı, durum satırı ve düğme çubuğu birbirinin üstüne yazıyordu — dar telefonlarda durum satırı iki satıra çıkınca daha da kötüleşiyordu. Üçü artık tek bir dikey yığında ve konumları çubuğun gerçek yüksekliğinden hesaplanıyor.<br>Aynı kusur daha önce de olmuş ve düzeltmesi sabit piksel değeriyle kilitlenmişti; o yüzden sessizce geri gelmiş. Artık her çekim karesinde çakışan kumanda SAYILIYOR.<br><b>Gizliliği artık tarayıcı da koruyor</b>: uygulama hiçbir adrese ağ isteği gönderemiyor. Bu bir söz değil, tarayıcının uyguladığı bir kural. Tek istisna yine sesle takip ve o da varsayılan kapalı.<br><b>Ekran okuyucu</b>: 39 ayar kaydırıcısının adı yoktu (hız, okuma çizgisi, yazı boyutu, altyazı boyutu, budama uçları); hepsi adlandırıldı.',
        en:'🎤 <b>Voice follow no longer dies silently</b>: if recognition starts and no audio arrives, it tells you why within 6 seconds — including that the camera shares the mic. Before, nothing happened and the reason was invisible.<br><b>Bottom controls no longer overlap</b>: the pace pill, status row and button bar were drawing on top of each other, and it got worse on narrow phones when the status row wrapped. All three now sit in one vertical stack whose position is computed from the real height of the bar.<br>The same defect had happened before and its fix was locked to a fixed pixel value, so it came back silently. Overlapping controls are now counted on every capture.<br><b>Privacy is now enforced by the browser</b>: the app cannot send a network request to any address. Not a promise, a rule the browser applies. The one exception is still voice follow, and it stays off by default.<br><b>Screen readers</b>: 39 settings sliders had no name (speed, reading line, font size, caption size, trim handles); all of them are named now.'},
  '6.4':{tr:'🎚 <b>Ses Stüdyosu</b>: uğultu kesme, 50 Hz şebeke çentiği, gürültü kapısı ve seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan yenilik bu.<br><b>Görüntü filtreleri</b>: 6 hazır ayar + şiddet. Kompozit açıkken videoya işleniyor.<br>Ayarlarda ve senaryolarda arama · ⚡ Reels/YouTube/Sunum hazır kurulumları · ◐ yüksek kontrast · 🛟 otomatik yedek.',

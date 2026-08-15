@@ -1298,7 +1298,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.11';   // telefon sürümüyle aynı numaralama
+  const VER='9.12';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -3311,6 +3311,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
    '9.2':'🎛 Kumanda sunucusu düzeltildi: 8080 portu doluysa sunucu bir sonraki porta geçiyordu ama QR koduna HÂLÂ 8080 yazıyordu — telefon boş bir porta bağlanmaya çalışıyor ve kumanda sessizce çalışmıyordu. Artık gerçek port bildiriliyor.\n\n♿ Tema kutucukları artık Tab ile odaklanıp Boşluk/Enter ile seçilebiliyor; ekran okuyucu hangi temanın seçili olduğunu söylüyor.\n\n(Yayın paketi, çekim notu ve iki sürümlü senaryo bu sürümde telefon tarafında.)',
    '9.3':'Bu sürümde Mac tarafında bir değişiklik yok — sürüm numarası telefonla aynı tutuluyor.\n\nTelefonda: yayın paketi uzun çekimlerde uygulamayı çökertiyordu (video tümüyle belleğe alınıyordu), düzeltildi.',
@@ -3917,15 +3918,28 @@ function tusEslemesiSuz(ham){
     normWords=[]; words.forEach((w,i)=>{ const n=norm(w.textContent); if(n) normWords.push({n,i}); });
   }
   function toggleVoice(){ voiceOn ? stopVoice() : startVoice(); }
-  var srFails=0, srRetryT=null;
-  function restartVoice(){
+  var srFails=0, srRetryT=null, srBasladi=0, srSonuc=false;
+  const SR_SAGLIKLI_MS=3000, SR_HIZLI_MS=150;
+  /* TELEFONLA AYNI MANTIK — burada iki ayrı kusur birden vardı (2026-08-15).
+     ① Sayaç `rec.start()` istisna atmadan dönünce sıfırlanıyordu. Ama
+        start()'ın dönmesi tanımanın ÇALIŞTIĞINI göstermez: tanıyıcı hemen
+        onend verirse sayaç her turda sıfırlanır, 5 sınırına HİÇ ulaşılmaz ve
+        250 ms'de bir sonsuza kadar yeniden başlatılır. Sonuç: mikrofon açık
+        kalır, pil tükenir, rozet "açık" görünür ama metin hiç takip etmez.
+        Telefonda bu bir tur önce ölçülüp kapatılmıştı; Mac geride kalmıştı —
+        yarım düzeltme, bu deponun 1 numaralı hata sınıfı.
+     ② Safari (masaüstünde de) tanımayı her sessizlikte bitirir. Sağlığı
+        süreye bakarak ölçmek duraklamayı arıza sayar; ölçüt ÜRETİM olmalı:
+        oturum sonuç verdiyse sağlıklıdır, bir saniye bile yaşasa. */
+  function restartVoice(saglikli){
     if(!voiceOn) return;
-    if(++srFails>5){ toast(m('voiceLost')); stopVoice(); return; }
+    if(!saglikli && ++srFails>5){ toast(m('voiceLost')); stopVoice(); return; }
     clearTimeout(srRetryT);
     srRetryT=setTimeout(()=>{
       if(!voiceOn) return;
-      try{ rec.start(); srFails=0; }catch(e){ logErr('voice',e); restartVoice(); }
-    }, 250*srFails);
+      try{ rec.start(); srBasladi=performance.now(); srSonuc=false; }
+      catch(e){ logErr('voice',e); restartVoice(); }
+    }, saglikli?SR_HIZLI_MS:250*srFails);
   }
   function startVoice(){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -3936,6 +3950,7 @@ function tusEslemesiSuz(ham){
     rec=new SR(); rec.lang='tr-TR'; rec.continuous=true; rec.interimResults=true;
     srIdx=-1; srSeen='';
     rec.onresult=e=>{
+      srFails=0; srSonuc=true;        // sonuç geldi: tanıma gerçekten çalışıyor
       const i=e.results.length-1, txt=(e.results[i][0].transcript||'');
       // YALNIZ YENİ KISIM: ara sonuçlar büyüyerek geliyor; tamamını her seferinde eşleştirmek
       // aynı kelimeleri tekrar aratıp metni ileri fırlatıyordu
@@ -3961,8 +3976,11 @@ function tusEslemesiSuz(ham){
       }
       if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
     };
-    rec.onend=()=>{ if(voiceOn) restartVoice(); };
-    try{ rec.start(); }catch(e){ logErr('voice',e); restartVoice(); }
+    rec.onend=()=>{
+      const saglikli = srSonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);
+      if(saglikli) srFails=0;
+      if(voiceOn) restartVoice(saglikli); };
+    try{ rec.start(); srBasladi=performance.now(); srSonuc=false; }catch(e){ logErr('voice',e); restartVoice(); }
     voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceLbl').textContent=t('mVoiceOn');
     /* E.4 — çekim ortasında açılırsa da bu çekim "sesle sürüldü" sayılır.
        Bayrak eşleştiricinin İÇİNDE değil: telefonda oraya konunca yalıtılmış

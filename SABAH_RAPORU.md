@@ -2,6 +2,38 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 v9.12 — iPhone: ses durunca sesle takip ölüyordu (Erdal bildirdi)
+
+**Bildirim:** "iPhone, ses durunca sesli takip çalışmıyor."
+
+**Teşhis tahmin edilmedi, ölçüldü.** `restartVoice` ve `onend` gerçek kaynaktan çıkarılıp
+sanal saatle koşturuldu. iPhone `continuous=true` bayrağını sürdürmüyor: kullanıcı cümlesini
+bitirip nefes alınca tanıma oturumu **kapanıyor**. Uygulama sağlığı yalnız **süreye** bakarak
+ölçtüğü için (3 sn'den kısa yaşadıysa arıza) her duraklama bir arıza puanı yazıyordu:
+
+| oturum süresi | sonuç |
+|---|---|
+| 1,5 sn (iPhone, normal konuşma) | **12,8 saniyede özellik kendini kapatıyor** |
+| 0,8 sn (kısa duraklar) | 8,6 saniyede kapanıyor |
+| 30 sn (Chrome, continuous gerçekten sürüyor) | ayakta |
+
+Yani kusur **iPhone'a özeldi ve masaüstünde hiç görünmüyordu**. Ölmeden önce de zarar
+veriyordu: gecikme `250·srFails` ile büyüdüğü için toplam **3.750 ms** hiç dinlenmiyor,
+duraklamadan sonraki ilk kelimeler kayboluyordu.
+
+**Düzeltme:** ölçüt **süre değil ÜRETİM**. Oturum sonuç verdiyse sağlıklıdır, bir saniye bile
+yaşasa; sağlıklı bitiş sayaç artırmaz ve **150 ms**'de geri döner. Yeniden başlarken sonuç
+dizisi durumu da sıfırlanıyor (yoksa duraklama sonrası ilk kelimeler sessizce atlanıyordu).
+**Korunan:** tanıma açılıp hiç sonuç vermezse (kamera mikrofonu tutuyorsa) altıncı denemede
+yine görünür şekilde kapanıyor — bir önceki turda eklenen o koruma gevşetilmedi.
+
+**Mac paritesi:** aynı alt sistemde masaüstü **bir tur geride**ydi ve ölçüldü — sayaç her
+başarılı `start()` ile sıfırlandığı için "tanıma çalışmıyor" durumu **hiç yakalanamıyordu**
+(mikrofon açık kalır, pil biter, rozet açık görünür). İkisi de hizalandı.
+
+`tests/147` (32 iddia; iki kabuk da aynı davranış tezgâhında koşuyor) + **9 kasıtlı bozma**.
+`tests/36` çıkarımı imza değiştiği için güncellendi — iddiaları değil.
+
 ## 15 Ağustos akşamı — erişilebilir ad + içerik güvenlik ilkesi (B1 · B2)
 
 Araç/ajan önerisi turunda **gerçek tarayıcıda** iki ölçüm yapıldı ve ikisi de kusur çıkardı;
@@ -289,7 +321,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.10 canlıda** · v9.11 hazır — **6 commit yayınlanmamış**, `main` dalında
-- **4851 test** (gece başında 732) · yeni test dosyası: 39–146
+- **v9.11 CANLIDA ve doğrulandı** · **v9.12 hazır** — **1 commit yayınlanmamış**, `main` dalında
+- **4885 test** (gece başında 732) · yeni test dosyası: 39–147
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

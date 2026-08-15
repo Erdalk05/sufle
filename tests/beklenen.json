@@ -34,7 +34,7 @@
  "33-iki-surumlu-senaryo.js": 36,
  "34-altyazi-kuyruklari.js": 33,
  "35-arsiv-askida-kalma.js": 23,
- "36-sesle-takip-yeniden-baslatma.js": 19,
+ "36-sesle-takip-yeniden-baslatma.js": 20,
  "37-kamera-kurtarma.js": 22,
  "38-kompozit-baglam-kaybi.js": 18,
  "39-kayitta-kamera-degistirme.js": 16,
@@ -144,5 +144,6 @@
  "143-tasarim-kimligi.js": 48,
  "144-rekabet-olcumu.js": 35,
  "145-erisilebilir-ad-ve-csp.js": 32,
- "146-vaat-kilidi.js": 45
+ "146-vaat-kilidi.js": 45,
+ "147-sesle-takip-ios-sessizlik.js": 32
 }
