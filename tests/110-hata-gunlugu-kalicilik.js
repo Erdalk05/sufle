@@ -44,7 +44,7 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
   const M=new Set(m);
   const eksik=t.filter(x=>!M.has(ESD[x]||x)).filter(x=>x!=='dbGuncelle');
   const MUAF=new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure',
-                      'audmon','meter','bg','autoSave','mapIn']);
+                      'audmon','meter','bg','autoSave','mapIn','camLock']);
   const beklenmeyen=eksik.filter(x=>!MUAF.has(x));
   ok('Macte eksik her etiket gerekçeli'+(beklenmeyen.length?' — beklenmeyen: '+beklenmeyen.join(', '):'')+
      ' ('+eksik.length+' muaf)', beklenmeyen.length===0);

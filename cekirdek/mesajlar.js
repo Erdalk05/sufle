@@ -63,7 +63,9 @@ const MSG={
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
   bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',bgDosyaBuyuk:'Görsel dosyası çok büyük — 25 MB altında bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden',
   /* Cihaz dışı yedek (C.2) */
-  bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi'},
+  bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi',
+  /* Odak/pozlama kilidi (D.2) */
+  lockNo:'Bu kamera kilitlemeye izin vermiyor'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
@@ -120,5 +122,7 @@ const MSG={
   bgSet:'Background image loaded',bgCleared:'Background image removed',
   bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off',
   /* Cihaz dışı yedek (C.2) */
-  bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added'}
+  bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added',
+  /* Odak/pozlama kilidi (D.2) */
+  lockNo:'This camera does not allow locking'}
 };

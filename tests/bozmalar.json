@@ -222,5 +222,12 @@
   "kaynak": "mac",
   "bul": "state.camId?{deviceId:{exact:state.camId}}:{facingMode:'user'}",
   "koy": "{facingMode:'user'}"
+ },
+ {
+  "ad": "D2 kilit anahtarı desteksiz cihazda da gösteriliyor (ölü ayar)",
+  "test": "126-kamera-secimi.js",
+  "kaynak": "telefon",
+  "bul": "  $('#lockRow').style.display=hasLock?'flex':'none';",
+  "koy": "  $('#lockRow').style.display='flex';"
  }
 ]

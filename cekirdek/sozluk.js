@@ -114,7 +114,9 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Otomatik yedekten dön',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Kamera'},
+  camSel:'📷 Kamera',
+  /* Odak ve pozlama kilidi (D.2) */
+  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -220,5 +222,7 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Restore from the automatic backup',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Camera'}
+  camSel:'📷 Camera',
+  /* Odak ve pozlama kilidi (D.2) */
+  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.'}
 };

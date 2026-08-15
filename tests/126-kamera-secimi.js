@@ -73,3 +73,45 @@ const kodMac = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
   ok('telefon: mikrofon seçimi duruyor', /async function setupMics\(\)\{/.test(tel));
   ok('telefon: ön/arka kamera seçimi duruyor', /facingMode/.test(tel));
 }
+
+/* ---------- ODAK / POZLAMA KİLİDİ (D.2 kalanı) ---------- */
+{
+  const kodTel = (tel.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  /* Kamera çekim ortasında arayış yapmasın: kıpırdayınca odak nefes almasın,
+     ışık değişince parlaklık zıplamasın. Rakip matrisinde "kamera kontrolleri"
+     kaleminin ikinci yarısı. */
+  ok('telefon: kilit anahtarı işaretlemede', /id="lockRow"[\s\S]{0,120}data-t="camLock"/.test(tel));
+  ok('telefon: anahtar sözlüğe bağlı', /<span data-i18n="tgLock">/.test(tel));
+  ok('telefon: ne işe yaradığı yazıyor (jargon değil)', /data-i18n="lockHint"/.test(tel));
+
+  /* EN ÖNEMLİ KURAL — ÖLÜ AYAR YARATMA: cihaz desteklemiyorsa anahtar HİÇ
+     görünmemeli. Deponun 3 numaralı hata sınıfı tam buydu; tarayıcıda
+     doğrulandı (kamera açılmadan satır ve ipucu gizli). */
+  ok('telefon: satır varsayılan GİZLİ', /id="lockRow" style="display:none"/.test(tel));
+  const sc = cikar(kodTel, /function setupCaps\(\)\{[\s\S]*?\n\}/, 'setupCaps');
+  ok('görünürlük YETENEĞE bağlı', /\$\('#lockRow'\)\.style\.display=hasLock\?'flex':'none'/.test(sc));
+  ok('ipucu da yetenekle birlikte gizleniyor',
+     /\$\('#lockHint'\)\.classList\.toggle\('hidden',!hasLock\)/.test(sc));
+  /* Cihaz değiştiren kullanıcıda "açık" görünen ama hiçbir şey yapmayan
+     bir bayrak kalmamalı. */
+  ok('desteklenmiyorsa durum da temizleniyor', /if\(!hasLock\) st\.camLock=false;/.test(sc));
+  /* iOS ve Android farklı kip adları veriyor; tek ada kilitlemek özelliği
+     bir platformda tümden ölü bırakırdı. */
+  ok('iki kip adı da aranıyor (manual / single-shot)',
+     /k==='manual'\|\|k==='single-shot'/.test(sc));
+
+  const ap = cikar(kodTel, /function applyCamLock\([\s\S]*?\n\}/, 'applyCamLock');
+  /* Desteksiz bir alanı istemek bazı tarayıcılarda TÜM kısıtı reddettiriyor
+     ve kilit sessizce hiç uygulanmıyordu — yalnız desteklenen alan gönderiliyor. */
+  ok('yalnız desteklenen alan gönderiliyor',
+     /if\(kilitOdak\) ileri\.focusMode/.test(ap) && /if\(kilitPoz\)  ileri\.exposureMode/.test(ap));
+  ok('kapatınca sürekli kipe dönülüyor', /'continuous'/.test(ap));
+  ok('gönderilecek bir şey yoksa çağrı yapılmıyor', /if\(!Object\.keys\(ileri\)\.length\) return;/.test(ap));
+  /* Kamera reddederse anahtar AÇIK kalmamalı: kullanıcı kilitli sanır,
+     kamera arayışa devam eder — sessiz yalan. */
+  ok('kamera reddederse anahtar geri alınıp sebebi söyleniyor',
+     /st\.camLock=false; save\(\); apply\(\); toast\(m\('lockNo'\)\)/.test(ap));
+  ok('hata günlüğe yazılıyor', /logErr\('camLock',e\)/.test(ap));
+  /* Anahtar gerçekten kameraya bağlı olmalı, yoksa ayar açılır hiçbir şey olmaz. */
+  ok('anahtar applyCamLock çağırıyor', /if\(k==='camLock'\) applyCamLock\(kilitOdakKipi, kilitPozKipi\);/.test(kodTel));
+}

@@ -146,7 +146,12 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
 /* NOT: `restore` bir ara muafiyet listesine yazılmıştı; kapı "muafiyet
    listesi büyüdü" diye reddetti ve HAKLIYDI. Boşluk örtülmedi, KAPATILDI:
    Mac'e de otomatik yedek eklendi (C.2). */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle']);
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock']);
+/* camLock: ODAK/POZLAMA KİLİDİ TELEFONA ÖZGÜ. Kilit MediaStreamTrack
+   yeteneklerine dayanıyor (focusMode/exposureMode) ve bunları yalnız mobil
+   kameralar sunuyor; Mac'te getCapabilities/zoom/torch da HİÇ YOK — ölçüldü,
+   sıfır kez geçiyor. Masaüstü webcam'i odak arayışı yapmıyor, yani sorunun
+   kendisi orada yok. `mapIn` ile aynı sınıf: kavram karşı platformda yok. */
 /* cams: KAMERA CİHAZ LİSTESİ MASAÜSTÜNE ÖZGÜ. Mac'te seçenekler FaceTime HD,
    harici webcam, yakalama kartı, iPhone Sürekli Kamera — hepsi ayrı cihaz.
    Telefonda anlamlı seçim ön/arka ve o ZATEN VAR (facingMode + st.backCam);

@@ -722,6 +722,8 @@
 
     <div class="tog"><span data-i18n="tgBack">🔄 Arka kamera</span><div class="sw" data-t="backCam"></div></div>
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">🔦 Işık (fener)</span><div class="sw" data-t="torch"></div></div>
+    <div class="tog" id="lockRow" style="display:none"><span data-i18n="tgLock">🔒 Odak ve pozlamayı kilitle</span><div class="sw" data-t="camLock"></div></div>
+    <div class="hint hidden" id="lockHint" data-i18n="lockHint">Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.</div>
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
 
     <div class="row" style="margin-top:20px"><label data-i18n="lightTitle">💡 Işık ve çerçeve denetçisi</label></div>
@@ -1250,7 +1252,9 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Otomatik yedekten dön',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Kamera'},
+  camSel:'📷 Kamera',
+  /* Odak ve pozlama kilidi (D.2) */
+  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1356,7 +1360,9 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Restore from the automatic backup',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Camera'}
+  camSel:'📷 Camera',
+  /* Odak ve pozlama kilidi (D.2) */
+  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1429,7 +1435,9 @@ const MSG={
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
   bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',bgDosyaBuyuk:'Görsel dosyası çok büyük — 25 MB altında bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden',
   /* Cihaz dışı yedek (C.2) */
-  bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi'},
+  bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi',
+  /* Odak/pozlama kilidi (D.2) */
+  lockNo:'Bu kamera kilitlemeye izin vermiyor'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
@@ -1486,7 +1494,9 @@ const MSG={
   bgSet:'Background image loaded',bgCleared:'Background image removed',
   bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off',
   /* Cihaz dışı yedek (C.2) */
-  bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added'}
+  bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added',
+  /* Odak/pozlama kilidi (D.2) */
+  lockNo:'This camera does not allow locking'}
 };
 /* ==/CEKIRDEK:mesajlar.js== */
 const HELP={
@@ -1542,7 +1552,7 @@ const DEF={
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
   hideUI:true,
-  target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   comp:false, burnCaps:false, capSize:42, capPos:'bottom', chroma:false, spill:60, bgKind:'color', keyColor:'#00b140', keySim:30, keySmooth:10, bgColor:'#101820', bgImg:null,
   scripts:null, activeId:null
@@ -2226,6 +2236,21 @@ async function setupMics(){
     });
   }catch(e){ logErr('mics',e); }
 }
+/* setupCaps'in ölçtüğü kilit kipleri. Her openCam sonunda tazeleniyor;
+   desteklenmiyorsa undefined kalır ve anahtar zaten görünmez. */
+let kilitOdakKipi, kilitPozKipi;
+/* Kilidi kameraya UYGULA. Yalnız desteklenen alanı gönderiyoruz: desteksiz
+   bir alanı istemek bazı tarayıcılarda TÜM kısıtı reddettiriyor ve kilit
+   sessizce hiç uygulanmıyordu. */
+function applyCamLock(kilitOdak,kilitPoz){
+  if(!vTrack||!vTrack.applyConstraints) return;
+  const ileri={};
+  if(kilitOdak) ileri.focusMode = st.camLock ? kilitOdak : 'continuous';
+  if(kilitPoz)  ileri.exposureMode = st.camLock ? kilitPoz : 'continuous';
+  if(!Object.keys(ileri).length) return;
+  vTrack.applyConstraints({advanced:[ileri]})
+    .catch(e=>{ logErr('camLock',e); if(st.camLock){ st.camLock=false; save(); apply(); toast(m('lockNo')); } });
+}
 function setupCaps(){
   let caps={}; try{ caps=vTrack&&vTrack.getCapabilities?vTrack.getCapabilities():{}; }catch(e){}
   const hasZoom = caps && caps.zoom;
@@ -2246,6 +2271,23 @@ function setupCaps(){
      ediyordu. Kullanıcı ışığın neden gittiğini göremiyordu.
      Zoom'da bu zaten doğruydu (aşağıda applyZoom çağrılıyor) — fenerde eksikti.
      Tek yer: setupCaps her openCam sonunda koşuyor. */
+  /* D.2 ODAK/POZLAMA KİLİDİ — kamera çekim ortasında arayış yapmasın.
+     YETENEĞE BAĞLI GÖSTERİM: hiçbiri desteklenmiyorsa anahtar HİÇ görünmez.
+     Desteksiz cihazda göstermek, deponun 3 numaralı hata sınıfı olurdu
+     (ön koşulu olan ayar = ölü ayar): kullanıcı açar, hiçbir şey olmaz.
+     'manual' yoksa 'single-shot'/'continuous' dışındaki kilitleyici kip
+     aranıyor — iOS ve Android farklı adlar veriyor. */
+  const odakKipleri = (caps && caps.focusMode) || [];
+  const pozKipleri  = (caps && caps.exposureMode) || [];
+  kilitOdakKipi = [...odakKipleri].find(k=>k==='manual'||k==='single-shot');
+  kilitPozKipi  = [...pozKipleri].find(k=>k==='manual');
+  const hasLock = !!(kilitOdakKipi || kilitPozKipi);
+  $('#lockRow').style.display=hasLock?'flex':'none';
+  $('#lockHint').classList.toggle('hidden',!hasLock);
+  /* Desteklenmiyorsa durumu da temizle: cihaz değiştiren kullanıcıda
+     "açık" görünen ama hiçbir şey yapmayan bir bayrak kalmasın. */
+  if(!hasLock) st.camLock=false; else applyCamLock(kilitOdakKipi,kilitPozKipi);
+
   const hasTorch = !!(caps && caps.torch);
   $('#torchRow').style.display=hasTorch?'flex':'none';
   if(!hasTorch) st.torch=false; else applyTorch();
@@ -6158,6 +6200,12 @@ $$('.tog').forEach(row=>{
   if(k==='backCam'||k==='rawAudio'||k==='safeAudio'){ if(stream) await openCam(); }
   if(k==='vad'){ if(st.vad) vadBaslat(); else vadDurdur(); }
   if(k==='torch') applyTorch();
+  /* Kilit anahtarı setupCaps'in ÖLÇTÜĞÜ kipleri kullanıyor.
+     Önce "yetenekler değişebilir, burada yeniden okuyayım" diye ikinci bir
+     okuma yazmıştım; kapı bunu yeni bir BOŞ CATCH olarak yakaladı ve
+     gerekçem de yanlıştı: setupCaps zaten her openCam sonunda koşuyor,
+     yani önbellek akış değiştiğinde kendiliğinden tazeleniyor. */
+  if(k==='camLock') applyCamLock(kilitOdakKipi, kilitPozKipi);
   if(k==='wake'&&st.wake) requestWake();
   if(k==='bionic'){
     /* Biyonik okuma kelime başlarını kalınlaştırıyor: genişlikler değişiyor,

@@ -321,7 +321,15 @@ Telefonun mikrofon seçicisiyle aynı kalıp: **iki kameradan azsa liste hiç g�
 (tarayıcıda doğrulandı), adlar izinden sonra tazeleniyor, **kayıt sürerken değişim engelleniyor**
 ve sebebi söyleniyor. `tests/126` (17 iddia) + kapıda kanıtlı bozma: kısıt sökülünce
 ayar ölü ayara dönüyor ve test kırılıyor.
-**Kalan:** odak/pozlama kilidi (`focusMode`/`exposureMode` iki kabukta da 0 — mobilde anlamlı).
+✅ **odak/pozlama kilidi de BİTTİ (telefon).** "🔒 Odak ve pozlamayı kilitle": kamera çekim
+ortasında arayış yapmayı bırakıyor — kıpırdayınca odak nefes almıyor, ışık değişince parlaklık
+zıplamıyor.
+**Ölü ayar yaratılmadı:** anahtar yalnız cihaz destekliyorsa görünüyor; desteklenmiyorsa satır,
+ipucu ve durum bayrağı **birlikte** temizleniyor (tarayıcıda doğrulandı). iOS/Android farklı kip
+adları verdiği için `manual` **ve** `single-shot` aranıyor; yalnız biri desteklense bile özellik
+açılıyor. Kamera kısıtı reddederse anahtar geri alınıp **sebebi söyleniyor**.
+`tests/71` artık davranışsal (yetenek taklidiyle 4 senaryo), `tests/126` 31 iddia.
+Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavramı hiç yok).
 **D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
 **D.4 Uzak önizleme:** telefon kumandasında kameranın gördüğü kare. Güçlü farklılaşma.
 **D.5 Entegrasyon:** sanal kamera / OBS / Zoom yolu (masaüstünde gerçekçi).
@@ -388,3 +396,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 19 | 2026-08-15 | C.2 cihaz dışı yedek + Mac otomatik yedek | Mac yedeği telefonda okundu (1→2) · yanlış isim eşlemesi 2 testte düzeltildi · 19 iddia | ✅ 8/8 YEŞİL |
 | 20 | 2026-08-15 | C.1 ÖLÇÜLDÜ ve ELENDİ · C.4 bitti · C.3 gerekçeli ertelendi | ls tavanı 4,94 MB · 2 dk senaryo 2 KB · tavana 1.271 senaryo → kota riski teorik | ✅ 8/8 YEŞİL |
 | 21 | 2026-08-15 | D.2: Mac harici kamera seçimi | deviceId Mac'te 0→kullanımda · tek kamerada gizli (tarayıcı) · parite tabanı bilerek 5→6 | ✅ 8/8 YEŞİL |
+| 22 | 2026-08-15 | D.2 tamam: odak/pozlama kilidi (yeteneğe bağlı) | desteksizde satır+ipucu+durum birlikte temizleniyor · 33 bozma · 25 kanıtlı dosya | ✅ 8/8 YEŞİL |

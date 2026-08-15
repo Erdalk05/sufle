@@ -31,24 +31,39 @@ ok('anahtar işleyicisi çıkarılabildi', !!mTog);
 if(!mCaps || !mTog) return;
 
 /* ---------- FENER HER YENİ AKIŞA UYGULANIYOR MU ---------- */
-function capsKos({torch, zoom}){
+function capsKos({torch, zoom, odak, poz}){
   const iz=[];
-  return new Function('__iz','__t','__z', `
-    const st={torch:true, zoom:250};
+  return new Function('__iz','__t','__z','__o','__p', `
+    const st={torch:true, zoom:250, camLock:true};
     let vTrack={};
     const caps={}; if(__t) caps.torch=true; if(__z) caps.zoom={min:1,max:3};
+    /* D.2: odak/pozlama kilidi de yeteneğe bağlı — taklit onu da sunabilmeli. */
+    if(__o) caps.focusMode=['continuous','manual'];
+    if(__p) caps.exposureMode=['continuous','manual'];
+    /* Bu satır tezgâhı yeniden yazarken bir kez DÜŞÜRÜLDÜ ve yetenekler hiç
+       okunmadı: dört fener/zoom iddiası birden kırıldı. Taklit kurarken
+       "neyi sağladığımı" değil "neyin okunduğunu" izlemek gerekiyor. */
     vTrack.getCapabilities=()=>caps;
-    const el=()=>({ style:{}, textContent:'', value:0, min:0, max:0 });
-    const kutu={}; const $=(s)=>(kutu[s]=kutu[s]||el());
+    /* Taklit önce yalnız innerHTML/style sağlıyordu; setupCaps classList'e de
+       dokununca "toggle of undefined" verip 25 iddia 2'ye düştü. Taklit
+       gerçeğe uyduruldu ve sınıf değişimleri İZ olarak kaydediliyor. */
+    const el=(s)=>({ style:{}, textContent:'', value:0, min:0, max:0,
+      classList:{ toggle:(c,v)=>__iz.push('sinif '+s+' '+c+'='+v),
+                  add:c=>__iz.push('ekle '+s+'.'+c),
+                  remove:c=>__iz.push('cikar '+s+'.'+c) } });
+    const kutu={}; const $=(s)=>(kutu[s]=kutu[s]||el(s));
     const applyZoom=()=>__iz.push('zoom');
     const applyTorch=()=>__iz.push('fener');
+    let kilitOdakKipi, kilitPozKipi;
+    const applyCamLock=(a,b)=>__iz.push('kilit '+a+'/'+b);
     ${mCaps[0]}
     setupCaps();
-    __iz.torchDurum=st.torch; __iz.zoomDurum=st.zoom;
+    __iz.torchDurum=st.torch; __iz.zoomDurum=st.zoom; __iz.kilitDurum=st.camLock;
     __iz.torchSatiri=kutu['#torchRow'].style.display;
     __iz.zoomSatiri=kutu['#zoomRow'].style.display;
+    __iz.kilitSatiri=kutu['#lockRow'].style.display;
     return __iz;
-  `)(iz, torch, zoom);
+  `)(iz, torch, zoom, odak, poz);
 }
 {
   const r=capsKos({torch:true, zoom:true});
@@ -125,4 +140,28 @@ function son(){
   ok('fener anahtarı hâlâ doğrudan da uyguluyor', /if\(k==='torch'\) applyTorch\(\)/.test(kod));
   ok('fener uygulaması iz yoksa sessizce çıkıyor',
      /function applyTorch\(\)\{ if\(!vTrack\) return;/.test(kod));
+}
+
+/* ---------- D.2: ODAK/POZLAMA KİLİDİ YETENEĞE BAĞLI MI ---------- */
+{
+  /* Desteksiz cihazda anahtar HİÇ görünmemeli ve durum temizlenmeli —
+     yoksa kullanıcı açar, hiçbir şey olmaz (deponun 3 numaralı sınıfı). */
+  const yok=capsKos({torch:true, zoom:true, odak:false, poz:false});
+  ok('kilit desteklenmiyorsa satır gizli', yok.kilitSatiri==='none');
+  ok('kilit desteklenmiyorsa durum temizleniyor', yok.kilitDurum===false);
+  ok('kilit desteklenmiyorsa kameraya kısıt GÖNDERİLMİYOR',
+     !yok.some(x=>String(x).startsWith('kilit ')));
+  ok('ipucu da gizleniyor', yok.includes('sinif #lockHint hidden=true'));
+
+  /* Yalnız ODAK destekleniyorsa bile özellik açılmalı: iki yetenekten birini
+     şart koşmak, cihazların yarısında özelliği ölü bırakırdı. */
+  const yalnizOdak=capsKos({torch:true, zoom:true, odak:true, poz:false});
+  ok('yalnız odak desteklense bile satır görünüyor', yalnizOdak.kilitSatiri==='flex');
+  ok('yalnız odak desteklense bile kısıt gönderiliyor',
+     yalnizOdak.some(x=>String(x).startsWith('kilit manual/undefined')));
+
+  const ikisi=capsKos({torch:true, zoom:true, odak:true, poz:true});
+  ok('ikisi de desteklenirse ikisi de gönderiliyor',
+     ikisi.some(x=>String(x)==='kilit manual/manual'));
+  ok('destek varken kullanıcı tercihi korunuyor', ikisi.kilitDurum===true);
 }
