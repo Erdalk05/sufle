@@ -621,5 +621,26 @@
   "kaynak": "magaza_teknik",
   "bul": "## ✅ ENGEL KALKTI",
   "koy": "## Ölçülmedi"
+ },
+ {
+  "ad": "F5 fiyat belgesi kendi yerine karar veriyor (ölçüm ile seçim karışır)",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "fiyat",
+  "bul": "**Durum:** karar Erdal'ın. Bu belge **karar vermiyor**, kararın zeminini ölçüyor.",
+  "koy": "**Durum:** fiyat aylık 99 TL olacak."
+ },
+ {
+  "ad": "F5 uygulanamazlık gerekçesi belgeden silindi",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "fiyat",
+  "bul": "## Ölçüm 2 — İstemci tarafı ödeme duvarı UYGULANAMAZ",
+  "koy": "## Ölçüm 2 — Ödeme duvarı"
+ },
+ {
+  "ad": "F5 kodda ödeme duvarı belirdi (ücretsiz sözü yalan olur)",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "telefon",
+  "bul": "function openTrim(){",
+  "koy": "function openTrim(){ if(!window.isPremium) return;"
  }
 ]

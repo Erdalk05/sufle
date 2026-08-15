@@ -41,6 +41,7 @@ KAYNAK = {
     # Teknik ölçüm belgesi de bozulabilmeli: mağaza kabuğunu bloke eden
     # iddia burada yaşıyor, çürütüldüğü de burada yazılı.
     'magaza_teknik': (os.path.join(REPO, 'MAGAZA_TEKNIK.md'), 'SUFLE_MAGAZA_TEKNIK'),
+    'fiyat': (os.path.join(REPO, 'FIYATLANDIRMA.md'), 'SUFLE_FIYAT'),
     # Vitrin sayfası da: kullanıcının uygulamayı açmadan ÖNCE okuduğu
     # sözler burada; abartma engeli ancak abartarak kanıtlanır.
     'vitrin': (os.path.join(REPO, 'tanitim.html'), 'SUFLE_VITRIN'),

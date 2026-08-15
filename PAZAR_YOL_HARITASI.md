@@ -763,7 +763,31 @@ gerektiği anda kaybolan kumanda. Düğme boyu artık en dar duruma göre viewpo
 (430→51,8 · 393→46,8 · 375→44,4 · 360→42 px), `flex-wrap` son emniyet.
 **Ölçülen sonuç: beş genişlikte de taşma 0.** `tests/134` aritmetiği kaynaktan yeniden kuruyor;
 üç bozma (sabit piksel · sekizinci düğme · nowrap) testi kırdığı kanıtlandı.
-**F.5** ⏸ **Erdal kararı — bedelini ÖLÇTÜM (Tur 37).** Bugün kodda ödeme duvarı/abonelik/satın
+**F.5** ⏸ **Erdal kararı — ama ÖNERİ ÖLÇÜLDÜ VE ÇÜRÜDÜ (Tur 52, `FIYATLANDIRMA.md`).**
+
+Yol haritasının önerisi *"bedava = 1080p + filigran · ücretli = 4K + filigransız + altyazı +
+bulut"* idi ve **ölçülmeden yazılmıştı.** Üç sorunu çıktı:
+
+**① Öneri, zaten ücretsiz olan üç şeyi GERİ ALIYOR.** Bugün yayında ve ücretsiz: **4K kayıt**,
+**altyazı üretimi**, ve filigran **hiç yok** (yani "filigransız" zaten varsayılan) — ayrıca yayın
+paketi, budama, yedekleme, sesle takip, kumanda, `.docx`, prova raporu, zorlanma haritası
+(**10 özellik**, kodda sayıldı). Verilmiş bir şeyi geri almak, hiç vermemekten ağır güven kaybıdır.
+
+**② İstemci tarafı ödeme duvarı UYGULANAMAZ.** Hesap **yok**, bize ait sunucuya çağrı **yok**,
+uygulama tek bir **herkese açık** HTML dosyası (200). "Ücretli" bayrağını istemcide tutmak,
+kaynağı açıp bayrağı çevirmekle aşılır: dürüst kullanıcıyı rahatsız eder, ödemeyeni durdurmaz.
+**Bundan çıkan mimari gerçek: yalnız SUNUCU gerektiren şeyler gerçekten ücretlendirilebilir.**
+Yani fiyat modelini pazarlama değil **mimari** belirliyor.
+
+**③ Ücretsizlik bugün bir pazarlama varlığı:** rakipte (PromptSmart patentli/ücretli, BIGVU
+abonelikli) para alınan sesle takip bizde bedava ve "ücretsiz" **on yerde** yazılı.
+
+**CTO önerisi:** yayındaki her şey kalıcı ücretsiz kalsın · ücret yalnız **sunucu gerektiren yeni
+değer** için (bulut eşitleme, AI yazar) · **filigran eklenmesin** · karar tek soruya indi:
+**sunucu işletmek istiyor muyuz?** `tests/141` (25 iddia, 3 kanıtlı bozma) belgenin iddialarını
+koda bağlıyor — 4K ya da altyazı paraya bağlanırsa kapı önce kırılır.
+
+*Eski ölçüm (Tur 37):* Bugün kodda ödeme duvarı/abonelik/satın
 alma **0** ve "ücretsiz" sözü **10 yerde** yazılı (uygulama başlığı, açıklaması, JSON-LD fiyatı,
 vitrin başlığı/açıklaması/JSON-LD'si, mağaza metni). İki test bunu kilitliyor (`tests/133`,
 `tests/135`): koda bir ödeme duvarı girdiği anda **on yerin hepsi birden yalan söylemeye başlar
@@ -936,3 +960,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 49 | 2026-08-15 | **Denetim turu** — kendi işimi kendi kapımla ölçtüm | 16/16 yüzey ulaşılabilir · **yol haritası 4 yerde yalan söylüyordu** (başlık ⏳, gövde ✅) → düzeltildi · **kapı sonuç ekranını hiç ölçmüyormuş** → eklendi, 1 kontrast ihlali + 4 çevrilmemiş metin çıktı, hepsi kapandı · 10/10 çekirdek modülü gerçekten kullanılıyor · 3 araç kusuru düzeltildi · 2 kanıtlı bozma (**87**) · **4618 test** | ✅ 9/9 YEŞİL |
 | 50 | 2026-08-15 | **v9.10 YAYINLANDI** (Erdal onayı) | 19 commit push edildi · canlı doğrulandı: sürüm `9.10`, cache `sufle-v82`, **md5 yerelle birebir**, canlı JS ayrıştırılıyor, vitrin + kareler + gizlilik 200 · 10 düzeltme izinin 10'u canlıda · `.son-yayin` ancak bundan SONRA yazıldı | ✅ CANLI |
 | 51 | 2026-08-15 | **iOS engeli ölçüldü ve ÇÜRÜDÜ** — mağaza kabuğunun önü açıldı | aylardır "WKWebView'da SpeechRecognition YOK" deniyordu ve **hiç ölçülmemişti** · Xcode+simülatör bu Mac'te varmış: aynı sayfa Safari'de VE elle derlenmiş gerçek WKWebView'da açıldı → **10/10 yetenek yeşil, ikisinde de** · UA kanıtı (`Safari/604.1` eki yok) · yerel köprü/Whisper/kapat **üçü de elendi**, Erdal kararı gerekmedi · ölçüm `ios-olcum/olc.sh` ile tekrarlanabilir · test bayat kararı değil ÖLÇÜMÜ kilitliyor · 2 kanıtlı bozma (**89**) | ✅ 4623 test |
+| 52 | 2026-08-15 | **F.5 zemini ölçüldü** — öneri çürüdü, karar tek soruya indi | öneri **zaten ücretsiz 3 şeyi geri alıyordu** (4K · altyazı · filigransızlık; 10 özellik kodda sayıldı) · istemci ödeme duvarı **uygulanamaz** (hesap 0, sunucu 0, kaynak herkese açık) → yalnız sunucu gerektiren şey ücretlendirilebilir · `FIYATLANDIRMA.md` + `tests/141` (25 iddia) · 3 kanıtlı bozma (**92**) · **4648 test** | ✅ 0 hata |
