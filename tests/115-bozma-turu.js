@@ -40,7 +40,9 @@ ok('kayıt boş değil ('+kayit.length+' bozma)', kayit.length>=15);
      kendi bayatlığını bildiriyordu. */
   const bozmaPy = fs.readFileSync(path.join(REPO,'bozma.py'),'utf8');
   const govde = (bozmaPy.match(/KAYNAK\s*=\s*\{([\s\S]*?)\n\}/)||['',''])[1];
-  const KAYNAKLAR = [...govde.matchAll(/^\s*'([a-z]+)':/gm)].map(m=>m[1]);
+  /* Alt çizgili anahtar da geçerli (`magaza_teknik`): `[a-z]+` onu görmüyordu
+     ve kaynak DOĞRU tanımlıyken 'uydurma' diye kırmızı verdi. */
+  const KAYNAKLAR = [...govde.matchAll(/^\s*'([a-z_]+)':/gm)].map(m=>m[1]);
   ok('bozma.py KAYNAK eşlemesi okunabildi (ölçmeyen kapı değil) — '+KAYNAKLAR.length,
      KAYNAKLAR.length >= 6 && KAYNAKLAR.includes('telefon') && KAYNAKLAR.includes('mac'));
   const uydurma = [...new Set(kayit.map(k=>k.kaynak))].filter(k=>!KAYNAKLAR.includes(k));

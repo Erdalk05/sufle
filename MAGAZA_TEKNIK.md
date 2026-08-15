@@ -1,6 +1,7 @@
 # F.1 — Mağaza kabuğu ön ölçümü (iOS + Android)
 
-**Ölçüm tarihi:** 15 Ağustos 2026 · **Ölçülen sürüm:** 9.9
+**Ölçüm tarihi:** 15 Ağustos 2026 · **Ölçülen sürüm:** 9.10
+**Güncelleme (T51):** iOS engeli ÖLÇÜLDÜ ve çürüdü — aşağıdaki tabloya bak.
 
 Bu belge **ölçümdür, plan değil.** Kabuk henüz kurulmadı; kurmadan önce neyin
 gerektiğini ve mevcut PWA'nın neyi zaten karşıladığını saymak gerekiyordu,
@@ -14,7 +15,7 @@ gerektiğini ve mevcut PWA'nın neyi zaten karşıladığını saymak gerekiyord
 |---|---|---|
 | `getUserMedia` | kamera + mikrofon | **izin gerekir** (aşağıda) |
 | `MediaRecorder` | çekim kaydı | WKWebView/Chromium'da var |
-| `SpeechRecognition` | sesle takip | ⚠️ **iOS WKWebView'da YOK** — aşağıda |
+| `SpeechRecognition` | sesle takip | ✅ **VAR** — WKWebView'da ölçüldü (T51) |
 | Wake Lock | ekran uyanık kalsın | iOS'ta yerel karşılık gerekir |
 | IndexedDB | çekim arşivi | var |
 | `navigator.share` | çekimi paylaş | var |
@@ -40,25 +41,38 @@ başladığınızda kullanır" gibi. Apple genel ifadeleri reddediyor.
 `CAMERA`, `RECORD_AUDIO`, `INTERNET` (yerel sunucu/kumanda için),
 `FOREGROUND_SERVICE` (uzun çekimde ekran açık kalsın).
 
-## 🔴 Ölçülen en büyük engel: iOS'ta sesle takip
+## ✅ ENGEL KALKTI — ölçüldü (2026-08-15, iOS 18.6 simülatörü)
 
-`SpeechRecognition` **WKWebView'da yok**. Yani Capacitor kabuğuna alınan PWA,
-iOS'ta sesle takip özelliğini **kaybeder**. Matriste bu bizim 5 aldığımız,
-liderin 3 aldığı kalem — kaybetmek kabul edilemez.
+Bu belge aylarca şunu yazıyordu: *"`SpeechRecognition` WKWebView'da YOK; Capacitor
+kabuğuna alınan PWA iOS'ta sesle takibi KAYBEDER."* **Bu iddia ölçülmemişti ve
+yanlış çıktı.** Mağaza kabuğunu bloke eden tek madde buydu.
 
-**Üç yol var, üçü de ölçülmeli:**
+**Ölçüm yöntemi** (`ios-olcum/olc.sh` ile tekrarlanabilir): aynı yetenek sayfası
+önce Mobile Safari'de, sonra elle derlenmiş **gerçek bir WKWebView** uygulamasında
+açıldı; ikisinin de ekran görüntüsü alındı (`ios-olcum/sonuc-*.png`).
+Ayırt edici kanıt **User-Agent**: Safari `… Mobile/15E148 Safari/604.1`,
+WKWebView `… Mobile/15E148` (Safari eki **yok**).
 
-1. **Yerel köprü:** iOS `Speech` çerçevesini bir Capacitor eklentisiyle
-   sarmalamak. Yapılabilir; Türkçe destekliyor. Bedeli: Swift kodu ve ayrı
-   bir bakım yüzeyi.
-2. **Whisper (WASM):** tarayıcıda çalışır, **cihazdan hiç çıkmaz** — gizlilik
-   metnindeki tek istisnayı da kapatır. Bedeli: model dosyası (küçüğü bile
-   ~40 MB) ve "tek dosya, sıfır bağımlılık" sözünün mağaza kabuğunda
-   esnetilmesi.
-3. **iOS'ta özelliği kapatmak** ve sebebini söylemek. En ucuz, en kötü.
+| yetenek | Safari | WKWebView |
+|---|---|---|
+| **SpeechRecognition** | ✅ | ✅ |
+| MediaRecorder | ✅ | ✅ |
+| MediaRecorder `video/mp4` | ✅ | ✅ |
+| getUserMedia | ✅ | ✅ |
+| canvas `captureStream` | ✅ | ✅ |
+| `DecompressionStream` (.docx) | ✅ | ✅ |
+| Wake Lock | ✅ | ✅ |
+| `navigator.share` | ✅ | ✅ |
+| IndexedDB | ✅ | ✅ |
+| secure context | ✅ | ✅ |
 
-**Karar Erdal'ın.** 2. yol gizlilik açısından en güçlüsü ve mağaza kabuğunda
-"tek dosya" sözü zaten geçerli değil (uygulama paketi zaten çok dosya).
+**Sonuç: yerel Speech köprüsü de, Whisper-WASM da, "iOS'ta kapat" da GEREKMİYOR.**
+Kabuk sesle takibi kaybetmeden kurulabilir; üç yolun üçü de elendi.
+
+**Dürüstlük sınırı:** ölçülen şey API'nin VARLIĞI — engel iddiası da tam olarak
+buydu. Uçtan uca tanıma ayrıca ağ ve mikrofon izni ister; simülatörde gerçek
+mikrofon yok. Gerçek cihazda ilk kabuk denemesinde bu ayrıca sınanmalı.
+**iOS sürümü değiştiğinde ölçümü tekrarla** — betik bunun için duruyor.
 
 ## Mevcut PWA'nın karşıladıkları
 
@@ -77,6 +91,9 @@ platform köprüsü** işi.
 
 ## Sıradaki somut adım
 
-Kabuk kurmadan önce **sesle takip kararı** verilmeli (yukarıdaki üç yol).
-Karar verilmeden kurulan kabuk, iOS'ta ürünün en güçlü özelliğini sessizce
-kaybettiği için yarım kalır — bu deponun 1 numaralı hata sınıfı.
+Sesle takip engeli **ölçümle kalktı**, yani kabuk kurulabilir. Kalan gerçek
+gereksinimler kod değil **hesap ve donanım**: Apple Developer üyeliği, imzalama
+kimliği ve mağaza kayıtları. Bunlar Erdal'ın kararı ve hesabı.
+
+Kabuk kurulduğunda ilk sınanacak şey ölçümün dürüstlük sınırı: **gerçek cihazda
+uçtan uca sesle takip** (API varlığı ≠ çalışan tanıma).

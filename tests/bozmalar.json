@@ -607,5 +607,19 @@
   "kaynak": "telefon",
   "bul": "(L==='tr'?'kompozit':'composite')",
   "koy": "('kompozit')"
+ },
+ {
+  "ad": "F1 iOS ölçümünün dürüstlük sınırı silindi (varlık = çalışan tanıma sanılır)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza_teknik",
+  "bul": "**Dürüstlük sınırı:** ölçülen şey API'nin VARLIĞI",
+  "koy": "**Kesin sonuç:** her şey çalışıyor"
+ },
+ {
+  "ad": "F1 iOS ölçüm sonucu belgeden silindi (engel geri gelir)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza_teknik",
+  "bul": "## ✅ ENGEL KALKTI",
+  "koy": "## Ölçülmedi"
  }
 ]

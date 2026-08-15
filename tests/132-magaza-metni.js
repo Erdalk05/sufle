@@ -24,7 +24,15 @@ const magYolu = (() => {
   return v || path.join(REPO,'MAGAZA.md');
 })();
 const mag = fs.readFileSync(magYolu,'utf8').replace(/\s+/g,' ');
-const tek = fs.readFileSync(path.join(REPO,'MAGAZA_TEKNIK.md'),'utf8').replace(/\s+/g,' ');
+/* AÇIKÇA VERİLEN YOL YANLIŞSA SESSİZCE DEPOYA DÜŞME — bozma turu geçici bir
+   kopya yazıp SUFLE_MAGAZA_TEKNIK ile gösteriyor; depo dosyası okunursa bozma
+   hiçbir şey ölçmeden "geçti" görünür. */
+const tekYol = (() => {
+  const v = process.env.SUFLE_MAGAZA_TEKNIK;
+  if (v && !fs.existsSync(v)) throw new Error('Verilen yol yok: ' + v);
+  return v || path.join(REPO,'MAGAZA_TEKNIK.md');
+})();
+const tek = fs.readFileSync(tekYol,'utf8').replace(/\s+/g,' ');
 
 /* ---------- METİNDEKİ İDDİALARIN KARŞILIĞI ---------- */
 {
@@ -86,13 +94,28 @@ const tek = fs.readFileSync(path.join(REPO,'MAGAZA_TEKNIK.md'),'utf8').replace(/
 
 /* ---------- TEKNİK ÖLÇÜM DÜRÜST MÜ ---------- */
 {
-  /* En büyük engel saklanmamalı: iOS WKWebView'da SpeechRecognition yok,
-     yani kabuğa alınan PWA sesle takibi KAYBEDER. Bunu yazmadan kabuk
-     kurmak, ürünün en güçlü özelliğini sessizce kaybetmek olurdu. */
-  ok('iOS sesle takip engeli açıkça yazılı',
-     /WKWebView.{0,40}YOK|iOS.{0,60}sesle takip/i.test(tek));
-  ok('üç çözüm yolu da yazılı ve karar Erdala bırakılmış',
-     /Whisper/.test(tek) && /Karar Erdal/.test(tek));
+  /* BU BLOK BAYAT BİR GERÇEĞİ KİLİTLİYORDU. Eskiden "iOS WKWebView'da
+     SpeechRecognition YOK, üç çözüm yolu var, karar Erdal'da" diyordu ve test
+     de tam bunu arıyordu. T51'de iddia ÖLÇÜLDÜ ve çürüdü: iOS 18.6'da hem
+     Safari'de hem WKWebView'da API VAR. Test artık BEKLEYEN BİR KARARI değil,
+     YAPILMIŞ BİR ÖLÇÜMÜ kilitliyor — CLAUDE.md'nin "kabul edilmiş kusuru
+     teste yazma" kuralının kardeşi: çürümüş varsayımı da yazma. */
+  ok('iOS ölçümü belgede yazılı', /WKWebView/.test(tek));
+  ok('ölçümün SONUCU yazılı (engel kalktı)',
+     /ENGEL KALKTI/.test(tek) && /SpeechRecognition\*{0,2} \| ✅ \| ✅/.test(tek));
+  /* Ölçüm TEKRARLANABİLİR olmalı: iOS sürümü değişince yeniden ölçülecek. */
+  ok('ölçüm betiği belgede gösteriliyor', /ios-olcum\/olc\.sh/.test(tek));
+  /* Ayırt edici kanıt yazılı olmalı, yoksa "WKWebView'da ölçtüm" iddiası
+     doğrulanamaz — Safari ile WKWebView'ı ayıran şey UA'daki Safari eki. */
+  ok('Safari ile WKWebView ayrımının kanıtı yazılı',
+     /Mobile\/15E148 Safari\/604\.1/.test(tek) && /Safari eki/.test(tek));
+  /* DÜRÜSTLÜK SINIRI: ölçülen şey API VARLIĞI; uçtan uca tanıma değil.
+     Bunu yazmamak, ölçümü olduğundan güçlü göstermek olurdu. */
+  ok('ölçümün sınırı da yazılı (varlık ≠ çalışan tanıma)',
+     /API'nin VARLIĞI/.test(tek) && /gerçek cihaz/i.test(tek));
+  /* Elenen üç yol da yazılı kalsın: bir gün ölçüm tersine dönerse seçenekler
+     yeniden aranmasın. */
+  ok('elenen üç yol belgede duruyor', /Whisper/.test(tek));
   ok('yapılamayacaklar sebebiyle yazılı',
      /Sanal kamera:.{0,80}yazılamaz/.test(tek) && /Arka planda kayıt/.test(tek));
   ok('gereken izinler sayılmış',

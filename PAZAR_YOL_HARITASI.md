@@ -722,10 +722,21 @@ sözü koddaki karşılığına bağlıyor **ve abartmayı engelliyor** — sana
 metne yazılırsa kapı kırılıyor (kanıtlandı).
 
 **F.1 ön ölçümü yapıldı** (`MAGAZA_TEKNIK.md`) — kabuk kurulmadan önce neyin gerektiğini saymak
-için. **🔴 Ölçülen en büyük engel: `SpeechRecognition` iOS WKWebView'da YOK**, yani kabuğa alınan
-PWA iOS'ta **sesle takibi kaybeder** — matriste bizim 5, liderin 3 aldığı kalem. Üç yol yazıldı
-(yerel köprü · Whisper-WASM · özelliği kapatmak) ve **karar Erdal'a bırakıldı**; kabuk bu karar
-verilmeden kurulursa ürünün en güçlü özelliğini sessizce kaybeder.
+için.
+
+**✅ EN BÜYÜK ENGEL ÖLÇÜLDÜ VE ÇÜRÜDÜ (Tur 51).** Belge aylarca *"`SpeechRecognition` iOS
+WKWebView'da YOK, kabuğa alınan PWA sesle takibi kaybeder"* diyordu ve mağaza kabuğunu bloke eden
+**tek madde** buydu. **İddia hiç ölçülmemişti.** Bu Mac'te Xcode ve iOS simülatörü olduğu için
+ölçüldü: aynı yetenek sayfası önce Mobile Safari'de, sonra **elle derlenmiş gerçek bir WKWebView
+uygulamasında** açıldı (`ios-olcum/olc.sh`, kareler `ios-olcum/sonuc-*.png`).
+
+**iOS 18.6'da ikisinde de 10/10 yetenek yeşil — `SpeechRecognition` dahil.** Ayırt edici kanıt
+User-Agent: Safari `… Mobile/15E148 Safari/604.1`, WKWebView `… Mobile/15E148` (Safari eki yok).
+
+Yani **yerel Speech köprüsü de, Whisper-WASM da, "iOS'ta kapat" da gerekmiyor** — üç yolun üçü
+birden elendi ve **Erdal'ın bu kararı vermesine gerek kalmadı.**
+*Dürüstlük sınırı:* ölçülen şey API'nin VARLIĞI (engel iddiası da tam buydu); uçtan uca tanıma
+gerçek cihazda ayrıca sınanmalı. iOS sürümü değişince betikle tekrar ölç.
 İzinler (`Info.plist`, `AndroidManifest`) ve **yapılamayacaklar** (sanal kamera, arka planda kayıt,
 Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 
@@ -799,6 +810,8 @@ değil kendi bayatlığını bildiriyordu; artık `bozma.py`'den çıkarılıyor
 
 - **Bağımsız ürün mü, edugo modülü mü?** Analiz "edugo modülü" öneriyor; kullanıcı "markete çıkmak" dedi
   → **bağımsız ürün** varsayımıyla ilerliyorum, ters karar gelirse Faz F durur, A–D yine değerli.
+- ~~iOS sesle takip (yerel köprü / Whisper / kapat)~~ → **ÖLÇÜLDÜ, KARAR GEREKMEDİ (T51):**
+  iOS 18.6'da `SpeechRecognition` hem Safari'de hem WKWebView'da VAR; üç yol da elendi.
 - Bulut/hesap sağlayıcısı (Supabase) ve AI uç noktası → anahtar gerektirir.
 - `git push` her yayında ayrı onay.
 
@@ -922,3 +935,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 48 | 2026-08-15 | **Zorlanma haritası Mac'e taşındı** — A.4 kapandı | `cekirdek/zorlanma.js` (telefon da ona bağlandı) · Mac'e üç sinyal: duraklatma `togglePlay`'de (stop() içine DEĞİL), geri sarma `jumpLine`'da, **sesle yavaşlama kancası yeni eklendi** · gerçek olaylarla doğrulandı · tarayıcı yarım özellik yakaladı (harita doluyor, kutu boş) → çizim işaretlemeye bağlandı · 5 kanıtlı bozma (**85**) · **4625 test** | ✅ 9/9 YEŞİL |
 | 49 | 2026-08-15 | **Denetim turu** — kendi işimi kendi kapımla ölçtüm | 16/16 yüzey ulaşılabilir · **yol haritası 4 yerde yalan söylüyordu** (başlık ⏳, gövde ✅) → düzeltildi · **kapı sonuç ekranını hiç ölçmüyormuş** → eklendi, 1 kontrast ihlali + 4 çevrilmemiş metin çıktı, hepsi kapandı · 10/10 çekirdek modülü gerçekten kullanılıyor · 3 araç kusuru düzeltildi · 2 kanıtlı bozma (**87**) · **4618 test** | ✅ 9/9 YEŞİL |
 | 50 | 2026-08-15 | **v9.10 YAYINLANDI** (Erdal onayı) | 19 commit push edildi · canlı doğrulandı: sürüm `9.10`, cache `sufle-v82`, **md5 yerelle birebir**, canlı JS ayrıştırılıyor, vitrin + kareler + gizlilik 200 · 10 düzeltme izinin 10'u canlıda · `.son-yayin` ancak bundan SONRA yazıldı | ✅ CANLI |
+| 51 | 2026-08-15 | **iOS engeli ölçüldü ve ÇÜRÜDÜ** — mağaza kabuğunun önü açıldı | aylardır "WKWebView'da SpeechRecognition YOK" deniyordu ve **hiç ölçülmemişti** · Xcode+simülatör bu Mac'te varmış: aynı sayfa Safari'de VE elle derlenmiş gerçek WKWebView'da açıldı → **10/10 yetenek yeşil, ikisinde de** · UA kanıtı (`Safari/604.1` eki yok) · yerel köprü/Whisper/kapat **üçü de elendi**, Erdal kararı gerekmedi · ölçüm `ios-olcum/olc.sh` ile tekrarlanabilir · test bayat kararı değil ÖLÇÜMÜ kilitliyor · 2 kanıtlı bozma (**89**) | ✅ 4623 test |

@@ -1,0 +1,33 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iOS yetenek ölçümü</title>
+<style>body{font:20px -apple-system;margin:0;padding:16px;background:#08090C;color:#F2F4F8}
+h1{font-size:22px;margin:0 0 12px}
+.s{padding:10px 12px;margin:6px 0;border-radius:10px;font-weight:800;font-size:26px}
+.ok{background:#00D47E;color:#04210F}.no{background:#D93036;color:#fff}
+small{display:block;font-weight:400;font-size:14px;opacity:.85;margin-top:4px}</style></head><body>
+<h1>SUFLE — iOS yetenek ölçümü</h1>
+<div id="out"></div>
+<script>
+const T=[
+ ['SpeechRecognition', ()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition)],
+ ['MediaRecorder',     ()=>!!window.MediaRecorder],
+ ['MediaRecorder mp4', ()=>!!(window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported('video/mp4'))],
+ ['getUserMedia',      ()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)],
+ ['captureStream',     ()=>typeof document.createElement('canvas').captureStream==='function'],
+ ['DecompressionStream',()=>typeof DecompressionStream!=='undefined'],
+ ['Wake Lock',         ()=>!!(navigator.wakeLock)],
+ ['navigator.share',   ()=>!!navigator.share],
+ ['IndexedDB',         ()=>!!window.indexedDB],
+ ['secureContext',     ()=>!!window.isSecureContext],
+];
+const o=document.getElementById('out');
+for(const [ad,f] of T){
+  let v=false; try{ v=f(); }catch(e){}
+  const d=document.createElement('div');
+  d.className='s '+(v?'ok':'no');
+  d.textContent=(v?'✓ ':'✗ ')+ad;
+  o.appendChild(d);
+}
+const ua=document.createElement('small'); ua.textContent=navigator.userAgent; o.appendChild(ua);
+</script></body></html>
