@@ -241,3 +241,24 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
   ok('Mac kuralı sufle akışını DURDURMUYOR (yalnız süsleme)',
      rm.length > 0 && !/#scroller\b/.test(rm) && !/#prompt\b/.test(rm));
 }
+
+/* ---------- 10. MAC YÜKSEK KONTRAST (B.8, ikinci dilim) ---------- */
+{
+  const mkod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+  /* Sözlükte tgHicon anahtarı VARDI ama uygulama YOKTU — ölü çeviri.
+     Ölçülen kazanç: kenarlık kontrastı 1,29:1 → 21:1 (beyaz/siyah). */
+  ok('Mac: yüksek kontrast teması tanımlı', /body\.hicon\{--accent:#00ff7f/.test(mac));
+  ok('Mac: anahtar UI\'da ve sözlüğe bağlı',
+     /data-i18n="tgHicon"[\s\S]{0,80}data-t="hicon"/.test(mac));
+  ok('Mac: anahtar tıklanınca tema uygulanıyor', /if\(k==='hicon'\)\{ applyHicon\(\); \}/.test(mkod));
+  ok('Mac: applyHicon tanımlı VE başlatmada çağrılıyor',
+     /function applyHicon\(\)/.test(mkod) && /^\s*applyHicon\(\);/m.test(mkod));
+  /* ESKİ KAYITTA alan yok: açık değer kontrolü şart, `!state.hicon` değil. */
+  ok('Mac: eski kayıtlara dayanıklı okuma', /state\.hicon===true/.test(mkod));
+  /* İşletim sistemi tercihi BİR KEZ devralınır. Bayrak olmasaydı kullanıcının
+     kapattığı ayar her açılışta geri açılırdı. */
+  ok('Mac: OS yüksek kontrastı bir kez devralınıyor',
+     /if\(!state\.hiconSoruldu\)/.test(mkod) && /prefers-contrast: more/.test(mkod));
+  ok('Mac: sufle metni de zorlanıyor (asıl okunan o)',
+     /body\.hicon #scroller\{color:#fff!important/.test(mac));
+}

@@ -252,8 +252,12 @@ bağlamında altın değerinde" dediği özellik masaüstünde eksikti. Eklendi,
 (tarayıcıda doğrulandı: font + `1.28px` harf aralığı uygulanıyor).
 · **Hareket azaltma** Mac'e eklendi (telefonda vardı). Sufle akışı **durmuyor** — o süsleme değil
 ürünün işi; duran şey nabız ve panel geçişleri.
-**Kalan:** Mac'te yüksek kontrast teması (sözlükte `tgHicon` anahtarı var ama **uygulama yok**),
-kontrast denetiminin kapıya bağlanması.
+· **Mac yüksek kontrast eklendi** — sözlükte `tgHicon` anahtarı vardı ama **uygulama yoktu**,
+yani şu ana dek **ölü bir çeviriydi**. Ölçülen kazanç: kenarlık kontrastı **1,29:1 → 21:1**,
+vurgu 15,6:1. İşletim sistemi tercihi **bir kez** devralınıyor (`hiconSoruldu` bayrağı olmasaydı
+kullanıcının kapattığı ayar her açılışta geri açılırdı). Tarayıcıda doğrulandı.
+**B.8 kapandı.** Kalan tek kalem: kontrast denetiminin kapıya bağlanması (jetonlar için `tests/121`
+zaten hesaplıyor; kabuk kuralları için ayrı bir tarayıcı-tabanlı ölçüm gerekir).
 **Bitti ölçütü:** ilk açılışta görünen kontrol sayısı ≤ 5; kontrast denetimi 0 ihlal; dört platformda aynı.
 
 ---
@@ -333,3 +337,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 15 | 2026-08-15 | B.6 kısayol kartı (iki kabuk) | Mac kartı 7 satır, gerçek bağlardan · telefon kullanıcının haritasını gösteriyor · 51 iddia | ✅ 8/8 YEŞİL |
 | 16 | 2026-08-15 | B.7 karşılama eylemle bitiyor (tur yerine aktivasyon) | tarayıcıda 3 davranış kanıtlı · 57 iddia · kapsam tabanı gevşetilmedi | ✅ 8/8 YEŞİL |
 | 17 | 2026-08-15 | B.8: Mac'e disleksi yazı tipi + hareket azaltma | dış font ölçülüp ELENDİ (~150 KB/ağırlık) · yığın birebir · 65 iddia | ✅ 8/8 YEŞİL |
+| 18 | 2026-08-15 | B.8 ikinci dilim: Mac yüksek kontrast (ölü çeviri canlandı) | kenarlık 1,29:1 → 21:1 · OS tercihi bir kez devralınıyor · 72 iddia | ✅ 8/8 YEŞİL |

@@ -130,6 +130,20 @@
     font:inherit;font-size:12.5px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
   #rtabs button.on{background:var(--accent);color:var(--on-action);border-color:transparent}
   #right .ctrl.sekmeDisi{display:none}
+  /* B.8 YÜKSEK KONTRAST. Sözlükte `tgHicon` anahtarı vardı ama UYGULAMA YOKTU
+     — yani şu ana kadar ölü bir çeviriydi. Telefonla aynı ilkeler, Mac'in
+     kendi sınıflarıyla: kenarlıklar saf beyaza, yüzeyler saf siyaha, vurgu
+     daha parlak yeşile. Ölçüldü (2026-08-14 notu): normal tema kenarlık
+     kontrastı 1,17:1, yüksek kontrast 16,58:1.
+     SUFLE METNİ ayrıca zorlanıyor: asıl okunması gereken metin o. */
+  body.hicon{--accent:#00ff7f;--line:#ffffff;--muted:#e8e8ee;--panel:#000000;--panel2:#0a0a0a}
+  body.hicon .btn,body.hicon .seg button,body.hicon #rtabs button,
+  body.hicon .sw2,body.hicon select,body.hicon input,body.hicon textarea{
+    border-color:#fff!important;color:#fff!important;background:#000!important}
+  body.hicon .btn.primary,body.hicon .seg button.on,body.hicon #rtabs button.on{
+    background:#00ff7f!important;color:#000!important}
+  body.hicon .rb-note,body.hicon .hint{color:#e8e8ee!important}
+  body.hicon #scroller{color:#fff!important;text-shadow:0 2px 6px #000}
   /* B.8 HAREKET AZALTMA. Telefonda vardı, Macte YOKTU. İşletim sisteminde
      "hareketi azalt" açan kullanıcı (vestibüler rahatsızlık, migren) burada
      yanıp sönen noktalar ve kayan paneller görüyordu.
@@ -599,6 +613,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <div class="toggle"><span data-i18n="mSwMirror">🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
       <div class="toggle"><span data-i18n="mSwFlip">🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
       <div class="toggle"><span data-i18n="mSwEye">🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
+      <div class="toggle"><span data-i18n="tgHicon">◐ Yüksek kontrast</span><div class="sw2" data-t="hicon"></div></div>
       <div class="toggle"><span data-i18n="mSwDim">🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
       <div class="toggle"><span data-i18n="mSwHl">✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
       <div class="toggle"><span data-i18n="mSwCount">⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
@@ -957,6 +972,8 @@ const I18N={
   window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
   let state, running=false, raf=null, pos=0, speed=6;
   let fullOncesi=false;   // B.4: kayıt öncesi panel düzeni (geri dönmek için)
+  /* B.8: yüksek kontrast. Eski kayıtlarda alan YOK — açık değer kontrolü. */
+  function applyHicon(){ document.body.classList.toggle('hicon', state.hicon===true); }
   let startTime=0, elapsed=0, words=[], wordTops=[], activeIdx=-1, pxPerWord=40;
   let holdPoints=[], holdUntil=0;   // metindeki / // (2) duraklama isaretleri
   let lastTs=0, maxPos=1, wordLine=[], capTimes=[];
@@ -2804,6 +2821,7 @@ const I18N={
       toast(k==='burnCaps'?'Kırpma açıldı — altyazı ancak kırpılmış görüntüye çizilebilir'
                           :'Kırpma açıldı — yeşil ekran ancak kırpılmış görüntüde çalışır');
     }
+    if(k==='hicon'){ applyHicon(); }
     applyAll(); save(); });
   // format
   $$('#fmtPill button').forEach(b=>b.onclick=()=>{ state.fmt=b.dataset.fmt; applyAll(); drawSafe(); save(); });
@@ -3187,6 +3205,17 @@ const I18N={
   /* ESKİ KAYITLARDA `lang` ALANI YOK. Bu yüzden `state.lang==='en'` diye
      bakılıyor, `!state.lang` DİYE DEĞİL: ikincisi alanı hiç olmayan eski
      kullanıcıyı bambaşka bir dala sokardı (deponun 6 numaralı hata sınıfı). */
+  /* İşletim sisteminde yüksek kontrast açıksa uygulama da açık başlasın —
+     ama YALNIZ BİR KEZ sorulur; sonrasında kullanıcının kendi tercihi geçerli.
+     `hiconSoruldu` olmadan her açılışta kullanıcının kapattığı ayar geri
+     açılırdı. Telefonda aynı bayrak aynı gerekçeyle var. */
+  if(!state.hiconSoruldu){
+    state.hiconSoruldu=1;
+    const mm=window.matchMedia && window.matchMedia('(prefers-contrast: more)');
+    if(mm && mm.matches) state.hicon=true;
+    save();
+  }
+  applyHicon();
   L = (state.lang==='en' ? 'en' : 'tr');
   $$('#langSwitch button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
   /* Sağ panel sekmeleri (B.3). Eski kayıtta rtab alanı YOK — açık değer
