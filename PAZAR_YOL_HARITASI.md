@@ -313,7 +313,15 @@ biri sessizce erişilemez olurdu.
 ## 4 · FAZ D — Rakip paritesi (gerçek eksikler)
 
 **D.1 İçe aktarma:** `.docx` (mammoth), `.pdf` (pdf.js), düz metin, pano. Sıfır bağımlılık kuralı gözden geçirilecek.
-**D.2 Kamera kontrolleri:** odak/pozlama kilidi, harici kamera seçimi, ön/arka.
+**D.2 Kamera kontrolleri:** ⏳ **harici kamera seçimi BİTTİ (Mac).**
+Ölçülen boşluk: Mac `facingMode:'user'` ile **sabitti** — harici webcam, yakalama kartı ya da
+iPhone Sürekli Kamera'sı olan masaüstü kullanıcısı **hiçbirini seçemiyordu**
+(`deviceId` Mac'te 0 kez geçiyordu, telefonda 4). Matriste liderin 5 aldığı kalem.
+Telefonun mikrofon seçicisiyle aynı kalıp: **iki kameradan azsa liste hiç görünmüyor**
+(tarayıcıda doğrulandı), adlar izinden sonra tazeleniyor, **kayıt sürerken değişim engelleniyor**
+ve sebebi söyleniyor. `tests/126` (17 iddia) + kapıda kanıtlı bozma: kısıt sökülünce
+ayar ölü ayara dönüyor ve test kırılıyor.
+**Kalan:** odak/pozlama kilidi (`focusMode`/`exposureMode` iki kabukta da 0 — mobilde anlamlı).
 **D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
 **D.4 Uzak önizleme:** telefon kumandasında kameranın gördüğü kare. Güçlü farklılaşma.
 **D.5 Entegrasyon:** sanal kamera / OBS / Zoom yolu (masaüstünde gerçekçi).
@@ -379,3 +387,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 18 | 2026-08-15 | B.8 ikinci dilim: Mac yüksek kontrast (ölü çeviri canlandı) | kenarlık 1,29:1 → 21:1 · OS tercihi bir kez devralınıyor · 72 iddia | ✅ 8/8 YEŞİL |
 | 19 | 2026-08-15 | C.2 cihaz dışı yedek + Mac otomatik yedek | Mac yedeği telefonda okundu (1→2) · yanlış isim eşlemesi 2 testte düzeltildi · 19 iddia | ✅ 8/8 YEŞİL |
 | 20 | 2026-08-15 | C.1 ÖLÇÜLDÜ ve ELENDİ · C.4 bitti · C.3 gerekçeli ertelendi | ls tavanı 4,94 MB · 2 dk senaryo 2 KB · tavana 1.271 senaryo → kota riski teorik | ✅ 8/8 YEŞİL |
+| 21 | 2026-08-15 | D.2: Mac harici kamera seçimi | deviceId Mac'te 0→kullanımda · tek kamerada gizli (tarayıcı) · parite tabanı bilerek 5→6 | ✅ 8/8 YEŞİL |

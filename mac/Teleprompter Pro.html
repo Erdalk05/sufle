@@ -473,7 +473,11 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-mode="video" data-i18n="mVideo">YouTube</button>
         </div>
         <div class="rb-note" id="modeHint" style="margin-top:6px"></div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwCrop">⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
+        <div class="field" id="camRow" style="display:none">
+        <div class="top"><span data-i18n="camSel">📷 Kamera</span></div>
+        <div class="seg" id="camSeg"></div>
+      </div>
+      <div class="toggle" style="margin-top:8px"><span data-i18n="mSwCrop">⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
         <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwChroma">🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
@@ -787,7 +791,9 @@ const I18N={
   /* Cihaz dışı yedek (C.2) */
   bkExport:'⬆︎ Dosyaya yedekle',bkImport:'⬇︎ Dosyadan geri al',
   /* Mac otomatik yedek ipucu (C.2) */
-  mTRestoreBk:'Otomatik yedekten dön'},
+  mTRestoreBk:'Otomatik yedekten dön',
+  /* Kamera seçimi (D.2) */
+  camSel:'📷 Kamera'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -891,7 +897,9 @@ const I18N={
   /* Cihaz dışı yedek (C.2) */
   bkExport:'⬆︎ Back up to a file',bkImport:'⬇︎ Restore from a file',
   /* Mac otomatik yedek ipucu (C.2) */
-  mTRestoreBk:'Restore from the automatic backup'}
+  mTRestoreBk:'Restore from the automatic backup',
+  /* Kamera seçimi (D.2) */
+  camSel:'📷 Camera'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1628,6 +1636,43 @@ const I18N={
   }
   function cancelCountdown(){ clearInterval(countIv); countIv=null; counting=false; $('#count').style.display='none'; }
 
+  /* ---------- KAMERA SEÇİMİ (D.2) ----------
+     Mac `facingMode:'user'` ile SABİTTİ: harici webcam'i, yakalama kartı ya da
+     iPhone Sürekli Kamera'sı olan masaüstü kullanıcısı HİÇBİRİNİ seçemiyordu.
+     Matriste "harici kamera desteği" liderin 5 aldığı yer; SUFLE 2 alıyordu.
+
+     Telefonun mikrofon seçicisiyle AYNI kalıp, aynı gerekçelerle:
+     · İKİ TANEDEN AZSA HİÇ GÖSTERME — tek kameralı makinede "seçenek" diye
+       görünen tek satır seçim yanılsaması yaratır ve paneli şişirir.
+     · İzin verilmeden önce tarayıcı cihaz ADLARINI boş döndürür; o yüzden
+       liste kamera açıldıktan SONRA da tazeleniyor.
+     · KAYIT SIRASINDA DEĞİŞTİRME: akışı yeniden kurmak kaydı bozar — telefonda
+       aynı koruma `kameraDegisebilir()` ile var. */
+  async function setupCams(){
+    try{
+      if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices) return;
+      const hepsi=await navigator.mediaDevices.enumerateDevices();
+      const kams=hepsi.filter(d=>d.kind==='videoinput');
+      const row=$('#camRow'), seg=$('#camSeg');
+      if(!row||!seg) return;
+      if(kams.length<2){ row.style.display='none'; return; }
+      row.style.display='block'; seg.innerHTML='';
+      kams.forEach((d,i)=>{
+        const b=document.createElement('button');
+        b.textContent=(d.label||('Kamera '+(i+1))).slice(0,20);
+        b.className=(state.camId===d.deviceId||(!state.camId&&i===0))?'on':'';
+        b.onclick=async()=>{
+          if(recorder&&recorder.state!=='inactive'){
+            toast('Kayıt sürerken kamera değiştirilemez'); return; }
+          state.camId=d.deviceId; save();
+          if(stream){ stopCam(); await toggleCam(); }
+          setupCams();
+        };
+        seg.appendChild(b);
+      });
+    }catch(e){ logErr('cams',e); }
+  }
+
   /* ---------- KAMERA + KAYIT ---------- */
   let stream=null, recorder=null, chunks=[], recStart=0, recStop=0, lastBlob=null, lastUrl=null, vidOldu=0, sesOldu=0;
   async function toggleCam(){
@@ -1635,7 +1680,9 @@ const I18N={
     try{
       stopAudioFx(); vadDurdur();   // eski mikrofon izine bağlı kalmasınlar
       stream=await navigator.mediaDevices.getUserMedia({
-        video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30},facingMode:'user'},
+        /* Seçili kamera varsa onu iste; yoksa eski davranış (ön kamera). */
+        video:Object.assign({width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}},
+          state.camId?{deviceId:{exact:state.camId}}:{facingMode:'user'}),
         // Ses kısıtlarını açıkça iste: varsayılana bırakmak tarayıcıdan tarayıcıya
         // değişiyordu. Telefon sürümüyle aynı davranış.
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
@@ -1644,6 +1691,7 @@ const I18N={
       if(state.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
       camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
       recBtn.disabled=false; recBtn.style.opacity='1';
+      setupCams();   // adlar ancak izinden SONRA doluyor
       const vs=stream.getVideoTracks()[0].getSettings?.()||{};
       toast('Kamera açık — '+(vs.width||'?')+'×'+(vs.height||'?')+
             (stream.getAudioTracks().length?'':' · 🔇 MİKROFON YOK'));
@@ -3311,6 +3359,7 @@ const I18N={
     r.onerror=()=>toast('Dosya okunamadı');
     r.readAsText(f,'utf-8'); e.target.value='';
   };
+  setupCams();
   $('#restoreBk').onclick=restoreBackup;
   $('#takesBtn').onclick=showTakes;
   $('#sbDev').textContent=deviceLine();

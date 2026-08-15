@@ -147,7 +147,13 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    listesi büyüdü" diye reddetti ve HAKLIYDI. Boşluk örtülmedi, KAPATILDI:
    Mac'e de otomatik yedek eklendi (C.2). */
 const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle']);
-const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
+/* cams: KAMERA CİHAZ LİSTESİ MASAÜSTÜNE ÖZGÜ. Mac'te seçenekler FaceTime HD,
+   harici webcam, yakalama kartı, iPhone Sürekli Kamera — hepsi ayrı cihaz.
+   Telefonda anlamlı seçim ön/arka ve o ZATEN VAR (facingMode + st.backCam);
+   üstüne bir cihaz listesi koymak aynı işi ikinci kez sorardı. `pip` ile aynı
+   sınıf: kavram karşı platformda yok, eksiklik değil.
+   Taban BİLEREK yükseltildi (mac 5→6) — kapı bunu görünür kılsın diye var. */
+const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb','cams']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));
 const macFazla = [...mE].filter(x => !tE.has(x) && !SADECE_MAC.has(x));

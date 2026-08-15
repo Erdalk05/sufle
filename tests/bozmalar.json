@@ -215,5 +215,12 @@
   "kaynak": "telefon",
   "bul": "      st.scripts=st.scripts.concat(gelen);",
   "koy": "      st.scripts=gelen;"
+ },
+ {
+  "ad": "D2 kamera seçimi ölü ayara çevrildi (kısıt söküldü)",
+  "test": "126-kamera-secimi.js",
+  "kaynak": "mac",
+  "bul": "state.camId?{deviceId:{exact:state.camId}}:{facingMode:'user'}",
+  "koy": "{facingMode:'user'}"
  }
 ]
