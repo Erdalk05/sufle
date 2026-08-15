@@ -28,6 +28,7 @@ KAYNAK = {
     # bir jeton hatası iki platformu birden vurur, yani en pahalı sınıf.
     'jeton': (os.path.join(REPO, 'cekirdek', 'jetonlar.css'), 'SUFLE_JETON'),
     'sozluk': (os.path.join(REPO, 'cekirdek', 'sozluk.js'), 'SUFLE_SOZLUK'),
+    'docx': (os.path.join(REPO, 'cekirdek', 'docx.js'), 'SUFLE_DOCX'),
 }
 
 

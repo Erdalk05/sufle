@@ -15,7 +15,13 @@ ResizeObserver MutationObserver TextDecoder TextEncoder Uint8Array Uint8ClampedA
 Uint16Array Uint32Array Int8Array Int16Array Float64Array DataView
 Float32Array Int32Array ArrayBuffer DOMParser Notification Worker indexedDB localStorage
 sessionStorage document window navigator location history performance screen console
-speechSynthesis SpeechRecognition webkitSpeechRecognition""".split())
+speechSynthesis SpeechRecognition webkitSpeechRecognition
+DecompressionStream CompressionStream""".split())
+# DecompressionStream: D.1'de .docx okumak için kullanıldı. TARAYICININ KENDİ
+# API'si (Chrome 103+, Safari 16.4+, Firefox 113+), kütüphane DEĞİL — zaten
+# .docx'i sıfır bağımlılıkla okuyabilmemizin tek sebebi bu. Kod tarafında
+# `typeof DecompressionStream!=='function'` ile ayrıca korunuyor, yani
+# desteklemeyen tarayıcıda sessizce patlamıyor, açıkça hata veriyor.
 
 def _satir_yorumunu_at(line):
     """Satırdaki // yorumunu atar ama TIRNAK İÇİNDEKİNE dokunmaz.

@@ -11,7 +11,7 @@ const MSG={
   recErr:'Kayıt başlatılamadı',needCam:'Önce kamerayı aç',voiceNo:'Bu tarayıcı sesle takibi desteklemiyor',
   voiceOn:'🎤 Konuşmaya başla — metin seni takip edecek',wipeStuck:'Depo cevap vermiyor, silme yarıda kaldı',takeGone:'Bu çekim artık arşivde yok',wakeMulti:'· TEK kelime olmalı, boşluklu tetik hiçbir zaman tanınmaz',wakeBad:'· Bu tetik harf ya da rakam içermiyor, tanınamaz',vlSet:'🎤 Sesle takip dili',voiceOff:'Sesle takip kapalı',micDenied:'Mikrofon izni gerekli',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
-  exported:'Yedek indirildi',imported:'Geri yüklendi',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
+  exported:'Yedek indirildi',imported:'📄 Dosyadan alındı',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
   tDone:'Metin güncellendi',tUndone:'↺ Geri alındı',toolNoop:'Değişiklik gerekmedi',
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
@@ -65,12 +65,14 @@ const MSG={
   /* Cihaz dışı yedek (C.2) */
   bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi',
   /* Odak/pozlama kilidi (D.2) */
-  lockNo:'Bu kamera kilitlemeye izin vermiyor'},
+  lockNo:'Bu kamera kilitlemeye izin vermiyor',
+  /* .docx içe aktarma (D.1) */
+  docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
-  exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
+  exported:'Backup downloaded',imported:'📄 Imported from file',impErr:'Could not read file',noTakes:'No takes yet',
   tDone:'Script updated',tUndone:'↺ Undone',toolNoop:'Nothing to change',
   emptyText:'Script is empty',takeKept:'Saved to My takes',mapReset:'Default key map restored',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
@@ -124,5 +126,7 @@ const MSG={
   /* Cihaz dışı yedek (C.2) */
   bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added',
   /* Odak/pozlama kilidi (D.2) */
-  lockNo:'This camera does not allow locking'}
+  lockNo:'This camera does not allow locking',
+  /* .docx içe aktarma (D.1) */
+  docxBad:'Word file could not be read — is it really a .docx?'}
 };

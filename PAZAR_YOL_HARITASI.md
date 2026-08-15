@@ -312,7 +312,19 @@ biri sessizce erişilemez olurdu.
 
 ## 4 · FAZ D — Rakip paritesi (gerçek eksikler)
 
-**D.1 İçe aktarma:** `.docx` (mammoth), `.pdf` (pdf.js), düz metin, pano. Sıfır bağımlılık kuralı gözden geçirilecek.
+**D.1 İçe aktarma:** ✅ **`.docx` BİTTİ — sıfır bağımlılıkla.** Kural gözden geçirilmedi, **korundu**.
+Ölçüm: `.docx` bir ZIP, içindeki `word/document.xml` düz XML ve açma işini tarayıcının **yerleşik**
+`DecompressionStream('deflate-raw')` API'si yapıyor — kütüphane değil, platformun kendisi.
+Kendi ZIP okuyucumuz ~40 satır (zip **yazıcıyı** zaten kendimiz yazmıştık).
+**mammoth.js (~150 KB) elendi** — disleksi fontunda ve `ffmpeg.wasm`'de verilen aynı karar.
+**Gerçek uygulamada uçtan uca doğrulandı:** 719 baytlık `.docx` içe alındı, senaryo 1→2, başlık
+dosya adından, Türkçe karakterler bozulmadı, satır sonu korundu. İki kabukta da çalışıyor
+(Mac'te metin dosyası içe aktarma **hiç yoktu**, o da eklendi).
+**`.pdf` BİLEREK YOK:** doğru bir çıkarıcı font kodlamaları ve CID eşlemeleri yüzünden binlerce
+satır ve yine de çoğu dosyada yanlış sonuç verir. Kullanıcıya **dürüst yol yazıldı**:
+"PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir."
+**Yan bulgu:** içe aktarma mesajı iki dilde de **yanlıştı** — "Geri yüklendi"/"Restored" diyordu,
+oysa kullanıcı dosya aldı, bir şey geri yüklemedi. Düzeltildi.
 **D.2 Kamera kontrolleri:** ⏳ **harici kamera seçimi BİTTİ (Mac).**
 Ölçülen boşluk: Mac `facingMode:'user'` ile **sabitti** — harici webcam, yakalama kartı ya da
 iPhone Sürekli Kamera'sı olan masaüstü kullanıcısı **hiçbirini seçemiyordu**
@@ -407,3 +419,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 21 | 2026-08-15 | D.2: Mac harici kamera seçimi | deviceId Mac'te 0→kullanımda · tek kamerada gizli (tarayıcı) · parite tabanı bilerek 5→6 | ✅ 8/8 YEŞİL |
 | 22 | 2026-08-15 | D.2 tamam: odak/pozlama kilidi (yeteneğe bağlı) | desteksizde satır+ipucu+durum birlikte temizleniyor · 33 bozma · 25 kanıtlı dosya | ✅ 8/8 YEŞİL |
 | 23 | 2026-08-15 | D.6: Mac'e video budama + telefonda eksik günlükleme | ölü çeviri canlandı · 20 iddia · 34 bozma · ffmpeg.wasm elendi | ✅ 8/8 YEŞİL |
+| 24 | 2026-08-15 | D.1: .docx içe aktarma, sıfır bağımlılıkla | gerçek .docx uçtan uca okundu · mammoth elendi · 24 iddia · 35 bozma | ✅ 8/8 YEŞİL |

@@ -47,6 +47,8 @@ PLAN = [
     ('mesajlar.js', ['index.html']),
     # İkonlar şimdilik yalnız telefonda kullanılıyor (krom düğmeleri).
     ('ikonlar.html', ['index.html']),
+    # .docx okuyucu iki kabukta da kullanılıyor (D.1).
+    ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
 ]
 
 BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'

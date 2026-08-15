@@ -393,7 +393,8 @@
   <!-- ===== SOL PANEL ===== -->
   <div id="left">
     <div class="sec">
-      <h3><span data-i18n="mHScripts">Senaryolar</span> <button class="iconbtn" id="newScript" title="Yeni senaryo" data-i18n-title="mTNew" aria-label="Yeni senaryo" data-aria="mTNew">＋</button></h3>
+      <h3><span data-i18n="mHScripts">Senaryolar</span> <button class="iconbtn" id="newScript" title="Yeni senaryo" data-i18n-title="mTNew" aria-label="Yeni senaryo" data-aria="mTNew">＋</button> <button class="iconbtn" id="metinDosya" title="Word veya metin dosyasından" data-i18n-title="mTFromFile" aria-label="Word veya metin dosyasından" data-aria="mTFromFile">📄</button></h3>
+      <input type="file" id="metinFile" accept=".txt,.md,.srt,.vtt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
@@ -812,7 +813,11 @@ const I18N={
   /* Kamera seçimi (D.2) */
   camSel:'📷 Kamera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.'},
+  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
+  /* .docx içe aktarma (D.1) */
+  fromFileHint:'Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.',
+  /* Mac dosyadan metin düğmesi (D.1) */
+  mTFromFile:'Word veya metin dosyasından'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -920,9 +925,89 @@ const I18N={
   /* Kamera seçimi (D.2) */
   camSel:'📷 Camera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.'}
+  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
+  /* .docx içe aktarma (D.1) */
+  fromFileHint:'Word (.docx), plain text, Markdown and subtitle files. For a PDF, open it, copy the text and use Paste.',
+  /* Mac dosyadan metin düğmesi (D.1) */
+  mTFromFile:'From a Word or text file'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
+
+/* ==CEKIRDEK:docx.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/docx.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* .docx OKUYUCU — SIFIR BAĞIMLILIK. İki kabuğa da derle.py gömer.
+
+   NEDEN KENDİ ÇÖZÜCÜMÜZ: mammoth.js ~150 KB, "tek dosya sıfır bağımlılık"
+   sözünü bozardı (disleksi fontunda ve ffmpeg.wasm'de verilen aynı karar).
+
+   NEDEN MÜMKÜN: .docx bir ZIP ve içindeki word/document.xml düz XML. ZIP'in
+   merkezi dizinini okumak ~40 satır; açma işini tarayıcının YERLEŞİK
+   DecompressionStream("deflate-raw") API'si yapıyor — kütüphane değil,
+   platformun kendisi. Ölçüldü (Chrome): 719 baytlık gerçek bir .docx okundu,
+   Türkçe karakterler (ğüşıöç ĞÜŞİÖÇ) bozulmadan geldi.
+
+   PDF BİLEREK YOK: doğru bir PDF metin çıkarıcısı font kodlamaları, CID
+   eşlemeleri ve sıkıştırılmış akışlar yüzünden binlerce satır ve yine de
+   çoğu dosyada yanlış sonuç verir. Kullanıcıya dürüst yol söyleniyor:
+   PDF'i açıp metni kopyala, "📋 Yapıştır" ile getir. */
+async function docxMetni(dosya){
+  const bin=new Uint8Array(await dosya.arrayBuffer());
+  const dv=new DataView(bin.buffer, bin.byteOffset, bin.byteLength);
+  /* ZIP sonu kaydını SONDAN ara: dosya yorumu varsa kayıt en sonda olmaz. */
+  let eocd=-1;
+  for(let i=bin.length-22;i>=0 && i>bin.length-65558;i--){
+    if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; }
+  }
+  if(eocd<0) throw new Error('zip degil');
+  const adet=dv.getUint16(eocd+10,true), cdOfs=dv.getUint32(eocd+16,true);
+  let p=cdOfs, hedef=null;
+  for(let i=0;i<adet;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) throw new Error('bozuk dizin');
+    const adUz=dv.getUint16(p+28,true), ek=dv.getUint16(p+30,true), yorum=dv.getUint16(p+32,true);
+    const ad=new TextDecoder().decode(bin.subarray(p+46,p+46+adUz));
+    if(ad==='word/document.xml')
+      hedef={yerel:dv.getUint32(p+42,true), yontem:dv.getUint16(p+10,true), boyut:dv.getUint32(p+20,true)};
+    p+=46+adUz+ek+yorum;
+  }
+  if(!hedef) throw new Error('document.xml yok');
+  /* Veri konumu YEREL başlıktan okunur: merkezi dizindeki ek alan uzunluğu
+     yerel başlıkla AYNI OLMAK ZORUNDA DEĞİL — burayı karıştırmak dosyayı
+     birkaç bayt kaydırıp açmayı bozar. */
+  const ln=dv.getUint16(hedef.yerel+26,true), le=dv.getUint16(hedef.yerel+28,true);
+  const bas=hedef.yerel+30+ln+le;
+  const ham=bin.subarray(bas, bas+hedef.boyut);
+  let xml;
+  if(hedef.yontem===0) xml=new TextDecoder().decode(ham);
+  else if(hedef.yontem===8){
+    if(typeof DecompressionStream!=='function') throw new Error('acma yok');
+    const ds=new DecompressionStream('deflate-raw');
+    xml=await new Response(new Blob([ham]).stream().pipeThrough(ds)).text();
+  } else throw new Error('bilinmeyen sikistirma');
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  if(doc.getElementsByTagName('parsererror').length) throw new Error('xml bozuk');
+  const paras=[...doc.getElementsByTagName('w:p')].map(par=>{
+    let s='';
+    /* SIRAYI KORU: w:t, w:br ve w:tab belge sırasında gezilmeli. Yalnız w:t
+       toplansaydı satır sonları yutulurdu — ilk ölçümde "Satırsonrası" diye
+       birleşmiş çıktı, kusur oradan görüldü. */
+    const gez=(d)=>{ for(const c of d.childNodes){
+      if(c.nodeType!==1) continue;
+      const ad=c.localName;
+      if(ad==='t') s+=c.textContent;
+      else if(ad==='br') s+='\n';
+      else if(ad==='tab') s+=' ';
+      else gez(c);
+    } };
+    gez(par);
+    return s;
+  });
+  /* Boş paragraflar paragraf ayracına dönüşür; üçten fazla boş satır
+     bırakmak sufle akışında kocaman boşluk demek. */
+  return paras.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+/* ==/CEKIRDEK:docx.js== */
 
   /* ---- i18n (A.2b) ----
      Sözlük telefonla ORTAK: cekirdek/sozluk.js. Mac bugüne dek Türkçeye
@@ -3452,6 +3537,31 @@ const I18N={
     r.readAsText(f,'utf-8'); e.target.value='';
   };
   setupCams();
+  /* D.1 DOSYADAN METİN — Mac'te HİÇ YOKTU (yalnız JSON yedeği vardı).
+     .docx ayrı yolda: readAsText bir zip'i metin sanıp ikili çöp üretirdi. */
+  $('#metinDosya').onclick=()=>$('#metinFile').click();
+  $('#metinFile').onchange=async e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f){ return; }
+    const ekle=(baslik,metin)=>{
+      if(!metin.trim()){ toast('Dosya boş'); return; }
+      const id='f'+Date.now();
+      state.scripts.unshift({id, title:baslik||'Dosyadan', text:metin});
+      state.current=id;
+      $('#title').value=baslik||'Dosyadan'; $('#editor').value=metin;
+      renderScripts(); syncEditorToState(); buildWords(); updateStats(); reset(); save();
+      toast('İçe aktarıldı: '+(baslik||'Dosyadan'));
+    };
+    const ad=(f.name||'').replace(/\.[^.]+$/,'');
+    if(/\.docx$/i.test(f.name)){
+      try{ ekle(ad,(await docxMetni(f)).replace(/\r\n/g,'\n')); }
+      catch(err){ logErr('docx',err); toast('Word dosyası okunamadı — gerçekten .docx mi?'); }
+      e.target.value=''; return;
+    }
+    const r=new FileReader();
+    r.onload=()=>ekle(ad,String(r.result||'').replace(/\r\n/g,'\n'));
+    r.onerror=()=>toast('Dosya okunamadı');
+    r.readAsText(f,'utf-8'); e.target.value='';
+  };
   $('#restoreBk').onclick=restoreBackup;
   $('#takesBtn').onclick=showTakes;
   $('#sbDev').textContent=deviceLine();

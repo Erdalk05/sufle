@@ -236,5 +236,12 @@
   "kaynak": "mac",
   "bul": "      if(nb.size<1000) throw new Error('empty');",
   "koy": ""
+ },
+ {
+  "ad": "D1 docx: eksik document.xml sessizce geçiliyor",
+  "test": "128-docx-ice-aktarma.js",
+  "kaynak": "docx",
+  "bul": "  if(!hedef) throw new Error('document.xml yok');",
+  "koy": ""
  }
 ]

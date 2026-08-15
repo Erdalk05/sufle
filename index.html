@@ -903,7 +903,8 @@
     <button class="cancel" id="bkImport" data-i18n="bkImport">⬇︎ Dosyadan geri al</button>
   </div>
   <input type="file" id="bkFile" accept=".json,application/json" class="hidden">
-  <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,text/plain,text/markdown" class="hidden">
+  <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
+  <div class="hint" data-i18n="fromFileHint">Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.</div>
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" placeholder="Senaryo başlığı">
   <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
@@ -1254,7 +1255,11 @@ const I18N={
   /* Kamera seçimi (D.2) */
   camSel:'📷 Kamera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.'},
+  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
+  /* .docx içe aktarma (D.1) */
+  fromFileHint:'Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.',
+  /* Mac dosyadan metin düğmesi (D.1) */
+  mTFromFile:'Word veya metin dosyasından'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1362,7 +1367,11 @@ const I18N={
   /* Kamera seçimi (D.2) */
   camSel:'📷 Camera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.'}
+  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
+  /* .docx içe aktarma (D.1) */
+  fromFileHint:'Word (.docx), plain text, Markdown and subtitle files. For a PDF, open it, copy the text and use Paste.',
+  /* Mac dosyadan metin düğmesi (D.1) */
+  mTFromFile:'From a Word or text file'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1383,7 +1392,7 @@ const MSG={
   recErr:'Kayıt başlatılamadı',needCam:'Önce kamerayı aç',voiceNo:'Bu tarayıcı sesle takibi desteklemiyor',
   voiceOn:'🎤 Konuşmaya başla — metin seni takip edecek',wipeStuck:'Depo cevap vermiyor, silme yarıda kaldı',takeGone:'Bu çekim artık arşivde yok',wakeMulti:'· TEK kelime olmalı, boşluklu tetik hiçbir zaman tanınmaz',wakeBad:'· Bu tetik harf ya da rakam içermiyor, tanınamaz',vlSet:'🎤 Sesle takip dili',voiceOff:'Sesle takip kapalı',micDenied:'Mikrofon izni gerekli',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
-  exported:'Yedek indirildi',imported:'Geri yüklendi',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
+  exported:'Yedek indirildi',imported:'📄 Dosyadan alındı',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
   tDone:'Metin güncellendi',tUndone:'↺ Geri alındı',toolNoop:'Değişiklik gerekmedi',
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',mapReset:'Varsayılan eşleme geri geldi',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
@@ -1437,12 +1446,14 @@ const MSG={
   /* Cihaz dışı yedek (C.2) */
   bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi',
   /* Odak/pozlama kilidi (D.2) */
-  lockNo:'Bu kamera kilitlemeye izin vermiyor'},
+  lockNo:'Bu kamera kilitlemeye izin vermiyor',
+  /* .docx içe aktarma (D.1) */
+  docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
-  exported:'Backup downloaded',imported:'Restored',impErr:'Could not read file',noTakes:'No takes yet',
+  exported:'Backup downloaded',imported:'📄 Imported from file',impErr:'Could not read file',noTakes:'No takes yet',
   tDone:'Script updated',tUndone:'↺ Undone',toolNoop:'Nothing to change',
   emptyText:'Script is empty',takeKept:'Saved to My takes',mapReset:'Default key map restored',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
@@ -1496,9 +1507,87 @@ const MSG={
   /* Cihaz dışı yedek (C.2) */
   bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added',
   /* Odak/pozlama kilidi (D.2) */
-  lockNo:'This camera does not allow locking'}
+  lockNo:'This camera does not allow locking',
+  /* .docx içe aktarma (D.1) */
+  docxBad:'Word file could not be read — is it really a .docx?'}
 };
 /* ==/CEKIRDEK:mesajlar.js== */
+
+/* ==CEKIRDEK:docx.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/docx.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* .docx OKUYUCU — SIFIR BAĞIMLILIK. İki kabuğa da derle.py gömer.
+
+   NEDEN KENDİ ÇÖZÜCÜMÜZ: mammoth.js ~150 KB, "tek dosya sıfır bağımlılık"
+   sözünü bozardı (disleksi fontunda ve ffmpeg.wasm'de verilen aynı karar).
+
+   NEDEN MÜMKÜN: .docx bir ZIP ve içindeki word/document.xml düz XML. ZIP'in
+   merkezi dizinini okumak ~40 satır; açma işini tarayıcının YERLEŞİK
+   DecompressionStream("deflate-raw") API'si yapıyor — kütüphane değil,
+   platformun kendisi. Ölçüldü (Chrome): 719 baytlık gerçek bir .docx okundu,
+   Türkçe karakterler (ğüşıöç ĞÜŞİÖÇ) bozulmadan geldi.
+
+   PDF BİLEREK YOK: doğru bir PDF metin çıkarıcısı font kodlamaları, CID
+   eşlemeleri ve sıkıştırılmış akışlar yüzünden binlerce satır ve yine de
+   çoğu dosyada yanlış sonuç verir. Kullanıcıya dürüst yol söyleniyor:
+   PDF'i açıp metni kopyala, "📋 Yapıştır" ile getir. */
+async function docxMetni(dosya){
+  const bin=new Uint8Array(await dosya.arrayBuffer());
+  const dv=new DataView(bin.buffer, bin.byteOffset, bin.byteLength);
+  /* ZIP sonu kaydını SONDAN ara: dosya yorumu varsa kayıt en sonda olmaz. */
+  let eocd=-1;
+  for(let i=bin.length-22;i>=0 && i>bin.length-65558;i--){
+    if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; }
+  }
+  if(eocd<0) throw new Error('zip degil');
+  const adet=dv.getUint16(eocd+10,true), cdOfs=dv.getUint32(eocd+16,true);
+  let p=cdOfs, hedef=null;
+  for(let i=0;i<adet;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) throw new Error('bozuk dizin');
+    const adUz=dv.getUint16(p+28,true), ek=dv.getUint16(p+30,true), yorum=dv.getUint16(p+32,true);
+    const ad=new TextDecoder().decode(bin.subarray(p+46,p+46+adUz));
+    if(ad==='word/document.xml')
+      hedef={yerel:dv.getUint32(p+42,true), yontem:dv.getUint16(p+10,true), boyut:dv.getUint32(p+20,true)};
+    p+=46+adUz+ek+yorum;
+  }
+  if(!hedef) throw new Error('document.xml yok');
+  /* Veri konumu YEREL başlıktan okunur: merkezi dizindeki ek alan uzunluğu
+     yerel başlıkla AYNI OLMAK ZORUNDA DEĞİL — burayı karıştırmak dosyayı
+     birkaç bayt kaydırıp açmayı bozar. */
+  const ln=dv.getUint16(hedef.yerel+26,true), le=dv.getUint16(hedef.yerel+28,true);
+  const bas=hedef.yerel+30+ln+le;
+  const ham=bin.subarray(bas, bas+hedef.boyut);
+  let xml;
+  if(hedef.yontem===0) xml=new TextDecoder().decode(ham);
+  else if(hedef.yontem===8){
+    if(typeof DecompressionStream!=='function') throw new Error('acma yok');
+    const ds=new DecompressionStream('deflate-raw');
+    xml=await new Response(new Blob([ham]).stream().pipeThrough(ds)).text();
+  } else throw new Error('bilinmeyen sikistirma');
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  if(doc.getElementsByTagName('parsererror').length) throw new Error('xml bozuk');
+  const paras=[...doc.getElementsByTagName('w:p')].map(par=>{
+    let s='';
+    /* SIRAYI KORU: w:t, w:br ve w:tab belge sırasında gezilmeli. Yalnız w:t
+       toplansaydı satır sonları yutulurdu — ilk ölçümde "Satırsonrası" diye
+       birleşmiş çıktı, kusur oradan görüldü. */
+    const gez=(d)=>{ for(const c of d.childNodes){
+      if(c.nodeType!==1) continue;
+      const ad=c.localName;
+      if(ad==='t') s+=c.textContent;
+      else if(ad==='br') s+='\n';
+      else if(ad==='tab') s+=' ';
+      else gez(c);
+    } };
+    gez(par);
+    return s;
+  });
+  /* Boş paragraflar paragraf ayracına dönüşür; üçten fazla boş satır
+     bırakmak sufle akışında kocaman boşluk demek. */
+  return paras.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+/* ==/CEKIRDEK:docx.js== */
 const HELP={
  tr:`<b>Hızlı başlangıç</b><br>1) Metnini 📝 Senaryolar'dan yapıştır.<br>2) Kamerayı aç, telefonu göz hizasında tut.<br>3) Kırmızı düğme = kayıt (sufle otomatik başlar).<br><br>
 <b>Ekran hareketleri</b><br>• Dokun = başlat/duraklat<br>• Yukarı-aşağı sürükle = metinde ileri-geri sar<br>• Sağ kenarda sürükle = hızı canlı değiştir<br>• İki kez dokun = kilidi aç/kapat<br><br>
@@ -6587,8 +6676,20 @@ $('#undoTool').onclick=()=>{ if(undoText==null) return;
 $('#checkBtn').onclick=()=>{ $('#diffOut').innerHTML=''; renderCheck(); };
 $('#diffBtn').onclick=()=>{ $('#checkOut').innerHTML=''; renderDiff(); };
 $('#fileScript').onclick=()=>$('#txtFile').click();
-$('#txtFile').onchange=e=>{
+$('#txtFile').onchange=async e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
+  /* .docx AYRI YOL: FileReader.readAsText bir zip'i metin sanıp anlamsız
+     ikili çöp üretirdi ve kullanıcı "içe aktardım ama saçma çıktı" derdi. */
+  if(/\.docx$/i.test(f.name)){
+    try{
+      const txt=(await docxMetni(f)).replace(/\r\n/g,'\n');
+      if(!txt.trim()){ toast(m('emptyText')); e.target.value=''; return; }
+      const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
+      st.scripts.unshift(s); st.activeId=s.id; save();
+      fillEditor(); renderScripts(); buildContent(); reset(); toast(m('imported'));
+    }catch(err){ logErr('docx',err); toast(m('docxBad')); }
+    e.target.value=''; return;
+  }
   const r=new FileReader();
   r.onload=()=>{
     const txt=String(srtToText(String(r.result))||'').replace(/\r\n/g,'\n');
