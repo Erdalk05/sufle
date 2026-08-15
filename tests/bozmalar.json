@@ -1608,5 +1608,61 @@
   "kaynak": "mac",
   "bul": "    const vurguIdx = yon==='rtl' ? 0 : parts.length-1;",
   "koy": "    const vurguIdx = parts.length-1;"
+ },
+ {
+  "ad": "G.13 Macte kalınlık ayarı ölü (sabit değere döndü)",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "    font-size:var(--pFont);line-height:var(--pLine);font-weight:var(--pWeight);",
+  "koy": "    font-size:var(--pFont);line-height:var(--pLine);font-weight:650;"
+ },
+ {
+  "ad": "G.13 Macte harf aralığı ölü",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "    letter-spacing:var(--pTrack);color:var(--pText);",
+  "koy": "    color:var(--pText);"
+ },
+ {
+  "ad": "G.13 Macte kalınlık duruma bağlı değil",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "    root.style.setProperty('--pWeight',String(state.weight||650));",
+  "koy": "    0;"
+ },
+ {
+  "ad": "G.13 Macte harf aralığı em yerine ham sayı (CSS yok sayar)",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "    root.style.setProperty('--pTrack',((state.track||0)/10).toFixed(2)+'em');",
+  "koy": "    root.style.setProperty('--pTrack',String(state.track||0));"
+ },
+ {
+  "ad": "G.13 Macte mono düğmesi sözlükten koptu",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "          <button data-fam=\"mono\" data-i18n=\"mMono\">Mono</button>",
+  "koy": "          <button data-fam=\"mono\">Mono</button>"
+ },
+ {
+  "ad": "G.13 telefonda mono düğmesi yine çevrilmemiş",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "telefon",
+  "bul": "      <button data-f=\"mono\" data-i18n=\"mMono\">Mono</button>",
+  "koy": "      <button data-f=\"mono\">Mono</button>"
+ },
+ {
+  "ad": "G.13 sığdırma tabanı orana döndü (büyük puntoda kelime taşar)",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "telefon",
+  "bul": "const SIG_TABAN_PX=22;",
+  "koy": "const SIG_TABAN_PX=0;"
+ },
+ {
+  "ad": "G.13 Macte mono ailesinin font yığını yok (ölü seçenek)",
+  "test": "158-yazi-tipi-erisilebilirlik.js",
+  "kaynak": "mac",
+  "bul": "  body[data-fam=mono] #scroller{font-family:\"SF Mono\",Menlo,Consolas,monospace}",
+  "koy": "  /* kaldırıldı */"
  }
 ]

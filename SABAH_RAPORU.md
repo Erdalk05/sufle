@@ -237,6 +237,30 @@ göründü; sebep üründe değil ölçümdeydi ve düzeltilip yeniden ölçüld
 `tests/157` **77 iddia** + **11 kasıtlı bozma** (toplam 230). Dört test tezgâhı yeni imzaya
 göre süslü parantez sayan çıkarıcıya geçirildi.
 
+### ✅ G.13 — Erişilebilir yazı tipi: plan iki kez düzeltildi · v9.14
+
+**Plan yanlış bir başlangıçtan yola çıkıyordu.** "Bugün tek Disleksi anahtarı var, dört aile
+ekle" diyordu; ölçünce **telefonda da Mac'te de beş aile** çıktı (sistem · serif · yumuşak ·
+mono · disleksi). Grep sayımının kanıt olmadığı kuralının bir vakası daha.
+
+**GERÇEK TARAYICIDA ÖLÇÜLDÜ** (Chrome, 430 px, uzun Türkçe kelimelerle —
+`Cumhurbaşkanlığı`, `elektroensefalografi`, `akranlarından`, `gözlüğümü`):
+**5 aile × 3 punto (46/72/110) → bölünen kelime 0 · taşan 0**; küçültülen kelime 3–15,
+en küçük çizilen punto **31 px** (taban 22 px). Yani kabul ölçütü zaten sağlanıyordu ve
+sebebi mimari: G.1'in ölç-küçült döngüsü **canlı ölçüm** yapıyor, font tablosuna bakmıyor —
+bu yüzden aileden bağımsız doğru çalışıyor.
+
+**Gerçek boşluk başka yerdeydi ve kapatıldı:** Mac'te **kalınlık ve harf aralığı yoktu**
+(telefonda ikisi de vardı). Harf aralığı metni uzatır; yeniden ölçülmezse akışın sınırı eski
+kalır ve **son satırlar hiç görünmeden akış biter** — telefonda bir kez ölçülüp düzeltilmiş
+kusur, Mac'e aynı korumayla açıldı. Ayrıca telefonda **Mono düğmesi çevrilmemişti** (sabit
+metin), sözlüğe bağlandı.
+
+**Dış font kararı korundu:** OpenDyslexic (~150 KB/ağırlık) gömülmedi; test artık
+`@font-face`, Google Fonts ve `.woff` yokluğunu da kilitliyor.
+
+`tests/158` **75 iddia** + **8 kasıtlı bozma** (toplam 238).
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -626,10 +650,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **10 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **11 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5852 test** (gece başında 732) · yeni test dosyası: 39–157
+- **5918 test** (gece başında 732) · yeni test dosyası: 39–158
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

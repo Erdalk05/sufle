@@ -337,10 +337,17 @@ Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** ar
 - **Not:** arayüz çevirisi ayrı iş — bu madde yalnız **senaryo metni** için.
 - **Kapı:** `tests/157` **77 iddia** + **11 kasıtlı bozma** (toplam 230).
 
-### G.13 — Erişilebilir yazı tipi seçimi · **P2**
-- **Ne:** bugünkü tek "Disleksi" anahtarı → ölçülmüş **4 aile** (sistem fontlarından) +
-  harf aralığı/ağırlık. **Dış font indirilmeyecek** (OpenDyslexic 150 KB kararı korunuyor).
-- **Kabul:** her ailede 22–110 px arasında kelime bölünmesi 0 ve kontrast ihlali 0.
+### G.13 — Erişilebilir yazı tipi seçimi · **P2** · ✅ **BİTTİ (v9.14) — plan iki kez düzeltildi**
+- **Planın öncülü yanlıştı:** "tek Disleksi anahtarı" deniyordu; ölçünce **iki kabukta da beş
+  aile** çıktı (sistem · serif · yumuşak · mono · disleksi).
+- **GERÇEK TARAYICIDA ÖLÇÜLDÜ:** 5 aile × 3 punto (46/72/110) → **bölünen kelime 0 · taşan 0**,
+  en küçük çizilen punto 31 px (taban 22). Sebebi mimari: sığdırma **canlı ölçüm** yapıyor,
+  font tablosuna bakmıyor.
+- **Gerçek boşluk kapatıldı:** Mac'te **kalınlık ve harf aralığı yoktu**; eklendi ve aralık
+  değişince **yeniden ölçülüyor** (yoksa son satırlar görünmeden akış biterdi). Telefonda
+  **Mono düğmesi çevrilmemişti**, sözlüğe bağlandı.
+- **Dış font kararı korundu** ve teste bağlandı (`@font-face`, Google Fonts, `.woff` yok).
+- **Kapı:** `tests/158` **75 iddia** + **8 kasıtlı bozma** (toplam 238).
 
 ### G.14 — Kumanda bağlantı zinciri · **P2 (kısmi)**
 - **Ne:** teleprompter.com bağlantıyı kendi seçiyor (BT → LAN → internet). Bizde BT HID ve
