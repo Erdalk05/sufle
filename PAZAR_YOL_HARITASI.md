@@ -476,3 +476,4 @@ Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 | 27 | 2026-08-15 | **v9.9 hazır** + ulaşılabilirlik denetimi | 18/18 kapı ulaşılabilir · 329 anahtarın 0'ı ölü · not tarayıcıda doğrulandı | ✅ 8/8 YEŞİL |
 | 28 | 2026-08-15 | F.4: gizlilik politikası + manifest kimliği | ağ çağrısı 0 / analitik 0 ölçüldü · istisna saklanmadı · 40 iddia · 38 bozma | ✅ 8/8 YEŞİL |
 | 29 | 2026-08-15 | F.4 mağaza metni + F.1 ön ölçümü | 20 söz koda bağlı · abartma engeli kanıtlı · iOS sesle takip engeli bulundu | ✅ 8/8 YEŞİL |
+| 30 | 2026-08-15 | **v9.9 YAYINLANDI** — Erdal onayıyla | canlı VER=9.9 · sw v81 · md5 birebir · 11/11 özellik izi canlıda sayıldı | ✅ canlı |

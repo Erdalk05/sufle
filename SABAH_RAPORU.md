@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 📦 v9.9 HAZIR — yayınlanmadı, yayın kararı sende (2026-08-15 sabah)
+## ✅ v9.9 YAYINLANDI ve canlıdan doğrulandı (2026-08-15 sabah)
 
 Pazar yol haritasının **27 turu** tamamlandı (`PAZAR_YOL_HARITASI.md`). FAZ A, B, C, D kapandı.
 
@@ -18,9 +18,19 @@ otomatik yedek · disleksi yazı tipi · yüksek kontrast · hareket azaltma · 
 tavana 1.271 senaryo sığıyor — risk teorik), OpenDyslexic gömme (~150 KB/ağırlık),
 `ffmpeg.wasm`, `mammoth.js`, sanal kamera (tarayıcıdan **yazılamaz**).
 
-Kapı **8 adım**, 37 kanıtlı bozma, 29 kanıtlı test dosyası. Ulaşılabilirlik denetimi: **18/18 kapı
-açık, 329 sözlük anahtarının 0'ı ölü**. **Onay verirsen push + canlı doğrulama protokolü
-uygulanacak.**
+Kapı **8 adım**, 38 kanıtlı bozma, 30 kanıtlı test dosyası. Ulaşılabilirlik denetimi: **18/18 kapı
+açık, 329 sözlük anahtarının 0'ı ölü**.
+
+**Yayın yapıldı ve canlıdan doğrulandı:** `VER='9.9'` · `sufle-v81` · canlı dosya deponun
+kopyasıyla **md5 birebir** · bu gecenin **11 özelliğinin 11'inin izi** canlı dosyada tek tek
+sayıldı (mod rozeti, kısayol kartı, karşılama eylemi, dosyaya yedek, docx okuyucu, odak kilidi,
+odak modu, SVG ikon, gizlilik metni, rol renkleri, sabit sayı gösterimi).
+`.son-yayin` **doğrulamadan sonra** yazıldı; kapı şimdi doğru şekilde kırmızı (aynı sürüm tekrar
+yayınlanmasın diye), sonraki sürüm artışında yeşile döner.
+
+**🔴 Senin kararını bekleyen tek şey:** iOS WKWebView'da `SpeechRecognition` YOK. Capacitor kabuğu
+kurulursa iOS'ta **sesle takip kaybolur**. Üç yol `MAGAZA_TEKNIK.md` dosyasında; kabuğu bu karar
+verilmeden kurmayacağım.
 
 ## Tek cümlede
 
