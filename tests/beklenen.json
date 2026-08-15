@@ -9,7 +9,7 @@
  "08-kaydirma-motoru.js": 22,
  "09-sesli-komut.js": 23,
  "10-shader-ve-bithizi.js": 17,
- "11-ses-studyosu-ve-filtre.js": 73,
+ "11-ses-studyosu-ve-filtre.js": 74,
  "12-arama-profil-altyazi.js": 55,
  "13-kayit-yolu-ve-durum.js": 74,
  "14-nefesle-akis-ve-yuzen.js": 45,
@@ -153,5 +153,6 @@
  "152-onizleme-kartlari.js": 93,
  "153-sureye-sigdir.js": 87,
  "154-marka-kiti.js": 169,
- "155-klip-onerileri.js": 119
+ "155-klip-onerileri.js": 119,
+ "156-muzik-yatagi.js": 121
 }

@@ -41,6 +41,7 @@ KAYNAK = {
     'tempo': (os.path.join(REPO, 'cekirdek', 'tempo.js'), 'SUFLE_TEMPO'),
     'marka': (os.path.join(REPO, 'cekirdek', 'marka.js'), 'SUFLE_MARKA'),
     'klip': (os.path.join(REPO, 'cekirdek', 'klip.js'), 'SUFLE_KLIP'),
+    'muzik': (os.path.join(REPO, 'cekirdek', 'muzik.js'), 'SUFLE_MUZIK'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

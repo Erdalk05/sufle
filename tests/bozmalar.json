@@ -1447,5 +1447,89 @@
   "kaynak": "mac",
   "bul": "      if(t) harita[i+1]=t;",
   "koy": "      if(t) harita[i]=t;"
+ },
+ {
+  "ad": "G.5 iOS engeli kaldırıldı (sessiz çekim riski)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(iosMu) return {calisir:false, sebep:'ios'};",
+  "koy": "  if(false) return {calisir:false, sebep:'ios'};"
+ },
+ {
+  "ad": "G.5 ham ses açıkken de müzik karışıyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(hamSes) return {calisir:false, sebep:'ham'};",
+  "koy": "  if(false) return {calisir:false, sebep:'ham'};"
+ },
+ {
+  "ad": "G.5 dosya yokken de çalışır deniyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(!dosyaVar) return {calisir:false, sebep:'dosyaYok'};",
+  "koy": "  if(false) return {calisir:false, sebep:'dosyaYok'};"
+ },
+ {
+  "ad": "G.5 olumsuz durum sebepsiz dönüyor (sessiz kapalı)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(iosMu) return {calisir:false, sebep:'ios'};",
+  "koy": "  if(iosMu) return {calisir:false, sebep:null};"
+ },
+ {
+  "ad": "G.5 kısılma sert geçişli (müzik pompalıyor)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  else konusma=(r-MUZIK_KIS_ESIK)/bant;",
+  "koy": "  else konusma=1;"
+ },
+ {
+  "ad": "G.5 konuşurken müzik hiç kısılmıyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  return t*(1-o*konusma);",
+  "koy": "  return t;"
+ },
+ {
+  "ad": "G.5 müzik düzeyi sınırlanmıyor (ses patlar)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  const t=Math.max(0, Math.min(1, +taban||0));",
+  "koy": "  const t=(+taban||0);"
+ },
+ {
+  "ad": "G.5 ses dosyası olmayan dosya kabul ediliyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(!/^audio\\//.test(t)) return {ok:false, sebep:'tur'};",
+  "koy": "  if(false) return {ok:false, sebep:'tur'};"
+ },
+ {
+  "ad": "G.5 müzik dosyası boyut kapısı yok",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if((+boyut||0) > MUZIK_MAX) return {ok:false, sebep:'boyut'};",
+  "koy": "  if(false) return {ok:false, sebep:'boyut'};"
+ },
+ {
+  "ad": "G.5 telefonda iOS bayrağı sabit false geçiliyor (iPhonede sessiz çekim)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "telefon",
+  "bul": "  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl).calisir;",
+  "koy": "  return !!mk.acik && muzikDurum(false, !!st.rawAudio, !!muzikEl).calisir;"
+ },
+ {
+  "ad": "G.5 zincir durunca müzik hoparlörden çalmaya devam ediyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "telefon",
+  "bul": "     deponun \"ödünç alınan iz\" dersinin müzik hâli. */\n  muzikDurdur();",
+  "koy": "     deponun \"ödünç alınan iz\" dersinin müzik hâli. */\n  0;"
+ },
+ {
+  "ad": "G.5 kayıt sürerken ses zinciri yeniden kuruluyor (çekimin sesi kesilir)",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "telefon",
+  "bul": "  if(rec && rec.state==='recording'){ toast(m('muzikRec')); return false; }",
+  "koy": "  if(false){ return false; }"
  }
 ]

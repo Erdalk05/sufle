@@ -179,6 +179,37 @@ veriyle koşuyordu ve seçilen kliplerin hepsi bölüm sebepli çıkınca **iddi
 
 `tests/155` **117 iddia** + **12 kasıtlı bozma** (toplam 207).
 
+### ✅ G.5 — Müzik yatağı · v9.14 · **iOS kararı ölçüme dayandı**
+
+**Önce risk ölçüldü, sonra kod yazıldı.** Bu depoda iPhone'da **kayıt sırasında** mikrofonu
+Web Audio'ya bağlamak MediaRecorder'ın ses yazmasını durduruyor; Ses Stüdyosu bu yüzden iOS'ta
+hiç açılmıyor. Müzik **aynı zincire** bağlandığı için aynı riski taşıyor.
+
+**Karar (sen uyurken alındı, sebebi yazılı):** müzik iOS'ta **açılmıyor** ve sebebi arayüzde
+tam olarak yazıyor. Alternatif "yine de aç" olurdu; bedeli **sessiz çekim** — bu üründeki en
+pahalı kayıp, çünkü kullanıcı ancak oynatınca fark eder ve o an konuşma bitmiştir.
+
+**Gelen (masaüstü ve Android):** cihazdan müzik seç, çekime karışsın, **konuşurken kendiliğinden
+kısılsın**. Kısılma için ikinci bir analiz zinciri kurulmadı — gürültü kapısının **zaten
+ölçtüğü** RMS kullanılıyor. Geçiş yumuşak: eşiğin hemen üstünde ani düşüş müziği pompalatır.
+
+**Dosya cihazdan çıkmıyor ve saklanmıyor:** nesne adresi kullanılıyor, iş bitince bırakılıyor,
+localStorage'a yazılmıyor (tavan ~5 MB ve orada senaryolar duruyor). Kullanıcı her oturumda
+yeniden seçiyor ve arayüz bunu açıkça söylüyor.
+
+**Üç koruma daha:** ses zinciri kapanırken müzik de **susuyor** (yoksa `<audio>` hoparlörden
+çalmaya devam eder ve mikrofona sızar) · kayıt sürerken zincir **değiştirilmiyor** · Mac'te
+olmayan "ham ses" alanını okumak kapı tarafından yakalandı ve kaldırıldı.
+
+**Bozma turu testimi ÜÇ yerde çürüttü:** ① "iOS bayrağı geçiliyor" iddiası tek çağrıya bakıyordu,
+diğeri sabit `false` olsa geçerdi — artık **her çağrı** ölçülüyor; ② "zincir durunca müzik
+duruyor" iddiası dosya genelinde arıyordu ve başka bir fonksiyondaki çağrıya takılıyordu;
+③ çekirdek modül kabuğa gömülü olduğu için **fonksiyon tanımı** da çağrı sanılıyordu.
+
+`tests/156` **113 iddia** + **12 kasıtlı bozma** (toplam 219). `tests/11`in "durum tam
+sıfırlanıyor" deseni nesnenin yazılışına kilitliydi; iddiaya taşındı ve **güçlendi** (müzik
+kazancının da sıfırlandığı ayrıca ölçülüyor).
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -568,10 +599,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **8 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **9 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5661 test** (gece başında 732) · yeni test dosyası: 39–155
+- **5783 test** (gece başında 732) · yeni test dosyası: 39–156
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

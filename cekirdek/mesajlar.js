@@ -7,7 +7,14 @@
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',
+ tr:{muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
+  muzikBuyuk:'Müzik dosyası çok büyük — 20 MB altında bir dosya seç',
+  muzikSet:'Müzik eklendi: {a}',muzikCleared:'Müzik kaldırıldı',
+  muzikIos:'iPhone ve iPadde müzik karıştırılamıyor: kayıt sırasında ses işleme MediaRecorderın sesini kesiyor ve çekim SESSİZ çıkıyor. Bu yüzden kapalı tutuluyor.',
+  muzikHam:'Ham ses açıkken müzik karıştırılamaz — ham ses hiçbir işleme yapmaz. Ses Stüdyosunu aç ya da ham sesi kapat.',
+  muzikDosyaYok:'Önce bir müzik dosyası seç',
+  muzikRec:'Kayıt sürerken ses zinciri değiştirilemez — çekimin sesi kesilirdi. Değişiklik sonraki çekimde geçerli.',
+  klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',
   klipSecildi:'Klip seçildi: {a} — sınırları değiştirip Kes ve uygula diyebilirsin',
   logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',
   logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',
@@ -80,7 +87,14 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',
+ en:{muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
+  muzikBuyuk:'The music file is too large — pick one under 20 MB',
+  muzikSet:'Music added: {a}',muzikCleared:'Music removed',
+  muzikIos:'Mixing music is not possible on iPhone or iPad: audio processing during a recording stops MediaRecorder from writing sound, so the take comes out SILENT. That is why it stays off.',
+  muzikHam:'Music cannot be mixed while raw audio is on — raw audio applies no processing. Turn on the Audio Studio or turn raw audio off.',
+  muzikDosyaYok:'Pick a music file first',
+  muzikRec:'The audio chain cannot change while recording — the take would lose its sound. The change applies to the next take.',
+  klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',
   klipSecildi:'Clip selected: {a} — adjust the edges if you like, then Cut and apply',
   logoTur:'That file is not an image — pick a PNG or a JPEG',
   logoBuyuk:'The logo is too large — pick a smaller or simpler image',

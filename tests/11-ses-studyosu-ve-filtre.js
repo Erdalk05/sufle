@@ -107,7 +107,15 @@ ok('ayar sayfası açılınca ön koşullar yeniden değerlendiriliyor',
 // stopAudioFx her zaman güvenli olmalı: hiç kurulmamışken çağrılabiliyor mu
 const sa=cikar(src,/function stopAudioFx\(\)\{[\s\S]*?\n\}/,'stopAudioFx');
 ok('stopAudioFx kurulmamışken de güvenli', /if\(afx\.iv\)/.test(sa) && /if\(afx\.ctx\)/.test(sa));
-ok('stopAudioFx durumu tam sıfırlıyor', /afx=\{ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1\}/.test(sa));
+/* G.5: müzik kazancı da duruma girdi, yani nesnenin YAZILIŞI uzadı.
+   İDDİA AYNI: her alan sıfırlanıyor — bir alan kalırsa sonraki zincir
+   eski bir düğüme bağlanır ve ses sessizce yanlış yerden akar. */
+{
+  const alanlar=['ctx:null','dest:null','gate:null','an:null','iv:0','buf:null','open:1'];
+  const sifirla=(sa.match(/afx=\{[^}]*\}/g)||[]).pop()||'';
+  ok('stopAudioFx durumu tam sıfırlıyor', alanlar.every(a=>sifirla.indexOf(a)>=0));
+  ok('müzik kazancı da sıfırlanıyor', /muzikKazanc:null/.test(sifirla));
+}
 
 // ---------- SESSİZ KAYIT (v8.8) — Erdal: "mac bilgisayarda ses yok" ----------
 // Kök neden: Chrome'da yeni AudioContext ASKIDA doğuyor ve askıdaki bağlam

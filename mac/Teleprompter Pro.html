@@ -629,6 +629,16 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="tgKaraoke">Konuşulan kelimeyi vurgula</span><div class="sw2" data-t="capKaraoke"></div></div>
         <div class="field" style="margin-top:10px">
+          <div class="top" style="margin-top:10px"><label data-i18n="muzikTitle">Müzik yatağı</label><span class="v" id="muzikDurumTxt">—</span></div>
+          <button class="btn" id="muzikPick" style="width:100%" data-i18n="muzikPick">Müzik seç</button>
+          <button class="btn" id="muzikClear" style="width:100%;margin-top:6px" data-i18n="muzikClear">Müziği kaldır</button>
+          <input type="file" id="muzikFile" accept="audio/*" style="display:none">
+          <div class="toggle" style="margin-top:8px"><span data-i18n="tgMuzik">Müziği çekime karıştır</span><div class="sw2" id="muzikSw"></div></div>
+          <div class="top" style="margin-top:8px"><label for="muzikSes" data-i18n="muzikSes">Müzik düzeyi</label><span class="v" id="muzikSesV">35</span></div>
+          <input type="range" id="muzikSes" min="0" max="100" value="35">
+          <div class="top" style="margin-top:8px"><label for="muzikKis" data-i18n="muzikKis">Konuşurken kıs</label><span class="v" id="muzikKisV">80</span></div>
+          <input type="range" id="muzikKis" min="0" max="100" value="80">
+          <div class="rb-note" data-i18n="muzikHint">Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.</div>
           <div class="top"><label data-i18n="fxTitle">Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
           <div class="seg" id="fxSeg">
             <button data-fx="off" data-i18n="aspNone">Kapalı</button>
@@ -1018,6 +1028,10 @@ const I18N={
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
   capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',
+  muzikTitle:'Müzik yatağı',muzikPick:'Müzik seç',muzikClear:'Müziği kaldır',tgMuzik:'Müziği çekime karıştır',
+  muzikSes:'Müzik düzeyi',muzikKis:'Konuşurken kıs',muzikIosKisa:'iPhone/iPad destekleyemiyor',
+  muzikHamKisa:'ham ses açık',muzikYokKisa:'dosya seçilmedi',
+  muzikHint:'Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.',
   klipTitle:'Klip önerileri',
   klipHint:'Öneriler senaryonun kendisinden çıkarıldı — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alındı. Dokununca budama kutusuna yüklenir, sınırları değiştirebilirsin.',
   markaTitle:'Marka kiti',logoPick:'Logo seç',logoClear:'Logoyu kaldır',logoPos:'Logo konumu',
@@ -1149,6 +1163,10 @@ const I18N={
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
   capTema:'Caption look',kartOrnek:'You record as you read',
+  muzikTitle:'Music bed',muzikPick:'Pick music',muzikClear:'Remove the music',tgMuzik:'Mix music into the take',
+  muzikSes:'Music level',muzikKis:'Duck while speaking',muzikIosKisa:'not possible on iPhone or iPad',
+  muzikHamKisa:'raw audio is on',muzikYokKisa:'no file picked',
+  muzikHint:'The music is mixed into the recording and ducks by itself while you speak. The file never leaves your device and is not stored — pick it again each session.',
   klipTitle:'Clip suggestions',
   klipHint:'The suggestions come from the script itself — section headings, emphasis marks and reading times. No AI, and the titles are taken from your script word for word. Tap one to load it into the trim box, where you can still adjust the edges.',
   markaTitle:'Brand kit',logoPick:'Pick a logo',logoClear:'Remove the logo',logoPos:'Logo position',
@@ -1312,8 +1330,8 @@ async function docxMetni(dosya){
    Sonu boşlukla biten anahtarlar değer eklenerek kullanılıyor; o boşluk
    KASITLI, silinirse metin sayıya yapışır. */
 const MMSG={
- tr:{klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',klipSecildi:'Klip seçildi: {a} — sınırları değiştirip Kes ve uygula diyebilirsin',logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',logoCleared:'Logo kaldırıldı',fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',fitNoText:'Senaryo boş — sığdırılacak metin yok',fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',fitTooFast:'Bu hedefe sığmaz: {g} WPM gerekiyor, en yüksek {u}. Metni kısalt ya da hedefi büyüt.',fitTooSlow:'Metin bu hedef için çok kısa: {g} WPM gerekiyor, en düşük {a}. Hız en düşüğe çekildi.',bkNone:'Otomatik yedek yok',bkUnread:'Yedek okunamadı',lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.',scBusyRec:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',resumed:'Kaldığın yerden',noTrash:'Geri getirilecek senaryo yok',trashBack:'↺ Senaryo geri geldi',lastOne:'En az bir senaryo kalmalı',sureDel:'⚠️ Emin misin? Silmek için tekrar bas',noChange:'Değişiklik gerekmedi',camBusyChange:'Kayıt sürerken kamera değiştirilemez',camDenied:'📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile',camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\\\'u kapat ve tekrar dene',camNone:'📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç',camFirstPl:'Önce kamerayı açın',noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek',cropFail:'⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor',recCut:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',cropDied:'⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat',noWebGL:'Yeşil ekran için WebGL yok — yalnız kırpma',camFirst:'Önce kamerayı aç',noTake:'Kaydedilecek çekim yok',noArchive:'Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de',noNumber:'Numara bulunamadı',deleted:'Silindi',noVideo:'Bu çekimin videosu bulunamadı',noPip:'Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)',pipOn:'Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle',trimNo:'Bu tarayıcı kesmeye izin vermiyor',trimShort:'Seçim çok kısa',trimFail:'Kesilemedi — çekim olduğu gibi duruyor',shareCancel:'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin',newTab:'Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet',audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',noteDown:'📝 Yayın notu indirildi',noCaps:'Altyazı yok — kayıt sırasında sufle akmamış',pipBusyRec:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.',undone:'↺ Geri alındı',ratio916:'Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor',bgCleared:'Arka plan görseli kaldırıldı',bgTooBig:'Görsel çok büyük',bgLoaded:'Arka plan görseli yüklendi',voiceLost:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',voiceNo:'Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın',micDenied:'🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile',voiceOn:'Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"',noWifi:'📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.',exported:'Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)',impEmpty:'Dosyada senaryo yok',impBad:'Dosya okunamadı — Sufle yedeği mi?',fileBad:'Dosya okunamadı',fileEmpty:'Dosya boş',docxBad:'Word dosyası okunamadı — gerçekten .docx mi?',obsCopied:'Adres kopyalandı',obsCopyFail:'Kopyalanamadı — adresi elle seçebilirsin',bkBack:'Yedekten dönüldü — ',eyeMoved:'👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar',textEnd:'Metin bitti',camOn:'Kamera açık — ',camNoAccess:'Kameraya erişilemedi: ',recFail:'Kayıt başlatılamadı: ',pipFail:'Yüzen pencere açılamadı: ',trimDone:'Kesildi — yeni süre ',downloading:'İndiriliyor: ',saveFail:'Kaydedilemedi: ',imported:'İçe aktarıldı: ',scNoHit:'Eşleşen senaryo yok',mapResetOk:'Tuş eşlemesi varsayılana döndü',diffCleared:'Zorlanma haritası sıfırlandı'},
- en:{klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',klipSecildi:'Clip selected: {a} — adjust the edges if you like, then Cut and apply',logoTur:'That file is not an image — pick a PNG or a JPEG',logoBuyuk:'The logo is too large — pick a smaller or simpler image',logoSet:'Logo added — it is burned into the video while the composite is on',logoCleared:'Logo removed',fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',fitNoText:'The script is empty — there is no text to fit',fitOk:'Pace set to {w} WPM — the script now takes about {s}',fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',fitTooFast:'It does not fit: {g} WPM would be needed and the maximum is {u}. Shorten the script or raise the target.',fitTooSlow:'The script is too short for this target: {g} WPM would be needed and the minimum is {a}. Pace set to the minimum.',bkNone:'No automatic backup yet',bkUnread:'The backup could not be read',lsFull:'⚠️ Storage is full — the script was NOT saved. Delete scripts you no longer use.',scBusyRec:'You cannot switch scripts while recording — stop the recording first',resumed:'Resumed where you left off',noTrash:'There is no deleted script to restore',trashBack:'↺ Script restored',lastOne:'At least one script must remain',sureDel:'⚠️ Are you sure? Press again to delete',noChange:'Nothing needed changing',camBusyChange:'You cannot switch cameras while recording',camDenied:'📷 Camera permission was not granted — allow it from the camera icon in the address bar, then reload the page',camBusy:'📷 The camera is in use by another app — close FaceTime, Zoom or Photo Booth and try again',camNone:'📷 No suitable camera found — if another camera is connected, select it',camFirstPl:'Turn the camera on first',noMic:'🔇 No microphone — the video will be recorded without sound',cropFail:'⚠️ Cropped recording could not start — recording at the camera ratio instead',recCut:'⛔ The recording stopped early — everything up to that point is kept',vidDied:'⛔ VIDEO STOPPED — audio continues but the video froze, end the recording',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the recording',cropDied:'⚠️ Cropping failed (memory) — stop the recording and start again',noWebGL:'No WebGL for the green screen — cropping only',camFirst:'Turn the camera on first',noTake:'There is no take to save',noArchive:'The archive is empty — use ⭐ Keep in archive on the result screen',noNumber:'Number not found',deleted:'Deleted',noVideo:'The video for this take could not be found',noPip:'This browser does not support the floating window — open it in Chrome or Edge (Safari does not support it)',pipOn:'Floating prompter opened — drag the window over your call',trimNo:'This browser does not allow trimming',trimShort:'The selection is too short',trimFail:'Could not trim — your take is untouched',shareCancel:'Sharing was cancelled — the file is still there, you can try again',newTab:'Opened in a new tab — right click, then Save Video As',audClip:'⚠️ The audio is clipping — move back from the microphone or speak more calmly',noteDown:'📝 Publish note downloaded',noCaps:'No subtitles — the prompter did not scroll during the recording',pipBusyRec:'⛔ This window cannot open while recording — the prompter and the video would freeze. Stop the recording first.',undone:'↺ Undone',ratio916:'Ratio set to 9:16 — this feature does not work at the free ratio',bgCleared:'Background image removed',bgTooBig:'The image is too large',bgLoaded:'Background image loaded',voiceLost:'⛔ Voice follow disconnected — turn it back on with 🎤',voiceNo:'This browser does not support voice follow — please use Chrome',micDenied:'🎤 No microphone permission — allow it from the icon in the address bar, then reload the page',voiceOn:'Speak — the text follows you · commands: "prompter start / stop / faster / rewind"',noWifi:'📵 The Wi-Fi address of this Mac was not found — your phone cannot reach it. Connect the Mac to Wi-Fi and restart the server.',exported:'Exported — open it on your phone with Scripts, then Import (Shift-click here to import)',impEmpty:'There are no scripts in the file',impBad:'The file could not be read — is it a Sufle backup?',fileBad:'The file could not be read',fileEmpty:'The file is empty',docxBad:'The Word file could not be read — is it really a .docx?',obsCopied:'Address copied',obsCopyFail:'Could not copy — you can select the address by hand',bkBack:'Restored from backup — ',eyeMoved:'👁 The reading line moved under the camera — step back a little as well, distance helps most',textEnd:'End of the text',camOn:'Camera on — ',camNoAccess:'The camera could not be opened: ',recFail:'The recording could not start: ',pipFail:'The floating window could not open: ',trimDone:'Trimmed — new length ',downloading:'Downloading: ',saveFail:'Could not save: ',imported:'Imported: ',scNoHit:'No matching script',mapResetOk:'Key map reset to defaults',diffCleared:'Struggle map cleared'}
+ tr:{muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',muzikBuyuk:'Müzik dosyası çok büyük — 20 MB altında bir dosya seç',muzikSet:'Müzik eklendi: {a}',muzikCleared:'Müzik kaldırıldı',muzikDosyaYok:'Önce bir müzik dosyası seç',muzikRec:'Kayıt sürerken ses zinciri değiştirilemez — çekimin sesi kesilirdi. Değişiklik sonraki çekimde geçerli.',klipBolum:'bölüm başlangıcı',klipVurgu:'{n} vurgu işareti',klipAcilis:'çekimin açılışı',klipCumle:'cümle sınırı',klipSecildi:'Klip seçildi: {a} — sınırları değiştirip Kes ve uygula diyebilirsin',logoTur:'Bu dosya bir görsel değil — PNG ya da JPEG seç',logoBuyuk:'Logo çok büyük — daha küçük ya da daha sade bir görsel seç',logoSet:'Logo eklendi — kompozit açıkken videoya işlenir',logoCleared:'Logo kaldırıldı',fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',fitNoText:'Senaryo boş — sığdırılacak metin yok',fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',fitTooFast:'Bu hedefe sığmaz: {g} WPM gerekiyor, en yüksek {u}. Metni kısalt ya da hedefi büyüt.',fitTooSlow:'Metin bu hedef için çok kısa: {g} WPM gerekiyor, en düşük {a}. Hız en düşüğe çekildi.',bkNone:'Otomatik yedek yok',bkUnread:'Yedek okunamadı',lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.',scBusyRec:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',resumed:'Kaldığın yerden',noTrash:'Geri getirilecek senaryo yok',trashBack:'↺ Senaryo geri geldi',lastOne:'En az bir senaryo kalmalı',sureDel:'⚠️ Emin misin? Silmek için tekrar bas',noChange:'Değişiklik gerekmedi',camBusyChange:'Kayıt sürerken kamera değiştirilemez',camDenied:'📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile',camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\\\'u kapat ve tekrar dene',camNone:'📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç',camFirstPl:'Önce kamerayı açın',noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek',cropFail:'⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor',recCut:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',cropDied:'⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat',noWebGL:'Yeşil ekran için WebGL yok — yalnız kırpma',camFirst:'Önce kamerayı aç',noTake:'Kaydedilecek çekim yok',noArchive:'Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de',noNumber:'Numara bulunamadı',deleted:'Silindi',noVideo:'Bu çekimin videosu bulunamadı',noPip:'Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)',pipOn:'Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle',trimNo:'Bu tarayıcı kesmeye izin vermiyor',trimShort:'Seçim çok kısa',trimFail:'Kesilemedi — çekim olduğu gibi duruyor',shareCancel:'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin',newTab:'Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet',audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',noteDown:'📝 Yayın notu indirildi',noCaps:'Altyazı yok — kayıt sırasında sufle akmamış',pipBusyRec:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.',undone:'↺ Geri alındı',ratio916:'Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor',bgCleared:'Arka plan görseli kaldırıldı',bgTooBig:'Görsel çok büyük',bgLoaded:'Arka plan görseli yüklendi',voiceLost:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',voiceNo:'Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın',micDenied:'🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile',voiceOn:'Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"',noWifi:'📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.',exported:'Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)',impEmpty:'Dosyada senaryo yok',impBad:'Dosya okunamadı — Sufle yedeği mi?',fileBad:'Dosya okunamadı',fileEmpty:'Dosya boş',docxBad:'Word dosyası okunamadı — gerçekten .docx mi?',obsCopied:'Adres kopyalandı',obsCopyFail:'Kopyalanamadı — adresi elle seçebilirsin',bkBack:'Yedekten dönüldü — ',eyeMoved:'👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar',textEnd:'Metin bitti',camOn:'Kamera açık — ',camNoAccess:'Kameraya erişilemedi: ',recFail:'Kayıt başlatılamadı: ',pipFail:'Yüzen pencere açılamadı: ',trimDone:'Kesildi — yeni süre ',downloading:'İndiriliyor: ',saveFail:'Kaydedilemedi: ',imported:'İçe aktarıldı: ',scNoHit:'Eşleşen senaryo yok',mapResetOk:'Tuş eşlemesi varsayılana döndü',diffCleared:'Zorlanma haritası sıfırlandı'},
+ en:{muzikTur:'That file is not audio — pick an MP3, M4A or WAV',muzikBuyuk:'The music file is too large — pick one under 20 MB',muzikSet:'Music added: {a}',muzikCleared:'Music removed',muzikDosyaYok:'Pick a music file first',muzikRec:'The audio chain cannot change while recording — the take would lose its sound. The change applies to the next take.',klipBolum:'start of a section',klipVurgu:'{n} emphasis marks',klipAcilis:'opening of the take',klipCumle:'sentence boundary',klipSecildi:'Clip selected: {a} — adjust the edges if you like, then Cut and apply',logoTur:'That file is not an image — pick a PNG or a JPEG',logoBuyuk:'The logo is too large — pick a smaller or simpler image',logoSet:'Logo added — it is burned into the video while the composite is on',logoCleared:'Logo removed',fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',fitNoText:'The script is empty — there is no text to fit',fitOk:'Pace set to {w} WPM — the script now takes about {s}',fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',fitTooFast:'It does not fit: {g} WPM would be needed and the maximum is {u}. Shorten the script or raise the target.',fitTooSlow:'The script is too short for this target: {g} WPM would be needed and the minimum is {a}. Pace set to the minimum.',bkNone:'No automatic backup yet',bkUnread:'The backup could not be read',lsFull:'⚠️ Storage is full — the script was NOT saved. Delete scripts you no longer use.',scBusyRec:'You cannot switch scripts while recording — stop the recording first',resumed:'Resumed where you left off',noTrash:'There is no deleted script to restore',trashBack:'↺ Script restored',lastOne:'At least one script must remain',sureDel:'⚠️ Are you sure? Press again to delete',noChange:'Nothing needed changing',camBusyChange:'You cannot switch cameras while recording',camDenied:'📷 Camera permission was not granted — allow it from the camera icon in the address bar, then reload the page',camBusy:'📷 The camera is in use by another app — close FaceTime, Zoom or Photo Booth and try again',camNone:'📷 No suitable camera found — if another camera is connected, select it',camFirstPl:'Turn the camera on first',noMic:'🔇 No microphone — the video will be recorded without sound',cropFail:'⚠️ Cropped recording could not start — recording at the camera ratio instead',recCut:'⛔ The recording stopped early — everything up to that point is kept',vidDied:'⛔ VIDEO STOPPED — audio continues but the video froze, end the recording',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the recording',cropDied:'⚠️ Cropping failed (memory) — stop the recording and start again',noWebGL:'No WebGL for the green screen — cropping only',camFirst:'Turn the camera on first',noTake:'There is no take to save',noArchive:'The archive is empty — use ⭐ Keep in archive on the result screen',noNumber:'Number not found',deleted:'Deleted',noVideo:'The video for this take could not be found',noPip:'This browser does not support the floating window — open it in Chrome or Edge (Safari does not support it)',pipOn:'Floating prompter opened — drag the window over your call',trimNo:'This browser does not allow trimming',trimShort:'The selection is too short',trimFail:'Could not trim — your take is untouched',shareCancel:'Sharing was cancelled — the file is still there, you can try again',newTab:'Opened in a new tab — right click, then Save Video As',audClip:'⚠️ The audio is clipping — move back from the microphone or speak more calmly',noteDown:'📝 Publish note downloaded',noCaps:'No subtitles — the prompter did not scroll during the recording',pipBusyRec:'⛔ This window cannot open while recording — the prompter and the video would freeze. Stop the recording first.',undone:'↺ Undone',ratio916:'Ratio set to 9:16 — this feature does not work at the free ratio',bgCleared:'Background image removed',bgTooBig:'The image is too large',bgLoaded:'Background image loaded',voiceLost:'⛔ Voice follow disconnected — turn it back on with 🎤',voiceNo:'This browser does not support voice follow — please use Chrome',micDenied:'🎤 No microphone permission — allow it from the icon in the address bar, then reload the page',voiceOn:'Speak — the text follows you · commands: "prompter start / stop / faster / rewind"',noWifi:'📵 The Wi-Fi address of this Mac was not found — your phone cannot reach it. Connect the Mac to Wi-Fi and restart the server.',exported:'Exported — open it on your phone with Scripts, then Import (Shift-click here to import)',impEmpty:'There are no scripts in the file',impBad:'The file could not be read — is it a Sufle backup?',fileBad:'The file could not be read',fileEmpty:'The file is empty',docxBad:'The Word file could not be read — is it really a .docx?',obsCopied:'Address copied',obsCopyFail:'Could not copy — you can select the address by hand',bkBack:'Restored from backup — ',eyeMoved:'👁 The reading line moved under the camera — step back a little as well, distance helps most',textEnd:'End of the text',camOn:'Camera on — ',camNoAccess:'The camera could not be opened: ',recFail:'The recording could not start: ',pipFail:'The floating window could not open: ',trimDone:'Trimmed — new length ',downloading:'Downloading: ',saveFail:'Could not save: ',imported:'Imported: ',scNoHit:'No matching script',mapResetOk:'Key map reset to defaults',diffCleared:'Struggle map cleared'}
 };
 /* ==/CEKIRDEK:mac-mesajlar.js== */
 
@@ -1443,7 +1461,7 @@ const MMSG={
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,capKaraoke:true,target:0,marka:{logo:null,renk:'#00D47E',ad:'',unvan:'',konum:'sagUst',boyut:12,bant:true,bantSn:6},capTema:'sade',capAnim:'yumusak',capSize:42,capPos:'bottom',crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,capKaraoke:true,target:0,muzik:{acik:false,ses:35,kis:80,ad:''},marka:{logo:null,renk:'#00D47E',ad:'',unvan:'',konum:'sagUst',boyut:12,bant:true,bantSn:6},capTema:'sade',capAnim:'yumusak',capSize:42,capPos:'bottom',crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -1888,6 +1906,12 @@ const MMSG={
       if($('#markaAd') && $('#markaAd').value!==(mk.ad||'')) $('#markaAd').value=mk.ad||'';
       if($('#markaUnvan') && $('#markaUnvan').value!==(mk.unvan||'')) $('#markaUnvan').value=mk.unvan||'';
       markaBantAnahtari();
+    }
+    {
+      const mk=state.muzik||{};
+      if($('#muzikSes')){ $('#muzikSes').value=mk.ses||35; if($('#muzikSesV')) $('#muzikSesV').textContent=String(mk.ses||35); }
+      if($('#muzikKis')){ const kk=(mk.kis===undefined?80:mk.kis); $('#muzikKis').value=kk; if($('#muzikKisV')) $('#muzikKisV').textContent=String(kk); }
+      muzikAnahtari();
     }
     $('#modeV').textContent=curMode().name;
     $('#modeHint').textContent=modeLine();
@@ -2832,10 +2856,31 @@ const MMSG={
       setTimeout(()=>{ try{ c.close(); }catch(e){ logErr('audioWarm',e); } },400);
     }catch(e){ logErr('audioWarm',e); }
   }
+  /* G.5 — müzik yardımcıları (telefonla aynı kurallar). */
+  let muzikEl=null, muzikAdres='';
+  function muzikOgesi(){ return muzikEl; }
+  function muzikCalisir(){
+    const mk=state.muzik||{};
+    /* Macte "ham ses" diye bir ayar YOK (telefona özgü). Olmayan alanı
+       okumak, kapının haklı olarak yakaladığı ölü durumdu. */
+    return !!mk.acik && muzikDurum(false, false, !!muzikEl).calisir;
+  }
+  function muzikDurdur(){
+    if(muzikEl){ try{ muzikEl.pause(); }catch(e){ logErr('muzikDur',e); } }
+  }
+  function muzikBirak(){
+    muzikDurdur();
+    if(muzikAdres){ try{ URL.revokeObjectURL(muzikAdres); }catch(e){ logErr('muzikUrl',e); } muzikAdres=''; }
+    muzikEl=null;
+    state.muzik=Object.assign({}, state.muzik, {ad:''});
+  }
   function stopAudioFx(){
     if(afx.iv) clearInterval(afx.iv);
     if(afx.ctx){ try{ afx.ctx.close(); }catch(e){ logErr('fxClose',e); } }
-    afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1};
+    /* Müzik de durmalı: bağlam kapansa da <audio> hoparlörden çalmaya
+       devam eder ve mikrofona sızar. */
+    muzikDurdur();
+    afx={ctx:null,dest:null,gate:null,an:null,iv:0,buf:null,open:1,muzikKazanc:null};
   }
   function makeFxTrack(){
     if(!fxOn()) return null;
@@ -2870,17 +2915,39 @@ const MMSG={
       const out=ctx.createGain(); out.gain.value=1.25;
       const an=ctx.createAnalyser(); an.fftSize=512;
       const dest=ctx.createMediaStreamDestination();
+      /* G.5 — MÜZİK YATAĞI AYNI HEDEFE KARIŞIYOR (telefonla aynı kural). */
+      let muzikKazanc=null;
+      if(muzikCalisir()){
+        try{
+          const el=muzikOgesi();
+          if(el){
+            const msrc=ctx.createMediaElementSource(el);
+            muzikKazanc=ctx.createGain();
+            muzikKazanc.gain.value=((state.muzik&&state.muzik.ses)||35)/100;
+            msrc.connect(muzikKazanc); muzikKazanc.connect(dest);
+            el.loop=true;
+            const pr=el.play(); if(pr&&pr.catch) pr.catch(e=>logErr('muzikCal',e));
+          }
+        }catch(e){ logErr('muzikBagla',e); muzikKazanc=null; }
+      }
       src.connect(hp); hp.connect(n50); n50.connect(n100); n100.connect(warm);
       warm.connect(pres); pres.connect(lp); lp.connect(an); lp.connect(gate);
       gate.connect(comp); comp.connect(lim); lim.connect(out); out.connect(dest);
-      afx={ctx,dest,gate,an,iv:0,buf:new Uint8Array(an.fftSize),open:1};
+      afx={ctx,dest,gate,an,iv:0,buf:new Uint8Array(an.fftSize),open:1,muzikKazanc};
       afx.iv=setInterval(()=>{
         if(!afx.an||!afx.gate) return;
         afx.an.getByteTimeDomainData(afx.buf);
         let sum=0; for(let i=0;i<afx.buf.length;i++){ const v=(afx.buf[i]-128)/128; sum+=v*v; }
-        const want=gateWant(Math.sqrt(sum/afx.buf.length), P.gate);
+        const rms=Math.sqrt(sum/afx.buf.length);
+        const want=gateWant(rms, P.gate);
         afx.gate.gain.setTargetAtTime(want, afx.ctx.currentTime, want<afx.open?0.08:0.02);
         afx.open=want;
+        /* Müziği konuşurken kıs: ölçüm zaten burada (telefonla aynı). */
+        if(afx.muzikKazanc){
+          const mk=state.muzik||{};
+          const hedef=muzikKisilmaKazanci(rms, (mk.ses||35)/100, (mk.kis===undefined?80:mk.kis)/100);
+          afx.muzikKazanc.gain.setTargetAtTime(hedef, afx.ctx.currentTime, 0.12);
+        }
       },40);
       return dest.stream.getAudioTracks()[0]||null;
     }catch(e){ logErr('audioFx',e); stopAudioFx(); return null; }
@@ -3759,8 +3826,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
@@ -3957,6 +4024,57 @@ function provaRapor(kaynak, sesle){
   $$('#capPosSeg button').forEach(b=>b.onclick=()=>{ state.capPos=b.dataset.cp; capOnbellek.lines=null; applyAll(); save(); });
   $$('#capAnimSeg button').forEach(b=>b.onclick=()=>{ state.capAnim=b.dataset.ka; applyAll(); save(); });
   /* G.4 — marka kiti (telefonla aynı bellek dersi: dosya base64 KOPYALANMIYOR). */
+  /* G.5 — müzik yatağı davranışı (telefonla aynı kurallar). */
+  $('#muzikPick').onclick=()=>$('#muzikFile').click();
+  $('#muzikFile').onchange=e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    e.target.value='';
+    const kabul=muzikDosyaKabul(f.type, f.size);
+    if(!kabul.ok){ toast(kabul.sebep==='tur' ? m('muzikTur') : m('muzikBuyuk')); return; }
+    muzikBirak();
+    muzikAdres=URL.createObjectURL(f);
+    muzikEl=new Audio(); muzikEl.src=muzikAdres; muzikEl.loop=true; muzikEl.preload='auto';
+    muzikEl.onerror=()=>{ toast(m('muzikTur')); muzikBirak(); applyAll(); };
+    state.muzik=Object.assign({}, state.muzik, {ad:f.name.slice(0,40)});
+    save(); applyAll(); toast(m('muzikSet').replace('{a}', state.muzik.ad));
+    if(afx.ctx && state.muzik.acik) fxYenidenKur();
+  };
+  $('#muzikClear').onclick=()=>{ muzikBirak(); save(); applyAll(); if(afx.ctx) fxYenidenKur(); toast(m('muzikCleared')); };
+  $('#muzikSes').addEventListener('input',e=>{ state.muzik=Object.assign({}, state.muzik, {ses:+e.target.value});
+    if($('#muzikSesV')) $('#muzikSesV').textContent=e.target.value;
+    if(afx.muzikKazanc) afx.muzikKazanc.gain.value=(+e.target.value)/100; save(); });
+  $('#muzikKis').addEventListener('input',e=>{ state.muzik=Object.assign({}, state.muzik, {kis:+e.target.value});
+    if($('#muzikKisV')) $('#muzikKisV').textContent=e.target.value; save(); });
+  function fxYenidenKur(){
+    if(recorder && recorder.state==='recording'){ toast(m('muzikRec')); return false; }
+    stopAudioFx();
+    if(fxOn()) makeFxTrack();
+    return true;
+  }
+  function muzikAnahtari(){
+    const sw=$('#muzikSw'); if(!sw) return;
+    const mk=state.muzik||{};
+    const d=muzikDurum(false, false, !!muzikEl);
+    const acik=!!mk.acik && d.calisir;
+    sw.classList.toggle('on', acik);
+    sw.setAttribute('aria-checked', acik?'true':'false');
+    sw.onclick=()=>{
+      const yeni=!(state.muzik&&state.muzik.acik);
+      if(yeni){
+        const dd=muzikDurum(false, false, !!muzikEl);
+        if(!dd.calisir){
+          toast(m('muzikDosyaYok'));
+          if(dd.sebep!=='dosyaYok') return;
+        }
+      }
+      state.muzik=Object.assign({}, state.muzik, {acik:yeni});
+      save(); applyAll();
+      if(afx.ctx) fxYenidenKur();
+    };
+    const txt=$('#muzikDurumTxt');
+    if(txt) txt.textContent = acik ? (mk.ad||t('muzikSes'))
+      : (d.sebep==='dosyaYok' ? t('muzikYokKisa') : (L==='tr'?'kapalı':'off'));
+  }
   $('#logoPick').onclick=()=>$('#logoFile').click();
   $('#logoFile').onchange=e=>{
     const f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -4160,6 +4278,69 @@ function duzMetin(t){
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:metin.js== */
+/* ==CEKIRDEK:muzik.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/muzik.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* MÜZİK YATAĞI — kısılma (ducking) hesabı ve kullanılabilirlik kuralı (G.5).
+
+   ÖLÇÜLMÜŞ RİSK, ÖNCE O: bu depoda iPhone'da KAYIT SIRASINDA mikrofonu
+   Web Audio'ya bağlamak MediaRecorder'ın ses yazmasını durduruyor. Ses
+   Stüdyosu bu yüzden iOS'ta hiç çalışmıyor (`fxOn()` içinde `!IS_WK`) ve
+   Nefesle Akış kayıt başlarken kapanıyor. Müzik yatağı da AYNI zincire
+   bağlanıyor, yani aynı riski taşıyor.
+
+   KARAR (Erdal uyurken alındı, sebebi burada): müzik iOS'ta AÇILMIYOR ve
+   sebebi arayüzde YAZIYOR. Alternatif "yine de aç" olurdu ve bedeli
+   SESSİZ ÇEKİM — bu üründe en pahalı kayıp, çünkü kullanıcı ancak
+   oynatınca fark eder ve o an konuşma bitmiştir. Sessizce kapatmak da
+   yasak (ön koşulu olan ayar = ölü ayar), o yüzden durum ve sebep
+   birlikte döndürülüyor.
+
+   Kısılma (ducking) da tahmin değil ÖLÇÜM: gürültü kapısının zaten
+   hesapladığı RMS kullanılıyor, yani müzik için ikinci bir analiz
+   zinciri kurulmuyor. */
+
+const MUZIK_MAX = 20*1024*1024;     // 20 MB — dakikalarca müzik için fazlasıyla yeter
+const MUZIK_KIS_ESIK = 0.035;       // bu RMS üstü "konuşuyor" sayılır (kapı eşiğiyle aynı sınıf)
+
+/* Konuşurken müzik ne kadar kısılsın.
+   `taban` kullanıcının seçtiği ses düzeyi (0..1), `oran` kısılma miktarı
+   (0 = hiç kısma, 1 = tamamen sustur).
+   Geçiş SERT DEĞİL: eşiğin hemen üstünde ani düşüş, müziği pompalatır ve
+   kulakta "makine" hissi bırakır; o yüzden eşik çevresinde yumuşak bir
+   geçiş bandı var. */
+function muzikKisilmaKazanci(rms, taban, oran){
+  const t=Math.max(0, Math.min(1, +taban||0));
+  const o=Math.max(0, Math.min(1, oran===undefined?0.8:+oran));
+  const r=+rms||0;
+  if(o===0) return t;
+  const bant=MUZIK_KIS_ESIK*1.6;
+  let konusma;
+  if(r<=MUZIK_KIS_ESIK) konusma=0;
+  else if(r>=MUZIK_KIS_ESIK+bant) konusma=1;
+  else konusma=(r-MUZIK_KIS_ESIK)/bant;
+  return t*(1-o*konusma);
+}
+
+/* Dosya kabulü: tür ve boyut, ikisi de kullanıcıya AÇIKÇA söylenir. */
+function muzikDosyaKabul(tur, boyut){
+  const t=String(tur||'');
+  if(!/^audio\//.test(t)) return {ok:false, sebep:'tur'};
+  if((+boyut||0) > MUZIK_MAX) return {ok:false, sebep:'boyut'};
+  return {ok:true, sebep:null};
+}
+
+/* Müzik yatağı şu an çalışabilir mi ve çalışmıyorsa NEDEN.
+   Sebep dizesi arayüzde gösterilecek mesajın anahtarıdır; "false" dönüp
+   susmak bu depoda yasak (kullanıcı ayarı açar, hiçbir şey olmaz). */
+function muzikDurum(iosMu, hamSes, dosyaVar){
+  if(iosMu) return {calisir:false, sebep:'ios'};
+  if(hamSes) return {calisir:false, sebep:'ham'};
+  if(!dosyaVar) return {calisir:false, sebep:'dosyaYok'};
+  return {calisir:true, sebep:null};
+}
+/* ==/CEKIRDEK:muzik.js== */
 /* ==CEKIRDEK:klip.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
    Değişiklik oraya yazılır, sonra: python3 derle.py

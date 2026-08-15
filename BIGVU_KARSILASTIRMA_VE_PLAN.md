@@ -176,12 +176,22 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 - **Kapı:** `tests/154` **169 iddia** + **14 kasıtlı bozma** (toplam 195). Dört eski testin
   biçime kilitli deseni iddiaya taşındı.
 
-### G.5 — Müzik yatağı · **P1**
+### G.5 — Müzik yatağı · **P1** · ✅ **BİTTİ (v9.14) — iOS kararı ölçüme dayandı**
 - **Ne:** cihazdan seçilen ses dosyası kayda karışsın, konuşma altında **otomatik kısılma** (ducking).
 - **Risk (bilinen sınıf):** mikrofonu Web Audio'ya bağlayan her özellik `openCam()`'de temizlenmeli;
   **iOS'ta kayıt sırasında Web Audio bağlamak MediaRecorder'ın sesini öldürüyor** →
   iOS'ta **kayıt sonrası karıştırma** yolu ölçülecek, olmuyorsa sebebi arayüzde yazacak.
-- **Kabul:** iOS'ta sessiz kayıt üretme riski **sıfır** olduğu kanıtlanmadan açılmaz.
+- **Yapıldı:** masaüstü ve Android'de müzik çekime karışıyor ve **konuşurken kendiliğinden
+  kısılıyor**; kısılma için ikinci analiz zinciri kurulmadı, gürültü kapısının zaten ölçtüğü
+  RMS kullanılıyor. Hesap `cekirdek/muzik.js`de.
+- **iOS'ta AÇILMIYOR ve sebebi yazıyor.** Risk ölçüldü: orada kayıt sırasında ses işleme
+  MediaRecorder'ın ses yazmasını durduruyor, yani çekim **sessiz** çıkardı — bu üründeki en
+  pahalı kayıp. Sessizce kapalı tutmak da yasak olduğu için durum ve sebep birlikte dönüyor.
+- **Dosya cihazdan çıkmıyor ve saklanmıyor:** nesne adresi, iş bitince bırakılıyor; her
+  oturumda yeniden seçiliyor ve arayüz bunu söylüyor.
+- **Üç koruma:** zincir kapanırken müzik susuyor (hoparlör sızıntısı) · kayıt sürerken zincir
+  değiştirilmiyor · Mac'te olmayan "ham ses" alanı okunmuyor (kapı yakaladı).
+- **Kapı:** `tests/156` **113 iddia** + **12 kasıtlı bozma** (toplam 219).
 
 ### G.6 — Klip üreteci (Auto-Shorts karşılığı, AI'sız) · **P1** · ✅ **BİTTİ (v9.14)**
 - **Ne:** çekimden sonra "paylaşılabilir 3 klip" önerisi — **bölüm işaretleri + `(2)` vurguları +

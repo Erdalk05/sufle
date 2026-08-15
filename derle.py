@@ -81,6 +81,8 @@ PLAN = [
     # telefonda ve masaüstünde farklı klipler önermek, kullanıcıya hangisine
     # güveneceğini sordurur.
     ('klip.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.5 — müzik yatağı kısılma hesabı ve kullanılabilirlik kuralı.
+    ('muzik.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),
