@@ -285,5 +285,26 @@
   "kaynak": "magaza",
   "bul": "Arayüz Türkçe ve İngilizce.",
   "koy": "Yapay zekâ senaryo yazarı ve bulut senkron dahildir. Arayüz Türkçe ve İngilizce."
+ },
+ {
+  "ad": "B kumanda çubuğu sabit piksele döndü (dar telefonda taşar)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  .cbtn{width:var(--cb,54px);height:var(--cb,54px)",
+  "koy": "  .cbtn{width:54px;height:54px"
+ },
+ {
+  "ad": "B çubuğa sekizinci düğme eklendi (hesap tutmaz)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "<button class=\"cbtn\" id=\"playBtn\"",
+  "koy": "<button class=\"cbtn\" id=\"fazlaBtn\" aria-label=\"fazla\">x</button>\n  <button class=\"cbtn\" id=\"playBtn\""
+ },
+ {
+  "ad": "B çubuk satır kıramaz oldu (son emniyet söküldü)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "justify-content:space-between;flex-wrap:wrap;",
+  "koy": "justify-content:space-between;flex-wrap:nowrap;"
  }
 ]

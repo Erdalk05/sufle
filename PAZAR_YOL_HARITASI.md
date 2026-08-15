@@ -442,7 +442,29 @@ verilmeden kurulursa ürünün en güçlü özelliğini sessizce kaybeder.
 İzinler (`Info.plist`, `AndroidManifest`) ve **yapılamayacaklar** (sanal kamera, arka planda kayıt,
 Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 
-**Kalan F.4:** ekran görüntüleri (plan yazıldı, görseller üretilmedi).
+**F.4 ekran görüntüleri ✅ (Tur 34)** — elle değil TEZGÂHLA: `ekran.py` uygulamanın kendisini
+CDP ile açıp altı kareyi gerçek arayüzden basıyor (kareler `magaza/ekranlar/`, belge
+`magaza/KARELER.md`). 2 kare **mağazaya hazır**; 4'ü kadrajda gerçek insan istediği için
+**taslak** ve `python3 ekran.py --cekim yuz.y4m` ile Erdal'ın çekimiyle aynı komutta
+mağazaya hazır hâle geliyor.
+
+*Tezgâhın kendisi üç kez yanlış ölçtü, üçü de kapatıldı:* ① `--window-size=430,932` verildiğinde
+gerçek viewport **500×845** çıkıp kare kırpıldı ve **var olmayan bir taşma kusuru** gösterdi —
+artık `Emulation` kullanılıyor ve her kareden önce viewport doğrulanıyor; ② ilk toplu koşuda
+**dört kare sessizce giriş ekranını bastı** (kurulum çalıştı ama uygulama o duruma geçmemişti),
+dördü de aynıydı ve boyutları makuldü — artık her karenin hedef durumu JS ile yoklanıyor,
+varılamazsa kare basılmıyor; ③ aynı tarayıcı yeniden kullanılınca önceki karenin kamera akışı
+serbest kalmıyordu — kare başına temiz tarayıcı.
+
+**🔴 Kareler gerçek bir kusur buldu ve kapatıldı.** Tezgâhın taşma sayacı kare 3'te 1 dedi:
+`.cbtn` 54 px + `#recBtn` 74 px `flex:none`, çubuk `nowrap`. Gereken genişlik kayıt yokken
+**410 px**, kayıt sürerken **470 px** — yani **kayıt başlar başlamaz ▶ düğmesi 430 px'lik en
+büyük iPhone'da bile ekran dışına çıkıyor** (sağ kenar 452) ve dokunulamıyordu; 393 ve 375 px'te
+kayıt olmadan da taşıyordu. Bu, deponun 2 numaralı hata sınıfının kitabî örneği: tam da
+gerektiği anda kaybolan kumanda. Düğme boyu artık en dar duruma göre viewport'tan hesaplanıyor
+(430→51,8 · 393→46,8 · 375→44,4 · 360→42 px), `flex-wrap` son emniyet.
+**Ölçülen sonuç: beş genişlikte de taşma 0.** `tests/134` aritmetiği kaynaktan yeniden kuruyor;
+üç bozma (sabit piksel · sekizinci düğme · nowrap) testi kırdığı kanıtlandı.
 **F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
 **F.6** ⏳ **meta katmanı bitti, vitrin sayfası açık.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
 `og:`/`twitter:`/JSON-LD/canonical **hiç yoktu**.
@@ -533,3 +555,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 
 | 32 | 2026-08-15 | **Denetim turu** — kendi gecemi kapımla ölçtüm | 12/14 → **14/14** kanıtlı bozma · asimetri 0 · yol haritası 3 yerde gerçeği söylemiyordu · Mac 67 çevrilmemiş mesaj bulundu |  ✅ 8/8 YEŞİL |
 | 33 | 2026-08-15 | **A.2c kapandı** — Mac uyarıları sözlüğe; testler forma değil cümleye bağlandı | çevrilmemiş toast **67 → 0** (83 çağrının 83'ü) · TR/EN 68/68 · 11 test `macMetni()` ile onarıldı · 121 yorum sızıntısını ayırt ediyor (kanıtlandı) · **4282 test, 0 hata** | ✅ 8/8 YEŞİL |
+| 34 | 2026-08-15 | **F.4 kareleri** — tezgâh kuruldu, kareler gerçek bir kusuru açığa çıkardı | 6 kare gerçek arayüzden (2 hazır · 4 taslak) · tezgâhın 3 kendi hatası ölçülüp kapatıldı · **kayıtta ▶ düğmesi 430 px iPhone'da ekran dışındaydı** → 5 genişlikte taşma **0** · tests/134 + 3 kanıtlı bozma · **4293 test, 0 hata** | ✅ 8/8 YEŞİL |

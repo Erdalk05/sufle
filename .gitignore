@@ -12,3 +12,8 @@
 
 # İşletim sistemi artıkları
 .DS_Store
+
+# Mağaza kareleri: taslaklar HER koşuda yeniden üretiliyor (sahte kamera).
+# İkili dosya oldukları için geçmişi şişirirler; mağazaya hazır olanlar
+# depoda durur, taslaklar `python3 ekran.py` ile bir komutta geri gelir.
+magaza/ekranlar/*.taslak.png

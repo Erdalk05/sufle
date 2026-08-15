@@ -296,20 +296,48 @@
   body.hideUI #railHint{opacity:0}
 
   /* ===== ALT KONTROL ===== */
+  /* KUMANDA ÇUBUĞU DAR TELEFONA SIĞMALI — ölçüldü, varsayılmadı (2026-08-15).
+     Düğmeler `flex:none` ile 54 px (kayıt 74 px) sabitti; çubuk `nowrap`.
+     Gereken genişlik = düğmeler + boşluklar + iç kenar:
+       kayıt yokken (6 düğme) 410 px · KAYIT SÜRERKEN (7 düğme) 470 px
+     Yani ▶ düğmesi 430 px'lik en büyük iPhone'da bile KAYIT BAŞLAR BAŞLAMAZ
+     ekranın dışına çıkıyordu (sağ kenar 452), 393 ve 375 px'te kayıt olmadan
+     da taşıyordu. Ekran dışına çıkan düğme dokunulamaz: tam da gerektiği anda
+     kaybolan kumanda.
+     Çözüm: boy en dar duruma (7 düğme) göre viewport'tan hesaplanıyor.
+     7,37 çarpanı 6 normal düğme + 74/54 oranındaki kayıt düğmesidir; boy
+     kayıt başlayınca DEĞİŞMESİN diye hep 7'ye göre ölçülüyor, yoksa çubuk
+     kaydı başlatınca zıplardı.
+
+     İlk denemede boşluk ve iç kenarı da vw'ye bağladım ve HESABI KAÇIRDIM:
+     430 px'te gider 40 değil 72 px çıktı, düğmeler 53 px'te kaldı, toplam
+     462 px oldu ve taşma sürdü (ölçüldü). Şimdi ikisi de sabit: gider
+     2x10 + 6x4 = 44 px, 48 px'lik pay güvenlik marjı.
+     Ölçülen sonuç (7 düğme, en dar durum):
+       430 -> 51,8 px · 393 -> 46,8 px · 375 -> 44,4 px · 360 -> 42,3 px
+     Alt sınır 42 px: Apple'ın hedefi 44, ama 360 px'lik Android'de seçenek
+     "2 px küçük düğme" ile "ekran dışında düğme" arasında; küçüğü seçiyoruz.
+     `flex-wrap:wrap` son emniyet: 355 px'in altında çubuk iki satıra iniyor,
+     hiçbir kumanda ekranın dışına ÇIKMIYOR. */
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
-    display:flex;align-items:center;justify-content:space-between;gap:6px;
-    padding:10px 18px calc(14px + env(safe-area-inset-bottom));
+    --cb:clamp(42px, calc((100vw - 48px) / 7.37), 54px);
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    gap:4px;
+    padding:10px 10px calc(14px + env(safe-area-inset-bottom));
     background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
-  .cbtn{width:54px;height:54px;border-radius:50%;border:none;background:rgba(40,40,46,.8);
+  .cbtn{width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
     color:#fff;font-size:21px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);flex:none}
   .cbtn:active{filter:brightness(1.4)}
   .cbtn.on{background:var(--accent);color:var(--accent-d)}
   /* SVG krom ikonları (B.2): currentColor sayesinde düğme durumu neyse
      ikon o renk — açıkken --accent-d, kapalıyken beyaz. */
   .cbtn .ic{width:22px;height:22px;display:block;margin:auto}
-  #recBtn{width:74px;height:74px;background:#fff;border:5px solid rgba(255,255,255,.4);position:relative;border-radius:50%;flex:none}
-  #recBtn::after{content:"";width:52px;height:52px;border-radius:50%;background:#ff3b30;transition:.18s;display:block;margin:auto}
-  #recBtn.rec::after{width:28px;height:28px;border-radius:8px}
+  #recBtn{width:calc(var(--cb,54px) * 1.37);height:calc(var(--cb,54px) * 1.37);background:#fff;border:5px solid rgba(255,255,255,.4);position:relative;border-radius:50%;flex:none}
+  /* İç nokta da düğmeyle ölçeklenmeli: düğme 74->60 px'e inince sabit 52 px
+     kırmızı daire kenarlıktan taşıyordu (60 - 2x5 kenarlık = 50 px iç alan).
+     Oranlar korunuyor: 52/74 ve 28/74. */
+  #recBtn::after{content:"";width:calc(var(--cb,54px) * .963);height:calc(var(--cb,54px) * .963);border-radius:50%;background:#ff3b30;transition:.18s;display:block;margin:auto}
+  #recBtn.rec::after{width:calc(var(--cb,54px) * .518);height:calc(var(--cb,54px) * .518);border-radius:8px}
   #recBtn:disabled{opacity:.35}
   #playBtn.playing{background:var(--accent);color:var(--accent-d)}
 
