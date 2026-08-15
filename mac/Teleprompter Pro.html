@@ -1331,6 +1331,14 @@ const MMSG={
   }
   window.addEventListener('error',e=>logErr('js',e.error||e.message));
   window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
+  /* CSP NÖBETÇİSİ — telefonla aynı gerekçe, Mac'te bir kat daha kritik:
+     kumanda sunucusu ilkenin İZİN VERDİĞİ tek ağ yolu (`connect-src 'self'`).
+     İlke yanlış daralırsa QR kumandası çalışmaz ve hiçbir hata çıkmaz —
+     bu dosyada kumandanın sessizce ölmesi zaten iki kez yaşandı (file://
+     açılışı ve yanlış port bildirimi). Artık durum çubuğundaki hata
+     sayacına düşer. */
+  document.addEventListener('securitypolicyviolation',
+    e=>logErr('csp',(e.violatedDirective||'?')+' :: '+(e.blockedURI||'satır içi')));
   let state, running=false, raf=null, pos=0, speed=6;
   let fullOncesi=false;   // B.4: kayıt öncesi panel düzeni (geri dönmek için)
   /* B.8: yüksek kontrast. Eski kayıtlarda alan YOK — açık değer kontrolü. */

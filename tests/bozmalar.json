@@ -761,5 +761,47 @@
   "kaynak": "kontrast",
   "bul": "    ('telefon-gorunum',  TELEFON, 430, 932, 3,",
   "koy": "    ('telefon-gorunumX', TELEFON, 430, 932, 3,"
+ },
+ {
+  "ad": "T57 telefona ağ çağrısı sızdı (vaat doğrudan bozulur)",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "telefon",
+  "bul": "window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));",
+  "koy": "window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));\nfetch('/olcum');"
+ },
+ {
+  "ad": "T57 WebRTC veri kanalı belirdi (CSP bunu ENGELLEMEZ)",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "telefon",
+  "bul": "window.addEventListener('error',e=>logErr('js',e.error||e.message));",
+  "koy": "window.addEventListener('error',e=>logErr('js',e.error||e.message));\nconst pc=new RTCPeerConnection();"
+ },
+ {
+  "ad": "T57 CSP nöbetçisi söküldü (ilke bir şeyi sessizce öldürebilir)",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "telefon",
+  "bul": "document.addEventListener('securitypolicyviolation',\n  e=>logErr('csp',",
+  "koy": "document.addEventListener('gecersizolay',\n  e=>logErr('yok',"
+ },
+ {
+  "ad": "T57 Mac'in kumanda akışı uzak sunucuya çevrildi (görüntü dışarı çıkar)",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "mac",
+  "bul": "new EventSource('/events')",
+  "koy": "new EventSource('https://uzak.test/events')"
+ },
+ {
+  "ad": "T57 service worker dış kaynağı önbelleğe aldı",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "sw",
+  "bul": "'./', './index.html', './manifest.json',",
+  "koy": "'./', './index.html', './manifest.json', 'https://cdn.test/a.js',"
+ },
+ {
+  "ad": "T57 gizlilik belgesi sesle takip istisnasını sakladı (mağazaya yanlış beyan)",
+  "test": "146-vaat-kilidi.js",
+  "kaynak": "gizlilik",
+  "bul": "**Tek istisna** sesle takip özelliğidir",
+  "koy": "**Hicbir istisna** yoktur ve sesle takibin sozu"
  }
 ]

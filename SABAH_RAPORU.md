@@ -23,6 +23,26 @@ ikisi de statik denetimin göremeyeceği sınıftı, ikisi de kapatıldı ve kap
   ayarların üç sekmesi de ölçülüyor. `tests/145` (32 iddia) + **6 kasıtlı bozma** ile kilitlendi;
   bozma turu ilk denemede kendi desenimin gevşek olduğunu yakaladı.
 
+### 🔒 Vaat kilidi — "veriniz cihazınızdan çıkmaz" (Erdal'ın talimatı)
+
+Vaat bugün doğruydu; asıl soru **yarın da doğru kalmasını neyin garanti ettiğiydi**.
+Üç katman birden kilitlendi, çünkü her katmanın tek başına kör noktası var:
+
+| katman | ne yapar | tek başına kör noktası |
+|---|---|---|
+| **İlke** (CSP) | tarayıcı seviyesinde ağ çıkışını yasaklar | WebRTC'yi **engellemez** — `RTCPeerConnection` veri kanalı açar ve `connect-src` onu görmez |
+| **Kod** (`tests/146`) | sızdırabilecek 12 API kaynakta hiç bulunmasın | kod doğruyken ilke yanlış yazılırsa özellik **sessizce ölür** |
+| **Belge** (`GIZLILIK.md` + `tests/131`) | kullanıcıya verilen söz | belge kodu bilmez; biri `fetch` eklerse belge **yalan söyler** |
+
+Eklenenler: **CSP nöbetçisi** — ilke bir şeyi engellerse artık hata günlüğüne yazılıyor
+(`csp: media-src :: blob:`), yani yanlış yazılmış bir ilke sessiz ölüm değil **kayıt**
+üretir. **Mac'in istisnası gizlenmedi**: kumanda sunucusu için `fetch`/`EventSource` var ve
+olmalı; kural "adres yalnız göreli olabilir"e dönüştü, mutlak bir `http(s)` adresi belirirse
+kapı kırmızı. **Service worker** yalnız göreli varlık önbelleğe alabilir.
+`tests/146` (46 iddia) + **6 kasıtlı bozma**; ikisi benim iddialarımın gevşek olduğunu
+gösterdi ve düzeltildi (gizlilik istisnası artık **açılış bölümünde** aranıyor — dibe
+gömülmüş açıklama, mağaza beyanında açıklama sayılmaz).
+
 ## ✅ v9.9 YAYINLANDI ve canlıdan doğrulandı · **v9.10 hazır, yayın kararı sende**
 
 v9.9 yayınlandıktan sonra Türkçe SEO katmanı eklendi (F.6) ve sürüm **9.10** oldu.
@@ -269,7 +289,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.10 canlıda** · v9.11 hazır — **4 commit yayınlanmamış**, `main` dalında
-- **4807 test** (gece başında 732) · yeni test dosyası: 39–145
+- **v9.10 canlıda** · v9.11 hazır — **6 commit yayınlanmamış**, `main` dalında
+- **4851 test** (gece başında 732) · yeni test dosyası: 39–146
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

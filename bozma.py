@@ -47,6 +47,11 @@ KAYNAK = {
     # ölçülen durumları silmek) kapı sessizce silahsızlanır — bu deponun
     # `tests/113` ile bir kez yakaladığı sınıf.
     'kontrast': (os.path.join(REPO, 'kontrast.py'), 'SUFLE_KONTRAST'),
+    # VAAT KİLİDİNİN İKİ AYAĞI. Gizlilik belgesi kullanıcıya verilen SÖZ,
+    # service worker ise çevrimdışı çalışmayı sağlayan tek ağ katmanı:
+    # ikisi de sessizce gevşetilebilir ve ikisi de vaadi doğrudan bozar.
+    'gizlilik': (os.path.join(REPO, 'GIZLILIK.md'), 'SUFLE_GIZLILIK'),
+    'sw': (os.path.join(REPO, 'sw.js'), 'SUFLE_SW'),
     # Rekabet ölçümü de bozulabilmeli: "sunucu işletmek istiyor muyuz?"
     # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
     # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.

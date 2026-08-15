@@ -2064,6 +2064,16 @@ function logErr(where,e){
 }
 window.addEventListener('error',e=>logErr('js',e.error||e.message));
 window.addEventListener('unhandledrejection',e=>logErr('promise',e.reason));
+/* CSP NÖBETÇİSİ — güvenlik ilkesi bir şeyi engellerse SESSİZ KALMASIN.
+   İlkenin görevi vaadi korumak: `connect-src 'none'` ile hiçbir ağ isteği
+   çıkamaz. Ama bir ilke ancak YANLIŞ yazıldığında zarar verir ve zararı tam
+   da bu deponun en pahalı biçiminde verir: özellik çalışmaz, hata çıkmaz,
+   kimse fark etmez. Gerçek tarayıcıda ölçüldü (file:// · HTTP kökeni ·
+   service worker · manifest → 0 ihlal), ama ölçüm masaüstü Chrome'daydı.
+   Bir iPhone'da beklenmedik bir engel çıkarsa artık hata günlüğüne düşer
+   ("csp: media-src :: blob:") — sessiz ölüm yerine kayıt. */
+document.addEventListener('securitypolicyviolation',
+  e=>logErr('csp',(e.violatedDirective||'?')+' :: '+(e.blockedURI||'satır içi')));
 
 /* ============ METİN KURULUMU ============ */
 let words=[], wordTops=[], paraEnds=[], holdPoints=[], maxPos=0, pxPerWord=40, wordLine=[];
