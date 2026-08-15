@@ -383,6 +383,7 @@
     <button class="btn" id="takesBtn" title="Arşivdeki çekimler" data-i18n-title="mTTakes" data-i18n="takes">🎞 Çekimlerim</button>
     <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)" data-i18n-title="mTExport" data-i18n="mScripts">⬆︎ Senaryolar</button>
     <input type="file" id="scImport" accept="application/json,.json" style="display:none">
+    <button class="btn" id="restoreBk" data-i18n="restoreBk" title="Otomatik yedekten dön" data-i18n-title="mTRestoreBk">🛟 Otomatik yedekten dön</button>
     <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n-title="mTFs" data-i18n="mFullscreen">⛶ Tam Ekran</button>
     <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)" data-i18n-title="mTHide" data-i18n="mCsClean">⇔ Sade</button>
     <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" data-i18n-title="settings" aria-label="Ayarlar" data-aria="settings">⚙︎</button>
@@ -782,7 +783,11 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Klavye kısayolları',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım'},
+  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Dosyaya yedekle',bkImport:'⬇︎ Dosyadan geri al',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Otomatik yedekten dön'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -882,7 +887,11 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Keyboard shortcuts',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Paste my text',onbLater:'I will look around first'}
+  onbGo:'Paste my text',onbLater:'I will look around first',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Back up to a file',bkImport:'⬇︎ Restore from a file',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Restore from the automatic backup'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1015,8 +1024,37 @@ const I18N={
      Mac'te cop (trash) yok, o yuzden telefondaki 'copu birak ve tekrar dene'
      kurtarmasinin karsiligi da yok: yapilacak sey durumu SOYLEMEK. */
   let lsDoluUyarildi=false;
+  /* C.2 UYGULAMA İÇİ OTOMATİK YEDEK — telefonda vardı, Mac'te HİÇ YOKTU.
+     Parite kapısı bunu bir "isim eşlemesi" arkasında saklıyordu
+     (`restore` ↔ `import` diye yanlış eşlenmişti); C.2'de ortaya çıktı.
+
+     Her 20 kayıtta bir yazılır: her kayıtta yazmak, kullanıcı bir senaryoyu
+     yanlışlıkla boşaltırsa yedeği de anında boşaltırdı. Aradaki gecikme
+     kasıtlı bir güvenlik payı — telefonda da aynı sayı, aynı gerekçe.
+     YALNIZ SENARYOLAR yedeklenir; ayarlar değerli veri değil. */
+  let saveCount=0;
+  function autoBackup(){
+    if(++saveCount % 20) return;
+    try{ localStorage.setItem(LS+'_yedek', JSON.stringify({
+      t:Date.now(), scripts:state.scripts, activeId:state.current })); }
+    catch(e){ /* kota dolu — asıl kayıt zaten uyarıyor */ }
+  }
+  function restoreBackup(){
+    try{
+      const b=JSON.parse(localStorage.getItem(LS+'_yedek')||'null');
+      if(!b||!b.scripts||!b.scripts.length){ toast('Otomatik yedek yok'); return; }
+      /* Mevcut hâli ÇÖPE at, geri alınabilsin: yanlışlıkla yedeğe dönmek
+         de bir veri kaybı biçimidir. Telefonda da aynı karar. */
+      state.cop=(state.cop||[]).concat(state.scripts).slice(-5);
+      state.scripts=b.scripts; state.current=b.activeId||b.scripts[0].id;
+      const s=curScript();
+      $('#title').value=s.title; $('#editor').value=s.text;
+      renderScripts(); buildWords(); updateStats(); reset(); save();
+      toast('Yedekten dönüldü — '+new Date(b.t).toLocaleString());
+    }catch(e){ logErr('restore',e); toast('Yedek okunamadı'); }
+  }
   function save(){
-    try{ localStorage.setItem(LS,JSON.stringify(state)); lsDoluUyarildi=false; }
+    try{ localStorage.setItem(LS,JSON.stringify(state)); lsDoluUyarildi=false; autoBackup(); }
     catch(e){
       logErr('lsFull',e);
       if(!lsDoluUyarildi){ lsDoluUyarildi=true;
@@ -3273,6 +3311,7 @@ const I18N={
     r.onerror=()=>toast('Dosya okunamadı');
     r.readAsText(f,'utf-8'); e.target.value='';
   };
+  $('#restoreBk').onclick=restoreBackup;
   $('#takesBtn').onclick=showTakes;
   $('#sbDev').textContent=deviceLine();
   $('#sbVer').textContent='v'+VER;

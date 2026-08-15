@@ -265,7 +265,19 @@ zaten hesaplıyor; kabuk kuralları için ayrı bir tarayıcı-tabanlı ölçüm
 ## 3 · FAZ C — Veri sağlamlığı (en yüksek risk azaltımı)
 
 **C.1** IndexedDB'ye tam geçiş + `localStorage` göçü (eski kullanıcı verisi kaybolmadan).
-**C.2** Otomatik yedek dışa aktarma + geri yükleme (tek dosya, tüm senaryolar + çekimler).
+**C.2** ✅ **BİTTİ** — ve asıl risk sanılan yerde değilmiş.
+· Telefonda `autoBackup`/`restoreBackup` **zaten vardı** ve kota dolması ele alınmıştı.
+Ele alınMAYAN: yedek de `localStorage`'daydı, yani **tarayıcı verisi silinince ikisi birden**
+gidiyordu. Çözüm **cihaz dışına çıkan dosya**.
+· **Telefonda dosyaya yedekleme YOKTU** (Mac'te vardı). Üstelik Mac'in mesajı *"telefonda İçe
+aktar ile açabilirsin"* diyordu — telefonda öyle bir şey olmadığı için **mesaj yalan söylüyordu**.
+Eklendi; biçim Mac'le birebir (`{sufle:1, scripts, activeId}`), tarayıcıda Mac yedeği telefonda
+okundu (1→2 senaryo, eski duruyor).
+· **Mac'te uygulama içi otomatik yedek HİÇ YOKTU.** Parite kapısı bunu yanlış bir isim eşlemesi
+(`restore` ↔ `import`) arkasında **saklıyordu**; iki testte birden düzeltildi. Mac'e `autoBackup` +
+`🛟 Otomatik yedekten dön` eklendi (tarayıcıda doğrulandı).
+· **Kapı beni boşluğu örtmekten alıkoydu:** `restore`'u muafiyet listesine yazmayı denedim,
+"muafiyet listesi BÜYÜDÜ" diye reddetti ve haklıydı — boşluk örtülmedi, **kapatıldı**.
 **C.3** Klasör + etiket + arama + sürüm geçmişi.
 **C.4** Geriye dönük uyum testi: eski kayıt nesnesiyle koş (`CLAUDE.md` kuralı).
 
@@ -338,3 +350,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 16 | 2026-08-15 | B.7 karşılama eylemle bitiyor (tur yerine aktivasyon) | tarayıcıda 3 davranış kanıtlı · 57 iddia · kapsam tabanı gevşetilmedi | ✅ 8/8 YEŞİL |
 | 17 | 2026-08-15 | B.8: Mac'e disleksi yazı tipi + hareket azaltma | dış font ölçülüp ELENDİ (~150 KB/ağırlık) · yığın birebir · 65 iddia | ✅ 8/8 YEŞİL |
 | 18 | 2026-08-15 | B.8 ikinci dilim: Mac yüksek kontrast (ölü çeviri canlandı) | kenarlık 1,29:1 → 21:1 · OS tercihi bir kez devralınıyor · 72 iddia | ✅ 8/8 YEŞİL |
+| 19 | 2026-08-15 | C.2 cihaz dışı yedek + Mac otomatik yedek | Mac yedeği telefonda okundu (1→2) · yanlış isim eşlemesi 2 testte düzeltildi · 19 iddia | ✅ 8/8 YEŞİL |

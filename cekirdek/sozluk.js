@@ -108,7 +108,11 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Klavye kısayolları',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım'},
+  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Dosyaya yedekle',bkImport:'⬇︎ Dosyadan geri al',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Otomatik yedekten dön'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -208,5 +212,9 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Keyboard shortcuts',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Paste my text',onbLater:'I will look around first'}
+  onbGo:'Paste my text',onbLater:'I will look around first',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Back up to a file',bkImport:'⬇︎ Restore from a file',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Restore from the automatic backup'}
 };

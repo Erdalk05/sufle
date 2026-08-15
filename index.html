@@ -891,6 +891,16 @@
     <button class="cancel" id="pasteScript" data-i18n="paste">📋 Yapıştır</button>
     <button class="cancel" id="fileScript" data-i18n="fromFile">📄 Dosya</button>
   </div>
+  <!-- C.2 CİHAZ DIŞI YEDEK. Uygulama içi otomatik yedek (autoBackup) VARDI
+       ama o da localStorage'da — tarayıcı verisi silinince ikisi birden
+       gidiyordu. Asıl koruma cihaz DIŞINA çıkan bir dosya.
+       Mac'te bu zaten vardı ve mesajı "telefonda İçe aktar ile açabilirsin"
+       diyordu; oysa telefonda o özellik YOKTU, yani mesaj yalan söylüyordu. -->
+  <div class="sheetbtns">
+    <button class="cancel" id="bkExport" data-i18n="bkExport">⬆︎ Dosyaya yedekle</button>
+    <button class="cancel" id="bkImport" data-i18n="bkImport">⬇︎ Dosyadan geri al</button>
+  </div>
+  <input type="file" id="bkFile" accept=".json,application/json" class="hidden">
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,text/plain,text/markdown" class="hidden">
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" placeholder="Senaryo başlığı">
@@ -1234,7 +1244,11 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Klavye kısayolları',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım'},
+  onbGo:'Metnimi yapıştır',onbLater:'Önce kendim bakayım',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Dosyaya yedekle',bkImport:'⬇︎ Dosyadan geri al',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Otomatik yedekten dön'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1334,7 +1348,11 @@ const I18N={
   /* Kısayol kartı (B.6) */
   keysTitle:'Keyboard shortcuts',
   /* Karşılama eylemi (B.7) */
-  onbGo:'Paste my text',onbLater:'I will look around first'}
+  onbGo:'Paste my text',onbLater:'I will look around first',
+  /* Cihaz dışı yedek (C.2) */
+  bkExport:'⬆︎ Back up to a file',bkImport:'⬇︎ Restore from a file',
+  /* Mac otomatik yedek ipucu (C.2) */
+  mTRestoreBk:'Restore from the automatic backup'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1405,7 +1423,9 @@ const MSG={
   compAudioWarn:'⚠️ iPhone\'da kompozit açıkken ses kaydedilmeyebilir — sesli çekimde kapalı tut',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
   bgSet:'Arka plan görseli yüklendi',bgCleared:'Arka plan görseli kaldırıldı',
-  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',bgDosyaBuyuk:'Görsel dosyası çok büyük — 25 MB altında bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden'},
+  bgTooBig:'Görsel çok büyük — daha küçük bir görsel seç',bgDosyaBuyuk:'Görsel dosyası çok büyük — 25 MB altında bir görsel seç',tiltOk:'📐 Eğim ölçümü açık',tiltNo:'Bu cihazda eğim ölçülemiyor',resumed:'↩︎ Kaldığın yerden',
+  /* Cihaz dışı yedek (C.2) */
+  bkDone:'Yedeklendi — dosyayı güvenli bir yerde sakla',bkEmpty:'Dosyada senaryo yok',bkBad:'Dosya okunamadı — Sufle yedeği mi?',bkAdded:'senaryo eklendi'},
  en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
@@ -1460,7 +1480,9 @@ const MSG={
   compAudioWarn:'⚠️ iOS may drop audio while composite is on — keep it off for spoken takes',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
   bgSet:'Background image loaded',bgCleared:'Background image removed',
-  bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off'}
+  bgTooBig:'Image too large — pick a smaller one',bgDosyaBuyuk:'Image file too large — pick one under 25 MB',tiltOk:'📐 Tilt measuring on',tiltNo:'Tilt is not available on this device',resumed:'↩︎ Resumed where you left off',
+  /* Cihaz dışı yedek (C.2) */
+  bkDone:'Backed up — keep the file somewhere safe',bkEmpty:'No scripts in the file',bkBad:'Could not read the file — is it a Sufle backup?',bkAdded:'scripts added'}
 };
 /* ==/CEKIRDEK:mesajlar.js== */
 const HELP={
@@ -5777,6 +5799,46 @@ $('#helpBtn2').onclick=()=>openSheet('#helpSheet');
    için kullanmanın bedeli bu — gizlemeyi unutmak sessiz kusur olurdu. */
 function newsElle(){ $('#onbActions').classList.add('hidden'); showNews(); }
 $('#newsBtn').onclick=newsElle;
+/* ---- C.2 CİHAZ DIŞI YEDEK ----
+   Biçim Mac'le BİREBİR aynı: {sufle:1, scripts, activeId}. Farklı olsaydı
+   iki platform birbirinin yedeğini okuyamazdı ve Mac'in "telefonda içe
+   aktarabilirsin" mesajı yalan olmaya devam ederdi.
+
+   İÇE ALIRKEN MEVCUTLAR SİLİNMEZ, üstüne eklenir. Yanlış dosya seçmek
+   her şeyi kaybettirmemeli — Mac'te de aynı karar verilmişti. */
+function yedekDosyaya(){
+  rememberPos();
+  const veri=JSON.stringify({sufle:1, scripts:st.scripts, activeId:st.activeId}, null, 1);
+  const u=URL.createObjectURL(new Blob([veri],{type:'application/json'}));
+  const a=document.createElement('a'); a.href=u; a.download='sufle-senaryolar.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+  toast(m('bkDone'));
+}
+function yedektenAl(f){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const j=JSON.parse(String(r.result));
+      if(!j.scripts||!j.scripts.length){ toast(m('bkEmpty')); return; }
+      /* ESKİ YEDEKLERDE yeni alanlar YOK (deponun 6 numaralı sınıfı):
+         her alanı varsayılanıyla oku, yoksa senaryo listesi bozulur. */
+      const gelen=j.scripts.map((x,i)=>({
+        id:'i'+Date.now()+i, title:(x.title||'').trim()||t('newScript'),
+        text:x.text||'', up:Date.now(), pos:0 }));
+      st.scripts=st.scripts.concat(gelen);
+      st.activeId=gelen[0].id;
+      save(); fillEditor(); renderScripts(); buildContent(); reset();
+      toast(gelen.length+' '+m('bkAdded'));
+    }catch(e){ logErr('bkImport',e); toast(m('bkBad')); }
+  };
+  r.onerror=()=>toast(m('bkBad'));
+  r.readAsText(f,'utf-8');
+}
+$('#bkExport').onclick=yedekDosyaya;
+$('#bkImport').onclick=()=>$('#bkFile').click();
+$('#bkFile').onchange=e=>{ const f=e.target.files&&e.target.files[0];
+  if(f) yedektenAl(f); e.target.value=''; };
 $('#onbGo').onclick=()=>{ closeSheets(); rememberPos(); fillEditor(); renderScripts();
   /* Telefonun metin alanı #text — #editor MAC'in id'si. Kopyalarken
      karıştırdım; `&&` guard'ı yüzünden çökmüyordu ama odak hiç gitmiyordu,

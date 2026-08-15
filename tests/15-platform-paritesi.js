@@ -118,7 +118,12 @@ const etiketler = s => new Set([...s.matchAll(/logErr\('([A-Za-z0-9_]+)'/g)].map
 
 /* Aynı kavramın iki dosyadaki farklı adları. Buraya yazmak "eşdeğer sayıldı"
    demektir — muafiyet değil, isim eşlemesi. */
-const ESDEGER = { dbPut:'idbPut', dbDel:'idbDel', restore:'import' };
+/* `restore:'import'` EŞLEMESİ YANLIŞTI ve C.2'de ortaya çıktı: telefondaki
+   `restore` UYGULAMA İÇİ otomatik yedekten dönmek, Mac'teki `import` ise
+   DOSYADAN içe almak. Farklı özellikler; eşleme gerçek bir boşluğu
+   örtüyordu (Mac'te uygulama içi otomatik yedek HİÇ YOK).
+   Doğru eşleme: telefonun yeni `bkImport`'u ↔ Mac'in `import`'u. */
+const ESDEGER = { dbPut:'idbPut', dbDel:'idbDel', bkImport:'import' };
 const norm = (set) => new Set([...set].map(x => ESDEGER[x] || x));
 
 const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
@@ -138,6 +143,9 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    HİÇ YOK — ölçüldü: `fav`, not düzenleme ve yeniden adlandırma Mac
    dosyasında sıfır kez geçiyor; Mac arşivi yalnız aç/sil yapan bir
    numara listesi (showTakes). autoSave ile aynı gerekçe. */
+/* NOT: `restore` bir ara muafiyet listesine yazılmıştı; kapı "muafiyet
+   listesi büyüdü" diye reddetti ve HAKLIYDI. Boşluk örtülmedi, KAPATILDI:
+   Mac'e de otomatik yedek eklendi (C.2). */
 const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle']);
 const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb']);
 

@@ -208,5 +208,12 @@
   "kaynak": "telefon",
   "bul": "  updateHud();\n  raf=requestAnimationFrame(tick);",
   "koy": "  raf=requestAnimationFrame(tick);"
+ },
+ {
+  "ad": "C2 içe alma mevcut senaryoların üstüne yazıyor (veri kaybı)",
+  "test": "125-cihaz-disi-yedek.js",
+  "kaynak": "telefon",
+  "bul": "      st.scripts=st.scripts.concat(gelen);",
+  "koy": "      st.scripts=gelen;"
  }
 ]

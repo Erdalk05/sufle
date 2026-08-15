@@ -34,7 +34,13 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
   ok('Macte de ciddi kapsam var ('+m.length+')', m.length>=20);
   /* Fark YALNIZ Macte olmayan özelliklerden gelmeli — parite kapısındaki
      muafiyet listesiyle birebir örtüşmeli, yoksa gerçek bir boşluk vardır. */
-  const ESD={dbPut:'idbPut', dbDel:'idbDel', dbListe:'idbListe', dbGetir:'idbGetir', restore:'import'};
+  /* `restore:'import'` EŞLEMESİ YANLIŞTI (tests/15'te de aynısı vardı ve
+     orada da düzeltildi): telefondaki `restore` UYGULAMA İÇİ otomatik
+     yedekten dönmek, Mac'teki `import` DOSYADAN içe almak. Farklı
+     özellikler. C.2'de Mac'e de otomatik yedek eklendi, yani `restore`
+     artık iki tarafta da var ve eşlemeye gerek yok. Yeni doğru eşleme:
+     telefonun `bkImport`'u ↔ Mac'in `import`'u. */
+  const ESD={dbPut:'idbPut', dbDel:'idbDel', dbListe:'idbListe', dbGetir:'idbGetir', bkImport:'import'};
   const M=new Set(m);
   const eksik=t.filter(x=>!M.has(ESD[x]||x)).filter(x=>x!=='dbGuncelle');
   const MUAF=new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure',
