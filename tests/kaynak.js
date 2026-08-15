@@ -96,5 +96,38 @@ function macCoz(src) {
    kullanmaya devam eder. */
 const macMetni = () => macCoz(oku(macYolu()));
 
-module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni };
+/* var(--jeton) -> GERÇEK DEĞER.
+
+   B.1'de tipografi ve boşluk ölçeği jetona bağlandı: `padding:12px` artık
+   `padding:var(--sp-3)`. Değer DEĞİŞMEDİ, yeri değişti. Ama sayıyı kaynaktan
+   okuyan testler `NaN` görmeye başladı ve iki dosya birden kırmızıya döndü —
+   kod doğruyken. Aynı sınıf A.2c'de mesajlarda da çıkmıştı.
+
+   İki yanlış çözüm vardı: (a) testleri "bir padding var" diye gevşetmek —
+   o zaman yanlış değer de geçerdi; (b) jeton bağlamayı geri almak — ölçek
+   yine ölürdü. Doğrusu: jetonu GERÇEK sözlüğünden çözüp yerine koymak.
+   Çözülemeyen jeton olduğu gibi bırakılmaz, görünür bir işaretle değiştirilir
+   ki test sessizce geçmesin. */
+function jetonlar() {
+  const s = fs.readFileSync(path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
+  const m = {};
+  for (const [, ad, deger] of s.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g))
+    m[ad] = deger.trim();
+  return m;
+}
+
+function cozJeton(metin) {
+  const j = jetonlar();
+  let onceki = null, cikti = metin;
+  /* İç içe jeton olabilir (bir jeton başka bir jetonu kullanabilir); değişim
+     durana kadar çöz, ama sonsuz döngüye girme. */
+  for (let i = 0; i < 5 && cikti !== onceki; i++) {
+    onceki = cikti;
+    cikti = cikti.replace(/var\((--[a-z0-9-]+)\)/g,
+      (t, ad) => j[ad] !== undefined ? j[ad] : '\u27ea' + ad + '\u27eb');
+  }
+  return cikti;
+}
+
+module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, cozJeton };
 

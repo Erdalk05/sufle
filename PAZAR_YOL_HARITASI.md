@@ -240,7 +240,31 @@ Ayrıca `kontrast.py` Mac'in ana ekranını hiç ölçmüyormuş: kurulum yalnı
 Mac'in sürüm penceresi `#bilgiKapat` ile kapanıyor, yani pencere açık kalıyordu. İki durum da
 ölçülüyor artık (**5 yüzey, 456 metin**).
 
-Kalan: tipografi ölçeği, boşluk ritmi.
+**Tipografi ölçeği ve boşluk ritmi ✅ (Tur 43).** Önce ÖLÇTÜM (tarayıcıda çizilen gerçek
+değerler; sufle metni hariç — onun ölçeği kullanıcıya ait):
+
+| | farklı punto | ölçeğe uyan | farklı iç kenar | ritme uyan |
+|---|---|---|---|---|
+| telefon ayarlar | 7 | 3 | 12 | 3 |
+| Mac ana ekran | 7 | 3 | 13 | 3 |
+
+**Asıl kusur "5 basamağa uymamak" değil, AYIRT EDİLEMEZ İKİZLERDİ:** telefonda 11 vs 11,5 px,
+Mac'te 12 vs 12,5 px. Yarım piksellik basamak tasarım değil kazadır. Tekleştirildi; iki kabukta
+da farklı punto **7 → 6**. Testim ölçümümden sıkı çıkıp başka ekranlarda dört yarım piksel daha
+buldu (9,5 · 12,5 · 13,5 · 14,5) — onlar da tam piksele oturtuldu.
+
+**🔴 Jetonlar ÖLÜYDÜ:** `--tx-*` ve `--sp-*` tanımlıydı ama **kullanan kimse yoktu (0)**. Tanımlı
+ama ölü ölçek, deponun "ölü ayar" sınıfı: bir sonraki geliştirici yine rastgele piksel yazardı.
+Değeri zaten ölçeğe denk gelen bildirimler jetona bağlandı — **ekranda hiçbir şey değişmedi**
+(kontrast 5 yüzeyde 0 ihlal, 6 karede taşma 0), ama ölçek artık gerçek: telefon 23 punto + 12
+boşluk, Mac 19 + 16 bildirim. `tests/121` ölçeğin KULLANILDIĞINI ve yarım pikselin geri
+gelmediğini kilitliyor.
+
+*Yan kazanç — iki test kendi kusurunu ele verdi:* ① jeton bağlanınca sayıyı kaynaktan okuyan iki
+test `NaN` gördü ve kod doğruyken kırmızıya döndü; `tests/kaynak.js`'e **jeton çözücü** eklendi,
+iddialar yine gerçek piksele bakıyor. ② `tests/134`'ün sayı okuyucusu yalnız BAŞARISIZKEN satır
+basıyordu, yani iddia sayısı tabanı bir HATAYI sayıyormuş — okuma düzelince sayı düştü ve kapı
+haklı olarak bağırdı. Ölçen kapı ölçtüğünü her koşuda söylemeli.
 
 **📏 B.3 ölçümü tarayıcıda yapıldı — analizin iddiası telefon için YANLIŞ çıktı:**
 telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.com disiplini telefonda
@@ -752,3 +776,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 40 | 2026-08-15 | **E.4 Mac paritesi** — hesap ortak çekirdeğe, Mac'te de rapor | `cekirdek/prova.js` iki kabuğa gömülüyor · Mac'te **çekim anlık görüntüsü yoktu**, altyazı canlı metinden üretiliyordu → kapandı · gerçek Mac çekimiyle doğrulandı · 2 bozma ilk turda yakalanmadı (ikisi de testin kusuru) → 7/7 kanıtlı · **59 bozma** | ✅ 9/9 YEŞİL |
 | 41 | 2026-08-15 | **B.2 Mac krom ikonları** — ve i18n kapsamının kör noktası | 4/4 ikon Mac'te çiziliyor (18×18, dil değişiminde kalıcı) · ikonu silen 2 tuzak kapandı (data-i18n üstte / çalışma zamanı yazımı) · **#voiceBtn İngilizcede Türkçe kalıyordu**, kapsam 0 dediği hâlde → sözlüğe bağlandı · 4 kanıtlı bozma (**63**) | ✅ 9/9 YEŞİL |
 | 42 | 2026-08-15 | **i18n kör noktası** — TR/EN çizim karşılaştırması kapıya bağlandı | 16 şüpheliden **7 gerçek kusur**: telefonda 5 title hiç çevrilmiyordu, Mac karşılama penceresi baştan sona Türkçeydi, 4 metin "yazılı ama tazelenmiyor" · beş yüzeyde **0** · denetleyicinin kendi kör noktası da kapandı · 4 kanıtlı bozma (**67**) · **4458 test, 0 hata** | ✅ 9/9 YEŞİL |
+| 43 | 2026-08-15 | **B.1 tipografi + boşluk** — ölçek ölü jetondan gerçeğe | ölçüldü: 7 punto/12 iç kenar, ölçeğe uyan 3 · **yarım piksel ikizler** tekleştirildi (7→6, 4 gizli vaka daha) · `--tx-*`/`--sp-*` **0 kullanımdan** 23+12 ve 19+16'ya · görsel değişiklik yok (kontrast 0, taşma 0) · 2 kanıtlı bozma (**69**) · **4481 test** | ✅ 9/9 YEŞİL |

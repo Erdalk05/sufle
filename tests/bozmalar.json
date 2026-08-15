@@ -467,5 +467,19 @@
   "kaynak": "telefon",
   "bul": "function onbGovde(){ return L==='tr'",
   "koy": "function onbGovde(){ return true"
+ },
+ {
+  "ad": "B1 tipografi ölçeği tekrar ölü jetona döndü (telefon)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "telefon",
+  "bul": ".hint{font-size:var(--tx-xs)",
+  "koy": ".hint{font-size:11.5px"
+ },
+ {
+  "ad": "B1 yarım piksellik punto geri geldi (Mac)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "mac",
+  "bul": "  .scriptItem .meta{font-size:var(--tx-xs)",
+  "koy": "  .scriptItem .meta{font-size:11.5px"
  }
 ]

@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, oku}=require('./kaynak.js');
+const {telefonYolu, oku, cozJeton}=require('./kaynak.js');
 
 /* B — KUMANDA ÇUBUĞU HER TELEFONA SIĞMALI.
 
@@ -24,7 +24,9 @@ const {telefonYolu, oku}=require('./kaynak.js');
    Not: `ekran.py` her karede viewport dışına taşan öge SAYIYOR; gerçek
    tarayıcı ölçümü orada. Burası o ölçümün ucuz ve her koşuda çalışan hâli. */
 
-const s = oku(telefonYolu());
+/* Çubuğun aritmetiği gerçek piksellerle yapılır; jetonlar çözülerek okunur
+   (B.1'de gap `var(--sp-1)`e bağlandı ve hesap NaN'a düşmüştü). */
+const s = cozJeton(oku(telefonYolu()));
 
 /* ---------- ÇUBUĞUN İÇİNDEKİ DÜĞMELER ---------- */
 const barHtml = (s.match(/<div id="bar"[\s\S]*?\n<\/div>/) || [''])[0];
@@ -40,10 +42,15 @@ ok('çubukta düğmeler sayılabildi (ölçmeyen kapı değil) — ' + dugmeler.
 const barCss = (s.match(/#bar\{[^}]*--cb[^}]*\}/) || [''])[0];
 ok('çubuk CSS bloğu bulundu', barCss.length > 60);
 
+/* HER OKUMA GÖRÜNÜR OLSUN. Önce yalnız BAŞARISIZKEN satır basıyordu; iddia
+   sayısı tabanı bu yüzden bir HATAYI sayıyordu ve okuma düzelince sayı düştü,
+   kapı da "iddia azaldı" diye kırmızı verdi. Ölçen kapı, ölçtüğünü her koşuda
+   söylemeli. */
 const sayi = (re, ad) => {
   const m = barCss.match(re);
-  if (!m) { ok('CSS değeri okunabildi: ' + ad, false); return NaN; }
-  return parseFloat(m[1]);
+  const v = m ? parseFloat(m[1]) : NaN;
+  ok('CSS değeri okunabildi: ' + ad + ' = ' + (m ? v : 'YOK'), Number.isFinite(v));
+  return v;
 };
 const cbMin  = sayi(/--cb:\s*clamp\(\s*([\d.]+)px/, '--cb alt sınır');
 const cbMax  = sayi(/--cb:\s*clamp\([^,]+,[^,]+,\s*([\d.]+)px\s*\)/, '--cb üst sınır');

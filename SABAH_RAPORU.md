@@ -249,6 +249,6 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 ## Sayılar
 
 - **v9.7 canlıda** (v9.5 sabah · v9.6 kararlar · v9.7 masaüstü donma düzeltmesi) · yayınlanmamış iş yok
-- **4458 test** (gece başında 732) · yeni test dosyası: 39–137
+- **4481 test** (gece başında 732) · yeni test dosyası: 39–137
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

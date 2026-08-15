@@ -194,7 +194,7 @@
   #eyeline::after{right:0;border-right-color:var(--accent)}
   #camMark{position:absolute;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
     z-index:5;background:rgba(0,200,83,.16);border:1px solid rgba(0,200,83,.45);color:#bfffd6;
-    font-size:11px;font-weight:700;padding:4px 12px;border-radius:0 0 14px 14px;display:none}
+    font-size:var(--tx-xs);font-weight:700;padding:var(--sp-1) 12px;border-radius:0 0 14px 14px;display:none}
   body.eye.cam #camMark{display:block}
 
   /* odak karartma / okuma şeridi — görünür pencere JS'te satır yüksekliğinden hesaplanır */
@@ -238,8 +238,8 @@
   body.recpaused #recFrame{display:block;animation:none;border-color:#ffb300;box-shadow:inset 0 0 40px rgba(255,179,0,.3)}
   @keyframes recpulse{50%{border-color:rgba(255,59,48,.45)}}
   #recDot{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:8;display:none;
-    align-items:center;gap:8px;background:rgba(0,0,0,.72);padding:9px 16px;border-radius:22px;
-    font-size:15px;font-weight:800;letter-spacing:.02em;backdrop-filter:blur(6px)}
+    align-items:center;gap:var(--sp-2);background:rgba(0,0,0,.72);padding:9px 16px;border-radius:22px;
+    font-size:var(--tx-md);font-weight:800;letter-spacing:.02em;backdrop-filter:blur(6px)}
   #recDot.on{display:flex}
   #audBadge{position:absolute;top:calc(max(10px,env(safe-area-inset-top)) + 46px);right:12px;z-index:8;
     display:none;align-items:center;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:800;
@@ -248,7 +248,7 @@
   #micWrap{height:12px;border-radius:8px;background:#26262c;overflow:hidden;margin-top:8px}
   #micBar{height:100%;width:0;background:#3a3a44;border-radius:8px;transition:width .06s linear}
   #noAudioBadge{position:absolute;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
-    z-index:7;background:rgba(255,59,48,.9);color:#fff;font-size:11px;font-weight:800;
+    z-index:7;background:rgba(255,59,48,.9);color:#fff;font-size:var(--tx-xs);font-weight:800;
     padding:5px 12px;border-radius:0 0 12px 12px;display:none}
   body.cam.noaudio #noAudioBadge{display:block}
   body.cam.noaudio #camMark{display:none}
@@ -262,8 +262,8 @@
   /* HUD */
   /* rozetler altta — üstte "📷 buraya bak" ve kayıt noktasıyla çakışıyordu */
   #hud{position:absolute;left:12px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:7;display:flex;gap:6px;
-    font-size:11px;font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
-  #hud span{background:rgba(0,0,0,.45);padding:4px 9px;border-radius:20px;backdrop-filter:blur(6px)}
+    font-size:var(--tx-xs);font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
+  #hud span{background:rgba(0,0,0,.45);padding:var(--sp-1) 9px;border-radius:20px;backdrop-filter:blur(6px)}
   #hud .warn{color:#ffb300}
   /* Mod rozeti (B.5): rol jetonlarından. Ses = bilgi mavisi (bir şey
      dinleniyor), otomatik = eylem yeşili (bir şey akıyor), elle = nötr. */
@@ -287,12 +287,12 @@
     background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);border-radius:26px;
     backdrop-filter:blur(10px);overflow:hidden}
   body.started #speedCtl{display:flex}
-  #speedCtl button{width:52px;height:46px;background:none;border:none;color:#fff;font-size:26px;
+  #speedCtl button{width:52px;height:46px;background:none;border:none;color:#fff;font-size:var(--tx-xl);
     font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center}
   #speedCtl button:active{background:rgba(255,255,255,.18)}
-  #spVal{min-width:96px;text-align:center;font-size:15px;font-weight:800;color:var(--accent);
+  #spVal{min-width:96px;text-align:center;font-size:var(--tx-md);font-weight:800;color:var(--accent);
     padding:0 4px;letter-spacing:.02em}
-  #spVal small{display:block;font-size:9.5px;font-weight:700;color:#9aa0a6;letter-spacing:.06em}
+  #spVal small{display:block;font-size:10px;font-weight:700;color:#9aa0a6;letter-spacing:.06em}
   body.hideUI #speedCtl{opacity:0;pointer-events:none}
   /* sağ kenarın hız şeridi olduğunu belli eden ince iz */
   #railHint{position:absolute;right:0;top:34%;bottom:34%;width:3px;z-index:5;border-radius:3px;
@@ -327,7 +327,7 @@
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
     --cb:clamp(42px, calc((100vw - 48px) / 7.37), 54px);
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
-    gap:4px;
+    gap:var(--sp-1);
     padding:10px 10px calc(14px + env(safe-area-inset-bottom));
     background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
   .cbtn{width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
@@ -354,15 +354,15 @@
     padding:10px 18px;border-radius:22px;backdrop-filter:blur(8px)}
 
   /* ===== BAŞLANGIÇ ===== */
-  #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-4);
     background:radial-gradient(circle at 50% 32%,#10231a,#000);padding:28px;text-align:center}
   #intro.hidden{display:none}
   #intro h1{font-size:30px;font-weight:800;letter-spacing:-.5px}#intro h1 b{color:var(--accent)}
   #intro p{color:var(--muted);font-size:14px;line-height:1.6;max-width:320px}
   #browserWarn{background:rgba(255,59,48,.16);border:1px solid rgba(255,59,48,.55);color:#ffd7d4;
-    font-size:13px;font-weight:700;line-height:1.5;padding:12px 16px;border-radius:14px;max-width:330px;text-align:center}
-  #verChip{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.08em;
-    background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);padding:4px 12px;border-radius:20px;margin-top:-12px}
+    font-size:var(--tx-sm);font-weight:700;line-height:1.5;padding:var(--sp-3) 16px;border-radius:14px;max-width:330px;text-align:center}
+  #verChip{font-size:var(--tx-xs);font-weight:800;color:var(--accent);letter-spacing:.08em;
+    background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);padding:var(--sp-1) 12px;border-radius:20px;margin-top:-12px}
   .big{background:var(--accent);color:var(--accent-d);border:none;border-radius:18px;font-size:18px;font-weight:800;
     padding:18px 28px;display:flex;align-items:center;gap:10px}
   .ghostbig{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);
@@ -402,14 +402,14 @@
   .sheet{visibility:hidden}
   .sheet.open{visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s}
   #peekTip{position:absolute;left:50%;top:14%;transform:translateX(-50%);z-index:33;display:none;
-    background:rgba(0,0,0,.75);color:#fff;font-size:13px;font-weight:800;padding:8px 16px;border-radius:20px;
+    background:rgba(0,0,0,.75);color:#fff;font-size:var(--tx-sm);font-weight:800;padding:var(--sp-2) 16px;border-radius:20px;
     backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
   body.peek #peekTip{display:block}
   .grab{width:40px;height:5px;border-radius:3px;background:#3a3a44;margin:8px auto 12px}
   .sheet h2{font-size:17px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
   .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;background:var(--sheetbg);padding:6px 0;z-index:2}
   .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:#cfd0d4;border-radius:11px;
-    padding:11px 0;font-size:13px;font-weight:700}
+    padding:11px 0;font-size:var(--tx-sm);font-weight:700}
   /* Ayar sekmeleri de SEÇİLİ DURUM — .seg, #langSwitch ile aynı kural (B.1). */
   .tabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
   .tab{display:none}.tab.on{display:block}
@@ -421,7 +421,7 @@
     .w,.ln,.sw,.sheet,.toast,#speedRail{transition:none!important;animation:none!important}
     .row .v.hit{animation:none!important}
   }
-  .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
+  .row label{font-size:14px;color:#dcdde0}.row .v{color:var(--accent);font-weight:700;font-size:var(--tx-sm);white-space:nowrap}
   .row .v.hit{animation:keyhit .5s ease-out}
   /* Ayar aramasında eşleşen blok gizli sınıfta olsa bile GÖRÜNMELİ.
      .hidden !important kullandığı için satır içi stil yetmiyor; eşit güçte kural. */
@@ -431,8 +431,8 @@
      şikâyeti ancak zincirin hangi halkasının koptuğu görülünce çözülebiliyor. */
   /* Ses şeridi durum çiplerinin (86px) TAM ÜSTÜNE geliyordu. Katman katman ayır. */
   #vHud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);
-    z-index:7;display:flex;gap:8px;align-items:center;pointer-events:none;
-    background:rgba(0,0,0,.72);border-radius:10px;padding:7px 11px;font-size:12.5px;
+    z-index:7;display:flex;gap:var(--sp-2);align-items:center;pointer-events:none;
+    background:rgba(0,0,0,.72);border-radius:10px;padding:7px 11px;font-size:12px;
     backdrop-filter:blur(6px)}
   #vHud b{font-weight:800;white-space:nowrap}
   #vHud b.ok{color:var(--accent)} #vHud b.kayip{color:#ffb300} #vHud b.sessiz{color:#8a8f97}
@@ -471,11 +471,22 @@
   .eyeline b{position:absolute;top:33.3%;left:6px;transform:translateY(-140%);font-size:10px;
     color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.3px}
   @keyframes keyhit{0%{transform:scale(1.5);color:#3ddc84}100%{transform:scale(1)}}
-  .hint{font-size:11.5px;color:#787f85;line-height:1.5;margin-top:4px}
+  /* B.1 TİPOGRAFİ ÖLÇEĞİ — ölçülerek bağlandı (Tur 43).
+     ÖLÇÜM (tarayıcı, çizilen gerçek değerler; sufle metni hariç — onun
+     ölçeği kullanıcıya ait):
+       telefon ayarlar : 7 farklı punto, ölçeğe uyan 3
+       Mac ana ekran   : 7 farklı punto, ölçeğe uyan 3
+     İki AYIRT EDİLEMEZ ikiz vardı: telefonda 11 vs 11,5 · Mac'te 12 vs 12,5.
+     Yarım piksellik basamak tasarım değil kazadır; tekleştirildi.
+     Ayrıca --tx-* jetonlarını KULLANAN KİMSE YOKTU (0 kullanım): tanımlı ama
+     ölü ölçek, bu deponun "ölü ayar" sınıfı. Değeri zaten ölçeğe denk gelen
+     bildirimler jetona bağlandı — ekranda hiçbir şey değişmiyor, ama ölçek
+     artık gerçek ve bir sonraki değişiklikte tek yerden yönetiliyor. */
+  .hint{font-size:var(--tx-xs);color:var(--t-low);line-height:1.5;margin-top:4px}
   input[type=range]{width:100%;accent-color:var(--accent);height:32px}
   .seg{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
   .seg button{flex:1 1 60px;background:var(--card);border:1px solid var(--line);color:#fff;border-radius:11px;
-    padding:12px 4px;font-size:13px;font-weight:600}
+    padding:var(--sp-3) 4px;font-size:var(--tx-sm);font-weight:600}
   /* B.1 — SEÇİLİ ≠ EYLEM. `jetonlar.css` kendi kuralını yazıyor:
      "--r-action ... asıl eylem, ekranda TEK olmalı". Ölçtüm, kural çiğneniyordu:
      Mac ana ekranda 9, telefon girişte 3 dolu yeşil AYNI ANDA görünüyordu ve
@@ -487,7 +498,7 @@
      ve dolu yeşil orada yerleşik bir alışkanlık — onları da tonal yapmak
      tanınırlığı bozardı, hiyerarşiyi düzeltmezdi. */
   .seg button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
-  .tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px;border-top:1px solid var(--line);gap:12px;cursor:pointer}
+  .tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px;border-top:1px solid var(--line);gap:var(--sp-3);cursor:pointer}
   .tog span{font-size:14px}
   .sw{width:48px;height:29px;border-radius:20px;background:#33333a;position:relative;transition:.15s;flex:none}
   .sw::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#8a8a92;transition:.15s}
@@ -496,9 +507,9 @@
     color:#eee;padding:14px;font-size:16px;line-height:1.6;font-family:inherit;
     -webkit-user-select:text;user-select:text;resize:none;margin-top:8px}
   input[type=text]{width:100%;background:#0d0d11;border:1px solid var(--line);border-radius:12px;color:#eee;
-    padding:13px 14px;font-size:15px;font-family:inherit;-webkit-user-select:text;user-select:text}
+    padding:13px 14px;font-size:var(--tx-md);font-family:inherit;-webkit-user-select:text;user-select:text}
   .sheetbtns{display:flex;gap:10px;margin-top:16px}
-  .sheetbtns button{flex:1;border:none;border-radius:14px;padding:15px 0;font-size:15px;font-weight:700}
+  .sheetbtns button{flex:1;border:none;border-radius:14px;padding:15px 0;font-size:var(--tx-md);font-weight:700}
   .save{background:var(--accent);color:var(--accent-d)}
   .cancel{background:var(--card);color:#fff}
   .danger{background:#3a1414;color:#ff6b6b}
@@ -506,8 +517,8 @@
     border-radius:13px;padding:13px;margin-top:9px}
   .listitem.on{border-color:var(--accent)}
   .listitem .meta{flex:1;min-width:0}
-  .listitem .t{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .listitem .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .listitem .t{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .listitem .s{font-size:var(--tx-xs);color:var(--muted);margin-top:3px}
   .iconbtn{background:transparent;border:none;color:#9aa0a6;font-size:17px;padding:7px 8px;flex:none;
     position:relative}
   /* DOKUNMA HEDEFİ BÜYÜDÜ, DÜĞME BÜYÜMEDİ (K11).
@@ -522,8 +533,8 @@
     content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:max(100%,44px);height:max(100%,44px)}
   .seg button, .tabs button{position:relative}
-  .empty{color:var(--muted);font-size:13px;text-align:center;padding:26px 10px;line-height:1.6}
-  .kv{display:flex;justify-content:space-between;font-size:13px;color:#c8cacd;padding:7px 0;border-bottom:1px solid var(--line)}
+  .empty{color:var(--muted);font-size:var(--tx-sm);text-align:center;padding:26px 10px;line-height:1.6}
+  .kv{display:flex;justify-content:space-between;font-size:var(--tx-sm);color:#c8cacd;padding:7px 0;border-bottom:1px solid var(--line)}
   .kv b{color:var(--accent)}
 
   /* ===== SONUÇ ===== */
@@ -534,8 +545,8 @@
   #resultVid{flex:1;width:100%;border-radius:16px;background:#111;object-fit:contain;min-height:0}
 
   .toast{position:absolute;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);
-    background:rgba(20,20,24,.96);border:1px solid var(--line);color:#fff;font-size:13.5px;font-weight:600;
-    padding:12px 18px;border-radius:14px;z-index:60;opacity:0;pointer-events:none;transition:.22s;max-width:86%;text-align:center}
+    background:rgba(20,20,24,.96);border:1px solid var(--line);color:#fff;font-size:var(--tx-sm);font-weight:600;
+    padding:var(--sp-3) 18px;border-radius:14px;z-index:60;opacity:0;pointer-events:none;transition:.22s;max-width:86%;text-align:center}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
   .hidden{display:none!important}
   /* İpucu ekranın ORTASINDAYDI (top:52%) ve senaryonun ilk satırlarını kapatıyordu:
@@ -543,7 +554,7 @@
    çıkarıp denetim çubuğunun hemen üstüne aldık. */
 /* İpucu da aynı banda düşüyordu; hız hapının (bottom:22%) ÜSTÜNE alındı. */
   .tapnote{position:absolute;bottom:calc(22% + 78px);left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
-    font-size:13px;pointer-events:none;transition:opacity .4s;text-align:center;line-height:1.7;width:80%}
+    font-size:var(--tx-sm);pointer-events:none;transition:opacity .4s;text-align:center;line-height:1.7;width:80%}
 
   @media (min-width:820px){
     #bar{padding-bottom:22px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,92%);background:none}
@@ -616,7 +627,7 @@
 <!-- AYARLAR -->
 <div class="sheet" id="sheet">
   <div class="grab"></div>
-  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:11px;color:var(--t-low);font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX" aria-label="Kapat" data-aria="sheetX">✕</button></h2>
+  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:var(--tx-xs);color:var(--t-low);font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX" aria-label="Kapat" data-aria="sheetX">✕</button></h2>
   <div class="tabs">
     <button data-tab="read" class="on" data-i18n="tabRead">Okuma</button>
     <button data-tab="look" data-i18n="tabLook">Görünüm</button>
@@ -1087,7 +1098,7 @@
   <div id="wakeDeps">
   <div class="row" style="margin-top:10px"><label data-i18n="wakeWordL">Kendi tetik kelimen</label></div>
   <input type="text" id="wakeWord" placeholder="örn: hazir" maxlength="20">
-  <small id="wakeWarn" style="display:none;font-size:11px;color:#ffb300;font-weight:700"></small>
+  <small id="wakeWarn" style="display:none;font-size:var(--tx-xs);color:#ffb300;font-weight:700"></small>
   </div>
   <div class="hint" data-i18n="voiceCmdHint">🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.</div>
 </div>
@@ -1112,7 +1123,7 @@
 <div class="sheet" id="helpSheet">
   <div class="grab"></div>
   <h2><span data-i18n="help">Nasıl kullanılır?</span><button class="iconbtn" id="helpX" aria-label="Kapat" data-aria="helpX">✕</button></h2>
-  <div id="helpBody" style="font-size:13.5px;line-height:1.75;color:#c9ccd0;padding-bottom:10px"></div>
+  <div id="helpBody" style="font-size:var(--tx-sm);line-height:1.75;color:#c9ccd0;padding-bottom:10px"></div>
   <!-- F.4 GİZLİLİK ÖZETİ. Mağazalar bir gizlilik metni ZORUNLU kılıyor, ama
        asıl sebep bu değil: gizlilik bu ürünün en güçlü satış argümanı ve
        kullanıcının onu UYGULAMANIN İÇİNDE görmesi gerek. Yalnız depoda duran
@@ -6804,7 +6815,7 @@ function gateSettings(){
     let et=satir.querySelector('.gateWhy');
     if(!uygun && sebep){
       if(!et){ et=document.createElement('small'); et.className='gateWhy';
-        et.style.cssText='display:block;font-size:11px;color:#ffb300;font-weight:700';
+        et.style.cssText='display:block;font-size:var(--tx-xs);color:#ffb300;font-weight:700';
         sw.parentNode.insertBefore(et,sw); }
       et.textContent='· '+sebep;
     } else if(et) et.remove();
@@ -6829,7 +6840,7 @@ function gateSettings(){
     let et=blok.querySelector(':scope > .gateWhy');
     if(!uygun){
       if(!et){ et=document.createElement('small'); et.className='gateWhy';
-        et.style.cssText='display:block;font-size:11px;color:#ffb300;font-weight:700';
+        et.style.cssText='display:block;font-size:var(--tx-xs);color:#ffb300;font-weight:700';
         blok.insertBefore(et,blok.firstChild); }
       et.textContent='· '+sebep;
     } else if(et) et.remove();

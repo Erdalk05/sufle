@@ -103,11 +103,11 @@
   #app.full #left,#app.full #right{opacity:0;pointer-events:none;overflow:hidden}
 
   /* ===== ÜST ÇUBUK ===== */
-  .brand{font-weight:800;font-size:15px;letter-spacing:.3px;color:#fff;margin-right:6px}
+  .brand{font-weight:800;font-size:var(--tx-md);letter-spacing:.3px;color:#fff;margin-right:6px}
   .brand b{color:var(--accent)}
   .spacer{flex:1}
   .btn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
-    border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+    border-radius:9px;padding:9px 14px;font-size:var(--tx-sm);font-weight:600;display:inline-flex;align-items:center;gap:7px}
   .btn:hover{border-color:#3d3d48}
   .btn.primary{background:var(--accent);color:#04210f;border-color:transparent}
   .btn.primary:hover{filter:brightness(1.08)}
@@ -118,7 +118,7 @@
   .seg{display:inline-flex;gap:2px;background:var(--panel2);border:1px solid var(--line);
     border-radius:9px;padding:2px}
   .seg button{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;
-    font-weight:700;padding:4px 10px;border-radius:7px;cursor:pointer}
+    font-weight:700;padding:var(--sp-1) 10px;border-radius:7px;cursor:pointer}
   /* B.1 — SEÇİLİ ≠ EYLEM. `jetonlar.css` kendi kuralını yazıyor:
      "--r-action ... asıl eylem, ekranda TEK olmalı". Ölçtüm, kural çiğneniyordu:
      Mac ana ekranda 9, telefon girişte 3 dolu yeşil AYNI ANDA görünüyordu ve
@@ -134,10 +134,10 @@
      53 kontrolün aynı anda görünmesi 'hepsi eşit önemde' demekti — hiçbiri
      önemli görünmüyordu. Sekme dışı gruplar akıştan tamamen çıkar
      (display:none) — klavye gezintisi görünmeyene takılmaz. */
-  #rtabs{display:flex;gap:4px;margin-bottom:12px;position:sticky;top:0;z-index:5;
-    background:var(--panel);padding:4px 0}
+  #rtabs{display:flex;gap:var(--sp-1);margin-bottom:12px;position:sticky;top:0;z-index:5;
+    background:var(--panel);padding:var(--sp-1) 0}
   #rtabs button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
-    font:inherit;font-size:12.5px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
+    font:inherit;font-size:12px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
   /* Sağ panel sekmeleri de seçili DURUM, eylem değil — .seg ile aynı kural. */
   #rtabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:700}
   #right .ctrl.sekmeDisi{display:none}
@@ -189,48 +189,48 @@
      ikon o renk; emoji ise her platformda başka çiziliyordu. */
   .ic{width:18px;height:18px;display:inline-block;vertical-align:-3px;flex:none}
   .iconbtn .ic{width:20px;height:20px;vertical-align:-4px}
-  .pill button{background:none;border:none;color:var(--muted);padding:8px 11px;font-size:12px;font-weight:600}
+  .pill button{background:none;border:none;color:var(--muted);padding:var(--sp-2) 11px;font-size:12px;font-weight:600}
   /* Biçim seçici de SEÇİLİ DURUM — .seg ve #rtabs ile aynı kural (B.1). */
   .pill button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);font-weight:700}
   .clock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:14px;min-width:54px;text-align:center}
 
   /* ===== SOL PANEL — SENARYOLAR + METİN ===== */
   .sec{padding:14px 14px 0}
-  .sec h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
-  .iconbtn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:7px;width:26px;height:26px;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .sec h3{font-size:var(--tx-xs);text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+  .iconbtn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:7px;width:26px;height:26px;font-size:var(--tx-md);line-height:1;display:flex;align-items:center;justify-content:center}
   .scripts{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
-  .scriptItem{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:9px}
+  .scriptItem{display:flex;align-items:center;gap:var(--sp-2);padding:9px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:9px}
   .scriptItem.on{border-color:var(--accent);background:rgba(0,200,83,.08)}
-  .scriptItem .nm{flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .scriptItem .meta{font-size:11px;color:var(--muted)}
+  .scriptItem .nm{flex:1;font-size:var(--tx-sm);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scriptItem .meta{font-size:var(--tx-xs);color:var(--muted)}
   .scriptItem .x{color:var(--muted);font-size:16px;background:none;border:none;padding:0 2px}
   .scriptItem .x:hover{color:#ff6b6b}
   #editorWrap{flex:1;display:flex;flex-direction:column;padding:6px 14px 14px;min-height:220px}
-  #title{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:13px;font-weight:600;margin-bottom:8px}
+  #title{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:var(--tx-sm);font-weight:600;margin-bottom:8px}
   #title:focus,#editor:focus{outline:none;border-color:var(--accent)}
   #editor{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:11px;color:var(--txt);
-    padding:13px;font-size:15px;line-height:1.65;resize:none;font-family:inherit;min-height:160px}
-  .editStats{font-size:11px;color:var(--muted);margin-top:7px;display:flex;justify-content:space-between}
+    padding:13px;font-size:var(--tx-md);line-height:1.65;resize:none;font-family:inherit;min-height:160px}
+  .editStats{font-size:var(--tx-xs);color:var(--muted);margin-top:7px;display:flex;justify-content:space-between}
 
   /* ===== SAĞ PANEL — AYARLAR ===== */
   .ctrl{padding:13px 16px;border-bottom:1px solid var(--line)}
   .ctrl .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
   .ctrl .row:last-child{margin-bottom:0}
-  .ctrl label{font-size:12.5px;color:var(--txt)}
+  .ctrl label{font-size:12px;color:var(--txt)}
   .ctrl .v{font-size:12px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
   input[type=range]{width:100%;accent-color:var(--accent);height:22px}
   .field{margin-bottom:11px}
   .field:last-child{margin-bottom:0}
   .field .top{display:flex;justify-content:space-between;margin-bottom:3px}
   .field .top label{font-size:12px;color:var(--muted)}
-  .swatches{display:flex;gap:8px;flex-wrap:wrap}
+  .swatches{display:flex;gap:var(--sp-2);flex-wrap:wrap}
   .sw{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative}
   .sw.on{border-color:#fff}
   .selectish{display:flex;gap:6px;flex-wrap:wrap}
-  .selectish button{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600}
+  .selectish button{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:var(--sp-2) 6px;font-size:12px;font-weight:600}
   .selectish button.on{background:var(--accent);color:#04210f;border-color:transparent}
-  .toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-  .toggle span{font-size:12.5px}
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:var(--sp-2) 0}
+  .toggle span{font-size:12px}
   .sw2{position:relative;width:42px;height:24px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;transition:.15s}
   .sw2::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#777;transition:.15s}
   .sw2.on{background:var(--accent)}
@@ -311,10 +311,10 @@
   #eyeline::before{left:0;border-left-color:var(--accent)}
   #eyeline::after{right:0;border-right-color:var(--accent)}
   /* format etiketi + rec göstergesi */
-  #fmtTag{position:absolute;top:10px;left:12px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;z-index:6}
+  #fmtTag{position:absolute;top:10px;left:12px;background:rgba(0,0,0,.55);color:#fff;font-size:var(--tx-xs);font-weight:600;padding:var(--sp-1) 9px;border-radius:20px;z-index:6}
   #audBadge{position:absolute;top:52px;right:14px;z-index:6;display:none;background:rgba(0,0,0,.6);
-    color:#fff;font-size:11px;font-weight:800;padding:5px 11px;border-radius:16px}
-  #recDot{position:absolute;top:10px;right:12px;display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;z-index:6}
+    color:#fff;font-size:var(--tx-xs);font-weight:800;padding:5px 11px;border-radius:16px}
+  #recDot{position:absolute;top:10px;right:12px;display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);color:#fff;font-size:var(--tx-xs);font-weight:700;padding:var(--sp-1) 10px;border-radius:20px;z-index:6}
   #recDot.on{display:flex}
   #recDot i{width:9px;height:9px;border-radius:50%;background:#e53935;animation:pulse 1s infinite}
   /* ilerleme çubuğu */
@@ -326,7 +326,7 @@
   #statusbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:14px;
     background:rgba(10,10,12,.8);border:1px solid var(--line);border-radius:12px;padding:7px 14px;font-size:12px;color:var(--muted);z-index:7;backdrop-filter:blur(6px)}
   #statusbar b{color:var(--txt)}
-  kbd{background:#26262e;border:1px solid #3a3a44;border-radius:4px;padding:1px 6px;font-size:11px;color:#cfcfd6}
+  kbd{background:#26262e;border:1px solid #3a3a44;border-radius:4px;padding:1px 6px;font-size:var(--tx-xs);color:#cfcfd6}
 
   /* mobil panel açma + arka karartma */
   .mobileOnly{display:none}
@@ -336,9 +336,9 @@
     .desktopOnly{display:none}
     #app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
     #app.full{grid-template-columns:1fr}
-    #topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:7px}
-    .brand{font-size:13px;margin-right:0}
-    .btn{padding:8px 11px;font-size:12px}
+    #topbar{height:auto;flex-wrap:wrap;padding:var(--sp-2) 10px;gap:7px}
+    .brand{font-size:var(--tx-sm);margin-right:0}
+    .btn{padding:var(--sp-2) 11px;font-size:12px}
     #statusbar{display:none}
     #left,#right{position:fixed;top:0;bottom:0;width:88%;max-width:340px;z-index:40;opacity:1 !important;
       pointer-events:auto !important;overflow-y:auto !important;transition:transform .25s ease}
@@ -348,10 +348,10 @@
     #app.showRight #right{transform:translateX(0)}
     #app.showLeft #backdrop,#app.showRight #backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:38}
   }
-  .rb-note{font-size:11.5px;color:var(--muted);line-height:1.5}
+  .rb-note{font-size:var(--tx-xs);color:var(--muted);line-height:1.5}
   .rb-note b{color:var(--txt)}
-  .rb-url{margin-top:6px;font-size:13px;font-weight:700;color:var(--accent);word-break:break-all;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;text-align:center}
-  #connDot{color:#555;font-size:11px}
+  .rb-url{margin-top:6px;font-size:var(--tx-sm);font-weight:700;color:var(--accent);word-break:break-all;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:var(--sp-2) 10px;text-align:center}
+  #connDot{color:#555;font-size:var(--tx-xs)}
   #connDot.on{color:var(--accent)}
   #voiceBtn.primary{background:var(--accent);color:#04210f;border-color:transparent}
   /* kayıt önizleme penceresi */
@@ -363,14 +363,14 @@
      taşınmaması bu depoda tekrarlayan sınıf.
      Yerine kendi panelimiz: sayfayı hiç durdurmuyor, Escape ile kapanıyor. */
   #bilgi{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.55);padding:24px}
+    background:rgba(0,0,0,.55);padding:var(--sp-6)}
   #bilgi.open{display:flex}
   #bilgi .bx{background:var(--card);border:1px solid var(--line);border-radius:16px;
     max-width:760px;max-height:80vh;overflow:auto;padding:18px 20px;box-shadow:0 18px 60px rgba(0,0,0,.6)}
-  #bilgi h3{margin:0 0 10px;font-size:15px}
+  #bilgi h3{margin:0 0 10px;font-size:var(--tx-md)}
   #bilgi pre{white-space:pre-wrap;font:13px/1.55 inherit;color:#cfd0d4;margin:0 0 14px}
   #recResult{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.78);backdrop-filter:blur(6px);padding:24px}
+    background:rgba(0,0,0,.78);backdrop-filter:blur(6px);padding:var(--sp-6)}
   #recResult.open{display:flex}
   .rr-box{background:#141418;border:1px solid var(--line);border-radius:18px;padding:18px;
     width:min(720px,92vw);max-height:90vh;display:flex;flex-direction:column;gap:14px}
@@ -380,7 +380,7 @@
   .rr-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
   .rr-note{font-size:12px;color:var(--muted);text-align:center}
   .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
-    background:var(--accent);color:#04210f;font-weight:700;font-size:13px;padding:11px 18px;border-radius:11px;
+    background:var(--accent);color:#04210f;font-weight:700;font-size:var(--tx-sm);padding:11px 18px;border-radius:11px;
     opacity:0;pointer-events:none;transition:.25s;z-index:50}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -2618,7 +2618,7 @@ const MMSG={
       d.body.appendChild(prompt);
       // saydamlık: görüşmede arkadaki yüzü kapatmasın
       const bar=d.createElement('div');
-      bar.style.cssText='position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;'+
+      bar.style.cssText='position:fixed;left:0;right:0;bottom:0;display:flex;gap:var(--sp-2);align-items:center;'+
         'background:rgba(0,0,0,.65);padding:6px 10px;font:12px -apple-system,sans-serif;color:#aaa';
       bar.innerHTML='<span>Saydamlık</span><input type="range" min="25" max="100" value="100" style="flex:1">'+
         '<span>Boşluk = başlat/dur</span>';

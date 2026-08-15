@@ -119,7 +119,7 @@
  "118-hedef-ve-kontrast.js": 33,
  "119-mac-donduran-diyalog.js": 27,
  "120-file-protokolu.js": 8,
- "121-jetonlar-ve-derleme.js": 36,
+ "121-jetonlar-ve-derleme.js": 53,
  "122-mac-i18n-kapsami.js": 14,
  "123-tasarim-yuzeyi.js": 83,
  "124-odak-modu.js": 14,
@@ -132,7 +132,7 @@
  "131-magaza-hazirlik.js": 40,
  "132-magaza-metni.js": 34,
  "133-seo-vitrin.js": 33,
- "134-kumanda-cubugu-sigiyor.js": 11,
+ "134-kumanda-cubugu-sigiyor.js": 17,
  "135-vitrin-sayfasi.js": 64,
  "136-buyuk-kutuphane.js": 23,
  "137-prova-raporu.js": 50

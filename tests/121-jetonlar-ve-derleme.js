@@ -180,3 +180,31 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
        eksik.length === 0 && fazla.length === 0 && t.size > 200);
   }
 }
+
+/* ---------- B.1: ÖLÇEK TANIMLI DEĞİL, KULLANILIYOR (Tur 43) ----------
+   ÖLÇÜLDÜ: `--tx-*` ve `--sp-*` jetonları tanımlıydı ama KULLANAN KİMSE
+   YOKTU (0 kullanım) — tanımlı ama ölü ölçek, bu deponun "ölü ayar" sınıfı.
+   Tanım tek başına hiçbir şeyi garanti etmez; bir sonraki geliştirici yine
+   rastgele piksel yazar. Bu blok ölçeğin GERÇEKTEN kullanıldığını kilitliyor.
+
+   Ayrıca tarayıcıda ölçülen iki AYIRT EDİLEMEZ ikiz tekleştirildi:
+   telefonda 11 vs 11,5 px · Mac'te 12 vs 12,5 px. Yarım piksellik basamak
+   tasarım değil kazadır; iki kabukta da farklı punto sayısı 7'den 6'ya indi. */
+{
+  const jetonKaynak = fs.readFileSync(jetonYolu, 'utf8');
+  for (const [ad, kaynak] of [['telefon', oku(telefonYolu())],
+                             ['Mac', oku(macYolu())]]) {
+    const tx = (kaynak.match(/var\(--tx-/g) || []).length;
+    const sp = (kaynak.match(/var\(--sp-/g) || []).length;
+    ok(ad + ': tipografi ölçeği kullanılıyor (' + tx + ' bildirim)', tx >= 10);
+    ok(ad + ': boşluk ritmi kullanılıyor (' + sp + ' bildirim)', sp >= 10);
+    /* Yarım piksellik punto GERİ GELMESİN: ölçüm onu ikiz olarak buldu. */
+    const yarim = kaynak.match(/font-size:\s*\d+\.\d+px/g) || [];
+    ok(ad + ': yarım piksellik punto yok — bulunan: ' + yarim.join(','), yarim.length === 0);
+  }
+  /* Jetonların KENDİSİ hâlâ tanımlı mı — kullanım varken tanım silinirse
+     bütün bildirimler sessizce varsayılana düşerdi. */
+  for (const j of ['--tx-xs','--tx-sm','--tx-md','--tx-lg','--tx-xl',
+                   '--sp-1','--sp-2','--sp-3','--sp-4','--sp-6','--sp-8'])
+    ok('jeton tanımlı: ' + j, new RegExp(j.replace(/-/g, '\\-') + ':').test(jetonKaynak));
+}

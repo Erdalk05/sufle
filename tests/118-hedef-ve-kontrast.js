@@ -1,6 +1,9 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
-const tel=oku(telefonYolu());
+const {telefonYolu,oku, cozJeton}=require('./kaynak');
+/* JETONLAR ÇÖZÜLMÜŞ okunur: B.1'de dolgular `var(--sp-3)`e bağlandı ve bu
+   dosya sayıyı kaynaktan aradığı için kırıldı — DEĞER hiç değişmemişti.
+   İddia yine gerçek piksel değerine bakıyor. */
+const tel = cozJeton(oku(telefonYolu()));
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 
 /* K11 + K9 — Erdal kararı bana bıraktı, ikisini de ölçüp karar verdim.
