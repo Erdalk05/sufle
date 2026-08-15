@@ -646,6 +646,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     <div class="rr-head"><span data-i18n="mRrHead">🎬 Çekim hazır</span> <span id="rrSize"></span></div>
     <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
     <video id="rrVideo" controls playsinline></video>
+    <!-- D.6 BUDAMA. Telefonda tam çalışıyordu, Mac'te HİÇ YOKTU — üstelik
+         sözlükte trimStart/trimEnd/trimGo anahtarları duruyordu, yani yine
+         ölü çeviri. Kutu varsayılan gizli: budama yalnız tarayıcı
+         captureStream desteklerse açılır (ölü ayar yaratma). -->
+    <div id="rrTrimBox" class="hidden" style="margin:10px 0">
+      <div class="field"><div class="top"><span data-i18n="trimStart">✂️ Baştan kes</span>
+        <span class="v" id="rrTrimAV">0.0 sn</span></div>
+        <input type="range" id="rrTrimA" min="0" max="1000" value="0"></div>
+      <div class="field"><div class="top"><span data-i18n="trimEnd">✂️ Sondan kes</span>
+        <span class="v" id="rrTrimBV">—</span></div>
+        <input type="range" id="rrTrimB" min="0" max="1000" value="1000"></div>
+      <div class="rb-note" id="rrTrimInfo"></div>
+      <div class="rr-btns" style="margin-top:6px">
+        <button class="btn" id="rrTrimPrev" data-i18n="trimPrev">▶︎ Seçimi oynat</button>
+        <button class="btn primary" id="rrTrimGo" data-i18n="trimGo">✂️ Kes ve uygula</button>
+      </div>
+    </div>
     <div class="rr-btns">
       <button class="btn danger" id="rrDiscard" data-i18n="mDiscard">🗑 Sil / Yeniden</button>
       <button class="btn" id="rrClose" data-i18n="keep">Kapat</button>
@@ -2363,6 +2380,70 @@ const I18N={
     setTimeout(()=>{ measure(); setPos(pos); },120);
   }
   function pipKapat(){ if(pipWin){ try{ pipWin.close(); }catch(e){ logErr('pip',e); } } pipGeriAl(); }
+  /* ---------- D.6 BUDAMA (baştan/sondan kes) ----------
+     Telefonun doTrim'iyle AYNI yöntem: videoyu seçilen aralıkta oynatıp
+     captureStream'i yeniden kaydediyoruz. Tarayıcıda yeniden kodlama
+     kütüphanesi olmadan tek dürüst yol bu; ffmpeg.wasm gömmek "tek dosya,
+     sıfır bağımlılık" sözünü bozardı (jetonlarda ölçülen aynı gerekçe).
+     BEDELİ AÇIKÇA SÖYLENİYOR: kesme, seçilen süre kadar sürer. */
+  let trimA=0, trimB=0, trimming=false;
+  function trimVar(){ const v=$('#rrVideo'); return !!(v && (v.captureStream||v.mozCaptureStream)); }
+  function trimSure(){ const v=$('#rrVideo');
+    return (v && v.duration && isFinite(v.duration)) ? v.duration : ((recStop-recStart)/1000||0); }
+  function trimGuncelle(){
+    const d=trimSure();
+    trimA=Math.min(+$('#rrTrimA').value/1000*d, d);
+    trimB=Math.max(+$('#rrTrimB').value/1000*d, trimA+0.3);
+    $('#rrTrimAV').textContent=trimA.toFixed(1)+' sn';
+    $('#rrTrimBV').textContent=trimB.toFixed(1)+' sn';
+    const sec=Math.max(0,trimB-trimA);
+    $('#rrTrimInfo').textContent='Seçilen: '+sec.toFixed(1)+' sn (toplam '+d.toFixed(1)+
+      ' sn) · kesme işlemi yaklaşık '+Math.ceil(sec)+' sn sürer';
+  }
+  function trimAc(){
+    /* Desteklenmiyorsa kutuyu HİÇ AÇMA — açıp sonra "olmuyor" demek,
+       kullanıcının çekimiyle oynadığını sandırır. */
+    if(!trimVar()||!trimSure()){ $('#rrTrimBox').classList.add('hidden'); return; }
+    $('#rrTrimBox').classList.remove('hidden');
+    $('#rrTrimA').value=0; $('#rrTrimB').value=1000; trimGuncelle();
+  }
+  async function trimUygula(){
+    if(trimming) return;
+    const v=$('#rrVideo'), d=trimSure();
+    if(!trimVar()||!d){ toast('Bu tarayıcı kesmeye izin vermiyor'); return; }
+    const sec=trimB-trimA;
+    if(sec<0.3){ toast('Seçim çok kısa'); return; }
+    trimming=true; $('#rrTrimGo').textContent='Kesiliyor…';
+    try{
+      const src=(v.captureStream?v.captureStream():v.mozCaptureStream());
+      if(!src||!src.getVideoTracks().length) throw new Error('stream');
+      const mime=pickMime();
+      let r2; try{ r2=new MediaRecorder(src,mime?{mimeType:mime}:{}); }catch(e){ r2=new MediaRecorder(src); }
+      const parcalar=[]; r2.ondataavailable=e=>{ if(e.data.size) parcalar.push(e.data); };
+      const bitti=new Promise(res=>{ r2.onstop=res; });
+      v.pause(); v.currentTime=trimA; v.muted=false;
+      await new Promise(res=>{ const h=()=>{ v.removeEventListener('seeked',h); res(); };
+        v.addEventListener('seeked',h); setTimeout(res,600); });
+      await v.play().catch(()=>{});
+      r2.start(500);
+      await new Promise(res=>{
+        const iv=setInterval(()=>{ if(v.currentTime>=trimB || v.ended){ clearInterval(iv); res(); } },80);
+        /* Üst sınır: seek ya da oynatma takılırsa süresiz beklemeyelim. */
+        setTimeout(()=>{ clearInterval(iv); res(); }, (sec+4)*1000);
+      });
+      v.pause(); try{ r2.stop(); }catch(e){}
+      await bitti;
+      const nb=new Blob(parcalar,{type:(r2.mimeType||lastBlob.type||'video/mp4').split(';')[0]});
+      /* Boş çıktıyla ESKİSİNİ EZME: kullanıcı çekimini kaybetmesin. */
+      if(nb.size<1000) throw new Error('empty');
+      lastBlob=nb;
+      $('#rrTrimBox').classList.add('hidden');
+      showResult();
+      toast('Kesildi — yeni süre '+sec.toFixed(1)+' sn');
+    }catch(e){ logErr('trim',e); toast('Kesilemedi — çekim olduğu gibi duruyor'); }
+    trimming=false; $('#rrTrimGo').textContent=t('trimGo');
+  }
+
   function showResult(){
     if(!lastBlob) return;
     if(lastUrl) URL.revokeObjectURL(lastUrl);
@@ -2371,6 +2452,7 @@ const I18N={
     const ext=(lastBlob.type.indexOf('mp4')>=0)?'MP4':'WebM';
     $('#rrSize').textContent='· '+ext+' · '+(lastBlob.size/1048576).toFixed(1)+' MB · '+fmtTime((recStop-recStart)/1000);
     $('#rrDownload').textContent='⬇︎ İndir (.'+ext.toLowerCase()+')';
+    setTimeout(trimAc,150);   // süre metadata ile geliyor
     const ai=$('#audInfo'); if(ai) ai.textContent=audSummary();
     // Goruntu sesten kisa mi? Donma buradan kesin anlasilir.
     (function(){
@@ -2850,6 +2932,12 @@ const I18N={
   $('#fsBtn').onclick=()=>{ if(!document.fullscreenElement) stageWrap.requestFullscreen?.(); else document.exitFullscreen(); };
   $('#hideBtn').onclick=()=>app.classList.toggle('full');
   // kayıt önizleme butonları
+  $('#rrTrimA').oninput=trimGuncelle;
+  $('#rrTrimB').oninput=trimGuncelle;
+  $('#rrTrimPrev').onclick=()=>{ const v=$('#rrVideo');
+    v.currentTime=trimA; v.play().catch(()=>{});
+    const iv=setInterval(()=>{ if(v.currentTime>=trimB||v.ended){ clearInterval(iv); v.pause(); } },80); };
+  $('#rrTrimGo').onclick=trimUygula;
   $('#rrDownload').onclick=downloadRec;
   $('#rrDiscard').onclick=discardRec;
   $('#rrClose').onclick=closeResult;

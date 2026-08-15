@@ -3709,7 +3709,10 @@ async function doTrim(){
     $('#trimBox').classList.add('hidden');
     showResult(lastBlob);
     toast(m('trimDone'));
-  }catch(e){ toast(m('trimFail')); }
+  /* Hata GÜNLÜĞE de yazılmalı: kullanıcı 'kesilemedi' görüyor ama neden
+     olduğu hiçbir yerde kalmıyordu. Mac'e budamayı taşırken parite kapısı
+     bu eksiği ele verdi — Mac'te logErr vardı, telefonda yoktu. */
+  }catch(e){ logErr('trim',e); toast(m('trimFail')); }
   trimming=false; $('#trimGo').textContent=t('trimGo');
 }
 

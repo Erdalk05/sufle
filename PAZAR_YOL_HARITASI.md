@@ -333,7 +333,16 @@ Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavram�
 **D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
 **D.4 Uzak önizleme:** telefon kumandasında kameranın gördüğü kare. Güçlü farklılaşma.
 **D.5 Entegrasyon:** sanal kamera / OBS / Zoom yolu (masaüstünde gerçekçi).
-**D.6 Video düzenleme:** kırpma zaten var → başlangıç/bitiş budama + hızlı kesme.
+**D.6 Video düzenleme:** ✅ **BİTTİ.** Ölçüm sürprizliydi: **telefonda budama zaten tamdı**
+(kaydırmalar, önizleme, gerçek yeniden kayıt) — **Mac'te hiç yoktu**, üstelik paylaşılan sözlükte
+`trimStart/trimEnd/trimGo/trimPrev` anahtarları duruyordu, yani yine **ölü çeviri**.
+Mac'e taşındı; yöntem telefonla aynı: videoyu seçilen aralıkta oynatıp `captureStream`'i yeniden
+kaydetmek. **`ffmpeg.wasm` gömülmedi** — jeton fontlarındaki aynı gerekçe ("tek dosya, sıfır
+bağımlılık"). Bedeli kullanıcıya **açıkça söyleniyor**: kesme, seçilen süre kadar sürer.
+Kutu **yalnız `captureStream` destekleniyorsa** açılıyor; boş çıktı **eskisini ezmiyor**;
+çift çalıştırma ve süresiz bekleme engelli.
+**Parite kapısı telefonda bir eksik buldurdu:** `doTrim` hatayı **günlüğe hiç yazmıyordu** —
+kullanıcı "kesilemedi" görüyor, sebebi hiçbir yerde kalmıyordu. Düzeltildi.
 
 ---
 
@@ -397,3 +406,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 20 | 2026-08-15 | C.1 ÖLÇÜLDÜ ve ELENDİ · C.4 bitti · C.3 gerekçeli ertelendi | ls tavanı 4,94 MB · 2 dk senaryo 2 KB · tavana 1.271 senaryo → kota riski teorik | ✅ 8/8 YEŞİL |
 | 21 | 2026-08-15 | D.2: Mac harici kamera seçimi | deviceId Mac'te 0→kullanımda · tek kamerada gizli (tarayıcı) · parite tabanı bilerek 5→6 | ✅ 8/8 YEŞİL |
 | 22 | 2026-08-15 | D.2 tamam: odak/pozlama kilidi (yeteneğe bağlı) | desteksizde satır+ipucu+durum birlikte temizleniyor · 33 bozma · 25 kanıtlı dosya | ✅ 8/8 YEŞİL |
+| 23 | 2026-08-15 | D.6: Mac'e video budama + telefonda eksik günlükleme | ölü çeviri canlandı · 20 iddia · 34 bozma · ffmpeg.wasm elendi | ✅ 8/8 YEŞİL |

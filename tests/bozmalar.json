@@ -229,5 +229,12 @@
   "kaynak": "telefon",
   "bul": "  $('#lockRow').style.display=hasLock?'flex':'none';",
   "koy": "  $('#lockRow').style.display='flex';"
+ },
+ {
+  "ad": "D6 boş çıktı korumasi söküldü (çekim eziliyor)",
+  "test": "127-video-budama.js",
+  "kaynak": "mac",
+  "bul": "      if(nb.size<1000) throw new Error('empty');",
+  "koy": ""
  }
 ]

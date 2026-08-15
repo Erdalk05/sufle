@@ -56,7 +56,11 @@ const ISTISNA = [
    İkisi de kod tarafından basılıyor; çevirileri kendi üretim yerlerine
    bağlanmalı, işaretlemeye değil. Bu yüzden kapsam dışı — ELEME GEREKÇESİ. */
 const CALISMA_ID = ['bilgiBas','camBtn','playBtn','recBtn','rrDownload','sbVer','voiceBtn',
-                    'sbErr','wc','rt','modeV','bandV'];
+                    'sbErr','wc','rt','modeV','bandV',
+                    /* D.6 budama göstergeleri: trimGuncelle bunları her
+                       kaydırmada yeniden yazıyor. data-i18n konsaydı
+                       applyLang seçilen süreyi ezip bayat değer basardı. */
+                    'rrTrimAV','rrTrimBV','rrTrimInfo'];
 
 /* Kapsanmış ögelerin İÇİNİ maskele: data-i18n taşıyan bir öge ve altındaki
    her şey çevrilmiş sayılır. */
