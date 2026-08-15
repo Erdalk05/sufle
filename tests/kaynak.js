@@ -129,5 +129,21 @@ function cozJeton(metin) {
   return cikti;
 }
 
-module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, cozJeton };
+/* Paylaşılan metin araçları TEK dosyada (A.3, Tur 46). Testler onları
+   kabuktan çıkarmaya çalışırsa GİRİNTİYE kilitlenir: Mac kopyası 2 boşlukla
+   yazılıydı, gömülü blok 0 girintiyle geliyor ve beş test birden "iddia sayısı
+   düştü" diye kırıldı — davranış hiç değişmemişti. Kaynağın kendisi okunuyor. */
+function metinCekirdegi() {
+  /* AÇIKÇA VERİLEN YOL YANLIŞSA SESSİZCE DEPOYA DÜŞME. Bozma turu geçici bir
+     kopya yazıp SUFLE_METIN ile gösteriyor; depo dosyası okunursa bozma
+     HİÇBİR ŞEY ölçmeden "geçti" görünür. Bu tuzağa bu oturumda üç kez
+     düşüldü (docx, prova, kumanda) — kural artık burada da yazılı. */
+  const acik = process.env.SUFLE_METIN;
+  if (acik && !fs.existsSync(acik))
+    throw new Error('Verilen metin çekirdeği yolu yok: ' + acik);
+  return fs.readFileSync(acik || path.join(REPO, 'cekirdek', 'metin.js'), 'utf8');
+}
+
+module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni,
+                   cozJeton, metinCekirdegi };
 

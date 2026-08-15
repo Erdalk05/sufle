@@ -140,10 +140,10 @@
   "koy": "      bilgi=await r.json();"
  },
  {
-  "ad": "L10 görünmez karakter temizliği yok",
+  "ad": "L10 görünmez karakter temizliği yok (ortak çekirdek — iki kabuk birden)",
   "test": "112-mac-riskli-bes.js",
-  "kaynak": "mac",
-  "bul": "      .replace(/\\u00AD/g,'')\n",
+  "kaynak": "metin",
+  "bul": "  .replace(/\\u00AD/g,'')\n",
   "koy": ""
  },
  {
@@ -537,5 +537,19 @@
   "kaynak": "kumanda",
   "bul": "  return Object.assign({}, varsayilan || {}, ogrenilen || {});",
   "koy": "  return Object.assign(varsayilan || {}, ogrenilen || {});"
+ },
+ {
+  "ad": "A3 telefon metin çekirdeğinden koptu (araçlar yine ayrışır)",
+  "test": "112-mac-riskli-bes.js",
+  "kaynak": "telefon",
+  "bul": "/* ==CEKIRDEK:metin.js== */",
+  "koy": "/* ==CEKIRDEKSIZ:metin.js== */"
+ },
+ {
+  "ad": "A3 çekirdekte cümle sonu kısaltma listesi boşaltıldı",
+  "test": "45-cumle-sonu.js",
+  "kaynak": "metin",
+  "bul": "'vb','vs','vd'",
+  "koy": "'zzz'"
  }
 ]

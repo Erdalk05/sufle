@@ -33,6 +33,7 @@ KAYNAK = {
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),
     'kumanda': (os.path.join(REPO, 'cekirdek', 'kumanda.js'), 'SUFLE_KUMANDA'),
+    'metin': (os.path.join(REPO, 'cekirdek', 'metin.js'), 'SUFLE_METIN'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

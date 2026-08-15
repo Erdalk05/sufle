@@ -195,8 +195,39 @@ Bu adımın ortaya çıkardığı üç yapısal sonuç:
 ekleniyor → **tek başına bir tur**. Yarım bırakılırsa deponun 1 numaralı hata sınıfı olur
 ("yarım kalmış düzeltme"), o yüzden bölündü.
 Sözlük Mac'e **henüz gömülmüyor**: kullanılmayan 250 satır ölü koddur ve `denetim.py` haklı olarak bağırır.
-**A.3** Motor + işaretleme + SRT çekirdeğe taşınır; iki kabuk da aynı kodu gömer.
-**A.4** Mac'te eksik özellikler (kompozit, arşiv, hazırlık) çekirdekten otomatik gelir.
+**A.3** ⏳ **ölçüldü; taşınabilir parça taşındı (Tur 46).** Önce SAYDIM — "her şeyi çekirdeğe"
+demeden önce ne kadar gerçek kopya var:
+
+| | adet |
+|---|---|
+| iki kabukta aynı adlı fonksiyon | **93** |
+| **birebir aynı** | **14** (~3 KB) |
+| %85+ benzer (SÜRÜKLENMİŞ kopya) | **32** |
+| aynı ad, farklı iş (meşru) | **47** |
+
+Yani "motor + işaretleme + SRT'yi çekirdeğe taşı" iddiası **olduğundan büyük**: motorun kendisi
+47'lik grupta, çünkü iki kabuğun DOM'u ve durumu farklı. Taşınabilir olan **saf metin
+araçları**ydı ve orada gerçek bir kusur çıktı:
+
+**🔴 `cleanText` iki kabukta FARKLI İŞ yapıyordu (%78 benzerlik).** Mac U+2028/2029 satır
+ayırıcıyı, U+200B-200F/U+2060/FEFF görünmez karakterleri, U+202A-202E/U+2066-2069 bidi
+denetimlerini ve yumuşak tireyi temizliyordu; **telefon hiçbirini**. Aynı "🧹 Temizle" düğmesi
+platforma göre başka sonuç veriyor ve **asıl ürün olan telefon eksik taraftı**. Görünmez
+karakterler sesle takip eşleşmesini sessizce bozar: kelime ekranda doğru görünür, tanıyıcı
+eşleştiremez, sufle durur ve kullanıcı sebebini göremez.
+
+`cekirdek/metin.js` kuruldu (`cleanText` · `joinLines` · `sentenceEnd` + KISALTMA ·
+`breathMarks` · `duzMetin`), **iki kabuğa da gömülüyor**, yerel kopyalar silindi. Üst küme
+alındığı için telefon eksiği kapandı. Taşınmayanların gerekçesi yukarıdaki tablo.
+
+*Yan ders — beş test birden kırıldı ve davranış hiç değişmemişti:* hepsi Mac kopyasının **2
+boşluklu girintisine** kilitlenmişti (`\n  }`). Paylaşılan araçlar artık **çekirdekten**
+çıkarılıyor (`metinCekirdegi()`), yani girinti bağımlılığı kalktı. Ayrıca o yardımcı ilk hâlinde
+`SUFLE_METIN`'i okumuyordu — bozma turu hiçbir şey ölçmeden geçiyordu; bu tuzağa oturumda
+**üçüncü kez** düşüldü ve kural artık `kaynak.js` içinde yazılı.
+
+**A.4** Mac'te eksik özellikler çekirdekten otomatik gelir.
+
 **Bitti ölçütü:** bir özelliği çekirdekte değiştir → iki çıktıda da değişsin; kapı bayat-çıktıyı yakalasın.
 
 ---
@@ -813,3 +844,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 43 | 2026-08-15 | **B.1 tipografi + boşluk** — ölçek ölü jetondan gerçeğe | ölçüldü: 7 punto/12 iç kenar, ölçeğe uyan 3 · **yarım piksel ikizler** tekleştirildi (7→6, 4 gizli vaka daha) · `--tx-*`/`--sp-*` **0 kullanımdan** 23+12 ve 19+16'ya · görsel değişiklik yok (kontrast 0, taşma 0) · 2 kanıtlı bozma (**69**) · **4481 test** | ✅ 9/9 YEŞİL |
 | 44 | 2026-08-15 | **B.2 kapandı · D.3 ölçüldü** — ikisi de "iş yok/iş bu kadar" diye kanıtlandı | sekme düğmelerinde emoji **0** (iş yok, yeni ikon üretilmedi) · başlıktaki 3 emojinin 2'si sözlükten (sınır korunuyor) · Mac sunum kumandası tuşlarını **zaten** karşılıyormuş, eksik olan yalnız tanınmayan tuşu öğretmek · tests/138 bugünkü garantiyi kilitliyor · 3 kanıtlı bozma (**72**) · **4502 test** | ✅ 9/9 YEŞİL |
 | 45 | 2026-08-15 | **D.3 kapandı** — Mac'te öğrenmeli tuş eşleme | sabit switch → tablo (davranış korundu) + öğrenme/tablo/sıfırlama · **gerçek tuş olayıyla doğrulandı** (F13 öğretilmeden ölü, öğretilince çalışıyor, kalıcı) · kurallar `cekirdek/kumanda.js`'e (süzgeç iki kabukta tek yerden) · vaat edilmeyen çift basış/profil GÖSTERİLMİYOR · 5 kanıtlı bozma (**77**) · **4560 test** | ✅ 9/9 YEŞİL |
+| 46 | 2026-08-15 | **A.3 ölçüldü ve taşınabilir parça taşındı** | 93 aynı adlı fonksiyondan yalnız **14'ü birebir**, 32'si sürüklenmiş · **`cleanText` iki kabukta farklı iş yapıyordu** — telefonda görünmez karakter/bidi temizliği YOKTU → `cekirdek/metin.js` ile kapandı · 5 test girinti bağımlılığını ele verdi · yardımcı `SUFLE_METIN`'i okumuyordu (3. kez) · 3 kanıtlı bozma (**79**) · **4564 test** | ✅ 9/9 YEŞİL |

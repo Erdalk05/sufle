@@ -59,6 +59,10 @@ PLAN = [
     ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Kumanda eşleme KURALLARI iki kabukta da aynı olmalı; varsayılan
     # TABLO kabuğa özeldir ve çekirdekte değil (D.3).
+    # Saf metin araçları: iki kabukta SÜRÜKLENMİŞ kopyalardı ve `cleanText`
+    # gerçekten farklı iş yapıyordu (telefonda görünmez karakter temizliği
+    # YOKTU). Tek kaynak (A.3'ün taşınabilir parçası).
+    ('metin.js', ['index.html', 'mac/Teleprompter Pro.html']),
     ('kumanda.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.

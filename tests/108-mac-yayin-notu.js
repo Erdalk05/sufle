@@ -55,7 +55,10 @@ ok('altyazı zaten indirilebiliyordu', /function downloadSrt\(\)/.test(macKod));
 const mTel=tel.replace(/\/\*[\s\S]*?\*\//g,'').match(/function yayinNotu\(\)\{[\s\S]*?\n\}/);
 const mMac=macKod.match(/function yayinNotu\(\)\{[\s\S]*?\n  \}/);
 const dTel=tel.replace(/\/\*[\s\S]*?\*\//g,'').match(/function duzMetin\(t\)\{[\s\S]*?\n\}/);
-const dMac=macKod.match(/function duzMetin\(t\)\{[\s\S]*?\n  \}/);
+/* Tur 46: bu araç ortak çekirdeğe taşındı, iki kabuk da AYNI bloğu
+   gömüyor — Mac kopyasının 2 boşluklu girintisi kalmadı. Parite iddiası
+   duruyor: biri çekirdekten koparılırsa metinler yine ayrışır. */
+const dMac=macKod.match(/function duzMetin\(t\)\{[\s\S]*?\n\}/);
 ok('telefon notu çıkarılabildi', !!mTel);
 ok('Mac notu çıkarılabildi', !!mMac);
 ok('telefon duzMetin çıkarılabildi', !!dTel);

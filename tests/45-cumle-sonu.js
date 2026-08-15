@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar, metinCekirdegi}=require('./kaynak');
 
 /* ALTYAZI KUYRUKLARI KISALTMALARDA ORTASINDAN KESİLİYORDU
    Kuyruk bölme ölçütlerinden biri "önceki kelime cümle sonu mu": kural
@@ -20,8 +20,12 @@ const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
 
 function kur(kaynak, ad){
   const kod=oku(kaynak).replace(/\/\*[\s\S]*?\*\//g,'');
-  const set=cikar(kod,/const KISALTMA=new Set\(\[[\s\S]*?\]\);/, ad+' KISALTMA');
-  const fn=cikar(kod,new RegExp('function sentenceEnd\\(s\\)\\{[\\s\\S]*?\\n'+(ad==='Mac'?'  ':'')+'\\}'), ad+' sentenceEnd');
+  /* PAYLAŞILAN ARAÇ ÇEKİRDEKTEN. Kabuktan çıkarmak girintiye kilitlenmekti
+     (Mac 2 boşluk, telefon 0) ve Tur 46'da tam bu yüzden kırıldı. Kabukların
+     AYNI kodu gömdüğü ayrıca sınanıyor (aşağıda). */
+  const cek=metinCekirdegi();
+  const set=cikar(cek,/const KISALTMA=new Set\(\[[\s\S]*?\]\);/, 'KISALTMA');
+  const fn=cikar(cek,/function sentenceEnd\(s\)\{[\s\S]*?\n\}/, 'sentenceEnd');
   return new Function(set+'\n'+fn+'; return sentenceEnd;')();
 }
 const se=kur(telefonYolu(),'telefon');

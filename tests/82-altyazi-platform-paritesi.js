@@ -25,7 +25,10 @@ const sM   = parcala(macKod,/function buildCues\(\)\{[\s\S]*?\n  \}/,'Mac buildC
 const sabT = parcala(kod,/const CAP_MAXCH=[^\n]*/,'telefon sabitleri');
 const sabM = parcala(macKod,/const CAP_MAXCH=[^\n]*/,'Mac sabitleri');
 const seT  = parcala(kod,/function sentenceEnd\(s\)\{[\s\S]*?\n\}/,'telefon sentenceEnd');
-const seM  = parcala(macKod,/function sentenceEnd\(s\)\{[\s\S]*?\n  \}/,'Mac sentenceEnd');
+/* Tur 46: bu araç ortak çekirdeğe taşındı, iki kabuk da AYNI bloğu
+   gömüyor — Mac kopyasının 2 boşluklu girintisi kalmadı. Parite iddiası
+   duruyor: biri çekirdekten koparılırsa metinler yine ayrışır. */
+const seM  = parcala(macKod,/function sentenceEnd\(s\)\{[\s\S]*?\n\}/,'Mac sentenceEnd');
 const kisT = parcala(kod,/const KISALTMA=new Set\([\s\S]*?\);/,'telefon KISALTMA');
 const kisM = parcala(macKod,/const KISALTMA=new Set\([\s\S]*?\);/,'Mac KISALTMA');
 const mwT  = parcala(kod,/function capMaxW\(\)\{[^\n]*\}/,'telefon capMaxW');

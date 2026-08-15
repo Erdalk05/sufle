@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar, metinCekirdegi}=require('./kaynak');
 const tel=oku(telefonYolu());
 const mac=oku(macYolu());
 
@@ -21,8 +21,14 @@ function kur(src, macMi){
   const re = macMi ? /function buildCues\(\)\{[\s\S]*?\n  \}/ : /function buildCues\(\)\{[\s\S]*?\n\}/;
   /* sentenceEnd artık tek satır değil: Türkçe kısaltmaları ve sıra sayılarını
      ayırt ediyor ve KISALTMA kümesine dayanıyor — ikisini de taşı. */
-  const seRe = macMi ? /function sentenceEnd\(s\)\{[\s\S]*?\n  \}/ : /function sentenceEnd\(s\)\{[\s\S]*?\n\}/;
-  const kisaltma = cikar(src, /const KISALTMA=new Set\(\[[\s\S]*?\]\);/, 'KISALTMA');
+  /* Çekirdekte tek biçim var; kabuk girintisine göre dallanma GEREKSİZ
+     ve zaten kırılganlığın kaynağıydı. */
+  const seRe = /function sentenceEnd\(s\)\{[\s\S]*?\n\}/;
+  /* Paylaşılan metin aracı ÇEKİRDEKTEN çıkarılıyor: kabuktan çıkarmak
+     girintiye kilitlenmek demek (Tur 46'da beş test birden bu yüzden
+     kırıldı, davranış değişmediği hâlde). */
+  const cek = metinCekirdegi();
+  const kisaltma = cikar(cek, /const KISALTMA=new Set\(\[[\s\S]*?\]\);/, 'KISALTMA');
   const sabit = cikar(src, /const CAP_MAXW?[\s\S]{0,140}?CAP_GAP\s*=\s*[\d.]+;/, 'CAP sabitleri');
   /* I10: kelime sınırı artık İKİ platformda da kullanıcı ayarı; Mac tarafında
      `capMaxW` yokmuş gibi davranmak tezgâhı çökertiyordu. */
@@ -36,7 +42,7 @@ function kur(src, macMi){
     ${sabit}
     ${capMaxW}
     ${kisaltma}
-    ${cikar(src, seRe, 'sentenceEnd')}
+    ${cikar(cek, seRe, 'sentenceEnd')}
     ${cikar(src, re, 'buildCues')}
     return buildCues();
   `)(kelimeler, zamanlar, satirlar, opt);

@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku, macMetni}=require('./kaynak');
+const {telefonYolu,macYolu,oku, macMetni, metinCekirdegi}=require('./kaynak');
 const tel=oku(telefonYolu());
 const mac=macMetni();
 const macHam=mac.replace(/\/\*[\s\S]*?\*\//g,'');          // koşturulacak kod
@@ -27,7 +27,11 @@ const macKod=macHam.replace(/\/\/[^\n]*/g,'');             // yalnız kaynak dü
    Denetim haklıydı, ben değil. */
 
 /* ---------- 1) cleanText: GÖRÜNMEZ KARAKTERLER ---------- */
-const mClean=macHam.match(/function cleanText\(t\)\{[\s\S]*?\n  \}/);
+/* Tur 46: cleanText ortak çekirdeğe taşındı ve iki kabuk da AYNI bloğu
+   gömüyor; Mac kopyasının 2 boşluklu girintisi kalmadı. Bu testin asıl
+   iddiası (görünmez karakterlerin temizlenmesi) aynen duruyor —
+   üstelik artık telefonda da geçerli, çünkü kod tek yerden geliyor. */
+const mClean=metinCekirdegi().match(/function cleanText\(t\)\{[\s\S]*?\n\}/);
 ok('cleanText çıkarılabildi', !!mClean);
 const mStrip=tel.replace(/\/\*[\s\S]*?\*\//g,'').match(/function stripInvisible\(x\)\{[\s\S]*?\n\}/);
 ok('telefon temizleyicisi çıkarılabildi', !!mStrip);
@@ -236,5 +240,23 @@ if(mSrc){
     /* Tuval iz üretemezse ham akışa dönülmeli — boş video kaydetme. */
     const r=kaynak({kirp:true, izVar:false});
     ok('tuval görüntü izi vermezse ham akışa dönülüyor', r.ad==='ham');
+  }
+}
+
+/* ---------- ARAÇLAR TEK KAYNAKTAN GELİYOR MU (A.3, Tur 46) ----------
+   `cleanText` iki kabukta FARKLI iş yapıyordu: Mac görünmez karakterleri
+   temizliyordu, telefon temizlemiyordu. Aynı "🧹 Temizle" düğmesi platforma
+   göre başka sonuç veriyor ve ASIL ÜRÜN olan telefon eksik taraftı. Kod tek
+   yere alındı; biri çekirdekten koparsa metinler yine ayrışır. */
+{
+  const telHam = oku(telefonYolu());
+  ok('telefon metin çekirdeğini gömüyor', /==CEKIRDEK:metin\.js==/.test(telHam));
+  /* HAM kaynağa bak: `macHam` blok yorumlarını atıyor ve çekirdek
+     işaretleyicisi bir yorum — atılmış metinde aramak hep boş döner. */
+  ok('Mac de aynı çekirdeği gömüyor', /==CEKIRDEK:metin\.js==/.test(oku(macYolu())));
+  /* Kabuklarda YEREL kopya kalmamalı: kalsaydı hangisinin çalıştığı belirsiz olurdu. */
+  for (const [ad, k] of [['telefon', telHam], ['Mac', macHam]]) {
+    const kacTane = (k.match(/function cleanText\(t\)\{/g) || []).length;
+    ok(ad + ': cleanText tam olarak bir kez tanımlı — ' + kacTane, kacTane === 1);
   }
 }
