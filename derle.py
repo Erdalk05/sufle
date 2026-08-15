@@ -64,6 +64,8 @@ PLAN = [
     # YOKTU). Tek kaynak (A.3'ün taşınabilir parçası).
     ('metin.js', ['index.html', 'mac/Teleprompter Pro.html']),
     ('kumanda.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Zorlanma haritası: prova raporunun tamamlayıcısı, hesabı ortak.
+    ('zorlanma.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

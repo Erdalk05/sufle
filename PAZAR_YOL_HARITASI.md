@@ -248,7 +248,23 @@ diğeri "nerede takıldım".
 kancalardan çıkar; üçüncüsü (sesle yavaşlama) Mac'in eşleştiricisinde **yok** — telefondaki
 `vPrev` karşılığı Mac'te 0 anma, yani oraya yeni kod gerekiyor. Saf kısım (işaretleme +
 satır bazında toplama) çekirdeğe taşınabilir; A.3'te kurulan kalıbın aynısı.
-**Yarım yapılmaması için ayrı bir tura bırakıldı.**
+**✅ Tur 48'de kapandı.** `cekirdek/zorlanma.js` kuruldu (saf: işaretleme + satır bazında
+toplama, ağırlıklar), **telefon da ona bağlandı** — kopyalansaydı `cleanText` vakasının (T46)
+birebir tekrarı olurdu. Mac'e üç sinyal de bağlandı:
+
+| sinyal | Mac'teki kanca |
+|---|---|
+| elle duraklatma | `togglePlay` — **`stop()` içine KONMADI**: orası metin bitince ve kayıt kapanınca da çalışıyor, her çekimi "zorlandım" sayardı |
+| geri sarma | `jumpLine(dir<0)` — yalnız geri; ileri atlamak bilinçli tercihtir |
+| sesle yavaşlama | eşleştiriciye **yeni eklendi** (T47'de yok bulunmuştu), telefondaki eşiklerin aynısı |
+
+**Tarayıcıda gerçek olaylarla doğrulandı:** Boşluk ile duraklat → `{"10":{p:1}}`, ArrowLeft ×2 →
+`{"10":{b:1,p:1},"11":{b:1}}`, kutu satır metnini ve **"geri 2 · durak 1"** sayaçlarını gösterdi,
+sıfırla → depo `{}` ve kutu sebebini söylüyor.
+
+*Tarayıcı bir yarım özellik yakaladı:* ilk hâlinde harita **doluyordu ama kutu boş kalıyordu** —
+çizim yalnız açılışta çağrılıyordu, kullanıcı biriken işaretleri hiç göremiyordu. Çizim artık her
+işaretlemeye ve senaryo değişimine bağlı.
 
 **Bitti ölçütü:** bir özelliği çekirdekte değiştir → iki çıktıda da değişsin; kapı bayat-çıktıyı yakalasın.
 
@@ -868,3 +884,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 45 | 2026-08-15 | **D.3 kapandı** — Mac'te öğrenmeli tuş eşleme | sabit switch → tablo (davranış korundu) + öğrenme/tablo/sıfırlama · **gerçek tuş olayıyla doğrulandı** (F13 öğretilmeden ölü, öğretilince çalışıyor, kalıcı) · kurallar `cekirdek/kumanda.js`'e (süzgeç iki kabukta tek yerden) · vaat edilmeyen çift basış/profil GÖSTERİLMİYOR · 5 kanıtlı bozma (**77**) · **4560 test** | ✅ 9/9 YEŞİL |
 | 46 | 2026-08-15 | **A.3 ölçüldü ve taşınabilir parça taşındı** | 93 aynı adlı fonksiyondan yalnız **14'ü birebir**, 32'si sürüklenmiş · **`cleanText` iki kabukta farklı iş yapıyordu** — telefonda görünmez karakter/bidi temizliği YOKTU → `cekirdek/metin.js` ile kapandı · 5 test girinti bağımlılığını ele verdi · yardımcı `SUFLE_METIN`'i okumuyordu (3. kez) · 3 kanıtlı bozma (**79**) · **4564 test** | ✅ 9/9 YEŞİL |
 | 47 | 2026-08-15 | **A.4 ölçüldü** — öncülü bayatmış, ama yeni gerçek boşluk çıktı | kompozit/arşiv/hazırlık **üçü de Mac'te varmış** → `tests/15` parite listesine yazıldı, bozma kanıtlandı · **zorlanma haritası Mac'te hiç yok** (telefonda canlı) ve bedeli ölçüldü: sesle yavaşlama kancası Mac'te 0 · parite deseni gevşekti (`cropCv` her yerde geçiyor), yeteneği yaratan satıra bağlandı · **4570 test** | ✅ 9/9 YEŞİL |
+| 48 | 2026-08-15 | **Zorlanma haritası Mac'e taşındı** — A.4 kapandı | `cekirdek/zorlanma.js` (telefon da ona bağlandı) · Mac'e üç sinyal: duraklatma `togglePlay`'de (stop() içine DEĞİL), geri sarma `jumpLine`'da, **sesle yavaşlama kancası yeni eklendi** · gerçek olaylarla doğrulandı · tarayıcı yarım özellik yakaladı (harita doluyor, kutu boş) → çizim işaretlemeye bağlandı · 5 kanıtlı bozma (**85**) · **4625 test** | ✅ 9/9 YEŞİL |

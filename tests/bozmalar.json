@@ -558,5 +558,40 @@
   "kaynak": "mac",
   "bul": "cropCv=document.createElement('canvas')",
   "koy": "cropCvYok=document.createElement('canvas')"
+ },
+ {
+  "ad": "A4 çekirdek sınır dışı indeksi kabul ediyor (yanlış satır işaretlenir)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "zorlanma",
+  "bul": "  if(kelimeSayisi != null && idx >= kelimeSayisi) return false;\n",
+  "koy": ""
+ },
+ {
+  "ad": "A4 çekirdek ağırlıkları düzleşti (duraklama = geri sarma)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "zorlanma",
+  "bul": "    r.total = r.s * 2 + r.b * 2 + r.p;",
+  "koy": "    r.total = r.s + r.b + r.p;"
+ },
+ {
+  "ad": "A4 Macte duraklatma sinyali stop() içine kaydı (her çekim zorlanma sayılır)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "    if(running){ macMarkDiff('pause', activeIdx); stop(); return; }",
+  "koy": "    if(running){ stop(); return; }"
+ },
+ {
+  "ad": "A4 Macte harita dolduğu hâlde çizilmiyor (kullanıcı hiç göremez)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "{ save(); macDiffCiz(); }",
+  "koy": "{ save(); }"
+ },
+ {
+  "ad": "A4 Macte sesle yavaşlama kancası söküldü",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "      if(dts>0.35 && dw<=6 && (dw/dts*60) < state.speed*0.6) macMarkDiff('slow', wi);\n",
+  "koy": ""
  }
 ]

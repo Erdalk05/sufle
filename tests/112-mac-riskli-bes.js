@@ -83,7 +83,10 @@ if(mDel){
       const curScript=()=>state.scripts.find(x=>x.id===state.current)||state.scripts[0];
       const oge={'#title':{value:''},'#editor':{value:''}};
       const $=k=>oge[k]||{value:''};
-      const renderScripts=()=>{}, buildWords=()=>{}, reset=()=>{}, updateStats=()=>{};
+      /* Zorlanma haritası SENARYOYA ait (A.4, Tur 48): senaryo silinince/
+         değişince yeniden çiziliyor. Bu test silmenin VERİYE etkisini
+         sınıyor, çizimi değil — taklit yeter. */
+      const renderScripts=()=>{}, buildWords=()=>{}, reset=()=>{}, updateStats=()=>{}, macDiffCiz=()=>{};
       const save=()=>iz.push('kaydedildi');
       ${mDel[0]}
       delScript(__d.id);
