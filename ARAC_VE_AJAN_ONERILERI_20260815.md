@@ -121,6 +121,14 @@ kaydırıcılarda.
 > HTTP kökeninde açıldı → **CSP ihlali 0, JS hatası 0**, service worker kaydı ve manifest
 > yükleniyor. `tests/145` hem CSP'yi hem "kodda gerçekten dış çağrı yok"u kilitliyor.
 
+> **Sonraki adım (talimat: "vaat asla bozulmasın"):** CSP tek başına **yetmiyor** — WebRTC'yi
+> engellemiyor (`RTCPeerConnection` veri kanalı açar, `connect-src` onu görmez). Vaat üç
+> katmanda kilitlendi: **ilke** (CSP) · **kod** (`tests/146`: 12 API'lik yasak listesi,
+> telefonda hiçbir ağ API'si yok, Mac'te yalnız göreli adres — kumanda sunucusu istisnası
+> gizlenmedi, service worker yalnız yerel varlık) · **belge** (`GIZLILIK.md` + `tests/131`).
+> Ayrıca **CSP nöbetçisi**: ilke bir şeyi engellerse hata günlüğüne düşüyor, yani yanlış
+> yazılmış bir ilke sessiz ölüm değil **kayıt** üretir. 46 iddia + 6 kasıtlı bozma.
+
 #### Bulgunun ilk hâli (ölçüm kaydı)
 
 `<head>` içinde `Content-Security-Policy` **yok** (ölçüldü: `http-equiv` meta sayısı 0).
