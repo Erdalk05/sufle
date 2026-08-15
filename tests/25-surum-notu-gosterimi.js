@@ -27,6 +27,11 @@ function kos({seenVer, zamanlayiciCalissin}){
     const save=()=>__iz.push('save');
     const openSheet=id=>__iz.push('openSheet '+id);
     const showNews=()=>__iz.push('showNews');
+    /* Tur 42'de karşılama metni dil değişince tazelenebilsin diye ayrı bir
+       çiziciye alındı (newsYaz). Bu test o çizimi değil, DAMGANIN ne zaman
+       basıldığını sınıyor; çizim iz olarak kaydediliyor. */
+    let newsKip=null;
+    const newsYaz=()=>__iz.push('newsYaz '+newsKip);
     /* B.7'de firstRun karşılama EYLEM satırını da açıyor; taklit yalnız
        innerHTML sağladığı için "classList of undefined" veriyordu. Taklit
        gerçeğe uyduruldu ve dokunulan sınıflar İZ olarak kaydediliyor —
@@ -134,6 +139,10 @@ function macKos({seenVer, zamanlayiciCalissin, ilkKurulum=!seenVer}){
        sayfayı durdurmayan panelden geçiyor. Tezgâh ikisini de tanımalı. */
     const alert=()=>__iz.push('alert');
     const bilgiGoster=()=>__iz.push('bilgiGoster');
+    /* Karşılama Tur 42'de anahtarla açılmaya başladı (dil değişince
+   tazelenebilsin diye). İDDİA AYNI KALIYOR: kullanıcı tanıtımı GÖRÜYOR mu.
+   İz adı ortak tutuluyor ki iddia biçime değil davranışa baksın. */
+    const bilgiGosterK=(b,m)=>__iz.push('bilgiGoster');
     const toast=()=>__iz.push('toast');
     const showNews=()=>__iz.push('showNews');
     const setTimeout=(f,ms)=>{ gecikme=ms; if(__calissin){ f(); } return 1; };
@@ -201,3 +210,25 @@ const govde = firstRunSrc.replace(/\/\*[\s\S]*?\*\//g,'');
 const zamanlayiciBasi = govde.indexOf('setTimeout');
 ok('seenVer yazımı setTimeout bloğunun içinde',
    govde.indexOf('st.seenVer=VER') > zamanlayiciBasi);
+
+/* ---------- KARŞILAMA METNİ İKİ DİLDE VE DİLLE TAZELENİYOR (Tur 42) ----------
+   ÖLÇÜLDÜ: sayfa açıkken dil değiştiren kullanıcı ESKİ DİLDE okumaya devam
+   ediyordu — metin iki dilde yazılıydı ama çizim bir kez yapılıyordu. Çizim
+   ayrı bir fonksiyona alındı; burası hem içeriği hem tazelemeyi kilitliyor. */
+{
+  const govde = cikar(tel, /function onbGovde\(\)\{[\s\S]*?\n\}/, 'onbGovde');
+  const yap = (dil) => new Function('L', govde + '\n return onbGovde();')(dil);
+  const tr = yap('tr'), en = yap('en');
+  ok('karşılama metni Türkçe üretiliyor', /Üç adımda başla/.test(tr));
+  ok('karşılama metni İngilizce üretiliyor', /Three steps/.test(en));
+  /* İki dil GERÇEKTEN farklı olmalı: aynı dönerse çeviri yok demektir. */
+  ok('iki dil birbirinden farklı', tr !== en && !/Üç adımda/.test(en));
+  /* Üç adımın üçü de duruyor mu — karşılamanın tek işi bu. */
+  for (const n of ['1️⃣', '2️⃣', '3️⃣']) {
+    ok('Türkçe karşılamada ' + n + ' adımı var', tr.includes(n));
+    ok('İngilizce karşılamada ' + n + ' adımı var', en.includes(n));
+  }
+  /* Dil değişince yeniden çizilmeli — yoksa metin doğru ama ekran yanlış. */
+  ok('applyLang karşılama sayfasını yeniden çiziyor',
+     /\n  newsYaz\(\);/.test(tel));
+}

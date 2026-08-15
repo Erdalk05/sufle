@@ -1,12 +1,17 @@
 {
  "telefon-giris": 0,
+ "telefon-giris~dil": 0,
  "telefon-giris~eylem": 1,
  "telefon-ayarlar": 0,
+ "telefon-ayarlar~dil": 0,
  "telefon-ayarlar~eylem": 0,
  "telefon-senaryo": 0,
+ "telefon-senaryo~dil": 0,
  "telefon-senaryo~eylem": 0,
  "mac-pencere": 0,
+ "mac-pencere~dil": 0,
  "mac-pencere~eylem": 1,
  "mac-ana": 0,
+ "mac-ana~dil": 0,
  "mac-ana~eylem": 1
 }

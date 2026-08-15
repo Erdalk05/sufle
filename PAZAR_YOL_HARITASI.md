@@ -268,6 +268,32 @@ sayıyor. Etiketler sözlüğe bağlandı (`mVoiceIdle`/`mVoiceOn`), `applyLang`
 tazeliyor. Bu, "kapsam sayısı yeşil" güvencesinin sınırını gösteriyor: **kapsam ölçer, kanıtlamaz.**
 
 Kalan: sekme/sheet başlık ikonları.
+
+### 🔍 Tur 42 — i18n kapsamının kör noktası kapatıldı
+
+T41'de "kapsam 0 dediği hâlde düğme Türkçe kalıyor" çıkınca kör noktayı **tarayıcıda TR→EN
+karşılaştırarak** taradım. Ölçüt keskin: iki dilde **birebir aynı kalan** ve **Türkçeye özgü harf**
+taşıyan metin. Başlangıç **16 şüpheli**; ayıklayınca **7'si gerçek kusur** çıktı (kalanı kullanıcının
+kendi senaryo metni — çevrilmemesi doğru):
+
+| kusur | sınıf |
+|---|---|
+| telefon: 5 `title` ipucunun 5'i de çevrilmiyor | `applyLang` `data-i18n-title`'ı **hiç işlemiyordu** (Mac'te vardı) |
+| telefon `#modeHint`, `#gazeHint`, `#verBtn` aria | metin iki dilde **yazılı ama tazelenmiyor** |
+| telefon `#title`/`#text` yer tutucuları | hiç bağlanmamış |
+| telefon karşılama sayfası | tazelenmiyor |
+| Mac `#playBtn`, `deviceLine()` | **hiç çevrilmemiş** (sabit Türkçe) |
+| Mac karşılama penceresi (başlık + gövde) | **hiç çevrilmemiş** |
+| Mac anahtar `aria-label`'ları | `firstRun` içinde **bir kez** yazılıyordu |
+
+Hepsi kapatıldı; **beş yüzeyde de çevrilmemiş metin 0**. Tarama artık `kontrast.py`'nin üçüncü
+ekseni ve kapıda: aynı yüzey TR ve EN çizilip karşılaştırılıyor, kullanıcı metni taşıyan ögeler
+**dar bir listeyle** muaf. Ayırt ettiği kanıtlandı (tazeleme sökülünce 0 → 2).
+
+*Dedektörün kendi kör noktası da düzeltildi:* anahtarı saklayıp sonra `t()` ile çözen yardımcı
+(`bilgiGosterK`) görülmediği için iki anahtar "ölü" bildirildi; `denetim.py` bu biçimi de sayıyor
+— hem tek kabukta hem ORTAK sözlük kümesinde (yalnız birinde saymak diğer kabukta sahte ölü
+anahtar üretiyordu).
 **B.3 Aşamalı açılım.** ✅ **Mac paneli BİTTİ** — sağ panel 3 sekme (Okuma · Çekim · Görünüm),
 telefonla aynı katmanlar, sözlükten etiketli. **Tarayıcıda doğrulandı:** varsayılan sekmede Çekim'in
 27 kontrolü DOM akışından çıkıyor; sekme seçimi yeniden yüklemede korunuyor (`state.rtab`, eski
@@ -725,3 +751,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 39 | 2026-08-15 | **B.1 rol ayrımı** — dolu yeşil = tek eylem, seçili = tonal | Mac ana **9 → 1**, telefon giriş **3 → 1** · kural kapıya bağlandı (2 kural: >1 yok + tabandan artmaz) · örtüşme kontrolü kendi değişikliğimi çürüttü, geri alındı · Mac ana ekran hiç ölçülmüyormuş, eklendi (5 yüzey/456 metin) · kontrast 0 ihlal | ✅ 9/9 YEŞİL |
 | 40 | 2026-08-15 | **E.4 Mac paritesi** — hesap ortak çekirdeğe, Mac'te de rapor | `cekirdek/prova.js` iki kabuğa gömülüyor · Mac'te **çekim anlık görüntüsü yoktu**, altyazı canlı metinden üretiliyordu → kapandı · gerçek Mac çekimiyle doğrulandı · 2 bozma ilk turda yakalanmadı (ikisi de testin kusuru) → 7/7 kanıtlı · **59 bozma** | ✅ 9/9 YEŞİL |
 | 41 | 2026-08-15 | **B.2 Mac krom ikonları** — ve i18n kapsamının kör noktası | 4/4 ikon Mac'te çiziliyor (18×18, dil değişiminde kalıcı) · ikonu silen 2 tuzak kapandı (data-i18n üstte / çalışma zamanı yazımı) · **#voiceBtn İngilizcede Türkçe kalıyordu**, kapsam 0 dediği hâlde → sözlüğe bağlandı · 4 kanıtlı bozma (**63**) | ✅ 9/9 YEŞİL |
+| 42 | 2026-08-15 | **i18n kör noktası** — TR/EN çizim karşılaştırması kapıya bağlandı | 16 şüpheliden **7 gerçek kusur**: telefonda 5 title hiç çevrilmiyordu, Mac karşılama penceresi baştan sona Türkçeydi, 4 metin "yazılı ama tazelenmiyor" · beş yüzeyde **0** · denetleyicinin kendi kör noktası da kapandı · 4 kanıtlı bozma (**67**) · **4458 test, 0 hata** | ✅ 9/9 YEŞİL |

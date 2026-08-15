@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""kontrast.py — ÇİZİLMİŞ arayüzde WCAG kontrast denetimi.
+"""kontrast.py — ÇİZİLMİŞ arayüz denetimi: kontrast · tek eylem · dil.
 
 Neden ayrı araç: `tests/121` jeton dosyasındaki renk ÇİFTLERİNİ hesaplıyor,
 ama bir jetonun hangi zeminin üstünde kullanıldığını kaynaktan bilmek mümkün
@@ -186,6 +186,35 @@ OLC = r"""
 """
 
 
+TOPLA = r"""
+(() => {
+  const out = [];
+  for (const el of document.querySelectorAll('*')) {
+    const s = getComputedStyle(el);
+    if (s.display === 'none' || s.visibility === 'hidden') continue;
+    const b = el.getBoundingClientRect();
+    if (b.width < 1 || b.height < 1) continue;
+    const kendi = [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim())
+      .map(n => n.textContent.trim()).join(' ');
+    const ad = el.id ? '#' + el.id
+      : el.tagName.toLowerCase() + '.' + String(el.className).split(' ')[0];
+    if (kendi) out.push([ad, kendi.slice(0, 70)]);
+    if (el.title) out.push([ad + '@title', el.title.slice(0, 70)]);
+    const al = el.getAttribute('aria-label'); if (al) out.push([ad + '@aria', al.slice(0, 70)]);
+    if (el.placeholder) out.push([ad + '@ph', el.placeholder.slice(0, 70)]);
+  }
+  return JSON.stringify(out);
+})()
+"""
+
+TR_HARF = 'çğışöüÇĞİŞÖÜ'
+
+# KULLANICININ KENDİ METNİ — çevrilmemesi DOĞRU. Bunlar senaryo içeriğini
+# çizen ögeler: sufle satırı, kelime span'ı, senaryo başlığı ve Mac'in
+# düzenleyicisi. Liste dar tutuluyor; genişletmek kusur saklamak olur.
+KULLANICI_METNI = {'div.ln', 'span.w', 'div.t', '#editor', '#text', '#title'}
+
+
 def olc(ad, url, w, h, dsf, kur):
     t = Tarayici()
     try:
@@ -200,7 +229,24 @@ def olc(ad, url, w, h, dsf, kur):
         if kur:
             t.js(kur)
             time.sleep(1.5)
-        return json.loads(t.js(OLC))
+        sonuc = json.loads(t.js(OLC))
+        # DİL DENETİMİ: aynı yüzeyi TR ve EN çizip karşılaştır. Bu, kaynak
+        # düzeyi kapsam sayısının GÖREMEDİĞİ şeyi görür — çalışma zamanında
+        # yazılan etiketler (Tur 41-42'de altı gerçek kusur buradan çıktı:
+        # düğme metni sabit Türkçeydi, ipucu hiç çevrilmiyordu, anahtar adı
+        # bir kez yazılıp dil değişince eski dilde kalıyordu).
+        tr = json.loads(t.js(TOPLA))
+        t.js("(document.querySelector('#langSwitch button[data-lang=en]')"
+             "||{click(){}}).click()")
+        time.sleep(1.2)
+        en = {k: v for k, v in json.loads(t.js(TOPLA))}
+        sonuc['dil'] = [
+            [k, v] for k, v in tr
+            if en.get(k) == v and any(c in v for c in TR_HARF)
+            and k.split('@')[0] not in KULLANICI_METNI
+        ]
+        sonuc['metinSayisi'] = len(tr)
+        return sonuc
     finally:
         t.kapat()
 
@@ -217,9 +263,21 @@ def main():
         n = len(r['ihlal'])
         yeni[ad] = n
         atl = ' · '.join('%s:%d' % (k, v) for k, v in sorted(r['atlanan'].items()))
-        print('%-18s ölçülen %4d · ihlal %2d · eylem düğmesi %d%s'
-              % (ad, r['olculen'], n, len(r['eylem']),
+        d = len(r['dil'])
+        print('%-18s ölçülen %4d · ihlal %2d · eylem %d · çevrilmemiş %d%s'
+              % (ad, r['olculen'], n, len(r['eylem']), d,
                  ('  (atlanan ' + atl + ')') if atl else ''))
+        for k, v in r['dil'][:8]:
+            print('   ⚠ %-26s "%s"' % (k, v))
+        yeni[ad + '~dil'] = d
+        # Ölçmeyen denetim olmasın: dil karşılaştırması gerçekten metin gördü mü?
+        if r.get('metinSayisi', 0) < 20:
+            print('   ⛔ dil denetimi yalnız %d metin gördü — ölçmüyor' % r.get('metinSayisi', 0))
+            kirmizi = True
+        eskiD = taban.get(ad + '~dil')
+        if eskiD is not None and d > eskiD:
+            print('   ⛔ çevrilmemiş metin ARTTI: %d → %d' % (eskiD, d))
+            kirmizi = True
         # ÖLÇMEYEN DENETİM OLMASIN: hiç metin ölçülmediyse "0 ihlal" yalandır.
         if r['olculen'] < 5:
             print('   ⛔ yalnız %d metin ölçüldü — denetim bir şey ölçmüyor' % r['olculen'])

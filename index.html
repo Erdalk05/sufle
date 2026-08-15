@@ -591,13 +591,13 @@
 
 <!-- ALT KONTROL -->
 <div id="bar" class="hidden">
-  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" title="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
-  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" title="Senaryolar"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
-  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" title="Çekime hazır mıyım?"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
+  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" data-i18n-title="settings" title="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
+  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" data-i18n-title="scripts" title="Senaryolar"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
+  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" data-i18n-title="mTReady" title="Çekime hazır mıyım?"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
   <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn">⏸</button>
   <button id="recBtn" aria-label="Kayıt başlat/durdur" data-aria="recBtn" disabled></button>
-  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" title="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
-  <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" title="Başlat">▶︎</button>
+  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" data-i18n-title="mTVoice" title="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
+  <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" data-i18n-title="tPlay" title="Başlat">▶︎</button>
 </div>
 
 <!-- BAŞLANGIÇ -->
@@ -994,13 +994,13 @@
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
   <div class="hint" data-i18n="fromFileHint">Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.</div>
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
-  <input type="text" id="title" placeholder="Senaryo başlığı">
+  <input type="text" id="title" data-i18n-ph="mPhTitle" placeholder="Senaryo başlığı">
   <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
        değil sürüm numarası — uygulama metnin hangi dilde olduğunu bilmiyor. -->
   <div class="row" style="margin-top:14px"><label data-i18n="text">📝 Metin</label>
     <span><button class="iconbtn" id="verBtn" aria-label="Sürüm değiştir">⇄ 1</button>
     <span class="v" id="stats">—</span></span></div>
-  <textarea id="text" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
+  <textarea id="text" data-i18n-ph="phScript" placeholder="Okuyacağın metni buraya yaz veya yapıştır…"></textarea>
   <div class="seg" id="toolSeg" style="margin-top:10px">
     <button id="tClean" data-i18n="tClean">🧹 Temizle</button>
     <button id="tJoin" data-i18n="tJoin">↩︎ Satırları birleştir</button>
@@ -1323,7 +1323,7 @@ const I18N={
   voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
   voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1441,7 +1441,7 @@ const I18N={
   voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
   voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
@@ -1747,6 +1747,9 @@ function applyLang(){
     // içinde etiket varsa innerHTML: eskiden <b> ham metin olarak görünüyordu
     if(/<[a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v; });
   $$('[data-i18n-ph]').forEach(el=>{ const v=I18N[L][el.dataset.i18nPh]; if(v) el.placeholder=v; });
+  /* title ipuçları: telefonda bu döngü HİÇ YOKTU (Mac'te vardı) ve 5 title'ın
+     5'i de Türkçe kalıyordu — platformlar arası tutarsızlık. */
+  $$('[data-i18n-title]').forEach(el=>{ const v=I18N[L][el.dataset.i18nTitle]; if(v) el.title=v; });
   /* Anahtarların adı yanındaki <span>'de duruyor; ekran okuyucu <div> anahtarı
      adsız okuyordu. Etiket dille değiştiği için BURADA türetiliyor — dil
      değişince yenilenmezse İngilizceye geçen kullanıcı Türkçe etiket duyardı. */
@@ -1758,6 +1761,14 @@ function applyLang(){
   $('#verLine').textContent='Sufle v'+VER;
   if($('#verChip')) $('#verChip').textContent='v'+VER;
   if($('#verTop')) $('#verTop').textContent='v'+VER;
+  /* ÇALIŞMA ZAMANINDA YAZILAN METİNLER DE TAZELENMELİ. Ölçüldü (Tur 42,
+     tarayıcıda TR→EN): `#modeHint`, `#gazeHint` ve `#verBtn`in aria etiketi
+     iki dilde de yazılabiliyordu AMA dil değişince yeniden çizilmiyordu, yani
+     İngilizceye geçen kullanıcı Türkçe okumaya devam ediyordu. i18n kapsam
+     kapısı bunu göremiyor: yalnız İŞARETLEMEDEKİ metni sayıyor. */
+  apply();                 // #modeHint + #gazeHint
+  newsYaz();               // açık karşılama/sürüm notu sayfası
+  surumRozeti();           // #verBtn aria-label
   renderScripts(); updateStats(); updateHud(); renderMap();
 }
 
@@ -6145,9 +6156,21 @@ function verCmp(a,b){
   }
   return 0;
 }
-function showNews(){
+/* Karşılama/sürüm notu metni İKİ DİLDE var ama BİR KEZ çiziliyordu: sayfa
+   açıkken dil değiştiren kullanıcı eski dilde okumaya devam ediyordu
+   (Tur 42'de tarayıcıda ölçüldü). Hangi metnin gösterildiği saklanıyor ki
+   applyLang yeniden çizebilsin. */
+let newsKip=null;   // 'onb' (ilk açılış) | 'news' (sürüm notu)
+function onbGovde(){ return L==='tr'
+  ? '<b>Üç adımda başla:</b><br><br>1️⃣ <b>📝 Senaryolar</b>&#39;a metnini yapıştır.<br>2️⃣ Ana ekranda <b>−/+</b> ile hızını ayarla (kendi okuma hızını bul).<br>3️⃣ <b>✅ Hazır mıyım</b> ile ışığı ve sesi kontrol et, sonra <b>●</b> ile çek.<br><br>Gerisi isteğe bağlı — hepsini şimdi öğrenmen gerekmiyor.'
+  : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>📝 Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>✅ Ready?</b>, then hit <b>●</b>.'; }
+function newsYaz(){
+  if(newsKip==='onb'){ $('#newsBody').innerHTML=onbGovde(); return; }
   const k=Object.keys(NEWS).sort(verCmp).pop();
   $('#newsBody').innerHTML='<b>v'+k+'</b><br><br>'+(NEWS[k][L]||NEWS[k].tr);
+}
+function showNews(){
+  newsKip='news'; newsYaz();
   openSheet('#newsSheet');
 }
 /* 11.9 İlk açılış: her şey aynı anda görünüyordu, nereden başlanacağı belli değildi. */
@@ -6164,9 +6187,7 @@ function firstRun(){
      sıfırlayan kod, özelliği tümden ölü bırakır.) */
   setTimeout(()=>{
     if(ilk){
-      $('#newsBody').innerHTML=(L==='tr'
-        ? '<b>Üç adımda başla:</b><br><br>1️⃣ <b>📝 Senaryolar</b>&#39;a metnini yapıştır.<br>2️⃣ Ana ekranda <b>−/+</b> ile hızını ayarla (kendi okuma hızını bul).<br>3️⃣ <b>✅ Hazır mıyım</b> ile ışığı ve sesi kontrol et, sonra <b>●</b> ile çek.<br><br>Gerisi isteğe bağlı — hepsini şimdi öğrenmen gerekmiyor.'
-        : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>📝 Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>✅ Ready?</b>, then hit <b>●</b>.');
+      newsKip='onb'; newsYaz();
       $('#onbActions').classList.remove('hidden');
       openSheet('#newsSheet');
     } else showNews();

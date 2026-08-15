@@ -439,5 +439,33 @@
   "kaynak": "mac",
   "bul": "    const vl=$('#voiceLbl'); if(vl) vl.textContent=t(voiceOn?'mVoiceOn':'mVoiceIdle');\n",
   "koy": ""
+ },
+ {
+  "ad": "i18n Mac karşılama penceresi dil değişince tazelenmiyor",
+  "test": "119-mac-donduran-diyalog.js",
+  "kaynak": "mac",
+  "bul": "    bilgiTazele();          // açık kip penceresi de dille yenilensin\n",
+  "koy": ""
+ },
+ {
+  "ad": "i18n Mac karşılama metni sabit Türkçeye döndü",
+  "test": "119-mac-donduran-diyalog.js",
+  "kaynak": "mac",
+  "bul": "if(ilk) bilgiGosterK('mDlgWelcome', 'mDlgWelcomeBody');",
+  "koy": "if(ilk) bilgiGoster('Sufleye hoş geldin', 'metnini yapıştır');"
+ },
+ {
+  "ad": "i18n telefon karşılama sayfası dil değişince tazelenmiyor",
+  "test": "25-surum-notu-gosterimi.js",
+  "kaynak": "telefon",
+  "bul": "  newsYaz();               // açık karşılama/sürüm notu sayfası\n",
+  "koy": ""
+ },
+ {
+  "ad": "i18n telefon karşılama metni tek dile indi",
+  "test": "25-surum-notu-gosterimi.js",
+  "kaynak": "telefon",
+  "bul": "function onbGovde(){ return L==='tr'",
+  "koy": "function onbGovde(){ return true"
  }
 ]

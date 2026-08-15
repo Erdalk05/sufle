@@ -66,7 +66,13 @@ def kullanilan_anahtarlar(path):
     # data-i18n-title ve data-aria DE kullanımdır. A.2c'de eklendiler ve bu
     # satır güncellenmeyince 21 anahtar "hiç kullanılmıyor" diye bağırdı;
     # oysa hepsi Mac işaretlemesinde bağlıydı. Dedektörün kendi kör noktası.
-    return (set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
+    # Anahtarı saklayan yardımcı (bkz. tc toplayıcısındaki not) BURADA DA
+    # sayılmalı: yalnız orada sayılırsa anahtar kendi kabuğunda görünür ama
+    # ORTAK sözlüğü paylaşan diğer kabukta "ölü" bildirilir.
+    yardimci = set()
+    for a, b in re.findall(r"\bbilgiGosterK\('([A-Za-z0-9]+)'\s*,\s*'([A-Za-z0-9]+)'\)", js):
+        yardimci.add(a); yardimci.add(b)
+    return (yardimci | set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
             | set(re.findall(r'data-i18n="([^"]+)"', html))
             | set(re.findall(r'data-i18n-ph="([^"]+)"', html))
             | set(re.findall(r'data-i18n-title="([^"]+)"', html))
@@ -270,6 +276,14 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     if (it ^ ie) - {"camera"}: problems.append(("I18N TR/EN farkı", sorted((it ^ ie) - {"camera"})))
     mc = set(re.findall(r"\bm\('([A-Za-z0-9]+)'\)", js))
     tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
+    # ANAHTARI SAKLAYAN YARDIMCILAR. Mac'in kip penceresi dil değişince
+    # yeniden çizilebilsin diye anahtarları SAKLIYOR ve sonra t() ile
+    # çözüyor: `bilgiGosterK('mDlgWelcome','mDlgWelcomeBody')`. Bu biçim
+    # görülmezse anahtarlar "hiç kullanılmıyor" sanılır ve denetim gerçek
+    # olmayan bir ölü anahtar bildirir (Tur 42'de tam bu oldu). Liste DAR
+    # tutuluyor: her yardımcıyı buraya yazmak denetimi kör eder.
+    for a, b in re.findall(r"\bbilgiGosterK\('([A-Za-z0-9]+)'\s*,\s*'([A-Za-z0-9]+)'\)", js):
+        tc.add(a); tc.add(b)
     if mc - mt: problems.append(("MSG'de olmayan m() anahtarı", sorted(mc - mt)))
     if tc - it: problems.append(("I18N'de olmayan t() anahtarı", sorted(tc - it)))
 

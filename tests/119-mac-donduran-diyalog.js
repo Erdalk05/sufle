@@ -30,12 +30,18 @@ ok('açılınca odak kapatma düğmesine gidiyor', /\$\('#bilgiKapat'\)\.focus\(
 ok('panel ekran okuyucuya diyalog olarak bildiriliyor', /role="dialog" aria-modal="true"/.test(mac));
 
 /* Dört çağrının dördü de panele taşınmış olmalı. */
+/* İDDİA BİÇİME DEĞİL YOLA BAĞLI. Desenler önce başlıkları BİREBİR TÜRKÇE
+   arıyordu; Tur 42'de o başlıklar sözlüğe bağlanınca (İngilizce kullanıcı
+   Türkçe pencere görüyordu) dördü birden kırıldı — oysa davranış hiç
+   değişmemişti. Aranan şey: her çağrının PANELDEN geçmesi. */
 for(const [ad,desen] of [
-  ['hata günlüğü', /bilgiGoster\('Son hatalar'/],
-  ['hazırlık raporu', /bilgiGoster\('Hazır mıyım\?'/],
+  ['hata günlüğü', /bilgiGoster\(t\('mDlgErr'\)/],
+  ['hazırlık raporu', /bilgiGoster\(t\('mDlgReady'\)/],
   ['sürüm notu', /bilgiGoster\('Sufle v'\+k/],
-  ['hoş geldin', /bilgiGoster\('Sufleye hoş geldin'/],
+  ['hoş geldin', /bilgiGosterK\('mDlgWelcome'/],
 ]) ok(ad+' panele taşındı', desen.test(macKod));
+/* alert() geri gelmesin: panelin varlık sebebi buydu. */
+ok('hiçbir çağrı alert()e dönmedi', !/\balert\(/.test(macKod));
 
 /* Panel SAYFAYI DURDURMAMALI: sınıf ekleyip çıkarmaktan ibaret olmalı,
    döngü ya da bekleme içermemeli. */
@@ -59,3 +65,23 @@ for(const [ad,desen] of [
 
 /* Telefon tarafında bu sınıf zaten kapalı — parite. */
 ok('telefonda da bilgilendirme alerti yok', !/\balert\(/.test(tel.replace(/\/\*[\s\S]*?\*\//g,'')));
+
+/* ---------- AÇIK PENCERE DİLLE TAZELENİYOR MU (Tur 42) ----------
+   ÖLÇÜLDÜ (tarayıcı, TR→EN): metin sözlükten gelse bile çizim BİR KEZ
+   yapılıyordu; açık karşılama penceresi dil değiştikten sonra da Türkçe
+   kalıyordu ve İngilizce açan yeni kullanıcı Türkçe talimat okuyordu.
+   Tazeleme sökülünce denetim bunu 0 → 2 çevrilmemiş metinle yakalıyor. */
+{
+  ok('açık pencereyi tazeleyen fonksiyon var', /function bilgiTazele\(\)\{/.test(macKod));
+  /* Anahtarlar saklanmazsa yeniden çizim neyi yazacağını bilemez. */
+  ok('gösterilen anahtarlar saklanıyor', /let bilgiAnahtar=null;/.test(macKod));
+  /* Anahtarsız çağrılar (üretilmiş metin taşıyanlar) saklamayı TEMİZLEMELİ,
+     yoksa sonraki dil değişimi pencereye YANLIŞ metni yazar. */
+  ok('anahtarsız gösterim saklamayı temizliyor',
+     /function bilgiGoster\(baslik, metin\)\{\s*\n\s*bilgiAnahtar=null;/.test(macKod));
+  /* Yalnız AÇIKKEN yazmalı: kapalı pencereye yazmak sonraki açılışta eski
+     içeriği bir an gösterirdi. */
+  ok('yalnız açık pencereye yazıyor',
+     /bilgiAnahtar && \$\('#bilgi'\)\.classList\.contains\('open'\)/.test(macKod));
+  ok('dil değişiminde çağrılıyor (applyLang)', /\n\s*bilgiTazele\(\);/.test(macKod));
+}
