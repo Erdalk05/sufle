@@ -1,215 +1,398 @@
-# Sufle — araç, UI ajanı ve ajan mimarisi önerileri (2026-08-15)
+# Sufle — derin inceleme + araç/ajan önerileri (2026-08-15)
 
-Bu belge üç soruyu yanıtlıyor: **(1)** GitHub'da kullanacağımız UI ajanı hangisi olmalı,
-**(2)** farklı ajan mimarileri arasından Sufle'ye hangisi uyar, **(3)** geliştirici olarak
-yararlanabileceğimiz repolar hangileri. Her öneri, önce depoda **ölçülen** duruma dayanıyor.
+**Yöntem:** önce depo ölçüldü (kapı araçları koşturuldu, kod sayıldı, **gerçek tarayıcıda
+iki yeni ölçüm yapıldı**), sonra öneri yazıldı. Ölçülmemiş hiçbir iddia yok; ölçemediğim
+yerde sınırı yazdım.
+
+> **İlk turumda iki hatam vardı, düzeltiyorum:**
+> ① "Whisper'a geç, iOS'ta sesle takip yok" demiştim — **yanlış**: `MAGAZA_TEKNIK.md` T51
+> ölçümü, iOS 18.6 WKWebView'da `SpeechRecognition`'ın **var olduğunu** kanıtlamış; üç yol
+> da elenmiş. Whisper'ın kalan gerekçesi başka (aşağıda, §4.11).
+> ② "Çizilen arayüzü ölçen hiçbir şey yok" demiştim — **yanlış**: `kontrast.py` + `ekran.py`
+> altı ekranı gerçek Chrome'da çizip ölçüyor. Doğru cümle: *ölçülen şey renk ve dil; **akış**
+> ve **düzen** ölçülmüyor.*
 
 ---
 
-## 0. Önce ölçüm — Sufle bugün ne? (öneriler bu tabana oturuyor)
+# BÖLÜM 1 — ÖLÇÜLEN DURUM
 
-| Ölçü | Değer |
+## 1.1 Anatomi
+
+| Katman | Değer | Not |
+|---|---|---|
+| `index.html` ham | **513.872 bayt** | gzip **178 KB** (Pages sıkıştırarak servis eder) |
+| ↳ JS (tek blok) | 406.716 bayt | **%82** — ürün fiilen bir JS uygulaması |
+| ↳ CSS | 39.962 bayt | 64 jeton tanımı, 165 `var()` kullanımı |
+| ↳ HTML | 46.452 bayt | 285 id (**yinelenen 0**), 173 düğme, 266 `data-i18n` |
+| `mac/Teleprompter Pro.html` | 4.309 satır | ortak çekirdek `cekirdek/`den gömülüyor |
+| `cekirdek/` | 10 modül | `sozluk.js` 34 KB · `mesajlar.js` 17 KB · `jetonlar.css` |
+| Testler | **152 dosya / 4.720 iddia** | hepsi geçiyor (ölçüldü) |
+| Kapı | 9 adım | derleme · denetim · sözdizimi · test · sürüm · ayna · kapsam · bozma · kontrast |
+| Hız | **1 Ağustos'tan beri 302 commit** | 14 Ağustos'ta tek günde 133 |
+
+## 1.2 Mimarî — en belirleyici tek gerçek
+
+```js
+(function(){ 'use strict';
+  const $=s=>document.querySelector(s), …, VER='9.11';
+  let st; function load(){…}
+})();
+```
+
+Uygulamanın tamamı **tek bir IIFE** içinde, `'use strict'` ile. Dışarıya **hiçbir şey**
+sızmıyor. Sonuçları:
+
+- ✅ Kirlilik yok, çakışma yok, `window` temiz. Doğru bir karar.
+- ⛔ **Tarayıcıda test tutamağı (seam) yok.** `Runtime.evaluate` ile `st`, `measure()`,
+  `buildContent()` çağrılamıyor (denedim: `ReferenceError: st is not defined`).
+  152 testin kaynaktan **regex ile çıkarma** yöntemi kullanmasının asıl sebebi bu.
+- ⛔ Bunun bedeli: davranış ancak **kullanıcı yolu sürülerek** ölçülebilir
+  (düğmeye tıkla, metni yaz). Tam da bir **UI ajanının** işi — §2'nin gerekçesi budur.
+
+## 1.3 İyi olan ve kanıtlanan şeyler (bunlara dokunma)
+
+| İddia | Ölçüm |
 |---|---|
-| `index.html` (telefon, ürünün kendisi) | 514 KB / 7.419 satır, tek dosya |
-| `mac/Teleprompter Pro.html` | 4.309 satır |
-| `cekirdek/` (tek kaynak modüller) | 10 dosya — `sozluk.js` 34 KB, `mesajlar.js` 17 KB, `jetonlar.css`, `docx.js`, `kumanda.js`, `metin.js`, `prova.js`, `zorlanma.js`… |
-| Derleme | `derle.py` — modülleri iki kabuğun **içine gömüyor**; `--denetle` bayat çıktıyı yakalıyor |
-| Test | `tests/` altında **152** node dosyası, `tests/kos.js` koşucu |
-| Kapı | `kapi.sh` **9 adım**: derleme tazeliği → denetim → `node --check` → testler → sürüm → aynalar → kapsam → bozma turu → kontrast |
-| El yapımı tezgâh | `denetim.py` (statik denetim), `bozma.py` (mutasyon), `kontrast.py`, `ekran.py` (CDP mağaza kareleri), `fark.py`, `kapsam.py` |
-| Bağımlılık | **sıfır** — `package.json` yok |
+| "Veri cihazdan çıkmıyor" | `fetch` **0** · `XMLHttpRequest` **0** · `WebSocket` **0** · `sendBeacon` **0** · dış host **0** · dış `src`/`href` **0** (tek istisna kendi kanonik URL'i). **Kodla doğrulandı.** |
+| Sıfır bağımlılık | `package.json` yok; `ekran.py` kendi WebSocket istemcisini bile yazmış |
+| Gürültü yok | `console.*` **0** · `TODO/FIXME` **0** · satır içi `onclick` **0** |
+| Hata yönetimi | `window.onerror` + `unhandledrejection` → `logErr` · localStorage kota dolumu ayrıca ele alınmış (`lsFull`) |
+| iOS IndexedDB'nin "üçüncü hâli" | `sozZamanAsimi()` — *cevapsızlık* için zaman aşımı. Çoğu ekip bunu bilmez bile |
+| Depo kalıcılığı | `navigator.storage.persist` + `estimate()` kullanılıyor (kontrol ettim, **açık değil**) |
+| Kayıt sırasında diyalog | 3 `prompt()` kaldı, **üçü de korumalı** (`if(rec.state==='recording'){ toast(dlgBusy); return; }`) |
+| Kapanışta kayıp | `kapanistaYaz()` → `pagehide` + `visibilitychange` (senkron) — eski P0 kapalı |
+| Kontrast | 6 ekran, **564 ölçüm, ihlal 0** |
+| Statik denetim | iki kabuk da **temiz** |
+| Derleme tazeliği | ✓ güncel (19 gömme noktası) |
 
-**Kritik ayrım — tüm önerilerin ekseni:**
-> "Tek dosya, sıfır bağımlılık" **ÜRÜNÜN** kimliği. **TEZGÂHIN** (dev-time) kimliği değil.
-> Ürüne giren her bayt tartışılır; `devDependencies`'e giren araç ise yalnızca "hangi gerçek
-> hatayı yakaladı" sorusuyla ölçülür. Aşağıdaki önerilerin neredeyse tamamı **tezgâh tarafında**.
-
-`derle.py` zaten bu ayrımı mümkün kılıyor: kaynak modüllerde yaşar, çıktı tek dosya kalır.
-Yani bir kütüphaneyi `cekirdek/`e koyup gömmek kimliği bozmuyor (bkz. Mediabunny önerisi).
-
-### Tezgâhın bugün göremediği üç şey
-1. **Çizilen arayüzü gerçekten gören test yok.** 152 test node'da sentetik veriyle koşuyor
-   (bu doğru bir seçimdi — headless sekmede `document.hidden=true`, rAF donuyor). Ama
-   canvas/kamera/video/kompozit boru hattının **görsel** doğruluğu hiç ölçülmüyor.
-2. **Kod düzenlemenin sessiz kayması.** Kendi kayıtlı hata sınıfın #1: `str.replace` deseni
-   tutmazsa değişiklik sessizce yapılmıyor (3 kez oldu). Bunun yapısal (AST) çözümü var.
-3. **Mağaza/paketleme hattı.** `ios-olcum/` (WKWebView probu) ve `magaza/` başlamış ama
-   Apple'ın 4.2 "repackaged website" riski belgelenmemiş.
+Bu tablo bir denetim sonucu değil, **rekabet avantajı**: "hiçbir veri toplamıyoruz" diyen
+uygulamaların çoğu bunu kanıtlayamaz; sen `grep` ile kanıtlıyorsun.
 
 ---
 
-## 1. UI ajanı — hangisi, neden
+## 1.4 BULGULAR — ölçtüklerim
 
-### Sufle'nin özel zorluğu
-DOM tabanlı otomasyonun tavanına **zaten çarpmış** bir üründesin: sufle akışı, kırpma önizlemesi,
-yeşil ekran kompoziti, kamera kadrajı, gömülü altyazı — hepsi **canvas ve video**. `querySelector`
-bunların hiçbirini "doğru görünüyor mu" diye ölçemez. Bu yüzden UI ajanı seçimi Sufle'de
-"güzel olur"dan öte, **kör noktanın tek çözümü**.
+### ✅ B1 — KAPATILDI (uygulandı, kapı yeşil) · aslı **6 değil 39** çıktı
 
-### Öneri: üç katman, hepsi birden değil
+> **Uygulama notu (aynı gün):** düzeltilirken sayı büyüdü. Tarayıcı taraması yalnız AÇIK
+> yüzeyleri görüyor; kaynak düzeyi kilit yazılınca **telefonda 24, Mac'te 15** — toplam
+> **39 adsız kaydırıcı** çıktı. Yeşil ekran (`keySim/keySmooth/spill`), altyazı gömme
+> (`capSize/capMaxW`), budama (`trimA/trimB`) ve yakınlaştırma panelleri kapalı oldukları
+> için ölçümde görünmüyordu. **Ders: tarayıcı ölçümü ile kaynak kilidi birbirinin yerine
+> geçmez, biri diğerinin kör noktasını kapatır** — `tests/145` ikisini birden tutuyor.
+>
+> Çözüm yeni sözlük anahtarı değil: zaten çevrili `<label>`ler `for` ile bağlandı (tek kaynak,
+> dil değişince ad da değişir). Mac'te üç ayrı biçim vardı: düz etiket → `for`; `<span>`
+> etiketi → `aria-labelledby` (CSS'e dokunmamak için); yüzen penceredeki id'siz kaydırıcı →
+> `aria-label`. Kapıya **mutlak kural** olarak bağlandı (`adsız = 0`), 6 kasıtlı bozma ile
+> kanıtlandı. **Yan bulgu:** kapıya ayar sekmeleri eklenince "bir kez çizilen kutu dil
+> değişince eski dilde kalıyor" sınıfının **üçüncü vakası** çıktı (`#lightOut`, `#checkOut`)
+> — o da düzeltildi.
 
-**L1 — Deterministik iskelet: Playwright + Playwright MCP**
-`microsoft/playwright` · `microsoft/playwright-mcp` (MIT)
-- DOM, klavye sırası, odak tuzağı, erişilebilirlik ağacı, `toHaveScreenshot()` ile piksel temel çizgisi.
-- Ucuz, tekrarlanabilir, **kapıya konabilir** (model çağırmaz → yeşil kapı yeşil kalır).
-- Mevcut 152 node testini **taşıma**; onlar mantık testi. Playwright DOM/olay/erişilebilirlik
-  katmanı için yeni bir küme (10-15 senaryo yeter).
+#### Bulgunun ilk hâli (ölçüm kaydı)
 
-**L2 — Görüş tabanlı ajan: 🥇 Midscene.js — birinci önerim**
-`web-infra-dev/midscene` (ByteDance Web Infra, MIT, ~14,6k ★)
-- **Ekran görüntüsünden çalışır**, seçiciye ihtiyaç duymaz → canvas, video, ikon düğme,
-  kamera önizlemesi dahil DOM'da olmayan her şeyi ölçebilir. Sufle'nin kör noktası tam burası.
-- **Web + Android + iOS + masaüstü + HarmonyOS** tek API. Ürünün asıl hedefi iPhone PWA olduğu
-  için bu, *gerçek cihazda* doğrulama demek — "headless sekmede rAF donuyor" kısıtını **atlar**.
-- Playwright/Puppeteer SDK, Chrome uzantısı (kod yazmadan deneme), CLI, **YAML senaryoları**, MCP.
-  YAML senaryosu = kapıya takılabilir bir dosya biçimi; Python tezgâhınla uyumlu.
-- Model tarafı: Qwen3.x, Doubao, GLM-4.6V, Gemini, **açık kaynak UI-TARS** — self-host mümkün,
-  yani "veri dışarı çıkmasın" kimliğine dev-time'da da sadık kalabilirsin.
-- **Sufle'de ilk iş:** `ekran.py` kare **üretmeye** devam etsin; kareyi **denetlemek** (kadraj taşması,
-  kesik düğme, yanlış dil, boş panel) Midscene'e geçsin. `ekran.py`'ın başındaki not zaten
-  "sağ kenar taşıyor sandım, iframe'de ölçünce 0 çıktı" diyor — o yanlış alarm sınıfını bu kapatır.
+Ayarlar ekranı, 430×932, gerçek Chrome, hesaplanmış erişilebilir ad:
 
-**L3 — Keşif turu (kapıya KOYMA): browser-use veya Stagehand**
-`browser-use/browser-use` (~108k ★, otonom döngü) · `browserbase/stagehand` (act/extract/observe, TS, Playwright üstü)
-- "Gerçek kullanıcı gibi gez, kırılanı bildir" gece turları için değerli.
-- **Kapıya asla konmaz**: nondeterministik bir kapı, kapısızlıktan tehlikelidir (senin
-  "yanlış yeri ölçen kapı" dersinin ikizi). Çıktısı bulgu listesi olur, yeşil/kırmızı değil.
-
-**İzle ama alma: stagewise** — `stagewise-io/stagewise` (AGPL, ~6,5k ★). Tarayıcıda ögeye tıkla →
-ajana bağlam ver. Gücü React/Vue bileşen ağacını çözmesinde; Sufle vanilla + tek dosya olduğu için
-kazanç sınırlı. Ayrıca AGPL, ürün public repo olduğu için ayrıca düşünülmeli.
-
-### Görsel regresyon (UI ajanının tamamlayıcısı)
-- **Playwright `toHaveScreenshot()`** — sıfır konfig, en kolay giriş.
-- **odiff** / **pixelmatch** — hızlı piksel diff; `ekran.py` çıktısını temel çizgiye bağlamak için
-  yeterli, Python tarafından da çağrılabilir.
-- Bu, "tasarım sessizce kaydı" sınıfını yakalar — `kontrast.py`'nin göremediği sınıf.
-
-### Erişilebilirlik ve bütçe kapıları
-- **axe-core** (`dequelabs/axe-core`) — tek JS dosyası, CDP ile enjekte edilir, **ürüne girmez**.
-  Kapıya 10. adım. Elle yazdığın klavye/ekran okuyucu testlerinin üstüne endüstri kural seti.
-- **Lighthouse / lighthouse-ci** — PWA + performans bütçesi; 514 KB tek dosya için sınır koy.
-- **size-limit** — "tek dosya X KB'ı geçemez" kapısı; şu an hiçbir sınır yok, dosya büyümeye devam ediyor.
-
----
-
-## 2. Farklı ajan yapıları — hangi mimari nereye
-
-Soruyu ikiye ayırmak şart: **(a)** Sufle'yi *geliştiren* ajan mimarisi, **(b)** *ürünün içinde* ajan.
-
-### (a) Geliştirme tarafı — dört mimari sınıfı
-
-**1) Tek ajan + sıkı kapı — bugünkü Sufle**
-Güçlü yanı: 9 adımlı kapı, mutasyon turu, kapsam ölçümü. Piyasadaki çoğu "AI agent kurulumundan"
-daha disiplinli. Zayıf yanı: **üreten = denetleyen**. v9.2'de kapının yakaladığı iki hatanın
-ikisi de senin kendi düzenlemendi — kapı olmasa yayınlanacaklardı.
-
-**2) Rol ayrımı (üreten ≠ denetleyen) — Claude Code subagent/skill/hook**
-Bilge'deki "Dil Loncası"nda çalıştığı kanıtlanmış desen. Sufle'ye uyarlaması:
-`üretici` → `denetçi` (kodu görmeden yalnız davranışı sınar) → `kapı`.
-Örnek/ilham repoları:
-- `VoltAgent/awesome-claude-code-subagents` — 100+ hazır subagent
-- `ComposioHQ/awesome-claude-skills` · `composio-community/awesome-claude-plugins`
-- `rohitg00/awesome-claude-code-toolkit` — 135 agent, 35 skill, 42 komut, hook/rule şablonları
-- `jqueryscript/awesome-claude-code` — genel dizin
-> ⚠️ Bunlar **prompt koleksiyonu**, kütüphane değil. Kopyalama — Sufle'nin denetim kültürü
-> (kanıtlı test, mutasyon turu, ölçülmüş iddia) çoğundan daha sıkı; oradan **yalnız yapı** al.
-
-**3) Graf / durum makinesi — LangGraph, Mastra**
-`langchain-ai/langgraph` (döngü, dallanma, checkpoint, insan onayı; kurumsal kullanımda lider),
-`mastra-ai/mastra` (~21k ★, TypeScript-native, ReAct + graf + agent ağı).
-**Sufle için önerim: alma.** Bu çerçevelerin sattığı şey deterministik orkestrasyon —
-sende o zaten `kapi.sh` + `/loop /cto` olarak var ve **bağımlılıksız**. Getirisi düşük, bakım yükü gerçek.
-
-**4) Vendor SDK — Claude Agent SDK**
-Tek anlamlı çerçeve yatırımı bu: **gece turunu CI'da koşturmak**. GitHub Actions içinde
-"kapıyı koş → kırmızıysa teşhis et → PR aç" ajanı. Yayın kararını yine sen verirsin
-(protokoldeki "Erdal onayı" adımı korunur).
-
-**Özet karar:** mimari değiştirme; **rol ayrımı (2)** ekle, **CI ajanı (4)** ile kapıyı otomatikleştir.
-
-### (b) Ürünün içinde ajan — sınır nerede
-Sufle'nin satış vaadi: *hesap yok, sunucu yok, veri cihazdan çıkmıyor* (`GIZLILIK.md`).
-Bulut LLM eklemek bu vaadi **doğrudan** bozar — ve `magaza`/gizlilik metniyle çelişir.
-
-Kimlikle uyumlu tek yol **cihaz üstü**:
-- `huggingface/transformers.js` + Whisper (WebGPU) — WASM'a göre 5-10× hızlanma, model indikten
-  sonra **çevrimdışı**, 100 dil. Sufle'de karşılığı: `webkitSpeechRecognition`'a bağlı
-  **sesle takip** ve **.srt üretimi** — bugün tarayıcının insafında, çevrimdışı çalışmıyor.
-- Maliyet dürüstlüğü: model indirimi onlarca MB → **opsiyonel özellik** olarak, kullanıcı
-  onayıyla. Tek dosya kimliğini bozmaz (model veri, kod değil).
-- "Sunucu gerektirenler = Erdal kararı" maddene dokunmadan ilerleyen **tek AI hattı** budur.
-
----
-
-## 3. Geliştiricinin yararlanacağı repolar — Sufle acısına göre sıralı
-
-| # | Repo | Neyi çözer | Sufle'deki hangi acı | Risk |
+| Öge | Tür | Ad | Etiket | Ekran okuyucu ne der |
 |---|---|---|---|---|
-| 1 | **ast-grep/ast-grep** | tree-sitter tabanlı yapısal arama/değiştirme; eşleşme sayısı verir, 0 eşleşmede hata döndürebilir | **Kayıtlı hata sınıfı #1**: `str.replace` deseni tutmazsa değişiklik SESSİZCE yapılmıyor (3 kez oldu) | düşük — tek ikili, dev-only |
-| 2 | **oxc-project/oxc (oxlint)** veya **biomejs/biome** | Rust hızında lint, sıfır konfig | çıkarılan `<script>` bloğunda ölü değişken, gölgeleme, boş catch, `==` | düşük |
-| 3 | **stryker-mutator/stryker-js** | mutasyon testi — "test ayırt ediyor mu" sorusunu otomatik yanıtlar | `bozma.py`'nin endüstriyel hâli; senin kendi kuralın ("yeni test yazınca ayırt ettiğini kanıtla") | orta — kurulum, tek dosyada özel konfig |
-| 4 | **GoogleChrome/workbox** (yalnız `workbox-cli`) | içerik hash'iyle precache manifesti | `sw.js` CACHE sürümünü **elle** artırma zorunluluğu — tek unutmada bayat önbellek, kullanıcı eski sürümde kalır | düşük — çıktı yine düz `sw.js` |
-| 5 | **Vanilagy/mediabunny** | saf TS medya araç seti; MP4/WebM mux+demux, WebCodecs; tree-shakable (~17 kB) — `mp4-muxer`/`webm-muxer` **artık kullanımdan kalktı**, halefi bu | iOS'ta MP4 önceliği, kayıt/altyazı gömme, uzun çekim bellek tepesi; MediaRecorder'ın *verdiğiyle* yetinmek yerine *istediğini* üret | orta — `cekirdek/`e girip `derle.py` ile gömülür, kimlik korunur |
-| 6 | **101arrowz/fflate** | akış tabanlı zip/deflate, çok küçük | yayın paketi zip'i — **şart değil**, kendi 50 satırlık yazıcın çalışıyor ve v9.3'te akışa çevrildi. Yalnız sıkıştırma gerekirse | düşük |
-| 7 | **dequelabs/axe-core** | erişilebilirlik kural seti | elle yazılan klavye/ekran okuyucu testlerinin üstüne endüstri katmanı | düşük — dev-only |
-| 8 | **GoogleChrome/lighthouse** + **ai/size-limit** | PWA denetimi + bayt bütçesi | 514 KB tek dosyanın sınırı yok, sessizce büyüyor | düşük |
-| 9 | **microsoft/playwright** (+ `playwright-mcp`) | deterministik tarayıcı testi + görsel temel çizgi | çizilen arayüzün hiç ölçülmemesi | düşük |
-| 10 | **web-infra-dev/midscene** | görüş tabanlı UI ajanı, web+iOS+Android | canvas/kamera/kompozit doğrulaması; **gerçek iPhone'da** PWA turu | orta — model çağrısı, maliyet; kapıya değil rapora bağla |
-| 11 | **huggingface/transformers.js** | cihaz üstü ASR (Whisper/WebGPU) | sesle takip + .srt'nin tarayıcıya bağımlılığı, çevrimdışı çalışmaması | orta — model boyutu, opsiyonel özellik |
-| 12 | **ionic-team/capacitor** | PWA → native kabuk (App Store / Play) | `ios-olcum/` WKWebView probun tam bunun için; `magaza/` başlamış | ⚠️ **yüksek — aşağıya bak** |
+| `#wpm` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#eye` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#dist` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#fs` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#lh` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#mg` | range | ✗ | ✗ | "kaydırıcı, %50" |
+| `#setFind` | text | ✓ placeholder | — | doğru |
 
-### ⚠️ 12 numaranın uyarısı — Apple 4.2
-Apple'ın 4.2 ("minimum functionality") kuralı **"yeniden paketlenmiş web sitesi"** görünen
-WebView uygulamalarını rutin olarak reddediyor; PWABuilder'ın iOS çıktısı da aynı riski taşıyor
-(Android/TWA tarafı sorunsuz). **Sufle'nin şansı ortalamanın çok üstünde**, çünkü gerçek native
-değer zaten var: kamera kaydı, Fotoğraflar'a paylaşım, Wake Lock, BT kumanda, dosya dışa aktarma,
-çekim arşivi. Ama bunlar **başvuruda öne çıkarılmazsa** "web sitesi" gibi okunur.
-→ `MAGAZA_TEKNIK.md`'ye bir **"4.2 savunma dosyası"** bölümü ekle: her native yeteneğin
-ekran görüntüsü + hangi iOS API'sini kullandığı. Reddi *sonra* tartışmak pahalı.
+Yani hız, göz çizgisi, mesafe, yazı boyutu, satır aralığı ve kenar boşluğu — **suflenin
+altı temel ayarı** — ekran okuyucuyla ayırt edilemiyor. Mac'te `#scriptFind` ve `#title`
+aynı durumda. `role="switch"` 29 ögede doğru kurulmuş (anahtarlar iyi), sorun yalnız
+kaydırıcılarda.
+**Neden kapı görmedi:** `kontrast.py` **rengi** ölçüyor, **adı** ölçen bir kural yok.
+**Düzeltme:** 6 `aria-label`, sözlükten (i18n'e de uyar) — yarım saatlik iş.
+
+### ✅ B2 — KAPATILDI (uygulandı, gerçek kökende doğrulandı)
+
+> **Uygulanan:** telefonda `connect-src 'none'`, Mac'te `connect-src 'self'` (kumanda sunucusu
+> `/events`, `/info`, `/preview`, `/qr` ile **aynı kökenden** konuşuyor; `'none'` yazmak
+> kumandayı sessizce öldürürdü — bu dosyada kumandanın sessizce ölmesi iki kez yaşanmış).
+> `default-src` bilerek `'self'` seçildi, `'none'` değil: saymadığım her kaynak türünü de
+> düşürür ve sessiz kırılma bu deponun en pahalı sınıfı.
+> **Ölçülerek doğrulandı, varsayılmadı:** iki kabuk `file://` altında + telefon gerçek bir
+> HTTP kökeninde açıldı → **CSP ihlali 0, JS hatası 0**, service worker kaydı ve manifest
+> yükleniyor. `tests/145` hem CSP'yi hem "kodda gerçekten dış çağrı yok"u kilitliyor.
+
+#### Bulgunun ilk hâli (ölçüm kaydı)
+
+`<head>` içinde `Content-Security-Policy` **yok** (ölçüldü: `http-equiv` meta sayısı 0).
+Bugün dış çağrı sıfır — ama bunu koruyan tek şey dikkat. Tek bir `fetch(...)` satırı
+`GIZLILIK.md`'yi, `tests/131`'in 40 iddiasını ve mağaza beyanını aynı anda yalanlar.
+
+```html
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';
+  img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'none';
+  font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+```
+
+`connect-src 'none'` = **tarayıcı** ağ çıkışını engeller; ihlal artık koda değil
+platforma takılır. `file://` ve PWA'da çalışır, kimliği bozmaz.
+Yan kazanç: mağaza başvurusunda ve tanıtımda **kanıt** olarak gösterilir.
+*(Sınır: `'unsafe-inline'` şart, çünkü kod tek dosyada satır içi. Yine de `connect-src`
+ve `default-src` asıl değeri veriyor.)*
+
+### 🟠 B3 — v9.11 depoda hazır, canlıda 9.10 (3 commit yayınlanmamış)
+
+| Yer | Sürüm | Önbellek |
+|---|---|---|
+| Depo (`index.html` / `sw.js`) | **9.11** | `sufle-v83` |
+| `.son-yayin` | 9.10 | 82 |
+| **Canlı** (`erdalk05.github.io/sufle`) | **9.10** | `sufle-v82` |
+| `main` vs `origin/main` | **3 commit ileride** | |
+
+Bekleyen üç commit: alt kumandaların üst üste binmesi (kök neden kendi düzeltmesi),
+**sesle takibin sessizce ölmesi**, 236 süs emojisinin kaldırıldığı arayüz kimliği turu.
+Protokole göre `git push` senin onayını bekliyor — yani bu bir hata değil, **bekleyen bir
+karar**. Ama "sesle takip sessizce ölüyordu" düzeltmesi kullanıcıya değen bir kusuru
+kapatıyor ve canlıda **yok**.
+
+### 🟡 B4 — Test kapsamı riskle ters orantılı
+
+`kapsam.py`: 276 fonksiyonun **230'u** anılıyor, **46'sı hiç anılmıyor** (%83).
+Anılmayanların dağılımı tesadüfi değil — **çekim ve sonuç yolunda yoğunlaşıyor**:
+
+```
+recordWith · probeAudio · runAudioTest · countdown · cancelCountdown · setLock
+trimUpdate · trimDur · closeResult · shareCaptions · crcHazirla · statLine
+diffReport · renderBitrate · qConstraint · autoLightCheck · drawEyeLine · gazeLine
+```
+
+Bunlar kırılırsa bedeli **kaybedilen çekim** — üründeki en pahalı hata. Buna karşılık
+en çok test edilen alanlar metin/altyazı/sözlük gibi ucuz-kurtarılır alanlar.
+Sebebi anlaşılır: kayıt yolu gerçek kamera, gerçek mikrofon ve gerçek zaman istiyor;
+node'da sentetik veriyle sınanamıyor. **Bu, bir araç boşluğudur — disiplin boşluğu değil.**
+Çözümü §2'deki L2 katmanı (sahte kamera akışı + gerçek tarayıcı).
+
+### 🟡 B5 — Jeton geçişi yarım
+
+64 jeton tanımlı, 165 yerde `var(--…)` kullanılıyor — ama CSS'te hâlâ **107 çıplak hex**
+ve **22 `!important`** var. `prefers-color-scheme` **0** (sufle için doğru: sahne siyah),
+`vh` **0** (iOS adres çubuğu tuzağına hiç düşülmemiş — iyi), `env(safe-area)` 13 (doğru).
+Yani jeton boru hattı kuruldu ama **geçiş bitmedi**; renk kararı hâlâ iki yerde yaşıyor.
+
+### 🟡 B6 — Platform paritesi: 75'e 29
+
+`fark.py`: telefonda olup Mac'te olmayan **75** yüzey, tersi **29**. Depodaki kendi
+kuralın şunu diyor: *"Telefonda olup Mac'te olmayan özellik yarım özelliktir — bu deponun
+1 numaralı hata sınıfı."* Rakam bu kuralın hâlâ açık olduğunu gösteriyor. (Bir kısmı
+doğal olarak telefona ait: `installBtn`, `reopenCam`. Ama `checkBtn` konuşulabilirlik
+denetimi, `pkgBtn` yayın paketi, `devBtn` cihaz uyumluluğu, `resetAll`, `undoDel`
+Mac'te de anlamlı.)
+
+### 🟢 B7 — Uzun senaryo hipotezi: ÖLÇÜLDÜ ve büyük ölçüde ÇÜRÜDÜ
+
+`tests/69` açıkça şunu yazmış: *"buradaki tezgâh gerçek tarayıcı düzeni koşturamaz, yani
+'10.000 kelimede ölçüm X ms sürüyor' diyemem. Milisaniye iddiası yok."*
+`ekran.py` kurulduktan sonra bu **ölçülebilir** hâle gelmiş — ölçtüm.
+(macOS, başsız Chrome, 430×932, gerçek kullanıcı yolu: metni yaz → Uygula.)
+
+| kelime | DOM ögesi | metin yüksekliği | kurulum (ms) | düzen okuma (ms) | **kirli düzen okuma (ms)** | 60 kare kaydırma (ms) |
+|---:|---:|---:|---:|---:|---:|---:|
+| 266 | 273 | 9.668 px | 7,4 | 1,1 | 0,9 | 0,2 |
+| 1.349 | 1.380 | 45.479 px | 9,1 | 1,9 | **4,0** | 0,2 |
+| 4.066 | 4.153 | 135.041 px | 19,5 | 4,3 | **10,2** | 0,1 |
+| 8.132 | 8.305 | 269.216 px | 41,8 | 8,0 | **22,3** | 0,2 |
+| 16.283 | 16.628 | 538.167 px | 73,8 | 15,1 | **44,4** | 0,3 |
+
+**Okuma:** gerçek kullanım (10 dakikalık video ≈ 1.300 kelime) **9 ms kurulum, 4 ms
+yeniden ölçüm** — sorun yok. Kaydırmanın kendisi (`transform`) kelime sayısından
+**bağımsız** — motor tasarımı doğru. Ölçüm maliyeti ancak **~8.000 kelimeden sonra**
+hissedilir hâle geliyor (kaydırıcıyı sürüklerken kare başına 22 ms → ~45 fps).
+`tests/69`'un birleştirme düzeltmesi (kare başına tek ölçüm) bu yükü zaten 12×'ten 1×'e
+indirmiş; onsuz 1.300 kelimede bile takılırdı.
+**Dürüstlük sınırı:** Mac'te ölçüldü, iPhone'da değil. iPhone düzen motoru kabaca
+1,5–2× daha yavaş → 8.000 kelimede ~40 ms/kare beklenir. Yine de **ilan edilebilir sınır:
+"20.000 kelimeye kadar sorunsuz" değil, "10.000 kelimeye kadar ölçüldü".**
+
+### 🟢 B8 — LAN kumandası: kapı var, kilit yok
+
+`mac/teleprompter_server.py` `0.0.0.0`'a bağlanıyor ve `Access-Control-Allow-Origin: *`
+gönderiyor, **ama** POST'ta `_origin_tamam()` kontrolü var: Origin farklıysa reddediyor,
+**Origin yoksa kabul ediyor** ("tarayıcı değil, betik"). Yani:
+- Kötü niyetli bir web sayfası kumandayı ele geçiremez ✅ (tarayıcı Origin'i hep gönderir)
+- Aynı Wi-Fi'daki biri `curl` ile sufleyi başlatıp durdurabilir ⚠️
+
+Risk düşük (yerel ağ, geçici sunucu, etkisi "metin kaydı"), ama düzeltmesi de ucuz:
+QR'a rastgele bir jeton koy, sunucu jetonsuz komutu reddetsin. **Kafede çekim yapan
+kullanıcı** senaryosunda anlamlı.
 
 ---
 
-## 4. Almayacaklarımız — ve nedeni (bu bölüm en az öneriler kadar önemli)
+# BÖLÜM 2 — UI AJANI
 
-| Alınmayacak | Neden |
-|---|---|
-| React / Tailwind / shadcn / v0 | "tek dosya + `file://` ile açılabilir" kimliğini kırar; `derle.py`'ın varlık sebebi bu ölçümdü (`<script type="module">` `file://` altında **sessizce** yüklenmiyor) |
-| LangGraph / CrewAI / AutoGen / Dify / n8n | Sufle'nin ajan ihtiyacı geliştirme zamanında; `kapi.sh` zaten deterministik orkestratör. Çerçeve = yeni bakım yükü, sıfır yeni kabiliyet |
-| Ürün içinde bulut LLM | gizlilik vaadi + mağaza metni ile çelişir |
-| `browser-use`'u yeşil kapıya koymak | nondeterministik kapı = kapısızlık; kırmızı/yeşil kararı modele bırakılmaz |
-| Hazır "awesome-agents" prompt paketlerini olduğu gibi kopyalamak | çoğu ölçülmemiş prompt; Sufle'nin kanıt kültürünü aşağı çeker |
+## 2.1 Tezgâhın gerçekte nerede bittiği
+
+`ekran.py` şunu yapıyor: Chrome'u `--headless=new` + `--use-fake-device-for-media-stream`
+ile açıyor, ham CDP konuşuyor (WebSocket istemcisi dahil kendi yazılmış),
+`Emulation.setDeviceMetricsOverride` ile **gerçek** viewport kuruyor (pencere boyutunun
+yalan söylediğini ölçmüşler), ekran alıyor. `kontrast.py` bunun üstünde 6 durum çiziyor.
+
+Bu ciddi bir tezgâh. Yapamadıkları (ve neden):
+
+| Yapılamayan | Sebep | Kim çözer |
+|---|---|---|
+| **Akış testi** (tıkla → çek → sonuç ekranı doğru mu) | girdi sentezi, bekleme, yeniden deneme, iz alma elle yazılmalı | Playwright |
+| **Düzen regresyonu** (dün bu düğme buradaydı) | piksel temel çizgisi + gürültü toleransı yok | Playwright `toHaveScreenshot()` / odiff |
+| **Canvas/kamera içeriği doğru mu** | kompozit, kırpma, göz çizgisi DOM'da yok — piksel | Midscene (görüş) |
+| **Gerçek cihaz** (iPhone'da PWA) | başsız Chrome iPhone değil; `document.hidden` rAF'ı donduruyor | Midscene (iOS) |
+| **Erişilebilir ad / 90+ kural** | elle yazılırsa her kural ayrı emek (B1'i ben elde yazdım) | axe-core |
+
+## 2.2 Karar
+
+**L1 — Playwright (dev-only, ürüne girmez): AL.**
+Sufle'nin ihtiyacı olan "tıkla-çek-doğrula" akışı Playwright'ın tam merkezi. Üstelik
+`ekran.py`'ın notlarında yazılı **iki tuzağı da hazır çözüyor**: cihaz metrikleri
+(`page.setViewportSize` + device descriptors) ve sahte medya
+(`--use-fake-device-for-media-stream` + `--use-file-for-fake-video-capture` bayrakları
+`launchOptions.args` ile). `ekran.py`'ı **silme** — mağaza karesi üretimi ve kontrast
+ölçümü çalışıyor ve senin. Playwright yanına, yeni sınıf için gelir.
+→ İlk 8 senaryo: giriş→sahne · metin yaz→başlat→durdur · kayıt→sonuç ekranı ·
+altyazı indir · arşive yaz→geri yükle · yayın paketi · ayarlar gezinme · dil değiştir.
+
+**L2 — Midscene.js: PoC yap, karar sonra.** (`web-infra-dev/midscene`, MIT, ~14,6k★)
+Ekran görüntüsünden çalışır → canvas/kamera/kompozit doğrulaması. **web + iOS + Android**
+tek API: gerçek iPhone'da PWA turu. Playwright/Puppeteer SDK'sı, Chrome uzantısı, YAML
+senaryoları, MCP. Model tarafı UI-TARS ile **self-host edilebilir** — "veri dışarı
+çıkmasın" kültürüne dev-time'da da uyar.
+⚠️ Model çağrısı = para + nondeterminizm. **Kapıya bağlama**; gece turu raporu olarak koş.
+→ İlk 3 senaryo: kayıt akışı uçtan uca · kompozit yeşil ekran kadrajı · **paylaşım tanı
+satırı** (senin açık maddendi: "iPhone'da ne yazıyor?" — bu tur kendiliğinden yanıtlar).
+
+**L3 — browser-use / Stagehand: şimdilik hayır.** Keşif turu değerli ama sende
+keşif zaten var (kendi denetim turların, `bozma.py`). Sıra bunda değil.
+
+**stagewise: hayır.** Gücü React/Vue bileşen ağacını çözmekte; Sufle vanilla. Ayrıca AGPL,
+depo public.
+
+**axe-core: AL, hemen.** Tek dosya, CDP ile enjekte, ürüne girmez. B1'i ben elde yazdığım
+kaba bir kuralla buldum; axe 90+ kuralı getirir ve `kontrast.py`'nin yanına 10. kapı
+adımı olur. **En ucuz gerçek kazanç bu.**
 
 ---
 
-## 5. Önerilen sıra (getiri/risk oranına göre)
+# BÖLÜM 3 — AJAN MİMARİSİ
 
-1. **ast-grep** — yarım gün, en yüksek getiri. `denetim.py`'nin regex kurallarının bir kısmını
-   yapısal kurala taşı; toplu düzenlemeler artık sessizce başarısız olamaz.
-2. **size-limit + Lighthouse** kapısı — bir saat, dosya büyümesine sınır.
-3. **Playwright + axe-core** → `kapi.sh` adım 10 ve 11.
-4. **Midscene PoC** — üç senaryo: (a) kayıt akışı baştan sona, (b) kompozit yeşil ekran kadrajı,
-   (c) paylaşım ekranı tanı satırı. **Gerçek iPhone'da.** Erdal'ın açık maddesi olan
-   "paylaşım tanı satırı ne yazıyor" sorusunu bu tur kendiliğinden yanıtlar.
-5. **Workbox** ile `sw.js` sürümlemesini elden al.
-6. **Stryker** ile bozma turunu genişlet (`bozma.py` kalsın, tamamlayıcı olsun).
-7. **Capacitor + 4.2 savunma dosyası** — mağaza kararı verildiğinde.
-8. **transformers.js ASR** — Erdal kararı; kimlikle uyumlu tek AI hattı.
+## 3.1 Asıl darboğaz: üretim değil doğrulama
 
-### Ölçüt
-Her araç için tek soru: **"bu ay hangi gerçek hatayı yakaladı?"** Cevabı olmayan araç,
-üçüncü ayın sonunda tezgâhtan çıkarılır. (Aynı ölçüt `kontrast.py` ve `kapsam.py` için de geçerli.)
+Ölçüm: **1 Ağustos'tan beri 302 commit, 14 Ağustos'ta 133.** Bu hızda üretim sorun değil.
+Sorun, üretilenin doğru olduğunu **kanıtlamak**. Kanıt: v9.2'de kapının yakaladığı iki
+hatanın **ikisi de kendi düzenlemendi**; v9.11'de "alt kumandalar üst üste biniyordu"
+commit'inin kök nedeni yine **kendi düzeltmen**. Bu, kötü bir işaret değil — hızlı
+çalışan tek ajanın kaçınılmaz sonucu. Mimari kararın buradan çıkması lazım.
+
+## 3.2 Dört sınıf, tek tavsiye
+
+| Sınıf | Örnek | Sufle için |
+|---|---|---|
+| Tek ajan + sıkı kapı | **bugünkü Sufle** | Zaten en iyi sürümü. Zayıflığı: üreten = denetleyen |
+| **Rol ayrımı** | Claude Code subagent/skill/hook | ✅ **AL** — aşağıda tasarım |
+| Graf/durum makinesi | LangGraph · Mastra | ❌ `kapi.sh` zaten deterministik orkestratör; çerçeve sıfır yeni kabiliyet, gerçek bakım yükü |
+| Vendor SDK | Claude Agent SDK | ✅ **AL (sonra)** — kapıyı CI'da koşturmak için |
+
+## 3.3 Somut tasarım — "gece fabrikası v2"
+
+```
+        ┌─ ÜRETİCİ ────────────┐   kodu yazar, kapıyı koşar, commit eder
+        │                      │   (bugünkü sen)
+        ├─ DENETÇİ ────────────┤   KODU GÖRMEZ. Yalnız: sürüm notu + yeni
+        │                      │   yüzeyler + kullanıcı yolu. "Bu özelliği
+        │                      │   bulabiliyor muyum, çalışıyor mu?"
+        ├─ KIRICI ─────────────┤   bozma.py + Stryker: testin ayırt ettiğini kanıtlar
+        └─ HAKEM = kapi.sh ────┘   tek gerçek otorite; nondeterministik girdi almaz
+```
+
+Kritik kural: **denetçi kodu görmez.** Kodu gören denetçi, üreticinin gerekçesini
+tekrarlar — bu deponun defalarca kaydettiği "jargon = görünmezlik" ve "sessiz ölü
+özellik" sınıfları tam da kodu okuyanın göremediği şeyler. `.srt` düğmesi vakası
+(Erdal "str ne demek bilmiyorum" dedi) kod okunarak asla bulunamazdı.
+
+İlham repoları (**kopyalama, yapı al**): `VoltAgent/awesome-claude-code-subagents`
+(100+ subagent), `ComposioHQ/awesome-claude-skills`, `rohitg00/awesome-claude-code-toolkit`,
+`composio-community/awesome-claude-plugins`. Bunlar ölçülmemiş prompt koleksiyonları;
+Sufle'nin kanıt çıtası çoğundan yüksek.
+
+## 3.4 Ürünün içine ajan?
+
+`GIZLILIK.md` + `tests/131` + mağaza beyanı üçlüsü bulut LLM'i **kilitliyor**.
+Yol haritasındaki E.1/E.2 (senaryo yazarı, yeniden yazım) bu yüzden doğru şekilde
+"Erdal kararı" diye bekliyor. Eklenecek tek not: bu özellik gelirse **ayrı bir onay
+yüzeyi** ister ("metniniz şu sunucuya gidecek"), yoksa `tests/131` kırılır ve iyi ki
+kırılır.
 
 ---
+
+# BÖLÜM 4 — REPOLAR (bulguya bağlı, sırayla)
+
+| # | Repo | Hangi bulguyu kapatır | Emek | Karar |
+|---|---|---|---|---|
+| 1 | **dequelabs/axe-core** | **B1** (6 adsız kaydırıcı) + gelecekteki tüm sınıf | 2 sa | ✅ AL |
+| 2 | **ast-grep/ast-grep** | kayıtlı hata sınıfı #1: `str.replace` sessiz kayması; `denetim.py`'nin regex kurallarını yapısal kurala taşır | 4 sa | ✅ AL |
+| 3 | **microsoft/playwright** | **B4** (kayıt yolu testsiz) + akış/düzen regresyonu | 1 gün | ✅ AL |
+| 4 | **oxc-project/oxc (oxlint)** | 25 boş catch, ölü değişken, gölgeleme — `node --check`'in göremediği sınıf | 1 sa | ✅ AL |
+| 5 | **web-infra-dev/midscene** | canvas/kamera/**gerçek iPhone** | 1 gün PoC | 🟡 PoC |
+| 6 | **stryker-mutator/stryker-js** | `bozma.py`'yi tamamlar; "test ayırt ediyor mu" otomatik | 1 gün | 🟡 sonra |
+| 7 | **GoogleChrome/workbox** (`workbox-cli`) | `sw.js` sürümünü elle artırma zorunluluğu (B3'ün yapısal sebebi) | 3 sa | 🟡 sonra |
+| 8 | **ai/size-limit** | 514 KB'ın sınırı yok; sessizce büyüyor | 1 sa | 🟡 sonra |
+| 9 | **Vanilagy/mediabunny** | MP4 hattı; `mp4-muxer`/`webm-muxer` **kullanımdan kalktı**, halefi bu. `cekirdek/`e girip `derle.py` ile gömülür | ölçüm önce | 🟡 koşullu |
+| 10 | **ionic-team/capacitor** | F.1 mağaza kabuğu (yol haritasında zaten) | hesap işi | 🟡 Erdal |
+| 11 | **huggingface/transformers.js** | ⚠️ **iOS gerekçesi ÇÜRÜDÜ.** Kalan gerçek gerekçe: sesle takip bugün konuşmayı **tarayıcı üreticisinin sunucusuna** gönderiyor (`GIZLILIK.md` bunu dürüstçe yazıyor) ve Firefox'ta hiç yok. Cihaz üstü Whisper bu istisnayı **kaldırır** | büyük | 🔵 Erdal |
+
+**Almayacaklar:** React/Tailwind/shadcn (tek dosya + `file://` kimliği — `derle.py`'ın
+varlık sebebi bu ölçüm) · LangGraph/CrewAI/Dify/n8n (§3.2) · ürün içi bulut LLM (§3.4) ·
+`browser-use`'u kapıya koymak (nondeterministik kapı = kapısızlık) · fflate (kendi zip
+yazıcın çalışıyor ve v9.3'te akışa çevrildi — çalışanı değiştirme).
+
+---
+
+# BÖLÜM 5 — SIRA
+
+**Bu hafta:**
+1. ~~**B1**: adsız kaydırıcılar~~ ✅ **BİTTİ** — 39 kaydırıcı bağlandı, kapıya mutlak kural,
+   6 bozma kanıtı, `tests/145` (32 iddia)
+2. ~~**B2**: CSP~~ ✅ **BİTTİ** — iki kabuk, gerçek kökende 0 ihlalle doğrulandı
+3. **B3**: v9.11 yayın kararı (senin) — sesle takip düzeltmesi canlıda yok
+4. **axe-core** → kapı adımı 10. **B1 sonrası gerekçesi güçlendi:** elle yazdığım tek kural
+   39 kusur buldu; axe 90+ kural getirir (rol, sıra, odak, kontrast-oran, canlı bölge…)
+5. **size-limit** → kapı adımı 11 (bugünkü boyut taban olsun)
+
+**Önümüzdeki iki hafta:**
+6. **ast-grep** — toplu düzenleme artık sessizce başarısız olamaz
+7. **Playwright** — 8 akış senaryosu, önce **B4'ün kayıt yolu**
+8. **B6 paritesi** — `fark.py`'nin 75'ini üçe böl: telefona özgü / Mac'e gerekli / gereksiz
+9. **B5 jeton geçişi** — 107 çıplak hex'i bitir
+10. **Midscene PoC** — 3 senaryo, gerçek iPhone
+
+**Erdal kararı bekleyenler:** Capacitor + Apple Developer hesabı · cihaz üstü Whisper ·
+E.1/E.2 AI katmanı · B8 kumanda jetonu (istersen 1 saat).
+
+## Ölçüt
+Her araç için tek soru: **"bu ay hangi gerçek hatayı yakaladı?"** Cevabı olmayan araç
+üçüncü ayın sonunda tezgâhtan çıkar. Bu belgedeki B1, B2 ve B7'yi öneri yazmak için
+değil, **önerinin işe yaradığını kanıtlamak** için ölçtüm: B1'i bir tarayıcı ajanı buldu,
+B7'yi bir tarayıcı ajanı çürüttü.
+
+---
+
+## Ölçüm betikleri
+Bu belgedeki B1 ve B7 ölçümleri `ekran.py`'nin `Tarayici` sınıfıyla yapıldı; betikler
+oturum klasöründe. Kalıcı olmalarını istersen `araclar/` altına alınır ve kapıya bağlanır
+(B1 için önerilen budur).
 
 ## Kaynaklar
-- Midscene: https://github.com/web-infra-dev/midscene
-- Tarayıcı ajanı karşılaştırmaları: https://www.firecrawl.dev/blog/best-browser-agents · https://www.nxcode.io/resources/news/stagehand-vs-browser-use-vs-playwright-ai-browser-automation-2026
+- Midscene: https://github.com/web-infra-dev/midscene · Stagehand/browser-use karşılaştırma: https://www.firecrawl.dev/blog/best-browser-agents
 - Stagewise: https://github.com/stagewise-io/stagewise
-- Ajan çerçeveleri: https://www.speakeasy.com/blog/ai-agent-framework-comparison/ · https://www.firecrawl.dev/blog/best-open-source-agent-frameworks
-- Claude Code ekosistemi: https://github.com/VoltAgent/awesome-claude-code-subagents · https://github.com/rohitg00/awesome-claude-code-toolkit · https://github.com/ComposioHQ/awesome-claude-skills
+- Ajan çerçeveleri: https://www.speakeasy.com/blog/ai-agent-framework-comparison/
+- Claude Code ekosistemi: https://github.com/VoltAgent/awesome-claude-code-subagents · https://github.com/rohitg00/awesome-claude-code-toolkit
+- ast-grep karşılaştırma: https://ast-grep.github.io/advanced/tool-comparison.html
+- Mediabunny (mp4-muxer halefi): https://github.com/Vanilagy/mediabunny
 - Görsel regresyon: https://percy.io/blog/open-source-visual-regression-testing-tools
-- ast-grep karşılaştırması: https://ast-grep.github.io/advanced/tool-comparison.html · https://www.hypermod.io/blog/4-jscodeshift-vs-ast-grep
-- Mediabunny (mp4-muxer halefi): https://github.com/Vanilagy/mediabunny · https://vanilagy.github.io/mp4-muxer/
-- PWA → App Store / 4.2: https://www.mobiloud.com/blog/publishing-pwa-app-store · https://capacitorjs.com/docs/web/progressive-web-apps
-- Cihaz üstü ASR: https://github.com/xenova/whisper-web
+- PWA → App Store 4.2: https://www.mobiloud.com/blog/publishing-pwa-app-store

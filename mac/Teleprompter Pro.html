@@ -2,6 +2,13 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<!-- Telefondakiyle aynı gerekçe (bkz. index.html), TEK FARKLA:
+     Mac kumanda sunucusu AYNI KÖKENDEN konuşuyor — `/events` (EventSource),
+     `/info`, `/preview`, `/qr` hepsi göreli yol. Bu yüzden burada
+     `connect-src 'self'`; 'none' yazmak QR uzaktan kumandayı SESSİZCE
+     öldürürdü (kumandanın sessizce ölmesi bu dosyada iki kez yaşandı:
+     önce file:// açılışında, sonra yanlış port bildiriminde). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teleprompter Pro — Video Çekim Sufle</title>
 <style>
@@ -615,11 +622,11 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
             <button data-k="#0047bb" data-i18n="kBlue">Mavi</button>
             <button data-k="#ffffff" data-i18n="cWhite">Beyaz</button>
           </div>
-          <div class="top" style="margin-top:8px"><label data-i18n="mThreshold">Eşik</label><span class="v" id="keySimV">30</span></div>
+          <div class="top" style="margin-top:8px"><label for="keySim" data-i18n="mThreshold">Eşik</label><span class="v" id="keySimV">30</span></div>
           <input type="range" id="keySim" min="5" max="80" value="30">
-          <div class="top" style="margin-top:6px"><label data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="keySmoothV">10</span></div>
+          <div class="top" style="margin-top:6px"><label for="keySmooth" data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="keySmoothV">10</span></div>
           <input type="range" id="keySmooth" min="1" max="40" value="10">
-          <div class="top" style="margin-top:8px"><label data-i18n="spill">Saçak temizliği (despill)</label><span class="v" id="spillV">60</span></div>
+          <div class="top" style="margin-top:8px"><label for="spill" data-i18n="spill">Saçak temizliği (despill)</label><span class="v" id="spillV">60</span></div>
           <input type="range" id="spill" min="0" max="100" value="60">
           <div class="top" style="margin-top:8px"><label data-i18n="newBg">Yeni arka plan</label></div>
           <div class="selectish" id="bgKindSel">
@@ -647,23 +654,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwSafe">Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="speedV">140</span></div>
+        <div class="top"><label for="speed" data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="speedV">140</span></div>
         <input type="range" id="speed" min="0" max="320" step="1" value="140">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="mFontSize">Yazı Boyutu</label><span class="v" id="fontV">64</span></div>
+        <div class="top"><label for="font" data-i18n="mFontSize">Yazı Boyutu</label><span class="v" id="fontV">64</span></div>
         <input type="range" id="font" min="24" max="160" value="64">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="mLineH">Satır Aralığı</label><span class="v" id="lineV">1.5</span></div>
+        <div class="top"><label for="line" data-i18n="mLineH">Satır Aralığı</label><span class="v" id="lineV">1.5</span></div>
         <input type="range" id="line" min="10" max="32" value="15">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="mMargin">Kenar Boşluğu</label><span class="v" id="marginV">6</span></div>
+        <div class="top"><label for="margin" data-i18n="mMargin">Kenar Boşluğu</label><span class="v" id="marginV">6</span></div>
         <input type="range" id="margin" min="0" max="22" value="6">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="mEyeLine">Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="eyeposV">42</span></div>
+        <div class="top"><label for="eyepos" data-i18n="mEyeLine">Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="eyeposV">42</span></div>
         <input type="range" id="eyepos" min="0" max="55" value="42">
       </div>
       <div class="field">
@@ -676,9 +683,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         </div>
         <button class="btn" id="eyeRecipe" style="margin-top:8px;width:100%" data-i18n="eyeRecipe">Göz teması ayarını uygula</button>
         <div class="rb-note" id="gazeHint" style="margin-top:6px"></div>
-        <div class="top" style="margin-top:10px"><label data-i18n="mFaceDist">Yüz–ekran mesafesi (cm)</label><span class="v" id="distV">60</span></div>
+        <div class="top" style="margin-top:10px"><label for="dist" data-i18n="mFaceDist">Yüz–ekran mesafesi (cm)</label><span class="v" id="distV">60</span></div>
         <input type="range" id="dist" min="30" max="200" step="5" value="60">
-        <div class="top" style="margin-top:8px"><label data-i18n="mScreenH">Ekran yüksekliği (cm)</label><span class="v" id="schV">21</span></div>
+        <div class="top" style="margin-top:8px"><label for="sch" data-i18n="mScreenH">Ekran yüksekliği (cm)</label><span class="v" id="schV">21</span></div>
         <input type="range" id="sch" min="12" max="45" value="21">
         <div class="top" style="margin-top:10px"><label data-i18n="mCaseView">Aa Harf düzeni (yalnız görünüm)</label></div>
         <div class="selectish" id="caseSel">
@@ -689,10 +696,10 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="rb-note" style="margin-top:4px" data-i18n="mNoteCase">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBionic">Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
         <div class="rb-note" data-i18n="mNoteBionic">Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.</div>
-        <div class="top" style="margin-top:10px"><label data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
+        <div class="top" style="margin-top:10px"><label for="capOff" data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
         <input type="range" id="capOff" min="-20" max="20" value="0">
         <div class="rb-note" data-i18n="mNoteCap">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
-        <div class="top" style="margin-top:10px"><label data-i18n="mCapMaxW">Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
+        <div class="top" style="margin-top:10px"><label for="capMaxW" data-i18n="mCapMaxW">Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
         <input type="range" id="capMaxW" min="3" max="12" value="7">
         <div class="rb-note" data-i18n="mNoteCapW">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
       </div>
@@ -816,12 +823,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
          ölü çeviri. Kutu varsayılan gizli: budama yalnız tarayıcı
          captureStream desteklerse açılır (ölü ayar yaratma). -->
     <div id="rrTrimBox" class="hidden" style="margin:10px 0">
-      <div class="field"><div class="top"><span data-i18n="trimStart">Baştan kes</span>
+      <div class="field"><div class="top"><span id="rrTrimALbl" data-i18n="trimStart">Baştan kes</span>
         <span class="v" id="rrTrimAV">0.0 sn</span></div>
-        <input type="range" id="rrTrimA" min="0" max="1000" value="0"></div>
-      <div class="field"><div class="top"><span data-i18n="trimEnd">Sondan kes</span>
+        <input type="range" aria-labelledby="rrTrimALbl" id="rrTrimA" min="0" max="1000" value="0"></div>
+      <div class="field"><div class="top"><span id="rrTrimBLbl" data-i18n="trimEnd">Sondan kes</span>
         <span class="v" id="rrTrimBV">—</span></div>
-        <input type="range" id="rrTrimB" min="0" max="1000" value="1000"></div>
+        <input type="range" aria-labelledby="rrTrimBLbl" id="rrTrimB" min="0" max="1000" value="1000"></div>
       <div class="rb-note" id="rrTrimInfo"></div>
       <div class="rr-btns" style="margin-top:6px">
         <button class="btn" id="rrTrimPrev" data-i18n="trimPrev">▶︎ Seçimi oynat</button>
@@ -2681,7 +2688,7 @@ const MMSG={
       const bar=d.createElement('div');
       bar.style.cssText='position:fixed;left:0;right:0;bottom:0;display:flex;gap:var(--sp-2);align-items:center;'+
         'background:rgba(0,0,0,.65);padding:6px 10px;font:12px -apple-system,sans-serif;color:#aaa';
-      bar.innerHTML='<span>Saydamlık</span><input type="range" min="25" max="100" value="100" style="flex:1">'+
+      bar.innerHTML='<span>Saydamlık</span><input type="range" aria-label="Saydamlık" min="25" max="100" value="100" style="flex:1">'+
         '<span>Boşluk = başlat/dur</span>';
       bar.querySelector('input').oninput=e=>{ d.body.style.opacity=(+e.target.value/100); };
       d.body.appendChild(bar);

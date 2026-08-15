@@ -42,6 +42,11 @@ KAYNAK = {
     # iddia burada yaşıyor, çürütüldüğü de burada yazılı.
     'magaza_teknik': (os.path.join(REPO, 'MAGAZA_TEKNIK.md'), 'SUFLE_MAGAZA_TEKNIK'),
     'fiyat': (os.path.join(REPO, 'FIYATLANDIRMA.md'), 'SUFLE_FIYAT'),
+    # KAPI ARACININ KENDİSİ de bozulabilmeli: `kontrast.py` çizilmiş arayüzü
+    # ölçen tek yer. Kuralı gevşetilirse (adsız öge kuralını tabana bağlamak,
+    # ölçülen durumları silmek) kapı sessizce silahsızlanır — bu deponun
+    # `tests/113` ile bir kez yakaladığı sınıf.
+    'kontrast': (os.path.join(REPO, 'kontrast.py'), 'SUFLE_KONTRAST'),
     # Rekabet ölçümü de bozulabilmeli: "sunucu işletmek istiyor muyuz?"
     # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
     # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.

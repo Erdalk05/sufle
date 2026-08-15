@@ -1,723 +1,765 @@
 [
-  {
-    "ad": "K8 anahtar satıra bağlı değil",
-    "test": "95-dokunma-hedefi.js",
-    "kaynak": "telefon",
-    "bul": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px",
-    "koy": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0"
-  },
-  {
-    "ad": "F1 ışık aralığı sıklaştı",
-    "test": "96-isik-ornekleme-maliyeti.js",
-    "kaynak": "telefon",
-    "bul": "  },20000);\n  body.classList.add('rec');",
-    "koy": "  },2000);\n  body.classList.add('rec');"
-  },
-  {
-    "ad": "G1 fps koruması kalktı",
-    "test": "97-kompozit-fps-olcumu.js",
-    "kaynak": "telefon",
-    "bul": "if(compFps.son && nowF-compFps.son>1000){ compFps.n=1; compFps.t0=nowF; }",
-    "koy": ""
-  },
-  {
-    "ad": "G4 arka plan oranı bozuk",
-    "test": "98-arka-plan-orani.js",
-    "kaynak": "telefon",
-    "bul": "  const k=Math.min(1, 1920/Math.max(W,H), 1080/Math.min(W,H));",
-    "koy": "  const k=1;"
-  },
-  {
-    "ad": "G5 dosya boyutu kapısı yok",
-    "test": "99-arka-plan-bellek.js",
-    "kaynak": "telefon",
-    "bul": "  if(f.size>25*1024*1024){ toast(m('bgDosyaBuyuk')); return; }\n",
-    "koy": ""
-  },
-  {
-    "ad": "G7 gölgelendirici silinmiyor",
-    "test": "100-kompozit-kaynak-birakma.js",
-    "kaynak": "telefon",
-    "bul": "  gl.deleteShader(vs); gl.deleteShader(fs);\n",
-    "koy": ""
-  },
-  {
-    "ad": "G10 çift altyazı uyarısı yok",
-    "test": "101-kompozit-paket-video-turu.js",
-    "kaynak": "telefon",
-    "bul": "    ...(lastPath && lastPath.burn ? ['',",
-    "koy": "    ...(false ? ['',"
-  },
-  {
-    "ad": "H9 chunks ikinci kopya kalıyor",
-    "test": "102-uzun-kayit-bellek.js",
-    "kaynak": "telefon",
-    "bul": "    chunks=[];   // Blob veriyi devraldı",
-    "koy": "    // chunks=[];   // Blob veriyi devraldı"
-  },
-  {
-    "ad": "I2 altyazı önbelleği yok",
-    "test": "103-gomulu-altyazi-maliyeti.js",
-    "kaynak": "telefon",
-    "bul": "capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size",
-    "koy": "capOnbellek.txt===txt && capOnbellek.size===size"
-  },
-  {
-    "ad": "J1 arşiv güncellemesi iki işlem",
-    "test": "104-arsiv-guncelleme.js",
-    "kaynak": "telefon",
-    "bul": "    const tx=d.transaction('takes','readwrite');\n    const q=tx.objectStore('takes').openCursor(id);",
-    "koy": "    const tx=d.transaction('takes');\n    const q=tx.objectStore('takes').openCursor(id);"
-  },
-  {
-    "ad": "J4 sürüm etiketi yok",
-    "test": "105-paket-surum-etiketi.js",
-    "kaynak": "telefon",
-    "bul": "    ...(cekimSenaryo && cekimSenaryo.ikiSurumlu ? [",
-    "koy": "    ...(false ? ["
-  },
-  {
-    "ad": "I1 vekil koruması yok (telefon)",
-    "test": "66-uzun-kelime-tasmasi.js",
-    "kaynak": "telefon",
-    "bul": "      if(k<w.length && yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
-    "koy": ""
-  },
-  {
-    "ad": "I1 vekil koruması yok (Mac)",
-    "test": "66-uzun-kelime-tasmasi.js",
-    "kaynak": "mac",
-    "bul": "        if(k<w.length&&yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
-    "koy": ""
-  },
-  {
-    "ad": "K3 kapalı sayfa gizlenmiyor",
-    "test": "106-klavye-sekme-sirasi.js",
-    "kaynak": "telefon",
-    "bul": "  .sheet{visibility:hidden}\n",
-    "koy": ""
-  },
-  {
-    "ad": "K7 odak kilidi yok",
-    "test": "107-odak-tuzagi.js",
-    "kaynak": "telefon",
-    "bul": "$(id).classList.add('open'); body.classList.add('sheeting');\n  arkayiKilitle();",
-    "koy": "$(id).classList.add('open'); body.classList.add('sheeting');"
-  },
-  {
-    "ad": "L1 Mac yayın notu düğmesi yok",
-    "test": "108-mac-yayin-notu.js",
-    "kaynak": "mac",
-    "bul": "  $('#rrNote').onclick=downloadNote;\n",
-    "koy": ""
-  },
-  {
-    "ad": "L11 Mac listesi blobları taşıyor",
-    "test": "109-mac-arsiv-listesi.js",
-    "kaynak": "mac",
-    "bul": "        const {blob, ...ustveri}=c.value;      // videoyu BIRAK\n        ustveri.videoVar=!!blob;",
-    "koy": "        const ustveri=c.value;\n        ustveri.videoVar=!!ustveri.blob;"
-  },
-  {
-    "ad": "L7 telefon günlüğü geri okumuyor",
-    "test": "110-hata-gunlugu-kalicilik.js",
-    "kaynak": "telefon",
-    "bul": "eskiHatalariGeriYukle();\nfunction logErr",
-    "koy": "function logErr"
-  },
-  {
-    "ad": "L7 Mac günlüğü yazmıyor",
-    "test": "110-hata-gunlugu-kalicilik.js",
-    "kaynak": "mac",
-    "bul": "    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}\n",
-    "koy": ""
-  },
-  {
-    "ad": "L9 sunucu cevapsızken ölü adres",
-    "test": "111-mac-kumanda-paneli-durumu.js",
-    "kaynak": "mac",
-    "bul": "      if(r.ok) bilgi=await r.json();",
-    "koy": "      bilgi=await r.json();"
-  },
-  {
-    "ad": "L10 görünmez karakter temizliği yok (ortak çekirdek — iki kabuk birden)",
-    "test": "112-mac-riskli-bes.js",
-    "kaynak": "metin",
-    "bul": "  .replace(/\\u00AD/g,'')\n",
-    "koy": ""
-  },
-  {
-    "ad": "A0 telefon kabuğu modül betiğine çevrildi",
-    "test": "120-file-protokolu.js",
-    "kaynak": "telefon",
-    "bul": "<script>\n(function(){\n'use strict';",
-    "koy": "<script type=\"module\">\n(function(){\n'use strict';"
-  },
-  {
-    "ad": "A0 telefona CDN bağımlılığı eklendi",
-    "test": "120-file-protokolu.js",
-    "kaynak": "telefon",
-    "bul": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>",
-    "koy": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>\n<link rel=\"stylesheet\" href=\"https://cdn.example.com/a.css\">"
-  },
-  {
-    "ad": "A0 Mac kabuğu modül betiğine çevrildi",
-    "test": "120-file-protokolu.js",
-    "kaynak": "mac",
-    "bul": "<script>\n(function(){\n  const $ = s=>document.querySelector(s);",
-    "koy": "<script type=\"module\">\n(function(){\n  const $ = s=>document.querySelector(s);"
-  },
-  {
-    "ad": "A1 jeton kontrastı AA altına düştü",
-    "test": "121-jetonlar-ve-derleme.js",
-    "kaynak": "jeton",
-    "bul": "--t-low:#868E9E",
-    "koy": "--t-low:#6B7280"
-  },
-  {
-    "ad": "A1 kayıt dolgu/metin rengi birleştirildi",
-    "test": "121-jetonlar-ve-derleme.js",
-    "kaynak": "jeton",
-    "bul": "--r-record-t:#FF4D4F",
-    "koy": "--r-record-t:#D93036"
-  },
-  {
-    "ad": "A2 sözlükte anahtar adı bozuldu (tr/en paritesi kırıldı)",
-    "test": "121-jetonlar-ve-derleme.js",
-    "kaynak": "sozluk",
-    "bul": ",undoDel:'↺ Restore deleted'",
-    "koy": ",undoDelBOZUK:'↺ Restore deleted'"
-  },
-  {
-    "ad": "B4 odak modu geri getirmesi söküldü",
-    "test": "124-odak-modu.js",
-    "kaynak": "telefon",
-    "bul": "  if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */\n",
-    "koy": ""
-  },
-  {
-    "ad": "B4 Mac panelleri kayıttan sonra geri gelmiyor",
-    "test": "124-odak-modu.js",
-    "kaynak": "mac",
-    "bul": "    /* Kayıt öncesi düzene dön (bkz. startRec'teki not). */\n    if(!fullOncesi) app.classList.remove('full');\n",
-    "koy": ""
-  },
-  {
-    "ad": "B5 mod rozeti rAF'a bırakıldı (senkron çağrı söküldü)",
-    "test": "123-tasarim-yuzeyi.js",
-    "kaynak": "telefon",
-    "bul": "  updateHud();\n  raf=requestAnimationFrame(tick);",
-    "koy": "  raf=requestAnimationFrame(tick);"
-  },
-  {
-    "ad": "C2 içe alma mevcut senaryoların üstüne yazıyor (veri kaybı)",
-    "test": "125-cihaz-disi-yedek.js",
-    "kaynak": "telefon",
-    "bul": "      st.scripts=st.scripts.concat(gelen);",
-    "koy": "      st.scripts=gelen;"
-  },
-  {
-    "ad": "D2 kamera seçimi ölü ayara çevrildi (kısıt söküldü)",
-    "test": "126-kamera-secimi.js",
-    "kaynak": "mac",
-    "bul": "state.camId?{deviceId:{exact:state.camId}}:{facingMode:'user'}",
-    "koy": "{facingMode:'user'}"
-  },
-  {
-    "ad": "D2 kilit anahtarı desteksiz cihazda da gösteriliyor (ölü ayar)",
-    "test": "126-kamera-secimi.js",
-    "kaynak": "telefon",
-    "bul": "  $('#lockRow').style.display=hasLock?'flex':'none';",
-    "koy": "  $('#lockRow').style.display='flex';"
-  },
-  {
-    "ad": "D6 boş çıktı korumasi söküldü (çekim eziliyor)",
-    "test": "127-video-budama.js",
-    "kaynak": "mac",
-    "bul": "      if(nb.size<1000) throw new Error('empty');",
-    "koy": ""
-  },
-  {
-    "ad": "D1 docx: eksik document.xml sessizce geçiliyor",
-    "test": "128-docx-ice-aktarma.js",
-    "kaynak": "docx",
-    "bul": "  if(!hedef) throw new Error('document.xml yok');",
-    "koy": ""
-  },
-  {
-    "ad": "D5 yayın kipinde sahne şeffaflığı söküldü (kamerayı örter)",
-    "test": "129-yayin-kipi.js",
-    "kaynak": "mac",
-    "bul": "  body.obs #stageWrap,body.obs #prompt{background:transparent!important}",
-    "koy": ""
-  },
-  {
-    "ad": "D4 önizleme ayarı kapalıyken de kare gönderiliyor (gizlilik)",
-    "test": "130-uzak-onizleme.js",
-    "kaynak": "mac",
-    "bul": "    if(!state.uzakOnizleme || !location.protocol.startsWith('http')) return;",
-    "koy": ""
-  },
-  {
-    "ad": "F4 gizlilik metni ekranda boş kalıyor",
-    "test": "131-magaza-hazirlik.js",
-    "kaynak": "telefon",
-    "bul": "  $('#privBody').innerHTML=PRIV[L];",
-    "koy": ""
-  },
-  {
-    "ad": "F6 JSON-LD'ye olmayan özellik yazıldı (abartma)",
-    "test": "133-seo-vitrin.js",
-    "kaynak": "telefon",
-    "bul": "\"Word dosyası içe aktarma\"",
-    "koy": "\"Yapay zeka senaryo yazarı\""
-  },
-  {
-    "ad": "A2 Mac etiketi sözlükten koparıldı (i18n kapsamı düşer)",
-    "test": "122-mac-i18n-kapsami.js",
-    "kaynak": "mac",
-    "bul": "<span data-i18n=\"mSwEye\">Göz çizgisi</span>",
-    "koy": "<span>Göz çizgisi</span>"
-  },
-  {
-    "ad": "F4 mağaza metnine olmayan özellik yazıldı (abartma)",
-    "test": "132-magaza-metni.js",
-    "kaynak": "magaza",
-    "bul": "Arayüz Türkçe ve İngilizce.",
-    "koy": "Yapay zekâ senaryo yazarı ve bulut senkron dahildir. Arayüz Türkçe ve İngilizce."
-  },
-  {
-    "ad": "B kumanda çubuğu sabit piksele döndü (dar telefonda taşar)",
-    "test": "134-kumanda-cubugu-sigiyor.js",
-    "kaynak": "telefon",
-    "bul": "  .cbtn{width:var(--cb,54px);height:var(--cb,54px)",
-    "koy": "  .cbtn{width:54px;height:54px"
-  },
-  {
-    "ad": "B çubuğa sekizinci düğme eklendi (hesap tutmaz)",
-    "test": "134-kumanda-cubugu-sigiyor.js",
-    "kaynak": "telefon",
-    "bul": "<button class=\"cbtn\" id=\"playBtn\"",
-    "koy": "<button class=\"cbtn\" id=\"fazlaBtn\" aria-label=\"fazla\">x</button>\n  <button class=\"cbtn\" id=\"playBtn\""
-  },
-  {
-    "ad": "B çubuk satır kıramaz oldu (son emniyet söküldü)",
-    "test": "134-kumanda-cubugu-sigiyor.js",
-    "kaynak": "telefon",
-    "bul": "justify-content:space-between;flex-wrap:wrap;",
-    "koy": "justify-content:space-between;flex-wrap:nowrap;"
-  },
-  {
-    "ad": "F6 vitrine olmayan özellik yazıldı (abartma)",
-    "test": "135-vitrin-sayfasi.js",
-    "kaynak": "vitrin",
-    "bul": "<h3 data-i=\"k6b\">Kendi metinlerinle çalış</h3>",
-    "koy": "<h3 data-i=\"k6b\">PDF ve bulut senkron</h3>"
-  },
-  {
-    "ad": "F6 vitrine CDN yazı tipi eklendi (sıfır bağımlılık sözü kırılır)",
-    "test": "135-vitrin-sayfasi.js",
-    "kaynak": "vitrin",
-    "bul": "<link rel=\"icon\" href=\"icon-192.png\">",
-    "koy": "<link rel=\"icon\" href=\"icon-192.png\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Inter\">"
-  },
-  {
-    "ad": "F6 vitrinde sesle takip istisnası saklandı (yanlış beyan)",
-    "test": "135-vitrin-sayfasi.js",
-    "kaynak": "vitrin",
-    "bul": " gxB:['Tek istisna: sesle takip.','The one exception: voice follow.'],",
-    "koy": " gxB:['Hicbir veri cihazdan cikmaz.','Nothing ever leaves your device.'],"
-  },
-  {
-    "ad": "F6 vitrine ulasan bağlantı söküldü (ölü sayfa)",
-    "test": "135-vitrin-sayfasi.js",
-    "kaynak": "telefon",
-    "bul": "<a href=\"tanitim.html\" target=\"_blank\" rel=\"noopener\">sufle tanıtım</a>",
-    "koy": "sufle tanıtım"
-  },
-  {
-    "ad": "C3 telefonda yapışkan başlık söküldü (uzun listede arama kaybolur)",
-    "test": "136-buyuk-kutuphane.js",
-    "kaynak": "telefon",
-    "bul": "  #scHead{position:sticky;top:0;",
-    "koy": "  #scHead{position:static;top:0;"
-  },
-  {
-    "ad": "C3 Macte arama kutusu olaya bağlı değil (ölü kutu)",
-    "test": "136-buyuk-kutuphane.js",
-    "kaynak": "mac",
-    "bul": "  $('#scriptFind').oninput=()=>renderScripts();\n",
-    "koy": ""
-  },
-  {
-    "ad": "C3 Mac araması düz küçültmeye döndü (Türkçe eşleşmez)",
-    "test": "136-buyuk-kutuphane.js",
-    "kaynak": "mac",
-    "bul": "      ? state.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))",
-    "koy": "      ? state.scripts.filter(s=>(s.title||'').toLowerCase().includes(q))"
-  },
-  {
-    "ad": "C3 kutu gizlenirken süzgeç temizlenmiyor (senaryolar görünmez olur)",
-    "test": "136-buyuk-kutuphane.js",
-    "kaynak": "mac",
-    "bul": "    if(!uzun) kutu.value='';\n",
-    "koy": ""
-  },
-  {
-    "ad": "E4 sesle bayrağı hep kapalı (rapor sessizce boş kalır)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "telefon",
-    "bul": "  cekimSesle=voiceOn;   // E.4",
-    "koy": "  cekimSesle=false;   // E.4"
-  },
-  {
-    "ad": "E4 rapor sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "telefon",
-    "bul": "  } else {\n    /* Sesle takip kapalıydı: damgalar suflenin kendi akışını gösterir. */\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
-    "koy": "  } else {\n    h+=sat(tr?'Gerçek hız':'Actual pace', r.wpm+' wpm');\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
-  },
-  {
-    "ad": "E4 az kelimede de rapor üretiliyor (yanıltıcı istatistik)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "prova",
-    "bul": "  if(okunan.length<12) return null;",
-    "koy": "  if(okunan.length<0) return null;"
-  },
-  {
-    "ad": "E4 rapor sonuç ekranına bağlı değil (ölü kod)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "telefon",
-    "bul": "  provaYaz();                         // E.4",
-    "koy": "  // provaYaz();                      // E.4"
-  },
-  {
-    "ad": "E4 Macte rapor sonuç ekranına bağlı değil (yarım özellik)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "mac",
-    "bul": "    provaYaz();                         // E.4",
-    "koy": "    // provaYaz();                    // E.4"
-  },
-  {
-    "ad": "E4 Macte sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
-    "test": "137-prova-raporu.js",
-    "kaynak": "mac",
-    "bul": "    } else {\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
-    "koy": "    } else {\n      h+=sat('Gerçek hız', r.wpm+' wpm');\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
-  },
-  {
-    "ad": "E4 Mac altyazısı anlık görüntü yerine canlı metinden üretiliyor",
-    "test": "137-prova-raporu.js",
-    "kaynak": "mac",
-    "bul": "    const kaynak = cekimAltyazi\n      ? cekimAltyazi\n      : words.map",
-    "koy": "    const kaynak = false\n      ? cekimAltyazi\n      : words.map"
-  },
-  {
-    "ad": "B2 Mac readyBtn'e data-i18n geri kondu (applyLang ikonu siler)",
-    "test": "123-tasarim-yuzeyi.js",
-    "kaynak": "mac",
-    "bul": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\">",
-    "koy": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\" data-i18n=\"mReady\">"
-  },
-  {
-    "ad": "B2 Mac sesle etiketi düğmeye doğrudan yazılıyor (ikon silinir)",
-    "test": "123-tasarim-yuzeyi.js",
-    "kaynak": "mac",
-    "bul": "$('#voiceLbl').textContent=t('mVoiceOn');",
-    "koy": "$('#voiceBtn').textContent='🎤 Ses: Açık';"
-  },
-  {
-    "ad": "B2 Mac krom düğmesi emojiye döndü",
-    "test": "123-tasarim-yuzeyi.js",
-    "kaynak": "mac",
-    "bul": "data-aria=\"settings\"><svg class=\"ic\" aria-hidden=\"true\"><use href=\"#i-ayarlar\"/></svg>",
-    "koy": "data-aria=\"settings\">⚙︎"
-  },
-  {
-    "ad": "B2 dil değişince çalışma zamanı etiketi tazelenmiyor",
-    "test": "123-tasarim-yuzeyi.js",
-    "kaynak": "mac",
-    "bul": "    const vl=$('#voiceLbl'); if(vl) vl.textContent=t(voiceOn?'mVoiceOn':'mVoiceIdle');\n",
-    "koy": ""
-  },
-  {
-    "ad": "i18n Mac karşılama penceresi dil değişince tazelenmiyor",
-    "test": "119-mac-donduran-diyalog.js",
-    "kaynak": "mac",
-    "bul": "    bilgiTazele();          // açık kip penceresi de dille yenilensin\n",
-    "koy": ""
-  },
-  {
-    "ad": "i18n Mac karşılama metni sabit Türkçeye döndü",
-    "test": "119-mac-donduran-diyalog.js",
-    "kaynak": "mac",
-    "bul": "if(ilk) bilgiGosterK('mDlgWelcome', 'mDlgWelcomeBody');",
-    "koy": "if(ilk) bilgiGoster('Sufleye hoş geldin', 'metnini yapıştır');"
-  },
-  {
-    "ad": "i18n telefon karşılama sayfası dil değişince tazelenmiyor",
-    "test": "25-surum-notu-gosterimi.js",
-    "kaynak": "telefon",
-    "bul": "  newsYaz();               // açık karşılama/sürüm notu sayfası\n",
-    "koy": ""
-  },
-  {
-    "ad": "i18n telefon karşılama metni tek dile indi",
-    "test": "25-surum-notu-gosterimi.js",
-    "kaynak": "telefon",
-    "bul": "function onbGovde(){ return L==='tr'",
-    "koy": "function onbGovde(){ return true"
-  },
-  {
-    "ad": "B1 tipografi ölçeği tekrar ölü jetona döndü (telefon)",
-    "test": "121-jetonlar-ve-derleme.js",
-    "kaynak": "telefon",
-    "bul": ".hint{font-size:var(--tx-xs)",
-    "koy": ".hint{font-size:11.5px"
-  },
-  {
-    "ad": "B1 yarım piksellik punto geri geldi (Mac)",
-    "test": "121-jetonlar-ve-derleme.js",
-    "kaynak": "mac",
-    "bul": "  .scriptItem .meta{font-size:var(--tx-xs)",
-    "koy": "  .scriptItem .meta{font-size:11.5px"
-  },
-  {
-    "ad": "D3 Macte pedal tuşu düştü (sunum kumandası sessizce ölür)",
-    "test": "138-kumanda-tuslari.js",
-    "kaynak": "mac",
-    "bul": "'PageDown':'toggle',",
-    "koy": ""
-  },
-  {
-    "ad": "D3 telefonda çift basış ayrımı söküldü (pedal yarım kalır)",
-    "test": "138-kumanda-tuslari.js",
-    "kaynak": "telefon",
-    "bul": "<button data-tap=\"2\" data-i18n=\"tap2\">Çift basış</button>",
-    "koy": ""
-  },
-  {
-    "ad": "D3 Macte yazı kutusundayken kısayol tetikleniyor",
-    "test": "138-kumanda-tuslari.js",
-    "kaynak": "mac",
-    "bul": "    if(tag==='TEXTAREA'||tag==='INPUT') return;\n    /* ÖĞRENME MODU EN ÖNDE",
-    "koy": "    /* ÖĞRENME MODU EN ÖNDE"
-  },
-  {
-    "ad": "D3 Macte öğrenme modu dağıtımdan SONRA (Escape gönderen kumanda öğretilemez)",
-    "test": "139-mac-tus-ogretme.js",
-    "kaynak": "mac",
-    "bul": "    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }\n    const act=macEsleme()[e.key];",
-    "koy": "    const act=macEsleme()[e.key];\n    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }"
-  },
-  {
-    "ad": "D3 Macte öğrenilen eşleme kaydedilmiyor (oturumda kaybolur)",
-    "test": "139-mac-tus-ogretme.js",
-    "kaynak": "mac",
-    "bul": "    state.tusEsleme=y; save();\n    toast(t('mLearned')",
-    "koy": "    state.tusEsleme=y;\n    toast(t('mLearned')"
-  },
-  {
-    "ad": "D3 varsayılan tablodan sunum kumandası tuşu düştü",
-    "test": "139-mac-tus-ogretme.js",
-    "kaynak": "mac",
-    "bul": "'PageUp':'prevLine', ",
-    "koy": ""
-  },
-  {
-    "ad": "D3 çekirdek süzgeci uydurma eylemi geçiriyor (ölü tuş)",
-    "test": "139-mac-tus-ogretme.js",
-    "kaynak": "kumanda",
-    "bul": "    if (typeof a === 'string' && KUMANDA_EYLEMLERI.has(a)) temiz[k] = a;",
-    "koy": "    if (typeof a === 'string') temiz[k] = a;"
-  },
-  {
-    "ad": "D3 çekirdek birleştirici varsayılan tabloyu bozuyor",
-    "test": "139-mac-tus-ogretme.js",
-    "kaynak": "kumanda",
-    "bul": "  return Object.assign({}, varsayilan || {}, ogrenilen || {});",
-    "koy": "  return Object.assign(varsayilan || {}, ogrenilen || {});"
-  },
-  {
-    "ad": "A3 telefon metin çekirdeğinden koptu (araçlar yine ayrışır)",
-    "test": "112-mac-riskli-bes.js",
-    "kaynak": "telefon",
-    "bul": "/* ==CEKIRDEK:metin.js== */",
-    "koy": "/* ==CEKIRDEKSIZ:metin.js== */"
-  },
-  {
-    "ad": "A3 çekirdekte cümle sonu kısaltma listesi boşaltıldı",
-    "test": "45-cumle-sonu.js",
-    "kaynak": "metin",
-    "bul": "'vb','vs','vd'",
-    "koy": "'zzz'"
-  },
-  {
-    "ad": "A4 Macte tuvale çizerek kayıt söküldü (parite kırılır)",
-    "test": "15-platform-paritesi.js",
-    "kaynak": "mac",
-    "bul": "cropCv=document.createElement('canvas')",
-    "koy": "cropCvYok=document.createElement('canvas')"
-  },
-  {
-    "ad": "A4 çekirdek sınır dışı indeksi kabul ediyor (yanlış satır işaretlenir)",
-    "test": "140-zorlanma-haritasi.js",
-    "kaynak": "zorlanma",
-    "bul": "  if(kelimeSayisi != null && idx >= kelimeSayisi) return false;\n",
-    "koy": ""
-  },
-  {
-    "ad": "A4 çekirdek ağırlıkları düzleşti (duraklama = geri sarma)",
-    "test": "140-zorlanma-haritasi.js",
-    "kaynak": "zorlanma",
-    "bul": "    r.total = r.s * 2 + r.b * 2 + r.p;",
-    "koy": "    r.total = r.s + r.b + r.p;"
-  },
-  {
-    "ad": "A4 Macte duraklatma sinyali stop() içine kaydı (her çekim zorlanma sayılır)",
-    "test": "140-zorlanma-haritasi.js",
-    "kaynak": "mac",
-    "bul": "    if(running){ macMarkDiff('pause', activeIdx); stop(); return; }",
-    "koy": "    if(running){ stop(); return; }"
-  },
-  {
-    "ad": "A4 Macte harita dolduğu hâlde çizilmiyor (kullanıcı hiç göremez)",
-    "test": "140-zorlanma-haritasi.js",
-    "kaynak": "mac",
-    "bul": "{ save(); macDiffCiz(); }",
-    "koy": "{ save(); }"
-  },
-  {
-    "ad": "A4 Macte sesle yavaşlama kancası söküldü",
-    "test": "140-zorlanma-haritasi.js",
-    "kaynak": "mac",
-    "bul": "      if(dts>0.35 && dw<=6 && (dw/dts*60) < state.speed*0.6) macMarkDiff('slow', wi);\n",
-    "koy": ""
-  },
-  {
-    "ad": "T49 sonuç ekranı dil değişiminde tazelenmiyor",
-    "test": "137-prova-raporu.js",
-    "kaynak": "telefon",
-    "bul": "  if($('#result') && getComputedStyle($('#result')).display!=='none') sonucTazele();\n",
-    "koy": ""
-  },
-  {
-    "ad": "T49 paylaşım tanısı sabit Türkçeye döndü",
-    "test": "137-prova-raporu.js",
-    "kaynak": "telefon",
-    "bul": "(L==='tr'?'kompozit':'composite')",
-    "koy": "('kompozit')"
-  },
-  {
-    "ad": "F1 iOS ölçümünün dürüstlük sınırı silindi (varlık = çalışan tanıma sanılır)",
-    "test": "132-magaza-metni.js",
-    "kaynak": "magaza_teknik",
-    "bul": "**Dürüstlük sınırı:** ölçülen şey API'nin VARLIĞI",
-    "koy": "**Kesin sonuç:** her şey çalışıyor"
-  },
-  {
-    "ad": "F1 iOS ölçüm sonucu belgeden silindi (engel geri gelir)",
-    "test": "132-magaza-metni.js",
-    "kaynak": "magaza_teknik",
-    "bul": "## ✅ ENGEL KALKTI",
-    "koy": "## Ölçülmedi"
-  },
-  {
-    "ad": "F5 fiyat belgesi kendi yerine karar veriyor (ölçüm ile seçim karışır)",
-    "test": "141-fiyatlandirma.js",
-    "kaynak": "fiyat",
-    "bul": "**Durum:** karar Erdal'ın. Bu belge **karar vermiyor**, kararın zeminini ölçüyor.",
-    "koy": "**Durum:** fiyat aylık 99 TL olacak."
-  },
-  {
-    "ad": "F5 uygulanamazlık gerekçesi belgeden silindi",
-    "test": "141-fiyatlandirma.js",
-    "kaynak": "fiyat",
-    "bul": "## Ölçüm 2 — İstemci tarafı ödeme duvarı UYGULANAMAZ",
-    "koy": "## Ölçüm 2 — Ödeme duvarı"
-  },
-  {
-    "ad": "F5 kodda ödeme duvarı belirdi (ücretsiz sözü yalan olur)",
-    "test": "141-fiyatlandirma.js",
-    "kaynak": "telefon",
-    "bul": "function openTrim(){",
-    "koy": "function openTrim(){ if(!window.isPremium) return;"
-  },
-  {
-    "ad": "T54 sessiz ölüm nöbetçisi söküldü (kullanıcı sebebini göremez)",
-    "test": "142-sesle-takip-nobetcisi.js",
-    "kaynak": "telefon",
-    "bul": "  sesGeldi=false; clearTimeout(sessizNobet);\n",
-    "koy": ""
-  },
-  {
-    "ad": "T54 sonuç gelince nöbetçi susmuyor (çalışırken hata basar)",
-    "test": "142-sesle-takip-nobetcisi.js",
-    "kaynak": "telefon",
-    "bul": "    sesGeldi=true; clearTimeout(sessizNobet); sessizNobet=null;\n",
-    "koy": ""
-  },
-  {
-    "ad": "T54 nöbetçi kamerayı ayırt etmiyor (yanlış yere yönlendirir)",
-    "test": "142-sesle-takip-nobetcisi.js",
-    "kaynak": "telefon",
-    "bul": "toast(kamera ? m('voiceSilentCam') : m('voiceSilent'));",
-    "koy": "toast(m('voiceSilent'));"
-  },
-  {
-    "ad": "T54 iOS ses ölçer koruması kalktı (mikrofonu Web Audio tutar)",
-    "test": "142-sesle-takip-nobetcisi.js",
-    "kaynak": "telefon",
-    "bul": "if(!IS_WK){ micTouched=true; startAudioMonitor(); }",
-    "koy": "if(true){ micTouched=true; startAudioMonitor(); }"
-  },
-  {
-    "ad": "T55 yüzeyler tek kaynaktan koparıldı (jetonlar.css yine ölü ayar olur)",
-    "test": "143-tasarim-kimligi.js",
-    "kaynak": "telefon",
-    "bul": "--card:var(--s-raised)",
-    "koy": "--card:#1e1e24"
-  },
-  {
-    "ad": "T55 basış geri bildirimi söküldü (dokunulan şey tepki vermez)",
-    "test": "143-tasarim-kimligi.js",
-    "kaynak": "telefon",
-    "bul": "transform:scale(var(--bas));box-shadow:none}",
-    "koy": "box-shadow:none}"
-  },
-  {
-    "ad": "T55 kaydırıcı dolgusu ham değerden hesaplanıyor (min sıfır değilse hiç boşalmaz)",
-    "test": "143-tasarim-kimligi.js",
-    "kaynak": "telefon",
-    "bul": "const o=mx>mn ? (v-mn)/(mx-mn)*100 : 0;",
-    "koy": "const o=mx>0 ? v/mx*100 : 0;"
-  },
-  {
-    "ad": "T55 dolgu yalnız sürüklerken tazeleniyor (hazır kurulum sonrası eski oranda kalır)",
-    "test": "143-tasarim-kimligi.js",
-    "kaynak": "telefon",
-    "bul": "  railHepsi();          // değerler programla da değişiyor; her açılışta tazele\n",
-    "koy": ""
-  },
-  {
-    "ad": "T55 sözlüğe süs emojisi geri geldi (iki platform ayrışır)",
-    "test": "143-tasarim-kimligi.js",
-    "kaynak": "telefon",
-    "bul": "tabRead:'Okuma'",
-    "koy": "tabRead:'🎯 Okuma'"
-  },
-  {
-    "ad": "T55 rekabet belgesi kendi sınırını gizledi (tahmin ölçüm sanılır)",
-    "test": "144-rekabet-olcumu.js",
-    "kaynak": "rekabet",
-    "bul": "hâlâ tahmin",
-    "koy": "hepsi ölçüldü"
-  },
-  {
-    "ad": "T55 sunucusuz tavan iddiası belgeden silindi (karar dayanaksız kalır)",
-    "test": "144-rekabet-olcumu.js",
-    "kaynak": "rekabet",
-    "bul": "**81,9**",
-    "koy": "**yüksek**"
-  }
+ {
+  "ad": "K8 anahtar satıra bağlı değil",
+  "test": "95-dokunma-hedefi.js",
+  "kaynak": "telefon",
+  "bul": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px",
+  "koy": ".tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0"
+ },
+ {
+  "ad": "F1 ışık aralığı sıklaştı",
+  "test": "96-isik-ornekleme-maliyeti.js",
+  "kaynak": "telefon",
+  "bul": "  },20000);\n  body.classList.add('rec');",
+  "koy": "  },2000);\n  body.classList.add('rec');"
+ },
+ {
+  "ad": "G1 fps koruması kalktı",
+  "test": "97-kompozit-fps-olcumu.js",
+  "kaynak": "telefon",
+  "bul": "if(compFps.son && nowF-compFps.son>1000){ compFps.n=1; compFps.t0=nowF; }",
+  "koy": ""
+ },
+ {
+  "ad": "G4 arka plan oranı bozuk",
+  "test": "98-arka-plan-orani.js",
+  "kaynak": "telefon",
+  "bul": "  const k=Math.min(1, 1920/Math.max(W,H), 1080/Math.min(W,H));",
+  "koy": "  const k=1;"
+ },
+ {
+  "ad": "G5 dosya boyutu kapısı yok",
+  "test": "99-arka-plan-bellek.js",
+  "kaynak": "telefon",
+  "bul": "  if(f.size>25*1024*1024){ toast(m('bgDosyaBuyuk')); return; }\n",
+  "koy": ""
+ },
+ {
+  "ad": "G7 gölgelendirici silinmiyor",
+  "test": "100-kompozit-kaynak-birakma.js",
+  "kaynak": "telefon",
+  "bul": "  gl.deleteShader(vs); gl.deleteShader(fs);\n",
+  "koy": ""
+ },
+ {
+  "ad": "G10 çift altyazı uyarısı yok",
+  "test": "101-kompozit-paket-video-turu.js",
+  "kaynak": "telefon",
+  "bul": "    ...(lastPath && lastPath.burn ? ['',",
+  "koy": "    ...(false ? ['',"
+ },
+ {
+  "ad": "H9 chunks ikinci kopya kalıyor",
+  "test": "102-uzun-kayit-bellek.js",
+  "kaynak": "telefon",
+  "bul": "    chunks=[];   // Blob veriyi devraldı",
+  "koy": "    // chunks=[];   // Blob veriyi devraldı"
+ },
+ {
+  "ad": "I2 altyazı önbelleği yok",
+  "test": "103-gomulu-altyazi-maliyeti.js",
+  "kaynak": "telefon",
+  "bul": "capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size",
+  "koy": "capOnbellek.txt===txt && capOnbellek.size===size"
+ },
+ {
+  "ad": "J1 arşiv güncellemesi iki işlem",
+  "test": "104-arsiv-guncelleme.js",
+  "kaynak": "telefon",
+  "bul": "    const tx=d.transaction('takes','readwrite');\n    const q=tx.objectStore('takes').openCursor(id);",
+  "koy": "    const tx=d.transaction('takes');\n    const q=tx.objectStore('takes').openCursor(id);"
+ },
+ {
+  "ad": "J4 sürüm etiketi yok",
+  "test": "105-paket-surum-etiketi.js",
+  "kaynak": "telefon",
+  "bul": "    ...(cekimSenaryo && cekimSenaryo.ikiSurumlu ? [",
+  "koy": "    ...(false ? ["
+ },
+ {
+  "ad": "I1 vekil koruması yok (telefon)",
+  "test": "66-uzun-kelime-tasmasi.js",
+  "kaynak": "telefon",
+  "bul": "      if(k<w.length && yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
+  "koy": ""
+ },
+ {
+  "ad": "I1 vekil koruması yok (Mac)",
+  "test": "66-uzun-kelime-tasmasi.js",
+  "kaynak": "mac",
+  "bul": "        if(k<w.length&&yuksekVekil(w.charCodeAt(k-1))) k=(k>=2?k-1:2);\n",
+  "koy": ""
+ },
+ {
+  "ad": "K3 kapalı sayfa gizlenmiyor",
+  "test": "106-klavye-sekme-sirasi.js",
+  "kaynak": "telefon",
+  "bul": "  .sheet{visibility:hidden}\n",
+  "koy": ""
+ },
+ {
+  "ad": "K7 odak kilidi yok",
+  "test": "107-odak-tuzagi.js",
+  "kaynak": "telefon",
+  "bul": "$(id).classList.add('open'); body.classList.add('sheeting');\n  arkayiKilitle();",
+  "koy": "$(id).classList.add('open'); body.classList.add('sheeting');"
+ },
+ {
+  "ad": "L1 Mac yayın notu düğmesi yok",
+  "test": "108-mac-yayin-notu.js",
+  "kaynak": "mac",
+  "bul": "  $('#rrNote').onclick=downloadNote;\n",
+  "koy": ""
+ },
+ {
+  "ad": "L11 Mac listesi blobları taşıyor",
+  "test": "109-mac-arsiv-listesi.js",
+  "kaynak": "mac",
+  "bul": "        const {blob, ...ustveri}=c.value;      // videoyu BIRAK\n        ustveri.videoVar=!!blob;",
+  "koy": "        const ustveri=c.value;\n        ustveri.videoVar=!!ustveri.blob;"
+ },
+ {
+  "ad": "L7 telefon günlüğü geri okumuyor",
+  "test": "110-hata-gunlugu-kalicilik.js",
+  "kaynak": "telefon",
+  "bul": "eskiHatalariGeriYukle();\nfunction logErr",
+  "koy": "function logErr"
+ },
+ {
+  "ad": "L7 Mac günlüğü yazmıyor",
+  "test": "110-hata-gunlugu-kalicilik.js",
+  "kaynak": "mac",
+  "bul": "    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}\n",
+  "koy": ""
+ },
+ {
+  "ad": "L9 sunucu cevapsızken ölü adres",
+  "test": "111-mac-kumanda-paneli-durumu.js",
+  "kaynak": "mac",
+  "bul": "      if(r.ok) bilgi=await r.json();",
+  "koy": "      bilgi=await r.json();"
+ },
+ {
+  "ad": "L10 görünmez karakter temizliği yok (ortak çekirdek — iki kabuk birden)",
+  "test": "112-mac-riskli-bes.js",
+  "kaynak": "metin",
+  "bul": "  .replace(/\\u00AD/g,'')\n",
+  "koy": ""
+ },
+ {
+  "ad": "A0 telefon kabuğu modül betiğine çevrildi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "telefon",
+  "bul": "<script>\n(function(){\n'use strict';",
+  "koy": "<script type=\"module\">\n(function(){\n'use strict';"
+ },
+ {
+  "ad": "A0 telefona CDN bağımlılığı eklendi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "telefon",
+  "bul": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>",
+  "koy": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>\n<link rel=\"stylesheet\" href=\"https://cdn.example.com/a.css\">"
+ },
+ {
+  "ad": "A0 Mac kabuğu modül betiğine çevrildi",
+  "test": "120-file-protokolu.js",
+  "kaynak": "mac",
+  "bul": "<script>\n(function(){\n  const $ = s=>document.querySelector(s);",
+  "koy": "<script type=\"module\">\n(function(){\n  const $ = s=>document.querySelector(s);"
+ },
+ {
+  "ad": "A1 jeton kontrastı AA altına düştü",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "jeton",
+  "bul": "--t-low:#868E9E",
+  "koy": "--t-low:#6B7280"
+ },
+ {
+  "ad": "A1 kayıt dolgu/metin rengi birleştirildi",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "jeton",
+  "bul": "--r-record-t:#FF4D4F",
+  "koy": "--r-record-t:#D93036"
+ },
+ {
+  "ad": "A2 sözlükte anahtar adı bozuldu (tr/en paritesi kırıldı)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "sozluk",
+  "bul": ",undoDel:'↺ Restore deleted'",
+  "koy": ",undoDelBOZUK:'↺ Restore deleted'"
+ },
+ {
+  "ad": "B4 odak modu geri getirmesi söküldü",
+  "test": "124-odak-modu.js",
+  "kaynak": "telefon",
+  "bul": "  if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */\n",
+  "koy": ""
+ },
+ {
+  "ad": "B4 Mac panelleri kayıttan sonra geri gelmiyor",
+  "test": "124-odak-modu.js",
+  "kaynak": "mac",
+  "bul": "    /* Kayıt öncesi düzene dön (bkz. startRec'teki not). */\n    if(!fullOncesi) app.classList.remove('full');\n",
+  "koy": ""
+ },
+ {
+  "ad": "B5 mod rozeti rAF'a bırakıldı (senkron çağrı söküldü)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "telefon",
+  "bul": "  updateHud();\n  raf=requestAnimationFrame(tick);",
+  "koy": "  raf=requestAnimationFrame(tick);"
+ },
+ {
+  "ad": "C2 içe alma mevcut senaryoların üstüne yazıyor (veri kaybı)",
+  "test": "125-cihaz-disi-yedek.js",
+  "kaynak": "telefon",
+  "bul": "      st.scripts=st.scripts.concat(gelen);",
+  "koy": "      st.scripts=gelen;"
+ },
+ {
+  "ad": "D2 kamera seçimi ölü ayara çevrildi (kısıt söküldü)",
+  "test": "126-kamera-secimi.js",
+  "kaynak": "mac",
+  "bul": "state.camId?{deviceId:{exact:state.camId}}:{facingMode:'user'}",
+  "koy": "{facingMode:'user'}"
+ },
+ {
+  "ad": "D2 kilit anahtarı desteksiz cihazda da gösteriliyor (ölü ayar)",
+  "test": "126-kamera-secimi.js",
+  "kaynak": "telefon",
+  "bul": "  $('#lockRow').style.display=hasLock?'flex':'none';",
+  "koy": "  $('#lockRow').style.display='flex';"
+ },
+ {
+  "ad": "D6 boş çıktı korumasi söküldü (çekim eziliyor)",
+  "test": "127-video-budama.js",
+  "kaynak": "mac",
+  "bul": "      if(nb.size<1000) throw new Error('empty');",
+  "koy": ""
+ },
+ {
+  "ad": "D1 docx: eksik document.xml sessizce geçiliyor",
+  "test": "128-docx-ice-aktarma.js",
+  "kaynak": "docx",
+  "bul": "  if(!hedef) throw new Error('document.xml yok');",
+  "koy": ""
+ },
+ {
+  "ad": "D5 yayın kipinde sahne şeffaflığı söküldü (kamerayı örter)",
+  "test": "129-yayin-kipi.js",
+  "kaynak": "mac",
+  "bul": "  body.obs #stageWrap,body.obs #prompt{background:transparent!important}",
+  "koy": ""
+ },
+ {
+  "ad": "D4 önizleme ayarı kapalıyken de kare gönderiliyor (gizlilik)",
+  "test": "130-uzak-onizleme.js",
+  "kaynak": "mac",
+  "bul": "    if(!state.uzakOnizleme || !location.protocol.startsWith('http')) return;",
+  "koy": ""
+ },
+ {
+  "ad": "F4 gizlilik metni ekranda boş kalıyor",
+  "test": "131-magaza-hazirlik.js",
+  "kaynak": "telefon",
+  "bul": "  $('#privBody').innerHTML=PRIV[L];",
+  "koy": ""
+ },
+ {
+  "ad": "F6 JSON-LD'ye olmayan özellik yazıldı (abartma)",
+  "test": "133-seo-vitrin.js",
+  "kaynak": "telefon",
+  "bul": "\"Word dosyası içe aktarma\"",
+  "koy": "\"Yapay zeka senaryo yazarı\""
+ },
+ {
+  "ad": "A2 Mac etiketi sözlükten koparıldı (i18n kapsamı düşer)",
+  "test": "122-mac-i18n-kapsami.js",
+  "kaynak": "mac",
+  "bul": "<span data-i18n=\"mSwEye\">Göz çizgisi</span>",
+  "koy": "<span>Göz çizgisi</span>"
+ },
+ {
+  "ad": "F4 mağaza metnine olmayan özellik yazıldı (abartma)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza",
+  "bul": "Arayüz Türkçe ve İngilizce.",
+  "koy": "Yapay zekâ senaryo yazarı ve bulut senkron dahildir. Arayüz Türkçe ve İngilizce."
+ },
+ {
+  "ad": "B kumanda çubuğu sabit piksele döndü (dar telefonda taşar)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  .cbtn{width:var(--cb,54px);height:var(--cb,54px)",
+  "koy": "  .cbtn{width:54px;height:54px"
+ },
+ {
+  "ad": "B çubuğa sekizinci düğme eklendi (hesap tutmaz)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "<button class=\"cbtn\" id=\"playBtn\"",
+  "koy": "<button class=\"cbtn\" id=\"fazlaBtn\" aria-label=\"fazla\">x</button>\n  <button class=\"cbtn\" id=\"playBtn\""
+ },
+ {
+  "ad": "B çubuk satır kıramaz oldu (son emniyet söküldü)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "justify-content:space-between;flex-wrap:wrap;",
+  "koy": "justify-content:space-between;flex-wrap:nowrap;"
+ },
+ {
+  "ad": "F6 vitrine olmayan özellik yazıldı (abartma)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": "<h3 data-i=\"k6b\">Kendi metinlerinle çalış</h3>",
+  "koy": "<h3 data-i=\"k6b\">PDF ve bulut senkron</h3>"
+ },
+ {
+  "ad": "F6 vitrine CDN yazı tipi eklendi (sıfır bağımlılık sözü kırılır)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": "<link rel=\"icon\" href=\"icon-192.png\">",
+  "koy": "<link rel=\"icon\" href=\"icon-192.png\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Inter\">"
+ },
+ {
+  "ad": "F6 vitrinde sesle takip istisnası saklandı (yanlış beyan)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "vitrin",
+  "bul": " gxB:['Tek istisna: sesle takip.','The one exception: voice follow.'],",
+  "koy": " gxB:['Hicbir veri cihazdan cikmaz.','Nothing ever leaves your device.'],"
+ },
+ {
+  "ad": "F6 vitrine ulasan bağlantı söküldü (ölü sayfa)",
+  "test": "135-vitrin-sayfasi.js",
+  "kaynak": "telefon",
+  "bul": "<a href=\"tanitim.html\" target=\"_blank\" rel=\"noopener\">sufle tanıtım</a>",
+  "koy": "sufle tanıtım"
+ },
+ {
+  "ad": "C3 telefonda yapışkan başlık söküldü (uzun listede arama kaybolur)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "telefon",
+  "bul": "  #scHead{position:sticky;top:0;",
+  "koy": "  #scHead{position:static;top:0;"
+ },
+ {
+  "ad": "C3 Macte arama kutusu olaya bağlı değil (ölü kutu)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "  $('#scriptFind').oninput=()=>renderScripts();\n",
+  "koy": ""
+ },
+ {
+  "ad": "C3 Mac araması düz küçültmeye döndü (Türkçe eşleşmez)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "      ? state.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))",
+  "koy": "      ? state.scripts.filter(s=>(s.title||'').toLowerCase().includes(q))"
+ },
+ {
+  "ad": "C3 kutu gizlenirken süzgeç temizlenmiyor (senaryolar görünmez olur)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "    if(!uzun) kutu.value='';\n",
+  "koy": ""
+ },
+ {
+  "ad": "E4 sesle bayrağı hep kapalı (rapor sessizce boş kalır)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  cekimSesle=voiceOn;   // E.4",
+  "koy": "  cekimSesle=false;   // E.4"
+ },
+ {
+  "ad": "E4 rapor sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  } else {\n    /* Sesle takip kapalıydı: damgalar suflenin kendi akışını gösterir. */\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
+  "koy": "  } else {\n    h+=sat(tr?'Gerçek hız':'Actual pace', r.wpm+' wpm');\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
+ },
+ {
+  "ad": "E4 az kelimede de rapor üretiliyor (yanıltıcı istatistik)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "prova",
+  "bul": "  if(okunan.length<12) return null;",
+  "koy": "  if(okunan.length<0) return null;"
+ },
+ {
+  "ad": "E4 rapor sonuç ekranına bağlı değil (ölü kod)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  provaYaz();                         // E.4",
+  "koy": "  // provaYaz();                      // E.4"
+ },
+ {
+  "ad": "E4 Macte rapor sonuç ekranına bağlı değil (yarım özellik)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    provaYaz();                         // E.4",
+  "koy": "    // provaYaz();                    // E.4"
+ },
+ {
+  "ad": "E4 Macte sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    } else {\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
+  "koy": "    } else {\n      h+=sat('Gerçek hız', r.wpm+' wpm');\n      h+='<div class=\"meta\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
+ },
+ {
+  "ad": "E4 Mac altyazısı anlık görüntü yerine canlı metinden üretiliyor",
+  "test": "137-prova-raporu.js",
+  "kaynak": "mac",
+  "bul": "    const kaynak = cekimAltyazi\n      ? cekimAltyazi\n      : words.map",
+  "koy": "    const kaynak = false\n      ? cekimAltyazi\n      : words.map"
+ },
+ {
+  "ad": "B2 Mac readyBtn'e data-i18n geri kondu (applyLang ikonu siler)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\">",
+  "koy": "<button class=\"btn\" id=\"readyBtn\" title=\"Çekime hazır mıyım?\" data-i18n-title=\"mTReady\" data-i18n=\"mReady\">"
+ },
+ {
+  "ad": "B2 Mac sesle etiketi düğmeye doğrudan yazılıyor (ikon silinir)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "$('#voiceLbl').textContent=t('mVoiceOn');",
+  "koy": "$('#voiceBtn').textContent='🎤 Ses: Açık';"
+ },
+ {
+  "ad": "B2 Mac krom düğmesi emojiye döndü",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "data-aria=\"settings\"><svg class=\"ic\" aria-hidden=\"true\"><use href=\"#i-ayarlar\"/></svg>",
+  "koy": "data-aria=\"settings\">⚙︎"
+ },
+ {
+  "ad": "B2 dil değişince çalışma zamanı etiketi tazelenmiyor",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "mac",
+  "bul": "    const vl=$('#voiceLbl'); if(vl) vl.textContent=t(voiceOn?'mVoiceOn':'mVoiceIdle');\n",
+  "koy": ""
+ },
+ {
+  "ad": "i18n Mac karşılama penceresi dil değişince tazelenmiyor",
+  "test": "119-mac-donduran-diyalog.js",
+  "kaynak": "mac",
+  "bul": "    bilgiTazele();          // açık kip penceresi de dille yenilensin\n",
+  "koy": ""
+ },
+ {
+  "ad": "i18n Mac karşılama metni sabit Türkçeye döndü",
+  "test": "119-mac-donduran-diyalog.js",
+  "kaynak": "mac",
+  "bul": "if(ilk) bilgiGosterK('mDlgWelcome', 'mDlgWelcomeBody');",
+  "koy": "if(ilk) bilgiGoster('Sufleye hoş geldin', 'metnini yapıştır');"
+ },
+ {
+  "ad": "i18n telefon karşılama sayfası dil değişince tazelenmiyor",
+  "test": "25-surum-notu-gosterimi.js",
+  "kaynak": "telefon",
+  "bul": "  newsYaz();               // açık karşılama/sürüm notu sayfası\n",
+  "koy": ""
+ },
+ {
+  "ad": "i18n telefon karşılama metni tek dile indi",
+  "test": "25-surum-notu-gosterimi.js",
+  "kaynak": "telefon",
+  "bul": "function onbGovde(){ return L==='tr'",
+  "koy": "function onbGovde(){ return true"
+ },
+ {
+  "ad": "B1 tipografi ölçeği tekrar ölü jetona döndü (telefon)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "telefon",
+  "bul": ".hint{font-size:var(--tx-xs)",
+  "koy": ".hint{font-size:11.5px"
+ },
+ {
+  "ad": "B1 yarım piksellik punto geri geldi (Mac)",
+  "test": "121-jetonlar-ve-derleme.js",
+  "kaynak": "mac",
+  "bul": "  .scriptItem .meta{font-size:var(--tx-xs)",
+  "koy": "  .scriptItem .meta{font-size:11.5px"
+ },
+ {
+  "ad": "D3 Macte pedal tuşu düştü (sunum kumandası sessizce ölür)",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "mac",
+  "bul": "'PageDown':'toggle',",
+  "koy": ""
+ },
+ {
+  "ad": "D3 telefonda çift basış ayrımı söküldü (pedal yarım kalır)",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "telefon",
+  "bul": "<button data-tap=\"2\" data-i18n=\"tap2\">Çift basış</button>",
+  "koy": ""
+ },
+ {
+  "ad": "D3 Macte yazı kutusundayken kısayol tetikleniyor",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "mac",
+  "bul": "    if(tag==='TEXTAREA'||tag==='INPUT') return;\n    /* ÖĞRENME MODU EN ÖNDE",
+  "koy": "    /* ÖĞRENME MODU EN ÖNDE"
+ },
+ {
+  "ad": "D3 Macte öğrenme modu dağıtımdan SONRA (Escape gönderen kumanda öğretilemez)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }\n    const act=macEsleme()[e.key];",
+  "koy": "    const act=macEsleme()[e.key];\n    if(macOgrenme){ e.preventDefault(); macTusYakala(e.key); return; }"
+ },
+ {
+  "ad": "D3 Macte öğrenilen eşleme kaydedilmiyor (oturumda kaybolur)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "    state.tusEsleme=y; save();\n    toast(t('mLearned')",
+  "koy": "    state.tusEsleme=y;\n    toast(t('mLearned')"
+ },
+ {
+  "ad": "D3 varsayılan tablodan sunum kumandası tuşu düştü",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "mac",
+  "bul": "'PageUp':'prevLine', ",
+  "koy": ""
+ },
+ {
+  "ad": "D3 çekirdek süzgeci uydurma eylemi geçiriyor (ölü tuş)",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "kumanda",
+  "bul": "    if (typeof a === 'string' && KUMANDA_EYLEMLERI.has(a)) temiz[k] = a;",
+  "koy": "    if (typeof a === 'string') temiz[k] = a;"
+ },
+ {
+  "ad": "D3 çekirdek birleştirici varsayılan tabloyu bozuyor",
+  "test": "139-mac-tus-ogretme.js",
+  "kaynak": "kumanda",
+  "bul": "  return Object.assign({}, varsayilan || {}, ogrenilen || {});",
+  "koy": "  return Object.assign(varsayilan || {}, ogrenilen || {});"
+ },
+ {
+  "ad": "A3 telefon metin çekirdeğinden koptu (araçlar yine ayrışır)",
+  "test": "112-mac-riskli-bes.js",
+  "kaynak": "telefon",
+  "bul": "/* ==CEKIRDEK:metin.js== */",
+  "koy": "/* ==CEKIRDEKSIZ:metin.js== */"
+ },
+ {
+  "ad": "A3 çekirdekte cümle sonu kısaltma listesi boşaltıldı",
+  "test": "45-cumle-sonu.js",
+  "kaynak": "metin",
+  "bul": "'vb','vs','vd'",
+  "koy": "'zzz'"
+ },
+ {
+  "ad": "A4 Macte tuvale çizerek kayıt söküldü (parite kırılır)",
+  "test": "15-platform-paritesi.js",
+  "kaynak": "mac",
+  "bul": "cropCv=document.createElement('canvas')",
+  "koy": "cropCvYok=document.createElement('canvas')"
+ },
+ {
+  "ad": "A4 çekirdek sınır dışı indeksi kabul ediyor (yanlış satır işaretlenir)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "zorlanma",
+  "bul": "  if(kelimeSayisi != null && idx >= kelimeSayisi) return false;\n",
+  "koy": ""
+ },
+ {
+  "ad": "A4 çekirdek ağırlıkları düzleşti (duraklama = geri sarma)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "zorlanma",
+  "bul": "    r.total = r.s * 2 + r.b * 2 + r.p;",
+  "koy": "    r.total = r.s + r.b + r.p;"
+ },
+ {
+  "ad": "A4 Macte duraklatma sinyali stop() içine kaydı (her çekim zorlanma sayılır)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "    if(running){ macMarkDiff('pause', activeIdx); stop(); return; }",
+  "koy": "    if(running){ stop(); return; }"
+ },
+ {
+  "ad": "A4 Macte harita dolduğu hâlde çizilmiyor (kullanıcı hiç göremez)",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "{ save(); macDiffCiz(); }",
+  "koy": "{ save(); }"
+ },
+ {
+  "ad": "A4 Macte sesle yavaşlama kancası söküldü",
+  "test": "140-zorlanma-haritasi.js",
+  "kaynak": "mac",
+  "bul": "      if(dts>0.35 && dw<=6 && (dw/dts*60) < state.speed*0.6) macMarkDiff('slow', wi);\n",
+  "koy": ""
+ },
+ {
+  "ad": "T49 sonuç ekranı dil değişiminde tazelenmiyor",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  if($('#result') && getComputedStyle($('#result')).display!=='none') sonucTazele();\n",
+  "koy": ""
+ },
+ {
+  "ad": "T49 paylaşım tanısı sabit Türkçeye döndü",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "(L==='tr'?'kompozit':'composite')",
+  "koy": "('kompozit')"
+ },
+ {
+  "ad": "F1 iOS ölçümünün dürüstlük sınırı silindi (varlık = çalışan tanıma sanılır)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza_teknik",
+  "bul": "**Dürüstlük sınırı:** ölçülen şey API'nin VARLIĞI",
+  "koy": "**Kesin sonuç:** her şey çalışıyor"
+ },
+ {
+  "ad": "F1 iOS ölçüm sonucu belgeden silindi (engel geri gelir)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza_teknik",
+  "bul": "## ✅ ENGEL KALKTI",
+  "koy": "## Ölçülmedi"
+ },
+ {
+  "ad": "F5 fiyat belgesi kendi yerine karar veriyor (ölçüm ile seçim karışır)",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "fiyat",
+  "bul": "**Durum:** karar Erdal'ın. Bu belge **karar vermiyor**, kararın zeminini ölçüyor.",
+  "koy": "**Durum:** fiyat aylık 99 TL olacak."
+ },
+ {
+  "ad": "F5 uygulanamazlık gerekçesi belgeden silindi",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "fiyat",
+  "bul": "## Ölçüm 2 — İstemci tarafı ödeme duvarı UYGULANAMAZ",
+  "koy": "## Ölçüm 2 — Ödeme duvarı"
+ },
+ {
+  "ad": "F5 kodda ödeme duvarı belirdi (ücretsiz sözü yalan olur)",
+  "test": "141-fiyatlandirma.js",
+  "kaynak": "telefon",
+  "bul": "function openTrim(){",
+  "koy": "function openTrim(){ if(!window.isPremium) return;"
+ },
+ {
+  "ad": "T54 sessiz ölüm nöbetçisi söküldü (kullanıcı sebebini göremez)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "  sesGeldi=false; clearTimeout(sessizNobet);\n",
+  "koy": ""
+ },
+ {
+  "ad": "T54 sonuç gelince nöbetçi susmuyor (çalışırken hata basar)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "    sesGeldi=true; clearTimeout(sessizNobet); sessizNobet=null;\n",
+  "koy": ""
+ },
+ {
+  "ad": "T54 nöbetçi kamerayı ayırt etmiyor (yanlış yere yönlendirir)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "toast(kamera ? m('voiceSilentCam') : m('voiceSilent'));",
+  "koy": "toast(m('voiceSilent'));"
+ },
+ {
+  "ad": "T54 iOS ses ölçer koruması kalktı (mikrofonu Web Audio tutar)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "if(!IS_WK){ micTouched=true; startAudioMonitor(); }",
+  "koy": "if(true){ micTouched=true; startAudioMonitor(); }"
+ },
+ {
+  "ad": "T55 yüzeyler tek kaynaktan koparıldı (jetonlar.css yine ölü ayar olur)",
+  "test": "143-tasarim-kimligi.js",
+  "kaynak": "telefon",
+  "bul": "--card:var(--s-raised)",
+  "koy": "--card:#1e1e24"
+ },
+ {
+  "ad": "T55 basış geri bildirimi söküldü (dokunulan şey tepki vermez)",
+  "test": "143-tasarim-kimligi.js",
+  "kaynak": "telefon",
+  "bul": "transform:scale(var(--bas));box-shadow:none}",
+  "koy": "box-shadow:none}"
+ },
+ {
+  "ad": "T55 kaydırıcı dolgusu ham değerden hesaplanıyor (min sıfır değilse hiç boşalmaz)",
+  "test": "143-tasarim-kimligi.js",
+  "kaynak": "telefon",
+  "bul": "const o=mx>mn ? (v-mn)/(mx-mn)*100 : 0;",
+  "koy": "const o=mx>0 ? v/mx*100 : 0;"
+ },
+ {
+  "ad": "T55 dolgu yalnız sürüklerken tazeleniyor (hazır kurulum sonrası eski oranda kalır)",
+  "test": "143-tasarim-kimligi.js",
+  "kaynak": "telefon",
+  "bul": "  railHepsi();          // değerler programla da değişiyor; her açılışta tazele\n",
+  "koy": ""
+ },
+ {
+  "ad": "T55 sözlüğe süs emojisi geri geldi (iki platform ayrışır)",
+  "test": "143-tasarim-kimligi.js",
+  "kaynak": "telefon",
+  "bul": "tabRead:'Okuma'",
+  "koy": "tabRead:'🎯 Okuma'"
+ },
+ {
+  "ad": "T55 rekabet belgesi kendi sınırını gizledi (tahmin ölçüm sanılır)",
+  "test": "144-rekabet-olcumu.js",
+  "kaynak": "rekabet",
+  "bul": "hâlâ tahmin",
+  "koy": "hepsi ölçüldü"
+ },
+ {
+  "ad": "T55 sunucusuz tavan iddiası belgeden silindi (karar dayanaksız kalır)",
+  "test": "144-rekabet-olcumu.js",
+  "kaynak": "rekabet",
+  "bul": "**81,9**",
+  "koy": "**yüksek**"
+ },
+ {
+  "ad": "T56 kaydırıcının etiket bağı koptu (ekran okuyucu 'kaydırıcı %50' der)",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "telefon",
+  "bul": "<label for=\"wpm\" data-i18n=\"speedWpm\">",
+  "koy": "<label data-i18n=\"speedWpm\">"
+ },
+ {
+  "ad": "T56 ağ kilidi gevşetildi — connect-src none yerine self (gizlilik vaadi kalkar)",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "telefon",
+  "bul": "connect-src 'none'; object-src",
+  "koy": "connect-src 'self'; object-src"
+ },
+ {
+  "ad": "T56 Mac'in kumanda izni kesildi — connect-src self yerine none (kumanda sessizce ölür)",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "mac",
+  "bul": "connect-src 'self'; object-src",
+  "koy": "connect-src 'none'; object-src"
+ },
+ {
+  "ad": "T56 dil değişince ışık denetçisi tazelenmiyor (İngilizcede Türkçe metin kalır)",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "telefon",
+  "bul": "if($('#lightOut') && $('#lightOut').innerHTML.trim()) renderLight();",
+  "koy": ""
+ },
+ {
+  "ad": "T56 adsız öge kuralı tabana bağlandı — kapı silahsızlanır",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "kontrast",
+  "bul": "        if adsiz:\n",
+  "koy": "        if adsiz and len(adsiz) > taban.get(ad + '~adsiz', 0):\n"
+ },
+ {
+  "ad": "T56 ayar sekmeleri kapı ölçümünden çıkarıldı (16 kaydırıcı yine görünmez olur)",
+  "test": "145-erisilebilir-ad-ve-csp.js",
+  "kaynak": "kontrast",
+  "bul": "    ('telefon-gorunum',  TELEFON, 430, 932, 3,",
+  "koy": "    ('telefon-gorunumX', TELEFON, 430, 932, 3,"
+ }
 ]

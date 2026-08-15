@@ -141,8 +141,12 @@ const gorunur=el=>el.style.display!=='none';
 {
   /* Okuma çizgisi: etiket -> boş uyarı bloğu -> kaydırıcı. Kural bir sonraki
      `.row`a kadar açtığı için aradaki boş blok onu engellemiyor. */
+  /* DESEN ÖZNİTELİK SIRASINA BAĞLI OLMASIN. Eski hâli `<label data-i18n=`
+     diye tam sıra istiyordu; kaydırıcılara erişilebilir ad için `for=`
+     eklenince (2026-08-15) bu iddia yapı hiç değişmediği hâlde kırmızıya
+     döndü. Sınanan şey SIRA değil YAPI: etiket → boş uyarı bloğu → kaydırıcı. */
   ok('okuma çizgisi kaydırıcısının etiketi iki kardeş geride',
-     /class="row"><label data-i18n="eyeLine"[\s\S]{0,200}?id="eyeUyari"[\s\S]{0,80}?id="eye"/.test(tel));
+     /class="row"><label[^>]*data-i18n="eyeLine"[\s\S]{0,200}?id="eyeUyari"[\s\S]{0,80}?id="eye"/.test(tel));
   const {panes}=ara('cizgi');
   let bulundu=false;
   panes.forEach(p=>p.children.forEach(c=>{ if(/id="eye"/.test(c.html) && gorunur(c)) bulundu=true; }));

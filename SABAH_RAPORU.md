@@ -2,6 +2,27 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 15 Ağustos akşamı — erişilebilir ad + içerik güvenlik ilkesi (B1 · B2)
+
+Araç/ajan önerisi turunda **gerçek tarayıcıda** iki ölçüm yapıldı ve ikisi de kusur çıkardı;
+ikisi de statik denetimin göremeyeceği sınıftı, ikisi de kapatıldı ve kapıya bağlandı.
+
+- **B1 — 39 kaydırıcının erişilebilir adı yoktu** (telefon 24 · Mac 15). Ekran okuyucu hepsini
+  "kaydırıcı, %50" diye okuyordu: hız, okuma çizgisi, yazı boyutu, yeşil ekran eşiği, altyazı
+  boyutu, budama uçları birbirinden ayrılamıyordu. **Yeni sözlük anahtarı eklenmedi** — zaten
+  çevrili olan etiketler `for` ile bağlandı (Mac'te iki tanesi `aria-labelledby`, biri
+  `aria-label`). Ad artık tek kaynaktan gelir ve dil değişince kendiliğinden değişir.
+- **B2 — CSP yoktu.** "Veri cihazdan çıkmıyor" vaadi kodda **doğruydu** (fetch/XHR/WebSocket/
+  EventSource/sendBeacon ve dış kaynak sıfır, ölçüldü) ama onu koruyan tek şey dikkatti.
+  Artık telefonda `connect-src 'none'`, Mac'te `connect-src 'self'` (kumanda sunucusu aynı
+  kökenden konuşuyor; 'none' yazmak kumandayı sessizce öldürürdü). Gerçek kökende, service
+  worker ve manifest dahil **sıfır ihlalle** doğrulandı.
+- **Yan bulgu:** kapıya ayarların üç sekmesi eklenince "bir kez çizilen kutu dil değişince
+  eski dilde kalıyor" sınıfının **üçüncü vakası** çıktı (`#lightOut`, `#checkOut`) — düzeltildi.
+- Kapı: `kontrast.py` artık **adsız öge** de ölçüyor (mutlak kural, tabana bağlı değil) ve
+  ayarların üç sekmesi de ölçülüyor. `tests/145` (32 iddia) + **6 kasıtlı bozma** ile kilitlendi;
+  bozma turu ilk denemede kendi desenimin gevşek olduğunu yakaladı.
+
 ## ✅ v9.9 YAYINLANDI ve canlıdan doğrulandı · **v9.10 hazır, yayın kararı sende**
 
 v9.9 yayınlandıktan sonra Türkçe SEO katmanı eklendi (F.6) ve sürüm **9.10** oldu.
@@ -248,7 +269,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.10 canlıda** · v9.11 hazır — **0 commit yayınlanmamış**, `main` dalında
-- **4758 test** (gece başında 732) · yeni test dosyası: 39–144
+- **v9.10 canlıda** · v9.11 hazır — **4 commit yayınlanmamış**, `main` dalında
+- **4807 test** (gece başında 732) · yeni test dosyası: 39–145
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

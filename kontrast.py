@@ -46,6 +46,22 @@ DURUMLAR = [
     ('telefon-senaryo',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#scriptsBtn').click();"),
+    # AYARLARIN ÜÇ SEKMESİ — 2026-08-15'e kadar HİÇ ölçülmüyordu. Yalnız açılış
+    # sekmesi (Okuma) ölçülüyordu; Görünüm, Kamera ve Diğer sekmelerindeki
+    # yüzlerce etiket ve ON kaydırıcı denetim dışındaydı. "Adsız öge" kuralı
+    # ilk koşuda tam da bu üç sekmede 10 kusur buldu (16'nın 10'u buradaydı).
+    ('telefon-gorunum',  TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startNoCam').click();"
+                 "document.querySelector('#settingsBtn').click();"
+                 "document.querySelector('[data-tab=look]').click();"),
+    ('telefon-kamera',   TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startNoCam').click();"
+                 "document.querySelector('#settingsBtn').click();"
+                 "document.querySelector('[data-tab=cam]').click();"),
+    ('telefon-diger',    TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startNoCam').click();"
+                 "document.querySelector('#settingsBtn').click();"
+                 "document.querySelector('[data-tab=more]').click();"),
     ('mac-pencere',      MAC,    1440, 900, 2,
      "(document.querySelector('#newsX')||{click(){}}).click();"),
     # Mac'in sürüm penceresi #bilgiKapat ile kapanıyor; yalnız #newsX'e
@@ -194,7 +210,33 @@ OLC = r"""
       eylem.push((el.id ? '#' + el.id : '.' + String(el.className).split(' ')[0])
                  + ' "' + el.textContent.trim().slice(0, 18) + '"');
   }
-  return JSON.stringify({ olculen, ihlal, atlanan, eylem });
+  /* ERİŞİLEBİLİR AD — ölçülen şey RENK değil AD.
+     kontrast.py bugüne kadar "okunuyor mu" sorusunu yanıtlıyordu; "ne olduğu
+     duyuluyor mu" sorusunu kimse sormuyordu. Ölçüldü (2026-08-15): ayarların
+     dört sekmesinde 16 kaydırıcının 16'sının da adı yoktu — ekran okuyucu
+     hepsini "kaydırıcı, %50" diye okuyordu. Hız, okuma çizgisi, yazı boyutu,
+     satır aralığı, filtre miktarı ve ses işleme ayarları birbirinden
+     ayrılamıyordu. Statik denetim bunu göremez: ad, `for`/`aria-label`/etiket
+     metni/yer tutucu zincirinden ÇALIŞMA ZAMANINDA hesaplanır.
+     Ölçüt kaba ama dürüst: görünür ve etkileşimli, hesaplanan adı BOŞ. */
+  const adHesapla = el =>
+       (el.getAttribute('aria-label') || '').trim()
+    || (el.getAttribute('title') || '').trim()
+    || (el.getAttribute('aria-labelledby') ? '[labelledby]' : '')
+    || (el.labels && el.labels.length
+          ? [...el.labels].map(l => l.textContent.trim()).join('|') : '')
+    || (el.getAttribute('placeholder') || '').trim()
+    || (el.textContent || '').replace(/\s+/g, ' ').trim();
+  const adsiz = [];
+  for (const el of document.querySelectorAll(
+      'button,[role="button"],[role="switch"],a[href],input,select,textarea,[tabindex]')) {
+    const s = getComputedStyle(el), b = el.getBoundingClientRect();
+    if (s.display === 'none' || s.visibility === 'hidden') continue;
+    if (b.width < 1 || b.height < 1) continue;
+    if (!adHesapla(el)) adsiz.push(el.id ? '#' + el.id : yol(el));
+  }
+
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz });
 })()
 """
 
@@ -232,6 +274,15 @@ KULLANICI_METNI = {'div.ln', 'span.w', 'div.t', '#editor', '#text', '#title'}
 # çizmek anlamsız (kullanıcı o an okuduğu cümlenin ortasında dil değiştirmez).
 # Muafiyet DAR: yalnız bu tek öge. Genişletmek kusur saklamak olur.
 GECICI = {'#toast'}
+
+# DİL ADI KENDİ DİLİNDE YAZILIR — çevrilmemesi DOĞRU, kusur değil.
+# Sesle takip dili seçicisi (`#vlSeg`) "Türkçe / English / Deutsch" diyor;
+# İngilizce arayüzde "Turkish" yazmak yaygın uygulamanın tersi olurdu
+# (kullanıcı kendi dilini kendi dilinde arar). Muafiyet METNE bağlı, YOLA
+# değil: yol muafiyeti (`button.on`) bütün seçili segment düğmelerini
+# kapatır ve gerçek kusurları da gizlerdi.
+# Listede yalnız Türkçe harf taşıyan ad var; diğerleri zaten hiç tetiklemez.
+DIL_ADI = {'Türkçe'}
 
 
 def olc(ad, url, w, h, dsf, kur):
@@ -276,6 +327,7 @@ def olc(ad, url, w, h, dsf, kur):
             if en.get(k) == v and any(c in v for c in TR_HARF)
             and k.split('@')[0] not in KULLANICI_METNI
             and k.split('@')[0] not in GECICI
+            and v not in DIL_ADI
         ]
         sonuc['metinSayisi'] = len(tr)
         return sonuc
@@ -296,9 +348,19 @@ def main():
         yeni[ad] = n
         atl = ' · '.join('%s:%d' % (k, v) for k, v in sorted(r['atlanan'].items()))
         d = len(r['dil'])
-        print('%-18s ölçülen %4d · ihlal %2d · eylem %d · çevrilmemiş %d%s'
-              % (ad, r['olculen'], n, len(r['eylem']), d,
+        adsiz = r.get('adsiz', [])
+        print('%-18s ölçülen %4d · ihlal %2d · eylem %d · çevrilmemiş %d · adsız %d%s'
+              % (ad, r['olculen'], n, len(r['eylem']), d, len(adsiz),
                  ('  (atlanan ' + atl + ')') if atl else ''))
+        # ADSIZ ÖGE MUTLAK KURALDIR, TABANA GÖRE DEĞİL. Taban karşılaştırması
+        # "arttı mı" der ve bugünkü 0'ı korur; ama burada doğru sayı 0'dır ve
+        # ölçüldüğünde 0'a indirildi. Taban kullanmak, ileride birinin tabanı
+        # yükseltip kusuru kalıcılaştırmasına izin verirdi.
+        yeni[ad + '~adsiz'] = len(adsiz)
+        if adsiz:
+            print('   ⛔ erişilebilir adı olmayan %d etkileşimli öge: %s'
+                  % (len(adsiz), ' · '.join(adsiz[:10])))
+            kirmizi = True
         for k, v in r['dil'][:8]:
             print('   ⚠ %-26s "%s"' % (k, v))
         yeni[ad + '~dil'] = d

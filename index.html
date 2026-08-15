@@ -2,6 +2,21 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<!-- GİZLİLİK VAADİNİ KOD DEĞİL TARAYICI ZORLASIN.
+     Ölçüldü (2026-08-15): uygulamada fetch 0 · XMLHttpRequest 0 · WebSocket 0 ·
+     EventSource 0 · sendBeacon 0 · dış kaynak 0. Yani GIZLILIK.md bugün doğru.
+     Ama bunu koruyan tek şey DİKKAT: tek bir fetch satırı gizlilik metnini,
+     tests/131'in 40 iddiasını ve mağaza beyanını aynı anda yalanlar ve bunu
+     SESSİZCE yapar. `connect-src 'none'` ile ihlal artık koda değil platforma
+     takılır — kod incelemesi kaçırsa bile istek gitmez.
+
+     `default-src 'none'` DEĞİL, `'self'` seçildi: 'none' altında manifest,
+     ikonlar ve service worker gibi saymadığım her kaynak türü de düşer ve
+     sessiz kırılma bu deponun en pahalı hata sınıfıdır. 'self' aynı korumayı
+     verir (dış kaynak yine yasak), sürpriz vermez.
+     Service worker'ın KENDİ fetch'i bu ilkeden etkilenmez (SW'nin CSP'si
+     kendi yanıtından gelir) — çevrimdışı önbellek çalışmaya devam eder. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -741,24 +756,24 @@
     <div class="hint" id="modeHint"></div>
     <div class="tog"><span data-i18n="tgSafe">Platform arayüz alanlarını göster</span><div class="sw" data-t="safe"></div></div>
 
-    <div class="row"><label data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="vWpm">140</span></div>
+    <div class="row"><label for="wpm" data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="vWpm">140</span></div>
     <input type="range" id="wpm" min="40" max="320" step="5" value="140">
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
 
-    <div class="row"><label data-i18n="eyeLine">Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">18</span></div>
+    <div class="row"><label for="eye" data-i18n="eyeLine">Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">18</span></div>
     <div class="hint hidden" id="eyeUyari"></div>
     <input type="range" id="eye" min="4" max="60" value="18">
 
-    <div class="row"><label data-i18n="dist">Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
+    <div class="row"><label for="dist" data-i18n="dist">Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
     <input type="range" id="dist" min="25" max="200" step="5" value="60">
 
-    <div class="row"><label data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
+    <div class="row"><label for="fs" data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
     <input type="range" id="fs" min="22" max="110" value="46">
 
-    <div class="row"><label data-i18n="lineH">Satır aralığı</label><span class="v" id="vLh">1.45</span></div>
+    <div class="row"><label for="lh" data-i18n="lineH">Satır aralığı</label><span class="v" id="vLh">1.45</span></div>
     <input type="range" id="lh" min="100" max="260" value="145">
 
-    <div class="row"><label data-i18n="margin">Kenar boşluğu</label><span class="v" id="vMg">7</span></div>
+    <div class="row"><label for="mg" data-i18n="margin">Kenar boşluğu</label><span class="v" id="vMg">7</span></div>
     <input type="range" id="mg" min="0" max="26" value="7">
 
     <div class="row" style="margin-top:18px"><label data-i18n="band">Okuma şeridi (göz teması)</label></div>
@@ -794,10 +809,10 @@
       <button data-f="dys" data-i18n="fDys">Disleksi</button>
     </div>
 
-    <div class="row"><label data-i18n="weight">Kalınlık</label><span class="v" id="vW">700</span></div>
+    <div class="row"><label for="weight" data-i18n="weight">Kalınlık</label><span class="v" id="vW">700</span></div>
     <input type="range" id="weight" min="400" max="900" step="100" value="700">
 
-    <div class="row"><label data-i18n="tracking">Harf aralığı</label><span class="v" id="vLs">0</span></div>
+    <div class="row"><label for="ls" data-i18n="tracking">Harf aralığı</label><span class="v" id="vLs">0</span></div>
     <input type="range" id="ls" min="-2" max="8" value="0">
 
     <div class="row"><label data-i18n="caseL">Harf düzeni (yalnız görünüm)</label></div>
@@ -829,7 +844,7 @@
       <button data-b="#ffffff" data-i18n="cWhite">Beyaz</button>
     </div>
 
-    <div class="row"><label data-i18n="scrim">Kamera üstü karartma (okunurluk)</label><span class="v" id="vScrim">35</span></div>
+    <div class="row"><label for="scrimSl" data-i18n="scrim">Kamera üstü karartma (okunurluk)</label><span class="v" id="vScrim">35</span></div>
     <input type="range" id="scrimSl" min="0" max="85" value="35">
 
     <div class="tog"><span data-i18n="tgMirror">Yazıyı aynala (cam rig / beam splitter)</span><div class="sw" data-t="mirrorText"></div></div>
@@ -866,7 +881,7 @@
       <button data-vfx="crisp" data-i18n="vfxCrisp">Net</button>
       <button data-vfx="lowlight" data-i18n="vfxLow">Az ışık</button>
     </div>
-    <input type="range" id="vidAmt" min="0" max="150" value="100">
+    <input type="range" data-aria="vidAmt" id="vidAmt" min="0" max="150" value="100">
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
     <div class="row" style="margin-top:14px"><label data-i18n="brL">Video kalitesi / dosya boyutu</label><span class="v" id="vBr">—</span></div>
@@ -891,7 +906,7 @@
     <div class="tog"><span data-i18n="tgEyeLine">Göz hattı kılavuzu (üçte bir)</span><div class="sw" data-t="eyeLine"></div></div>
     <div class="hint" data-i18n="eyeLineHint">Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.</div>
 
-    <div class="row" id="zoomRow" style="display:none"><label data-i18n="zoom">Yakınlaştırma</label><span class="v" id="vZoom">1.0×</span></div>
+    <div class="row" id="zoomRow" style="display:none"><label for="zoom" data-i18n="zoom">Yakınlaştırma</label><span class="v" id="vZoom">1.0×</span></div>
     <input type="range" id="zoom" min="100" max="300" value="100" style="display:none">
 
     <div class="tog"><span data-i18n="tgBack">Arka kamera</span><div class="sw" data-t="backCam"></div></div>
@@ -922,11 +937,11 @@
         <button data-k="#0047bb" data-i18n="kBlue">Mavi</button>
         <button data-k="#ffffff" data-i18n="cWhite">Beyaz</button>
       </div>
-      <div class="row"><label data-i18n="keySim">Eşik (ne kadarı silinsin)</label><span class="v" id="vKeySim">30</span></div>
+      <div class="row"><label for="keySim" data-i18n="keySim">Eşik (ne kadarı silinsin)</label><span class="v" id="vKeySim">30</span></div>
       <input type="range" id="keySim" min="5" max="80" value="30">
-      <div class="row"><label data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="vKeySmooth">10</span></div>
+      <div class="row"><label for="keySmooth" data-i18n="keySmooth">Kenar yumuşaklığı</label><span class="v" id="vKeySmooth">10</span></div>
       <input type="range" id="keySmooth" min="1" max="40" value="10">
-      <div class="row"><label data-i18n="spill">Saçak temizliği (despill)</label><span class="v" id="vSpill">60</span></div>
+      <div class="row"><label for="spill" data-i18n="spill">Saçak temizliği (despill)</label><span class="v" id="vSpill">60</span></div>
       <input type="range" id="spill" min="0" max="100" value="60">
       <div class="row"><label data-i18n="newBg">Yeni arka plan</label></div>
       <div class="seg" id="bgKindSeg">
@@ -953,7 +968,7 @@
       </div>
       <div class="tog"><span data-i18n="tgBurn">Altyazıyı videoya göm</span><div class="sw" data-t="burnCaps"></div></div>
       <div id="burnDeps">
-      <div class="row"><label data-i18n="capSize">Altyazı boyutu</label><span class="v" id="vCapSize">42</span></div>
+      <div class="row"><label for="capSize" data-i18n="capSize">Altyazı boyutu</label><span class="v" id="vCapSize">42</span></div>
       <input type="range" id="capSize" min="24" max="72" value="42">
       <div class="row"><label data-i18n="capPos">Altyazı konumu</label></div>
       <div class="seg" id="capPosSeg">
@@ -964,7 +979,7 @@
         <button data-cs="clean" class="on" data-i18n="csClean">Sade</button>
         <button data-cs="social" data-i18n="csSocial">Sosyal (büyük, ortada)</button>
       </div>
-      <div class="row"><label data-i18n="capMaxW">Satırda en fazla kelime</label><span class="v" id="vCapW">7</span></div>
+      <div class="row"><label for="capMaxW" data-i18n="capMaxW">Satırda en fazla kelime</label><span class="v" id="vCapW">7</span></div>
       <input type="range" id="capMaxW" min="3" max="12" value="7">
       </div>
       <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
@@ -983,11 +998,11 @@
     </div>
     <div class="hint" id="fxHint"></div>
     <div id="fxAdv" class="hidden">
-      <div class="row"><label data-i18n="fxGate">Gürültü kapısı</label><span class="v" id="vGate">—</span></div>
+      <div class="row"><label for="fxGate" data-i18n="fxGate">Gürültü kapısı</label><span class="v" id="vGate">—</span></div>
       <input type="range" id="fxGate" min="0" max="12" value="2">
-      <div class="row"><label data-i18n="fxPres">Netlik (anlaşılırlık)</label><span class="v" id="vPres">—</span></div>
+      <div class="row"><label for="fxPres" data-i18n="fxPres">Netlik (anlaşılırlık)</label><span class="v" id="vPres">—</span></div>
       <input type="range" id="fxPres" min="0" max="9" value="3">
-      <div class="row"><label data-i18n="fxWarm">Tok ses (gövde)</label><span class="v" id="vWarm">—</span></div>
+      <div class="row"><label for="fxWarm" data-i18n="fxWarm">Tok ses (gövde)</label><span class="v" id="vWarm">—</span></div>
       <input type="range" id="fxWarm" min="-4" max="6" value="1">
       <div class="hint" data-i18n="fxAdvHint">Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.</div>
     </div>
@@ -998,11 +1013,11 @@
 
   <!-- DİĞER -->
   <div class="tab" id="tab-more">
-    <div class="row"><label data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="vCapOff">0.0</span></div>
+    <div class="row"><label for="capOffset" data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="vCapOff">0.0</span></div>
     <input type="range" id="capOffset" min="-20" max="20" value="0">
     <div class="hint" data-i18n="capHint">Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.</div>
 
-    <div class="row"><label data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
+    <div class="row"><label for="target" data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
     <input type="range" id="target" min="0" max="600" step="15" value="0">
     <div class="hint" data-i18n="targetHint">Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.</div>
 
@@ -1016,7 +1031,7 @@
 
     <div class="row" style="margin-top:18px"><label data-i18n="vadL">Nefesle akış</label><span class="v" id="vadState">—</span></div>
     <div class="tog"><span data-i18n="tgVad">Konuşmayı kesince sufle dursun</span><div class="sw" data-t="vad"></div></div>
-    <div class="row"><label data-i18n="vadSens">Duyarlılık</label><span class="v" id="vVad">—</span></div>
+    <div class="row"><label for="vadSens" data-i18n="vadSens">Duyarlılık</label><span class="v" id="vVad">—</span></div>
     <input type="range" id="vadSens" min="5" max="60" value="20">
     <div class="hint" id="vadHint"></div>
     <div class="sheetbtns"><button class="cancel" id="voiceTest" data-i18n="voiceTest">Mikrofonu ve tanımayı sına</button></div>
@@ -1222,9 +1237,9 @@
   <video id="resultVid" controls playsinline></video>
   <div id="provaBox" class="hidden"></div>
   <div id="trimBox" class="hidden">
-    <div class="row"><label data-i18n="trimStart">Baştan kes</label><span class="v" id="vTrimA">0.0 sn</span></div>
+    <div class="row"><label for="trimA" data-i18n="trimStart">Baştan kes</label><span class="v" id="vTrimA">0.0 sn</span></div>
     <input type="range" id="trimA" min="0" max="1000" value="0">
-    <div class="row"><label data-i18n="trimEnd">Sondan kes</label><span class="v" id="vTrimB">—</span></div>
+    <div class="row"><label for="trimB" data-i18n="trimEnd">Sondan kes</label><span class="v" id="vTrimB">—</span></div>
     <input type="range" id="trimB" min="0" max="1000" value="1000">
     <div class="hint" id="trimInfo"></div>
     <div class="sheetbtns">
@@ -1832,7 +1847,7 @@ const HELP={
 let L='tr';
 const t=k=>(I18N[L][k]||I18N.tr[k]||k);
 const m=k=>(MSG[L][k]||MSG.tr[k]||k);
-const ARIA={tr:{spDown:'Yavaşlat',spUp:'Hızlandır',settingsBtn:'Ayarlar',scriptsBtn:'Senaryolar',readyBtn:'Çekime hazır mıyım',pauseBtn:'Kaydı duraklat',recBtn:'Kayıt başlat/durdur',voiceBtn:'Sesle takip',playBtn:'Başlat/duraklat',tempoBtn:'Ölçülen tempoyu uygula',sheetX:'Kapat',scriptsX:'Kapat',takesX:'Kapat',remoteX:'Kapat',helpX:'Kapat',readyX:'Kapat'},en:{spDown:'Slower',spUp:'Faster',settingsBtn:'Settings',scriptsBtn:'Scripts',readyBtn:'Readiness check',pauseBtn:'Pause recording',recBtn:'Start or stop recording',voiceBtn:'Voice follow',playBtn:'Play or pause',tempoBtn:'Apply measured pace',sheetX:'Close',scriptsX:'Close',takesX:'Close',remoteX:'Close',helpX:'Close',readyX:'Close'}};
+const ARIA={tr:{vidAmt:'Filtre miktarı',spDown:'Yavaşlat',spUp:'Hızlandır',settingsBtn:'Ayarlar',scriptsBtn:'Senaryolar',readyBtn:'Çekime hazır mıyım',pauseBtn:'Kaydı duraklat',recBtn:'Kayıt başlat/durdur',voiceBtn:'Sesle takip',playBtn:'Başlat/duraklat',tempoBtn:'Ölçülen tempoyu uygula',sheetX:'Kapat',scriptsX:'Kapat',takesX:'Kapat',remoteX:'Kapat',helpX:'Kapat',readyX:'Kapat'},en:{vidAmt:'Filter amount',spDown:'Slower',spUp:'Faster',settingsBtn:'Settings',scriptsBtn:'Scripts',readyBtn:'Readiness check',pauseBtn:'Pause recording',recBtn:'Start or stop recording',voiceBtn:'Voice follow',playBtn:'Play or pause',tempoBtn:'Apply measured pace',sheetX:'Close',scriptsX:'Close',takesX:'Close',remoteX:'Close',helpX:'Close',readyX:'Close'}};
 function applyLang(){
   document.documentElement.lang=L;
   $$('[data-aria]').forEach(el=>{ const v=ARIA[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
@@ -1865,6 +1880,15 @@ function applyLang(){
      metinler iki dilde yazılıydı ama dil değişince eski dilde kalıyordu.
      Kapı bu yüzeyi hiç ölçmüyordu — kör noktaydı, T49'da kapıya eklendi. */
   if($('#result') && getComputedStyle($('#result')).display!=='none') sonucTazele();
+  /* AYNI SINIFIN ÜÇÜNCÜ VAKASI (2026-08-15). Kapıya ayarların üç sekmesi
+     eklenince ışık denetçisinin çıktısı yakalandı: `#lightOut` iki dilde de
+     yazılabiliyor ama BİR KEZ çiziliyor, dil değişince eski dilde kalıyordu
+     ("Önce kamerayı aç" İngilizce arayüzde de Türkçe duruyordu). Konuşulabilirlik
+     denetiminin çıktısı `#checkOut` da aynı yoldan geliyor.
+     İkisi de yalnız DOLUYSA yeniden çiziliyor — boş kutuyu doldurmak,
+     kullanıcının açmadığı bir denetimi açmak olurdu. */
+  if($('#lightOut') && $('#lightOut').innerHTML.trim()) renderLight();
+  if($('#checkOut') && $('#checkOut').innerHTML.trim()) renderCheck();
   apply();                 // #modeHint + #gazeHint
   newsYaz();               // açık karşılama/sürüm notu sayfası
   surumRozeti();           // #verBtn aria-label
