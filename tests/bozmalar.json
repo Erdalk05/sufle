@@ -334,5 +334,33 @@
   "kaynak": "telefon",
   "bul": "<a href=\"tanitim.html\" target=\"_blank\" rel=\"noopener\">sufle tanıtım</a>",
   "koy": "sufle tanıtım"
+ },
+ {
+  "ad": "C3 telefonda yapışkan başlık söküldü (uzun listede arama kaybolur)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "telefon",
+  "bul": "  #scHead{position:sticky;top:0;",
+  "koy": "  #scHead{position:static;top:0;"
+ },
+ {
+  "ad": "C3 Macte arama kutusu olaya bağlı değil (ölü kutu)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "  $('#scriptFind').oninput=()=>renderScripts();\n",
+  "koy": ""
+ },
+ {
+  "ad": "C3 Mac araması düz küçültmeye döndü (Türkçe eşleşmez)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "      ? state.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))",
+  "koy": "      ? state.scripts.filter(s=>(s.title||'').toLowerCase().includes(q))"
+ },
+ {
+  "ad": "C3 kutu gizlenirken süzgeç temizlenmiyor (senaryolar görünmez olur)",
+  "test": "136-buyuk-kutuphane.js",
+  "kaynak": "mac",
+  "bul": "    if(!uzun) kutu.value='';\n",
+  "koy": ""
  }
 ]

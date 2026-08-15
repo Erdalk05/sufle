@@ -314,9 +314,40 @@ okundu (1→2 senaryo, eski duruyor).
 Klasör/etiket, kütüphane büyüdüğünde değerli; ölçülen gerçek: tipik sufle kütüphanesi onlarca
 senaryo (tavana 1.271 sığıyor, kimse oraya yaklaşmıyor). Şimdi eklemek, kullanılmayan bir
 hiyerarşi ve her senaryo ekranında fazladan bir seçim demek — B fazında tam tersini yaptık.
-**Tetikleyici:** kullanıcı kütüphanesi 50 senaryoyu aşarsa ya da Erdal isterse.
-Bunun yerine sıra ağırlığı daha yüksek ve açıkça eksik olan **D.2 kamera kontrollerine** geçiyor
-(matris ×3, SUFLE=2, lider=5).
+**Tetikleyici (Tur 36'da DEĞİŞTİRİLDİ):** eskisi *"kullanıcı kütüphanesi 50 senaryoyu aşarsa"*
+idi — **gözlenemez bir tetikleyici**, çünkü sıfır telemetri topluyoruz (ve bu doğru). Hiç
+ateşlenemeyecek bir koşul, ölü tetikleyicidir. Yerine: **Erdal isterse.**
+
+### 🔁 Tur 36 — C.3 yeniden değerlendirildi: ERTELEME SÜRÜYOR, ama ölçerek
+
+Gerçek tarayıcıda tohumlanmış kütüphanelerle ölçüldü:
+
+| senaryo | depo | liste çizimi | liste yüksekliği | arama |
+|---|---|---|---|---|
+| 10 | 8,2 KB | 0,4 ms | 711 px | anında |
+| 50 | 36,2 KB | 0,8 ms | 3.591 px | anında |
+| 200 | 141,5 KB | 2,0 ms | 14.391 px | anında |
+| 800 | 562,9 KB | 7,4 ms | 57.591 px | anında |
+
+**Performans gerekçesi çürüdü** — 800 senaryo 7,4 ms'de çiziliyor. Klasör eklemek, kimsenin
+yaşamadığı bir sorun için herkese kalıcı bir seçim dayatmak olurdu.
+
+**Ama ölçüm İKİ gerçek kusur buldu, ikisi de kapatıldı:**
+① **Telefonda arama vardı ama ULAŞILAMIYORDU.** 200 senaryoda sayfa 14.720 px kayıyor; dibe
+inildiğinde arama kutusu viewport'un **14.558 px yukarısında**, ✕ kapat düğmesi de öyle.
+Kütüphaneyi yönetmenin iki aracı da tam gerektiği anda kayboluyordu (2 numaralı hata sınıfı).
+Başlık bloğu yapışkan yapıldı — dipte arama ve kapat **görünür** ölçüldü, ilk satırı örtmüyor.
+② **Mac'te senaryo araması HİÇ YOKTU.** Sol panel 9.202 px kayıyor; aramasız tek yol gözle
+taramaktı. Telefondaki yetenek Mac'e taşındı: aynı `norm()` Türkçe katlaması ("urun" → "Ürün"
+ölçüldü), 12'den kısa listede kutu gizli, eşleşme yoksa sebep yazılı, kutu gizlenirken süzgeç
+temizleniyor (yoksa gizli bir süzgeç senaryoları görünmez yapardı).
+
+**Erteleme artık koşullu:** gerekçe, senaryonun İKİ kabukta da anında bulunabilmesine dayanıyor;
+`tests/136` (23 iddia, 4 kanıtlı bozma) bunu kilitliyor — biri kaybolursa gerekçe de çöker.
+
+*Tohumlama tuzağı (ölçüldü):* depoya doğrudan yazıp sayfayı yenilemek İŞE YARAMIYOR — uygulama
+`pagehide`'da bellekteki durumu yazıp tohumu eziyor (doğru davranış). Ölçüm, uygulamanın
+çalışmadığı ayrı bir tohum sayfasından yapılmalı.
 **C.4** ✅ **BİTTİ** — yalnız `{id,title,text}` taşıyan **çok eski** biçimde üç kayıt
 (başlıksız, boşluk-başlıklı, boş metinli) tarayıcıda içe alındı: üçü de başlık kazandı,
 `up`/`pos` eklendi, liste çizildi. Kaynak düzeyi sözleşmesi **iki kabukta da** kilitli
@@ -579,3 +610,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 33 | 2026-08-15 | **A.2c kapandı** — Mac uyarıları sözlüğe; testler forma değil cümleye bağlandı | çevrilmemiş toast **67 → 0** (83 çağrının 83'ü) · TR/EN 68/68 · 11 test `macMetni()` ile onarıldı · 121 yorum sızıntısını ayırt ediyor (kanıtlandı) · **4282 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 34 | 2026-08-15 | **F.4 kareleri** — tezgâh kuruldu, kareler gerçek bir kusuru açığa çıkardı | 6 kare gerçek arayüzden (2 hazır · 4 taslak) · tezgâhın 3 kendi hatası ölçülüp kapatıldı · **kayıtta ▶ düğmesi 430 px iPhone'da ekran dışındaydı** → 5 genişlikte taşma **0** · tests/134 + 3 kanıtlı bozma · **4293 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 35 | 2026-08-15 | **F.6 vitrin sayfası** — tanitim.html, iddialar koda bağlı | 63 iddia · 3 genişlikte taşma **0** · TR+EN · jetonlar tek kaynaktan (derle.py 3. kabuk) · uygulamadan keşif yolu açıldı · 4 kanıtlı bozma · tests/115 kopya listeden çıkarıma geçti · **4358 test, 0 hata** | ✅ 8/8 YEŞİL |
+| 36 | 2026-08-15 | **C.3 yeniden değerlendirildi** — erteleme sürüyor, iki gerçek kusur kapandı | 800 senaryo **7,4 ms** (perf gerekçesi çürüdü) · telefonda arama+kapat dipte ulaşılamazdı → yapışkan başlık · **Mac'te senaryo araması hiç yoktu** → eklendi (Türkçe katlama ölçüldü) · gözlenemez tetikleyici düzeltildi · tests/136 + 4 kanıtlı bozma · **4381 test, 0 hata** | ✅ 8/8 YEŞİL |

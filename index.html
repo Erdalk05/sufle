@@ -209,6 +209,11 @@
     box-shadow:0 0 0 9999px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.28);border-radius:2px}
   body.aspectOn #aspectBox{display:block}
   /* platform arayüzünün kapattığı alanlar (yaklaşık) */
+  /* Yapışkan başlık: arka plan ŞART — saydam bırakılırsa altından kayan
+     liste satırları başlığın içinden geçer. Sayfanın kendi zeminini alıyor. */
+  #scHead{position:sticky;top:0;z-index:3;background:var(--sheetbg);
+    padding-top:2px;margin-bottom:2px}
+  #scHead h2{margin-top:0}
   #safeWrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;pointer-events:none}
   body.safeOn #safeWrap{display:block}
   #safeWrap div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.10) 0 10px,transparent 10px 20px);
@@ -937,12 +942,20 @@
 <!-- SENARYOLAR -->
 <div class="sheet" id="scriptsSheet">
   <div class="grab"></div>
+  <!-- C.3 — BAŞLIK BLOĞU YAPIŞKAN. ÖLÇÜLDÜ (2026-08-15, 200 senaryo, 430x932):
+       sayfa 14.720 px kayıyor ve dibe inildiğinde arama kutusu viewport'un
+       14.558 px YUKARISINDA kalıyordu; ✕ kapat düğmesi de öyle. Yani kütüphane
+       büyüdükçe onu yönetmenin İKİ aracı da tam gerektiği anda erişilemez
+       oluyordu — bu deponun 2 numaralı hata sınıfı. Arama ve kapatma artık
+       listeyle birlikte kaymıyor. -->
+  <div id="scHead">
   <h2><span data-i18n="scripts">Senaryolar</span><button class="iconbtn" id="scriptsX" aria-label="Kapat" data-aria="scriptsX">✕</button></h2>
   <div id="secWrap" class="hidden">
     <div class="row" style="margin:6px 0"><label data-i18n="sections">🔖 Bölümler — dokun, oraya atla</label></div>
     <div class="seg" id="secList"></div>
   </div>
   <input type="text" id="scriptFind" placeholder="🔎 Senaryolarda ara…" data-i18n-ph="findPh">
+  </div>
   <div class="seg" id="scSort" style="margin-bottom:6px">
     <button data-ss="used" class="on" data-i18n="ssUsed">Son kullanılan</button>
     <button data-ss="name" data-i18n="ssName">Ada göre</button>
