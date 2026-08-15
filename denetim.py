@@ -8,6 +8,7 @@ BUILTIN = set("""if for while switch catch return typeof function new delete voi
 String Number Math JSON Array Object Boolean Promise Date RegExp Set Map WeakMap Symbol Error
 parseInt parseFloat isFinite isNaN encodeURIComponent decodeURIComponent escape unescape
 setTimeout setInterval clearTimeout clearInterval requestAnimationFrame cancelAnimationFrame
+getComputedStyle matchMedia structuredClone queueMicrotask
 fetch alert confirm prompt URL URLSearchParams Blob File FileReader FormData Image Audio Event
 MediaRecorder MediaStream MediaStreamTrack AudioContext EventSource Headers Response Request
 DataTransfer PointerEvent KeyboardEvent MouseEvent CustomEvent IntersectionObserver

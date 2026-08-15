@@ -593,5 +593,19 @@
   "kaynak": "mac",
   "bul": "      if(dts>0.35 && dw<=6 && (dw/dts*60) < state.speed*0.6) macMarkDiff('slow', wi);\n",
   "koy": ""
+ },
+ {
+  "ad": "T49 sonuç ekranı dil değişiminde tazelenmiyor",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  if($('#result') && getComputedStyle($('#result')).display!=='none') sonucTazele();\n",
+  "koy": ""
+ },
+ {
+  "ad": "T49 paylaşım tanısı sabit Türkçeye döndü",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "(L==='tr'?'kompozit':'composite')",
+  "koy": "('kompozit')"
  }
 ]

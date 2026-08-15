@@ -47,7 +47,14 @@ const PROVA_YOL = acikProva || path.join(REPO, 'cekirdek/prova.js');
   ok('eşleştirici bölümü ayrılabildi (ölçmeyen kapı değil)', esles.length > 60);
   ok('bayrak eşleştiricinin içinde DEĞİL', !/cekimSesle/.test(esles));
   /* Rapor sonuç ekranına bağlı olmalı — bağlanmamış rapor ölü koddur. */
-  ok('rapor sonuç ekranında çağrılıyor', /^\s*provaYaz\(\);/m.test(src));
+  /* İDDİA SONUÇ EKRANI YOLUNA DEMİRLİ. T49'da `sonucTazele()` de provaYaz()
+     çağırmaya başladı ve genel desen (`^\s*provaYaz();`) oradan eşleşerek
+     asıl bağlantı koparıldığında bile geçiyordu — bozma turu yakaladı. */
+  /* SATIR BAŞINA DEMİRLİ: yorum işaretiyle kapatılan satır da aynı deseni
+     taşıyor ve çağrıyı yoruma almak testten geçiyordu — bu tuzağa T40'ta da
+     düşülmüştü, aynı dosyada ikinci kez. */
+  ok('rapor sonuç ekranında çağrılıyor',
+     /^\s*provaYaz\(\);\s*\/\/ E\.4 — çekim sonrası prova raporu/m.test(src));
   ok('rapor kutusu işaretlemede var', /id="provaBox"/.test(src));
 }
 
@@ -210,4 +217,31 @@ const kelimeler = (zamanlar, kuyruk = 0) => {
      /cekimAltyazi = words\.length \? words\.map/.test(mac));
   ok('Mac altyazısı anlık görüntüden üretiliyor',
      /const kaynak = cekimAltyazi/.test(mac));
+}
+
+/* ---------- SONUÇ EKRANI DİLLE TAZELENİYOR MU (T49 denetimi) ----------
+   Kapı çekim sonrası ekranı HİÇ ölçmüyordu; eklenince orada 1 kontrast
+   ihlali ve 4 çevrilmemiş metin çıktı. Metinler iki dilde yazılıydı ama
+   ekran bir kez çiziliyordu — "yazılı ama tazelenmiyor" sınıfı. */
+{
+  ok('sonuç ekranı tazeleyicisi var', /function sonucTazele\(\)\{/.test(src));
+  ok('dil değişiminde çağrılıyor',
+     /getComputedStyle\(\$\('#result'\)\)\.display!=='none'\) sonucTazele\(\)/.test(src));
+  const tz = src.slice(src.indexOf('function sonucTazele(){'), src.indexOf('function showResult('));
+  ok('tazeleyici ayrılabildi (ölçmeyen kapı değil)', tz.length > 300);
+  /* Üç dinamik metnin üçü de yenilenmeli: ses özeti, altyazı bilgisi, rapor. */
+  ok('ses özeti tazeleniyor', /audSummary\(\)/.test(tz));
+  ok('altyazı bilgisi tazeleniyor', /#capInfo/.test(tz));
+  ok('prova raporu tazeleniyor', /provaYaz\(\)/.test(tz));
+  /* Paylaşım tanısındaki SABİT TÜRKÇE parçalar da çevrildi (denetimde
+     bulundu): tanı satırı sorun anında bakılan tek yer, yarısı yabancı
+     dilde olamaz. */
+  ok('tanı satırı iki dilde', /'kompozit':'composite'/.test(src) &&
+     /'ham kamera':'raw camera'/.test(src));
+  /* Türkçe metin ŞAPKALI yazılmalı: Türkçe-öncelikli bir üründe
+     "Ses cok kisik" kabul edilemez. */
+  /* Kaynakta uzun tire `\u2014` kaçışıyla yazılı; iddia METNE bakmalı,
+     kaçış biçimine değil. */
+  ok('ses uyarısı şapkalı Türkçe', /Ses çok kısık .* mikrofona yaklaş/.test(src));
+  ok('kırpma uyarısı şapkalı Türkçe', /ses kırpmış/.test(src));
 }

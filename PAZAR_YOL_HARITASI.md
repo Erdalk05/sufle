@@ -275,7 +275,7 @@ işaretlemeye ve senaryo değişimine bağlı.
 Taklit hedefi **Teleprompter.com**: özellik listesi değil **hiyerarşi disiplini**.
 Ek kaynaklar: Elgato (odak modu), BIGVU (çekim sonrası akış), Video Teleprompter UK (kamera kontrolü).
 
-**B.1 Tasarım jetonları.** ⏳ **başladı** — `--accent` iki kabukta da `var(--r-action)`'a bağlandı
+**B.1 Tasarım jetonları.** ✅ **BİTTİ (rol ayrımı T39, tipografi+boşluk T43).** — `--accent` iki kabukta da `var(--r-action)`'a bağlandı
 (#00C853 → #00D47E, ölçülmüş kontrast 8,21 → 8,65); 12 sayısal gösterge `tabular-nums` aldı
 (HUD, kayıt süresi, hız, geri sayım, Mac saat/sayaç). `tests/123` kilitliyor (15 iddia).
 **Rol ayrımı ✅ BİTTİ (Tur 39).** `jetonlar.css` kuralı kendisi yazıyordu — *"--r-action … asıl
@@ -339,7 +339,7 @@ haklı olarak bağırdı. Ölçen kapı ölçtüğünü her koşuda söylemeli.
 telefon ilk açılış **5 kontrol**, ana ekran **9 kontrol** — Teleprompter.com disiplini telefonda
 **zaten var**. "40+ kontrol" Mac'in sağ paneline ait. B.3'ün gerçek hedefi **Mac paneli**;
 telefonun sadeliği korunması gereken varlık (test 123 §3 bunu kilitliyor: intro ≤6 düğme).
-**B.2 Emoji → SVG ikon.** ⏳ **başladı** — `cekirdek/ikonlar.html` (Feather/MIT, stroke,
+**B.2 Emoji → SVG ikon.** ✅ **BİTTİ (telefon krom düğmeleri, Mac T41, sekmeler T44'te ölçüldü: zaten temiz).** — `cekirdek/ikonlar.html` (Feather/MIT, stroke,
 `currentColor`) + `derle.py` HTML-modül desteği. Telefonun 4 krom düğmesi geçti
 (⚙︎📝✅🎤 → sliders/belge/onay/mikrofon), **tarayıcıda doğrulandı: 4/4 çizim, 22×22**,
 erişilebilir adlar korundu. Kapsam bilerek dar: `playBtn/pauseBtn` çalışma zamanında yazılıyor
@@ -698,7 +698,7 @@ başlatılmaz).
 **F.1** iOS + Android: Capacitor kabuğu, aynı çekirdek. Kamera/mikrofon/dosya izinleri, gizlilik bildirimi.
 **F.2** Mac: imzalı `.app` (Tauri veya Capacitor Electron), notarize.
 **F.3** Windows: `.exe`/MSIX, Microsoft Store.
-**F.4** ⏳ **gizlilik + manifest BİTTİ.** Ölçüm: manifest beklenenden dolgunmuş (ad, açıklama,
+**F.4** ✅ **BİTTİ (gizlilik + manifest + mağaza metni + kareler T34).** Ölçüm: manifest beklenenden dolgunmuş (ad, açıklama,
 kapsam, `display_override`, kategoriler, 192/512/maskable ikonlar, `share_target`, kısayollar).
 **Kısayollar ve paylaşım hedefi ÖLÜ DEĞİL** — `?go=cam`/`?go=takes` kodda gerçekten karşılanıyor
 (denetlendi). Eklenen: **`id`** (kalıcı uygulama kimliği; `start_url` değişirse tarayıcı kurulu
@@ -759,7 +759,7 @@ vitrin başlığı/açıklaması/JSON-LD'si, mağaza metni). İki test bunu kili
 ve kapı önce kırılır** — yani karar verildiğinde metinlerin güncellenmesi unutulamaz.
 Öneri değişmedi (bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut) ama
 "bulut" katmanı sunucu ister, yani F.5 ile E fazı **aynı karara** bağlı.
-**F.6** ⏳ **meta katmanı bitti, vitrin sayfası açık.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
+**F.6** ✅ **BİTTİ (meta katmanı + vitrin sayfası T35).** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
 `og:`/`twitter:`/JSON-LD/canonical **hiç yoktu**.
 Eklendi: anahtar kelimeli başlık (**40 karakter**, sınır 60), açıklama (**157**, sınır 160),
 canonical, 6 `og:` + 4 `twitter:` etiketi, `SoftwareApplication` JSON-LD (dört platform, iki dil,
@@ -801,6 +801,41 @@ değil kendi bayatlığını bildiriyordu; artık `bozma.py`'den çıkarılıyor
   → **bağımsız ürün** varsayımıyla ilerliyorum, ters karar gelirse Faz F durur, A–D yine değerli.
 - Bulut/hesap sağlayıcısı (Supabase) ve AI uç noktası → anahtar gerektirir.
 - `git push` her yayında ayrı onay.
+
+---
+
+### 🔍 Denetim turu (Tur 49) — kendi işimi kendi kapımla ölçtüm
+
+**(a) Ölü uç var mı?** T33–T48'de eklenen **16 kullanıcı yüzeyinin 16'sı** da tarayıcıda mevcut
+ve doğru durumda (gizli olanlar bilerek gizli: `#provaBox` çekimden önce, `#verTop` ayar
+sayfasında).
+
+**(b) Yol haritası gerçeği söylüyor mu?** ⛔ **Hayır — dört madde yalan söylüyordu.** B.1, B.2,
+F.4 ve F.6 başlıkları hâlâ "⏳ başladı / açık" diyordu, oysa gövdeleri kapandığını yazıyordu.
+Bir okuyucu üst satıra bakıp "yarım" sanırdı. Düzeltildi. (A.3 ⏳ ve C.3/F.5 ⏸ **doğru**:
+ilki kısmen taşındı ve sebebi yazılı, diğerleri gerekçeli ertelenmiş/karar bekliyor.)
+
+**(c) Kapının kör noktası:** ⛔ **Çekim sonrası SONUÇ EKRANI hiç ölçülmüyordu.** Kullanıcının her
+çekimden sonra gördüğü yüzey — prova raporu, ses özeti, paylaşım tanısı, altyazı bilgisi —
+denetim dışındaydı. `kontrast.py`'ye eklendi ve ilk koşuda **1 kontrast ihlali + 4 çevrilmemiş
+metin** çıkardı:
+· `#audInfo small` **2,81:1** (opacity .6 muted rengi AA altına indiriyordu) → jetona bağlandı
+· ses özeti, altyazı bilgisi ve prova raporu **bir kez çiziliyordu** → `sonucTazele()` ile dil
+  değişiminde yenileniyor
+· paylaşım tanısının yarısı **sabit Türkçeydi** (`kompozit`, `ham kamera`, `ses izi`) — sorun
+  anında bakılan tek satırın yarısı yabancı dilde olamaz → çevrildi
+· ses uyarısı **şapkasız Türkçe** yazılmıştı ("Ses cok kisik — mikrofona yaklas"); Türkçe-öncelikli
+  bir üründe kabul edilemez → düzeltildi
+Geçici bildirim (`#toast`) **dar ve gerekçeli** muaf: 2,2 sn yaşıyor ve bir sonraki tetiklenmede
+zaten güncel dilde yazılıyor.
+
+**(d) Çekirdek modülleri gerçekten kullanılıyor mu?** **10/10 modül**, gömüldüğü **her kabukta**
+blok DIŞINDAN çağrılıyor (ölçüldü; `applyTool(cleanText, …)` gibi referansla geçenler dahil).
+
+*Denetim üç kez kendi araçlarımı da düzeltti:* `denetim.py` `getComputedStyle`'ı tanımıyordu
+(yalancı alarm), `tests/137`'nin deseni **yoruma alınmış satırla da eşleşiyordu** (aynı tuzağa
+aynı dosyada ikinci kez düşüldü, satır başına demirlendi), ve `kapsam.py`'yi tek kabukla
+çalıştırmak tabanı bozdu — deponun kendi kayıtlı tuzağı, `tests/113` yakaladı.
 
 ---
 
@@ -885,3 +920,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 46 | 2026-08-15 | **A.3 ölçüldü ve taşınabilir parça taşındı** | 93 aynı adlı fonksiyondan yalnız **14'ü birebir**, 32'si sürüklenmiş · **`cleanText` iki kabukta farklı iş yapıyordu** — telefonda görünmez karakter/bidi temizliği YOKTU → `cekirdek/metin.js` ile kapandı · 5 test girinti bağımlılığını ele verdi · yardımcı `SUFLE_METIN`'i okumuyordu (3. kez) · 3 kanıtlı bozma (**79**) · **4564 test** | ✅ 9/9 YEŞİL |
 | 47 | 2026-08-15 | **A.4 ölçüldü** — öncülü bayatmış, ama yeni gerçek boşluk çıktı | kompozit/arşiv/hazırlık **üçü de Mac'te varmış** → `tests/15` parite listesine yazıldı, bozma kanıtlandı · **zorlanma haritası Mac'te hiç yok** (telefonda canlı) ve bedeli ölçüldü: sesle yavaşlama kancası Mac'te 0 · parite deseni gevşekti (`cropCv` her yerde geçiyor), yeteneği yaratan satıra bağlandı · **4570 test** | ✅ 9/9 YEŞİL |
 | 48 | 2026-08-15 | **Zorlanma haritası Mac'e taşındı** — A.4 kapandı | `cekirdek/zorlanma.js` (telefon da ona bağlandı) · Mac'e üç sinyal: duraklatma `togglePlay`'de (stop() içine DEĞİL), geri sarma `jumpLine`'da, **sesle yavaşlama kancası yeni eklendi** · gerçek olaylarla doğrulandı · tarayıcı yarım özellik yakaladı (harita doluyor, kutu boş) → çizim işaretlemeye bağlandı · 5 kanıtlı bozma (**85**) · **4625 test** | ✅ 9/9 YEŞİL |
+| 49 | 2026-08-15 | **Denetim turu** — kendi işimi kendi kapımla ölçtüm | 16/16 yüzey ulaşılabilir · **yol haritası 4 yerde yalan söylüyordu** (başlık ⏳, gövde ✅) → düzeltildi · **kapı sonuç ekranını hiç ölçmüyormuş** → eklendi, 1 kontrast ihlali + 4 çevrilmemiş metin çıktı, hepsi kapandı · 10/10 çekirdek modülü gerçekten kullanılıyor · 3 araç kusuru düzeltildi · 2 kanıtlı bozma (**87**) · **4618 test** | ✅ 9/9 YEŞİL |

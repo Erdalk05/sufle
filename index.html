@@ -1777,6 +1777,11 @@ function applyLang(){
      iki dilde de yazılabiliyordu AMA dil değişince yeniden çizilmiyordu, yani
      İngilizceye geçen kullanıcı Türkçe okumaya devam ediyordu. i18n kapsam
      kapısı bunu göremiyor: yalnız İŞARETLEMEDEKİ metni sayıyor. */
+  /* SONUÇ EKRANI DA TAZELENMELİ. T49 denetiminde ölçüldü: çekimden sonraki
+     ekran (ses özeti, paylaşım tanısı, altyazı bilgisi) BİR KEZ çiziliyordu;
+     metinler iki dilde yazılıydı ama dil değişince eski dilde kalıyordu.
+     Kapı bu yüzeyi hiç ölçmüyordu — kör noktaydı, T49'da kapıya eklendi. */
+  if($('#result') && getComputedStyle($('#result')).display!=='none') sonucTazele();
   apply();                 // #modeHint + #gazeHint
   newsYaz();               // açık karşılama/sürüm notu sayfası
   surumRozeti();           // #verBtn aria-label
@@ -3260,9 +3265,9 @@ function audSummary(){
   const k=sesKodu(); if(!k) return '';
   if(k==='none') return L==='tr'?'\ud83d\udd07 Ses yok':'\ud83d\udd07 No audio';
   const pct=audStats.clip/audStats.n*100;
-  if(k==='clip') return (L==='tr'?'\u26a0\ufe0f Kaydin %'+Math.round(pct)+"'inde ses kirpmis \u2014 mikrofondan uzaklas ya da daha sakin konus"
+  if(k==='clip') return (L==='tr'?'\u26a0\ufe0f Kaydın %'+Math.round(pct)+"'inde ses kırpmış \u2014 mikrofondan uzaklaş ya da daha sakin konuş"
                                  :'\u26a0\ufe0f Audio clipped in '+Math.round(pct)+'% of the take \u2014 back off the mic');
-  if(k==='low') return (L==='tr'?'\ud83d\udd08 Ses cok kisik \u2014 mikrofona yaklas':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');
+  if(k==='low') return (L==='tr'?'\ud83d\udd08 Ses çok kısık \u2014 mikrofona yaklaş':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');
   return (L==='tr'?'\ud83d\udd0a Ses seviyesi iyi':'\ud83d\udd0a Audio level good');
 }
 /* Ar\u015fiv listesinde k\u0131sa h\u00e2li. Kod saklan\u0131p burada \u00e7evriliyor \u2014 \u00e7ekim
@@ -3803,6 +3808,27 @@ async function probeAudio(blob){
     return (dec && dec.duration>0 && dec.numberOfChannels>0) ? dec.numberOfChannels : -1;
   }catch(e){ return -1; }
 }
+/* Sonuç ekranının DİLE BAĞLI parçaları. showResult() bir kez çalışıyor;
+   dil değişince yalnız bu üç metin yenilenmeli (video, budama ve düğmeler
+   zaten data-i18n ile bağlı). */
+let sonDiag='';
+function sonucTazele(){
+  const ai=$('#audInfo'); if(ai){
+    const kucuk=ai.querySelector('small');
+    if(kucuk) kucuk.textContent=audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'');
+  }
+  const n=buildCues().length, ci=$('#capInfo');
+  if(ci) ci.textContent = n
+    ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
+               : n+' caption lines ready — generated from the script, no typos')
+    : (L==='tr'? 'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.'
+               : 'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.');
+  /* Paylaşım tanısı `lastPath` ölçümlerinden kuruluyor; dil değişince
+     yeniden hesaplamak yerine showResult'ı yeniden çalıştırmak videoyu da
+     yeniden yüklerdi. Metni kuran yol tek yerde, sonucu burada tazeleniyor. */
+  if(lastBlob) showResult(lastBlob);
+  provaYaz();
+}
 function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl=URL.createObjectURL(blob);
@@ -3818,10 +3844,16 @@ function showResult(blob){
   else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');
   if(IS_IOS_ALT) diag='⚠️ '+(L==='tr'?'BU TARAYICI SES KAYDETMİYOR — Safari kullan':'THIS BROWSER RECORDS NO AUDIO — use Safari')+' · '+diag;
   if(lastPath){
-    diag += ' · ' + (lastPath.comp?'kompozit':'ham kamera') + ' · ses izi '+lastPath.aud+
-            (lastPath.aud?(' ('+lastPath.live+')'):'');
-    if(!lastPath.aud) diag='⚠️ Kayıtta SES İZİ YOKTU — '+diag;
+    /* SABİT TÜRKÇEYDİ (T49 denetiminde ölçüldü): İngilizceye geçen kullanıcı
+       tanı satırının yarısını Türkçe okuyordu. Tanı satırı sorun anında
+       bakılan tek yer — yarısı yabancı dilde olamaz. */
+    diag += ' · ' + (lastPath.comp ? (L==='tr'?'kompozit':'composite')
+                                   : (L==='tr'?'ham kamera':'raw camera'))
+          + ' · ' + (L==='tr'?'ses izi ':'audio track ') + lastPath.aud
+          + (lastPath.aud?(' ('+lastPath.live+')'):'');
+    if(!lastPath.aud) diag=(L==='tr'?'⚠️ Kayıtta SES İZİ YOKTU — ':'⚠️ THE TAKE HAD NO AUDIO TRACK — ')+diag;
   }
+  sonDiag=diag;              // dil değişince yeniden yazılabilsin
   $('#shareDiag').textContent=diag;
   arsivKutusu();   // arşive yazılamadıysa çıkış yolu burada duruyor
   // dosyanın içini ölç ve satırı güncelle
@@ -3875,7 +3907,7 @@ function showResult(blob){
       : '<b style="color:#ff5252">⛔ '+(L==='tr'?'BU VİDEODA SES YOK':'THIS VIDEO HAS NO AUDIO')+'</b><br>'+
         (L==='tr'?'Tekrar çekmeden önce: Ayarlar → Kamera → <b>Güvenli ses modu</b> açık olsun'
                 :'Before reshooting: Settings → Camera → enable <b>Safe audio mode</b>'))
-    + '<br><small style="opacity:.6">'+audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'')+'</small>';
+    + '<br><small style="color:var(--t-low)">'+audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'')+'</small>';
   const n=buildCues().length;
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'

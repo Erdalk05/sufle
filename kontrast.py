@@ -54,7 +54,20 @@ DURUMLAR = [
     ('mac-ana',          MAC,    1440, 900, 2,
      "(document.querySelector('#newsX')||{click(){}}).click();"
      "(document.querySelector('#bilgiKapat')||{click(){}}).click();"),
+    # ÇEKİM SONRASI SONUÇ EKRANI — T49'a kadar HİÇ ölçülmemişti. Kullanıcının
+    # her çekimden sonra gördüğü yüzey burası (prova raporu, budama, paylaş)
+    # ve kontrastı da çevirisi de denetim dışındaydı: kapının kör noktası.
+    # Kısa bir çekim yapılıp sonuç ekranı açılıyor.
+    ('telefon-sonuc',    TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startCam').click();"),
 ]
+
+# Sonuç ekranı iki aşamalı: kamera akmadan kayıt başlatmak anlamsız.
+SONRA = {
+    'telefon-sonuc': ("const b=document.querySelector('#recBtn'); b.click();"
+                      " await new Promise(r=>setTimeout(r,4000)); b.click();"
+                      " await new Promise(r=>setTimeout(r,3500));"),
+}
 
 # Tarayıcıda koşan ölçüm. Tek parça JS: her tur için ayrı ayrı gönderilir.
 OLC = r"""
@@ -214,6 +227,12 @@ TR_HARF = 'çğışöüÇĞİŞÖÜ'
 # düzenleyicisi. Liste dar tutuluyor; genişletmek kusur saklamak olur.
 KULLANICI_METNI = {'div.ln', 'span.w', 'div.t', '#editor', '#text', '#title'}
 
+# GEÇİCİ BİLDİRİM MUAF. Toast 2,2 saniye yaşıyor ve bir sonraki tetiklenmede
+# ZATEN güncel dilde yazılıyor; uçuştaki bir bildirimi dil değişiminde yeniden
+# çizmek anlamsız (kullanıcı o an okuduğu cümlenin ortasında dil değiştirmez).
+# Muafiyet DAR: yalnız bu tek öge. Genişletmek kusur saklamak olur.
+GECICI = {'#toast'}
+
 
 def olc(ad, url, w, h, dsf, kur):
     t = Tarayici()
@@ -229,6 +248,18 @@ def olc(ad, url, w, h, dsf, kur):
         if kur:
             t.js(kur)
             time.sleep(1.5)
+        if ad in SONRA:
+            t.js('(async()=>{%s})()' % SONRA[ad])
+            # Kayıt + işleme: sonuç ekranı açılana kadar YOKLA, sabit bekleme
+            # yetersiz kalırsa boş ekran ölçerdik ("ölçmeyen denetim").
+            for _ in range(40):
+                if t.js("getComputedStyle(document.querySelector('#result'))"
+                        ".display!=='none'"):
+                    break
+                time.sleep(0.5)
+            else:
+                raise RuntimeError('%s: sonuç ekranı açılmadı' % ad)
+            time.sleep(1.0)
         sonuc = json.loads(t.js(OLC))
         # DİL DENETİMİ: aynı yüzeyi TR ve EN çizip karşılaştır. Bu, kaynak
         # düzeyi kapsam sayısının GÖREMEDİĞİ şeyi görür — çalışma zamanında
@@ -244,6 +275,7 @@ def olc(ad, url, w, h, dsf, kur):
             [k, v] for k, v in tr
             if en.get(k) == v and any(c in v for c in TR_HARF)
             and k.split('@')[0] not in KULLANICI_METNI
+            and k.split('@')[0] not in GECICI
         ]
         sonuc['metinSayisi'] = len(tr)
         return sonuc
