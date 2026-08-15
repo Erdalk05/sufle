@@ -856,6 +856,19 @@ tavan **81,9**, bugün **63,0** — BIGVU **65,3**.
 | **G.8** | içerik planlayıcı (cihazda, hesapsız) | P2 | ⏳ açık |
 | **G.9** | göz teması düzeltme (ML) | — | ölçülecek, sonra karar |
 | **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | P1 | ⏳ açık |
+| **G.11** | süreye sığdır (sabit süreli kaydırma) | P1 | ⏳ açık |
+| **G.12** | sağdan sola diller (Arapça/İbranice) | P2 | ⏳ açık |
+| **G.13** | erişilebilir yazı tipi seçimi (dış font YOK) | P2 | ⏳ açık |
+| **G.14** | kumanda bağlantı zinciri — sebebi yazsın | P2 | ⏳ açık |
+| **G.15** | yeşil ekransız arka plan bulanıklığı | — | önce ölçüm |
+| **G.16** | PDF içe aktarma | — | **ALMA** (gerekçe yazılı) |
+
+**Teleprompter.com turu (aynı gün):** asıl işi sufle olan rakip ölçüldü. Onlarda **Pro'ya
+kilitli** olan aynalama, temiz ses ve altyazı bizde **ücretsiz ve zaten var**; bizde eksik
+çıkan gerçek şeyler yalnız **süreye sığdırma** ve **RTL**. Ölçüm bu turda beni iki kez
+yalanladı: İngilizce anahtarla arayınca `ayna`/`disleksi`/`hedef süre`/`gürültü kapısı`
+"yok" göründü, oysa dördü de var — Türkçe adlandırılmış bir kod tabanında
+**kullanıcının gördüğü metni** (`cekirdek/sozluk.js`) aramak gerekiyor.
 
 Sunucu/hesap isteyenler (AI senaryo, avatar, ses klonlama, B-roll, analitik, tek tıkla
 yayınlama, bulut, ekip) **FAZ E ile aynı tek soruya** bağlı ve Erdal kararıdır.

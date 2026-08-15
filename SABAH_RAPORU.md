@@ -376,7 +376,19 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
-- **v9.12 CANLIDA ve doğrulandı** · **v9.13 hazır** — **1 commit yayınlanmamış**, `main` dalında
-- **4941 test** (gece başında 732) · yeni test dosyası: 39–149
+- **v9.13 CANLIDA ve doğrulandı** (2026-08-15 gecesi, Erdal onayıyla): `sufle-v85`,
+  index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
+  (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
+  `.son-yayin` ancak doğrulamadan SONRA yazıldı.
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **1 commit yayınlanmamış**
+  (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
+  dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
+- **4942 test** (gece başında 732) · yeni test dosyası: 39–149
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
+  (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
+  sonraki sürüm artışında yeşile döner)
+- **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
+  `BIGVU_KARSILASTIRMA_VE_PLAN.md`. Rakiplerin **paraya kilitlediği** aynalama, temiz ses,
+  altyazı ve filigransız 4K bizde zaten ücretsiz; gerçek eksikler **karaoke altyazı**,
+  **marka kiti**, **süreye sığdırma** ve **RTL**

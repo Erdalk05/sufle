@@ -7,6 +7,10 @@ bakımından onların üstüne çıkar. Süreçleri TODO olarak planla, sonra ya
 **Bu dosya plandır, iş değildir.** Hiçbir madde "yapıldı" işaretli değil. Kural değişmedi:
 kanıtsız ✅ yasak, her madde ölçülen bir kabul ölçütüyle kapanır.
 
+⚠️ **Ad çakışmasına dikkat:** buradaki maddeler **noktalı** (`G.1` … `G.16`) ve pazar yol
+haritasının FAZ G'sine aittir. `GECE_PLANI_20260813.md` dosyasındaki **noktasız** `G12`
+bambaşka bir görevdir (büyük fotoğraf çözme maliyeti). İkisi karıştırılmasın.
+
 **Yöntem:** BIGVU tarafı **dış kaynaktan** (App Store, kendi site/FAQ'ları, bağımsız inceleme
 ve Erdal'ın gönderdiği ödeme ekranı görüntüsü) çıkarıldı. Sufle tarafı **tahmin edilmedi,
 kaynaktan sayıldı** (aşağıdaki her "var/yok" bir grep/okuma sonucudur). İkisini aynı tabloya
@@ -172,7 +176,123 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 
 ---
 
-## 6 · Sıradaki tur
+## 6 · Teleprompter.com incelemesi (2026-08-15, ikinci tur)
+
+Erdal *"bunları bir değerlendir ve gerekli olanları al; teleprompter.com'u incele ve
+eklemeler yap"* dedi. BIGVU bir **video üretim** ürünü; teleprompter.com ise **asıl işi
+sufle olan** rakip — yani bizim doğrudan sınıfımız. O yüzden karşılaştırma daha sıkı yapıldı.
+
+### Onların modülleri
+
+**Kaydırma:** VoiceGlide (sesle takip) · sabit hız · **sabit SÜRE** (metni verilen dakikaya
+sığdırır) · sayısal WPM.
+**Kayıt:** 4K · **arka plan değiştirme/bulanıklaştırma** · ön-arka kamera geçişi · "temiz ses"
+(gürültü giderme) · dış mikrofon · platform oranlarına yeniden boyutlandırma.
+**Metin:** TXT/Word/**PDF** · bulut senaryo deposu (Drive/Dropbox/iCloud) · **yatay ve dikey
+aynalama** (cam rig) · **OpenDyslexic + Lexend** · **sağdan sola diller (Arapça/İbranice)** ·
+geri sayım · ilerleme göstergesi · AI ile "zor cümleyi yeniden yaz".
+**Kumanda:** iPhone/iPad/**Apple Watch**/tarayıcı · **bağlantıyı kendi seçiyor** (internet yoksa
+Bluetooth, aynı Wi-Fi'daysa yerel ağ, uzaktaysa internet) · sunum kumandası, oyun kolu, MIDI,
+pedal · **ikinci cihazda önizleme**.
+**Yayın:** IG/TikTok/YouTube/LinkedIn canlı yayın entegrasyonu · altyazı üretimi.
+**Fiyat:** Free (filigranlı) · Pro **$19,99/ay** ($7,50 yıllıkta) · Max **$49,99/ay**.
+**Ücretsizde kilitli:** filigransız 4K, aynalama, altyazı, temiz ses.
+
+### 🔴 Ölçüm bu turda beni İKİ KEZ yalanladı (kural 7'nin kitabî örneği)
+
+İlk grep `ayna` · `disleksi` · `hedef süre` · `gürültü` için **0** döndürdü ve
+"bunlar bizde yok" diye yazacaktım. Sözlükten arayınca hepsi çıktı:
+`tgMirror:'Yazıyı aynala (cam rig / beam splitter)'` · `fDys:'Disleksi'` ·
+`targetDur:'Hedef süre (pacing)'` · `fxGate:'Gürültü kapısı'` + uğultu kesme + 50 Hz çentiği.
+**İngilizce anahtar aramak Türkçe adlandırılmış bir kod tabanında kanıt üretmez.**
+Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** aramak.
+
+### Değerlendirme — özellik özellik
+
+| Özellik | Onlarda | Sufle'de (ölçüldü) | Karar |
+|---|---|---|---|
+| Sesle takip | VoiceGlide (Pro) | ✅ var, **ücretsiz** | zaten var |
+| Sayısal WPM | var | ✅ var | zaten var |
+| **Sabit süreye sığdırma** | var | ⚠️ `targetDur` yalnız **geri/ileri rozeti** gösteriyor, hızı SÜRMÜYOR | **AL → G.11** |
+| Aynalama (cam rig) | Pro'ya kilitli | ✅ var, ücretsiz | zaten var — **vitrine yaz** |
+| Disleksi yazı tipi | OpenDyslexic + Lexend | ✅ `fDys` var (sistem fontu; dış font **bilerek gömülmedi**, 150 KB) | genişlet → G.13 |
+| **Sağdan sola diller** | var | ❌ **yok** (ölçüldü: `dir`/RTL eşleşmesi yalnız "arabellek" gibi sahte eşleşmeler) | **AL → G.12** |
+| Geri sayım · ilerleme | var | ✅ `tgCount` 3-2-1 + ilerleme | zaten var |
+| Temiz ses / gürültü | Pro'ya kilitli | ✅ Ses Stüdyosu: uğultu kesme + 50 Hz çentik + gürültü kapısı + seviye | zaten var — **vitrine yaz** |
+| Arka planı **bulanıklaştırma** (yeşil ekransız) | var | ❌ yalnız yeşil ekranla | **ÖNCE ÖLÇ → G.15** |
+| Platform oranları | var | ✅ çekim modları (Reels/Story/IG/Shorts/YT) | zaten var |
+| **PDF içe aktarma** | var | ❌ (kopyala-yapıştır yolu ve görünmez karakter temizliği var) | **ALMA → G.16, gerekçesi yazılı** |
+| Bulut senaryo (Drive/Dropbox) | var | ❌ (cihaz dosyasına yedek + geri alma var) | Erdal kararı (sunucu/hesap) |
+| Apple Watch kumandası | var | ❌ | **ALMA** — yerel uygulama ister, PWA'dan çıkar |
+| Çok yollu kumanda (BT/LAN/internet) | var | ⚠️ BT HID ✅ · LAN QR ✅ (Mac) · internet ❌ | kısmi → G.14 |
+| İkinci cihazda önizleme | Pro | ✅ Mac'te var | zaten var |
+| Canlı yayın entegrasyonu | var | ⚠️ OBS tarayıcı kaynağı `?obs=1` var; doğrudan RTMP yok | Erdal kararı (sunucu) |
+| AI yeniden yazma / başlık | var | ❌ | Erdal kararı (sunucu) |
+| Filigran | ücretsizde **var** | **hiç yok** | üstünlük — koru |
+
+### BIGVU listesinin değerlendirmesi — neyi ALMIYORUZ ve neden
+
+| Almıyoruz | Sebep (ölçülmüş ya da ilkesel) |
+|---|---|
+| AI avatar / "Twin" | Ürünün sözü **senin yüzün, senin sesin**. Avatar bunun tam tersi; ayrıca sunucu ister |
+| Ses klonlama | aynı sebep + kötüye kullanım yüzeyi |
+| B-roll stok kütüphanesi | lisans + sunucu + depolama; "tek dosya, sıfır bağımlılık" ile bağdaşmaz |
+| Fototale / video e-posta / VoiceMate | Sufle bir **sufle+çekim** ürünü; bunlar başka ürünler |
+| Analitik panosu | hesap ve veri toplama ister — **gizlilik vaadini kırar** |
+| Rastgele döndürme altyazı animasyonu | okunabilirliği düşürür; bizim ölçütümüz kontrast ve okunurluk (kapıya bağlı) |
+| PDF içe aktarma | `pdf.js` ~1 MB. `.docx`'i kendi yazdık çünkü zip+XML; PDF metin çıkarımı font/kodlama tabloları ister. Yapıştırma yolu **zaten çalışıyor** ve görünmez karakter temizliği bağlı |
+| Apple Watch kumandası | yerel uygulama ister; kabuk kurulsa bile ayrı bir Watch hedefi demek |
+
+---
+
+## 7 · TODO — teleprompter.com turundan eklenenler
+
+### G.11 — Süreye sığdır (sabit süreli kaydırma) · **P1**
+- **Ne:** "Bu metni 60 saniyede bitir" → hız **kendiliğinden** hesaplansın. Bugün `targetDur`
+  yalnız geri/ileri rozeti gösteriyor, hızı sürmüyor.
+- **Neden:** Reels/Shorts'ta süre sınırı işin merkezi; onlarda var, bizde yarım.
+- **Kabul:** 5 metin × 3 hedef süre (30/60/90 sn) ile ölçüm, bitiş sapması **≤%2**;
+  **duraklama işaretleri (`/`, `//`, `(2)`) hesaba katılsın** (tahmini süre kusuru buradan çıkmıştı);
+  mevcut rozet davranışı bozulmasın.
+- **Kapı:** kaynaktan çıkarılan hesap sanal saatle koşturulur + 3 bozma.
+
+### G.12 — Sağdan sola diller (Arapça · İbranice · Farsça) · **P2**
+- **Ne:** senaryo yönü otomatik (`dir=auto`), hizalama, satır kırma, **altyazı ve `.srt` yönü**,
+  işaretleme dilinin RTL'de bozulmaması.
+- **Kabul:** 3 dilde 3 genişlikte **taşma 0**, kelime bölünmesi 0 (G.1'in kuralı korunur),
+  karışık metinde (Arapça + Latin rakam) sıra doğru.
+- **Not:** arayüz çevirisi ayrı iş — bu madde yalnız **senaryo metni** için.
+
+### G.13 — Erişilebilir yazı tipi seçimi · **P2**
+- **Ne:** bugünkü tek "Disleksi" anahtarı → ölçülmüş **4 aile** (sistem fontlarından) +
+  harf aralığı/ağırlık. **Dış font indirilmeyecek** (OpenDyslexic 150 KB kararı korunuyor).
+- **Kabul:** her ailede 22–110 px arasında kelime bölünmesi 0 ve kontrast ihlali 0.
+
+### G.14 — Kumanda bağlantı zinciri · **P2 (kısmi)**
+- **Ne:** teleprompter.com bağlantıyı kendi seçiyor (BT → LAN → internet). Bizde BT HID ve
+  LAN QR var; **internet yolu sunucu ister → Erdal kararı**. Bu maddede yapılacak olan:
+  hangi yolun **neden** kullanılamadığını panelin açıkça söylemesi (bugün yalnız LAN durumu yazıyor).
+- **Kabul:** üç yol için de tek satırlık sebep; ölü adres gösterme kusuru (L9) tekrarlamasın.
+
+### G.15 — Arka planı bulanıklaştırma (yeşil ekransız) · **ÖNCE ÖLÇÜM**
+- **Sıra:** ① platformun kendi API'si var mı ölç (`getUserMedia` kısıtları / işletim sistemi
+  video efektleri) ② yoksa segmentasyon modeli gerekir ve bu **"sıfır bağımlılık" sözünü kırar**
+  → `ffmpeg.wasm`, `mammoth.js`, OpenDyslexic ile aynı karar süreci, ölçmeden yazılmaz.
+- **Kabul (ölçüm turu):** kare hızı düşüşü ve model boyutu sayıya dökülmeden kod yazılmaz.
+
+### G.16 — PDF içe aktarma · **ALMA (karar yazılı)**
+Gerekçe yukarıdaki tabloda. Bunun yerine **yapıştırma yolunu görünür kıl**: içe aktarma
+ekranında "PDF için: aç, kopyala, Yapıştır — görünmez karakterler temizlenir" satırı zaten var,
+**keşfedilebilirliği** ölçülecek (jargon = görünmezlik kuralı).
+
+### G.17 — Vitrinde ücretsiz olan üstünlükleri say · **P1 (G.10'a eklendi)**
+Rakiplerde **paraya kilitli** ama bizde ücretsiz olanlar, tek tek ölçülerek:
+aynalama (cam rig) · temiz ses/gürültü kapısı · altyazı · filigransız 4K · sesle takip ·
+ikinci cihazda önizleme · sayısal WPM. **Her cümle koddaki karşılığına bağlanacak** (tests/132, 135).
+
+---
+
+## 8 · Sıradaki tur
 
 `G.1 → G.2 → G.3` tek bir yayına (v9.14) sığar ve BIGVU'nun vitrin özelliğini
 **onlardan daha doğru** biçimde karşılar. G.4–G.6 ikinci yayın.
