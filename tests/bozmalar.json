@@ -201,5 +201,12 @@
   "kaynak": "mac",
   "bul": "    /* Kayıt öncesi düzene dön (bkz. startRec'teki not). */\n    if(!fullOncesi) app.classList.remove('full');\n",
   "koy": ""
+ },
+ {
+  "ad": "B5 mod rozeti rAF'a bırakıldı (senkron çağrı söküldü)",
+  "test": "123-tasarim-yuzeyi.js",
+  "kaynak": "telefon",
+  "bul": "  updateHud();\n  raf=requestAnimationFrame(tick);",
+  "koy": "  raf=requestAnimationFrame(tick);"
  }
 ]

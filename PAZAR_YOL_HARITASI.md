@@ -221,7 +221,13 @@ kapıda kanıtlı bozma. **Mac tarafı da BİTTİ:** kayıt başlarken paneller 
 **yalnız gerekirse** geri açılıyor — kullanıcının H ile açtığı düzen saklanıp aynen geri geliyor
 (önce-sakla-sonra-kapat sırası testte kilitli; ters sıra özelliği sessizce yarım bırakırdı).
 Kapıda kanıtlı bozma: geri dönüş satırı sökülünce test kırılıyor.
-**B.5 Durum satırı.** "Sesle takip · tr-TR · mikrofon açık" — kullanıcı hangi moddayım diye denemesin.
+**B.5 Durum satırı.** ✅ **telefon BİTTİ** — HUD'a mod rozeti: `✋ Elle` / `▶︎ Otomatik` /
+`🎤 Sesle · tr-TR`, rol renkleriyle (ses=bilgi mavisi, otomatik=eylem yeşili). **Dil de yazıyor** ve
+bu kasıtlı: sesle takip yanlış dilde açıksa hiçbir kelime eşleşmez, sufle durur, kullanıcı sebebini
+göremez. Tarayıcıda doğrulandı (Elle → Otomatik + rol sınıfı).
+İki ders: ① rozet **senkron** güncelleniyor — rAF'a bırakılınca arka plan sekmesinde hiç koşmuyordu
+(deponun 2 numaralı ölçüm tuzağı); ② tazeleme **arayüz katmanında**, `stopVoice`'un içinde değil —
+o fonksiyon `tests/36`'da yalıtılmış koşuyor ve global bağımlılık **6 iddiayı birden düşürmüştü**.
 **B.6 Klavye + kısayol kartı.** `↑↓` hız, `M` ayna, `R` kayıt, `F` tam ekran, `?` kart.
 **B.7 Onboarding.** 4 adım, atlanabilir, bir kez.
 **B.8 Erişilebilirlik sütunu.** OpenDyslexic + Lexend, kontrast temaları, AA 4.5:1 zorunlu, ekran okuyucu.
@@ -300,3 +306,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 11 | 2026-08-14 | B.4 telefon: odak modu tuzağı kapandı + varsayılan açık | tarayıcıda döngü kanıtlı · peekUI sırası kilitli · 28 bozma | 7/8 yeşil (VER doğru kırmızı) |
 | 12 | 2026-08-14 | B.4 Mac: kayıtta paneller oto-kapanır, düzen geri gelir | sıra iddiası kilitli · 29 bozma kanıtlı · 14 iddia | 7/8 yeşil (VER doğru kırmızı) |
 | 13 | 2026-08-14 | **v9.8 yayın hazırlığı** — VER 9.8 · cache v80 · TR+EN sürüm notları | **KAPI 8/8 YEŞİL** — kampanyanın ilk tam yeşili; push Erdal onayı bekliyor | ✅ 8/8 |
+| 14 | 2026-08-15 | B.5 telefon: mod rozeti (Elle/Otomatik/Sesle+dil) | tarayıcıda geçiş kanıtlı · senkron güncelleme · 30 bozma · **KAPI 8/8 YEŞİL** | ✅ 8/8 |

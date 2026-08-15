@@ -226,6 +226,11 @@
     font-size:11px;font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
   #hud span{background:rgba(0,0,0,.45);padding:4px 9px;border-radius:20px;backdrop-filter:blur(6px)}
   #hud .warn{color:#ffb300}
+  /* Mod rozeti (B.5): rol jetonlarından. Ses = bilgi mavisi (bir şey
+     dinleniyor), otomatik = eylem yeşili (bir şey akıyor), elle = nötr. */
+  #hMode{font-weight:800}
+  #hMode.v{color:var(--r-info-t)}
+  #hMode.a{color:var(--r-action-t)}
   body.hideUI #hud,body.hideUI #bar,body.hideUI #progress{opacity:0;pointer-events:none}
   body.hideUI #recDot,body.hideUI #recFrame{opacity:1}
   #bar,#hud,#progress{transition:opacity .25s}
@@ -486,7 +491,7 @@
   <div id="eyeline"></div>
   <div id="recFrame"></div>
   <div id="progress"></div>
-  <div id="hud"><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
+  <div id="hud"><span id="hMode">✋ Elle</span><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
   <div id="recDot"><i></i><span id="recLbl" role="status" aria-live="polite">KAYITTA</span><span id="recTime" class="tnum">00:00</span></div>
   <div id="audBadge"></div>
   <div id="speedRail"><div id="railV" class="tnum">140</div></div>
@@ -1215,7 +1220,9 @@ const I18N={
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Arayüz dili',
   /* Mac panel sekmesi (B.3) */
-  mTabShoot:'Çekim'},
+  mTabShoot:'Çekim',
+  /* Durum satırı — hangi moddayım (B.5) */
+  modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -1309,7 +1316,9 @@ const I18N={
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Interface language',
   /* Mac panel sekmesi (B.3) */
-  mTabShoot:'Shooting'}
+  mTabShoot:'Shooting',
+  /* Durum satırı — hangi moddayım (B.5) */
+  modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1905,10 +1914,15 @@ function start(){
   $('#tapnote').style.opacity='0';
   if(!st.ilkAkis){ st.ilkAkis=1; save(); }   // bir kez başlattın: ipucu bir daha çıkmasın
   requestWake();
+  /* B.5 mod rozeti SENKRON güncellensin. rAF'a bırakılırsa arka plan
+     sekmesinde hiç koşmaz ve rozet bir önceki modu gösterir — deponun
+     2 numaralı ölçüm tuzağı, ilk denemede tam buna düştüm. */
+  updateHud();
   raf=requestAnimationFrame(tick);
 }
 function stop(why){ running=false; $('#playBtn').textContent='▶︎'; $('#playBtn').classList.remove('playing'); cancelAnimationFrame(raf);
   if(why==='user') markDiff('pause',activeIdx);      // elle duraklattığın yer = zorlanma sinyali
+  updateHud();                                        // bkz. start(): senkron
   measureTempo(); rememberPos(); }
 /* kaldığın yeri senaryoya yaz */
 function rememberPos(){ const s=active(); if(s){ s.pos=Math.round(pos); save(); } }
@@ -1954,6 +1968,17 @@ function updateHud(){
     w.textContent=(drift>0?'+':'')+drift+'s';
     w.classList.toggle('warn',Math.abs(drift)>5);
   } else { w.textContent=st.wpm+' wpm'; w.classList.remove('warn'); }
+  /* B.5 DURUM SATIRI: "hangi moddayım" sorusu deneyerek yanıtlanmasın.
+     Üç mod birbirini dışlar; sesle takip açıksa zamanlı akış zaten durdurulur
+     (o ayrım startRec'te de gözetiliyor), o yüzden sıra: ses > otomatik > elle.
+     Dil de yazılıyor çünkü sesle takip YANLIŞ dilde açıksa hiçbir şey
+     eşleşmez ve kullanıcı sebebini göremez — en pahalı sessiz kusur buydu. */
+  const md=$('#hMode');
+  if(md){
+    if(voiceOn){ md.textContent=t('modeVoice')+' · '+(st.voiceLang||'tr-TR'); md.className='v'; }
+    else if(running){ md.textContent=t('modeAuto'); md.className='a'; }
+    else { md.textContent=t('modeManual'); md.className=''; }
+  }
 }
 
 /* ============ EKRAN UYANIK ============ */
@@ -5769,7 +5794,12 @@ function spRelease(){ clearInterval(spRep); spRep=null; }
 $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
 $('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
 $('#pauseBtn').onclick=e=>{ e.stopPropagation(); togglePauseRec(); };
-$('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); };
+/* Mod rozeti tazelemesi BURADA, stopVoice/startVoice'un İÇİNDE değil.
+   O iki fonksiyon testlerde YALITILMIŞ koşturuluyor (tests/36 kaynaktan
+   çıkarıp sentetik ortamda çalıştırıyor); içlerine updateHud koyunca
+   'updateHud is not defined' ile 6 iddia birden düştü. Mantık katmanı
+   arayüz global'ine bağlanmamalı — kapı bunu doğru yakaladı. */
+$('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); updateHud(); };
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
 $('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };

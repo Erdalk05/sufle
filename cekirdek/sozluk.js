@@ -102,7 +102,9 @@ const I18N={
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Arayüz dili',
   /* Mac panel sekmesi (B.3) */
-  mTabShoot:'Çekim'},
+  mTabShoot:'Çekim',
+  /* Durum satırı — hangi moddayım (B.5) */
+  modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -196,5 +198,7 @@ const I18N={
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Interface language',
   /* Mac panel sekmesi (B.3) */
-  mTabShoot:'Shooting'}
+  mTabShoot:'Shooting',
+  /* Durum satırı — hangi moddayım (B.5) */
+  modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual'}
 };

@@ -15,6 +15,9 @@ const {telefonYolu, macYolu, oku}=require('./kaynak.js');
 
 const tel = oku(telefonYolu());
 const mac = oku(macYolu());
+const kodTel = (tel.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
+const cikarKod = (re, ad) => { const m = kodTel.match(re);
+  if (!m) { ok('kaynaktan çıkarılabildi: ' + ad, false); return ''; } return m[0]; };
 
 /* ---------- 1. JETONLAR GERÇEKTEN KULLANILIYOR ---------- */
 {
@@ -118,4 +121,40 @@ const mac = oku(macYolu());
   for (const ikon of ['i-ayarlar','i-senaryo','i-hazir','i-mikrofon']) {
     ok('sembol tanımlı: ' + ikon, new RegExp('<symbol id="' + ikon + '"').test(tel));
   }
+}
+
+/* ---------- 6. DURUM SATIRI: HANGİ MODDAYIM (B.5) ---------- */
+{
+  /* Kullanıcı hangi modda olduğunu DENEYEREK anlıyordu. Üç mod birbirini
+     dışlar; sıra ses > otomatik > elle, çünkü sesle takip açıkken zamanlı
+     akış zaten durduruluyor. Tarayıcıda doğrulandı: Elle -> Otomatik geçişi
+     ve rol sınıfı ('a') uygulanıyor.
+
+     DİL DE YAZILIYOR ve bu kasıtlı: sesle takip YANLIŞ dilde açıksa hiçbir
+     kelime eşleşmez, sufle durur ve kullanıcı sebebini göremez. Sessiz
+     kusurun en pahalısı buydu. */
+  ok('telefon: mod rozeti HUD içinde', /<div id="hud"><span id="hMode">/.test(tel));
+  const uh = cikarKod(/function updateHud\(\)\{[\s\S]*?\n\}/, 'updateHud');
+  ok('rozet üç modu da ayırıyor',
+     /t\('modeVoice'\)/.test(uh) && /t\('modeAuto'\)/.test(uh) && /t\('modeManual'\)/.test(uh));
+  ok('sesle takipte DİL de yazıyor', /st\.voiceLang\|\|'tr-TR'/.test(uh));
+  ok('öncelik sırası ses > otomatik > elle',
+     uh.indexOf('voiceOn') >= 0 && uh.indexOf('voiceOn') < uh.indexOf('else if(running)'));
+
+  /* rAF TUZAĞI: mod değişince rozet SENKRON güncellenmeli. rAF'a bırakılırsa
+     arka plan sekmesinde hiç koşmaz ve rozet bir önceki modu gösterir —
+     bu tur ilk denemede tam buna düşüldü. */
+  const st_ = cikarKod(/function start\(\)\{[\s\S]*?raf=requestAnimationFrame\(tick\);\n\}/, 'start');
+  ok('start() rozeti rAF öncesi SENKRON günceller',
+     st_.indexOf('updateHud();') >= 0 && st_.indexOf('updateHud();') < st_.indexOf('requestAnimationFrame'));
+  ok('stop() de senkron günceller', /measureTempo\(\); rememberPos\(\); \}/.test(kodTel) &&
+     /updateHud\(\);\s*\/\/ bkz\. start/.test(kodTel));
+  /* Tazeleme ARAYÜZ katmanında olmalı, stopVoice/startVoice'un İÇİNDE değil:
+     o iki fonksiyon tests/36'da kaynaktan çıkarılıp YALITILMIŞ koşturuluyor ve
+     içlerine arayüz global'i koyunca 6 iddia birden düştü. Mantık katmanı
+     arayüz global'ine bağlanmasın. */
+  ok('ses düğmesi rozeti tazeliyor (arayüz katmanı)',
+     /voiceOn\?stopVoice\(\):startVoice\(\); updateHud\(\);/.test(kodTel));
+  ok('stopVoice arayüz global\'ine bağlı DEĞİL (yalıtım korunuyor)',
+     !/function stopVoice\(\)\{[^}]*updateHud/.test(kodTel));
 }
