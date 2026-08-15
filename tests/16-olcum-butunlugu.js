@@ -72,7 +72,14 @@ ok('yalnız boşluk eklenince de yakalanıyor', damga('bir iki')!==damga('bir  i
 // kabul ediyor. Mac okuma süresini "Infinity:NaN" gösteriyordu.
 const mac=oku(macYolu());
 ok('Mac fmtTime sonsuzu ekrana basmıyor', /if\(!isFinite\(s\)\) return '—:—';/.test(mac));
-ok('Mac süre hesabı sıfıra bölmüyor', /Math\.max\(20,state\.speed\|\|0\)/.test(mac));
+/* G.11: koruma ÇEKİRDEĞE taşındı (tahminiSure hızı 20nin altına düşürmüyor)
+   ve Mac artık o hesabı çağırıyor. İddia yer değiştirdi, GEVŞEMEDİ: hem
+   çağrının varlığı hem çekirdekteki tabanın kendisi ölçülüyor. */
+ok('Mac süre hesabı ortak çekirdeği çağırıyor', /tahminiSure\(wc, state\.speed/.test(mac));
+{
+  const tempo=require('./kaynak').cekirdekOku('tempo.js','SUFLE_TEMPO');
+  ok('çekirdek hız tabanı sıfıra bölmeyi engelliyor', /Math\.max\(20, \+wpm\|\|0\)/.test(tempo));
+}
 ok('kumanda hâlâ 0 gönderebiliyor (koruma alt katmanda)', /Math\.max\(0,Math\.min\(320/.test(mac));
 // davranış
 const fmt=s=>{ if(!isFinite(s)) return '—:—'; s=Math.max(0,Math.floor(s));

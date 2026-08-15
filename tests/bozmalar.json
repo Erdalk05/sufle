@@ -1188,5 +1188,82 @@
   "kaynak": "mac",
   "bul": "    temaKartlariCiz(true);",
   "koy": "    0;"
+ },
+ {
+  "ad": "G.11 duraklamalar hedeften düşülmüyor (çekim taşar)",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "  const okumaSn = h - d;",
+  "koy": "  const okumaSn = h;"
+ },
+ {
+  "ad": "G.11 sığmayan metin sessizce kırpılıyor (sebep yok)",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "  if(gereken > ust) return {wpm, sigar:false, sebep:'hizli', okumaSn, gereken};",
+  "koy": "  if(gereken > ust) return {wpm, sigar:true, sebep:null, okumaSn, gereken};"
+ },
+ {
+  "ad": "G.11 adıma oturtma AŞAĞI yuvarlıyor (hedef aşılır)",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "  const oturmus = Math.ceil(gereken/a)*a;",
+  "koy": "  const oturmus = Math.floor(gereken/a)*a;"
+ },
+ {
+  "ad": "G.11 bekleme süresi sınırsız (sufle dakikalarca durur)",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "      if(m) ms+=Math.min(10000, Math.round(parseFloat(m[1].replace(',','.'))*1000));",
+  "koy": "      if(m) ms+=Math.round(parseFloat(m[1].replace(',','.'))*1000);"
+ },
+ {
+  "ad": "G.11 hız sıfırken sonsuz süre üretiliyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "  const h=Math.max(20, +wpm||0);",
+  "koy": "  const h=(+wpm||0);"
+ },
+ {
+  "ad": "G.11 nefes duraklaması sayılmıyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "    for(let i=1;i<sat.length;i++) if(!sat[i].trim()) ms+=420;",
+  "koy": "    for(let i=1;i<sat.length;i++) if(!sat[i].trim()) ms+=0;"
+ },
+ {
+  "ad": "G.11 yalnız duraklama hedefi doldurduğunda sebep söylenmiyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "tempo",
+  "bul": "    return {wpm:ust, sigar:false, sebep:'duraklama', okumaSn:0, gereken:null};",
+  "koy": "    return {wpm:ust, sigar:true, sebep:null, okumaSn:0, gereken:null};"
+ },
+ {
+  "ad": "G.11 telefonda hesaplanan hız uygulanmıyor (düğme ölü)",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "telefon",
+  "bul": "  st.wpm=r.wpm; sl.value=r.wpm; apply(); save();",
+  "koy": "  sl.value=r.wpm;"
+ },
+ {
+  "ad": "G.11 Macte hesaplanan hız uygulanmıyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "mac",
+  "bul": "    state.speed=r.wpm; sl.value=r.wpm; applyAll(); save(); updateStats();",
+  "koy": "    sl.value=r.wpm; updateStats();"
+ },
+ {
+  "ad": "G.11 Mac tahmini yine duraklamaları saymıyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "mac",
+  "bul": "    const sn=tahminiSure(wc, state.speed, duraklamaSaniye(metin, true));",
+  "koy": "    const sn=tahminiSure(wc, state.speed, 0);"
+ },
+ {
+  "ad": "G.11 hedef yokken sessizce hiçbir şey olmuyor",
+  "test": "153-sureye-sigdir.js",
+  "kaynak": "telefon",
+  "bul": "  if(!st.target){ toast(m('fitNoTarget')); return; }",
+  "koy": "  if(!st.target){ return; }"
  }
 ]

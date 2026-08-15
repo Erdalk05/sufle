@@ -1,5 +1,9 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,oku,cikar,cekirdekOku}=require('./kaynak');
+/* G.11: hesap cekirdek/tempo.jse taşındı (Mac de aynı sayıyı göstersin
+   diye). Tezgâh çekirdeği de yüklüyor, yoksa çıkarılan sarmalayıcı
+   tanımsız fonksiyon çağırır ve test KENDİ eksiğini bildirir. */
+const TEMPO=cekirdekOku('tempo.js','SUFLE_TEMPO');
 const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* TAHMİNİ SÜRE DURAKLAMALARI SAYMIYORDU
@@ -21,7 +25,7 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    bakarak verdiği hâlde. */
 
 const D=(t,breathe=false)=>new Function('st',
-  cikar(kod,/function duraklamaSn\(t\)\{[\s\S]*?\n\}/,'duraklamaSn')+'; return duraklamaSn;')({breathe})(t);
+  TEMPO+'\n'+cikar(kod,/function duraklamaSn\(t\)\{[\s\S]*?\n\}/,'duraklamaSn')+'; return duraklamaSn;')({breathe})(t);
 
 /* ---------- İŞARET SÜRELERİ markup() İLE AYNI ---------- */
 ok('/ = 0,35 sn', D('a / b') === 0.35);
@@ -77,8 +81,12 @@ ok('baştaki boş satır sayılmıyor', D('\nmetin',true) === 0);
    Biri unutulursa aynı ekranda iki farklı süre görünür ve hangisinin doğru
    olduğu belli olmaz. */
 const sayfa=kod;
+/* DESENLER İDDİAYA GEVŞETİLDİ (G.11): hesap ortak çekirdeğe taşındı, yani
+   formülün YAZILIŞI değişti ama iddia aynı — üç tahmin de duraklamayı
+   hesaba katıyor. Bu tam da CLAUDE.mddeki "kodun biçimine değil iddiaya
+   bağlan" kuralının vakası. */
 ok('platform açıklamasında duraklama sayılıyor',
-   /const secs=countWords\(_mt\)\/st\.wpm\*60 \+ duraklamaSn\(_mt\);/.test(sayfa));
+   /const secs=tahminiSure\(countWords\(_mt\), st\.wpm, duraklamaSn\(_mt\)\)/.test(sayfa));
 ok('hazırlık kontrolünde duraklama sayılıyor',
    /const secs=wc\/st\.wpm\*60 \+ duraklamaSn\(_mt2\);/.test(sayfa));
 ok('konuşulabilirlik denetiminde duraklama sayılıyor',

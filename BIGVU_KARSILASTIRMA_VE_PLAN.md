@@ -277,14 +277,23 @@ Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** ar
 
 ## 7 · TODO — teleprompter.com turundan eklenenler
 
-### G.11 — Süreye sığdır (sabit süreli kaydırma) · **P1**
-- **Ne:** "Bu metni 60 saniyede bitir" → hız **kendiliğinden** hesaplansın. Bugün `targetDur`
-  yalnız geri/ileri rozeti gösteriyor, hızı sürmüyor.
-- **Neden:** Reels/Shorts'ta süre sınırı işin merkezi; onlarda var, bizde yarım.
-- **Kabul:** 5 metin × 3 hedef süre (30/60/90 sn) ile ölçüm, bitiş sapması **≤%2**;
-  **duraklama işaretleri (`/`, `//`, `(2)`) hesaba katılsın** (tahmini süre kusuru buradan çıkmıştı);
-  mevcut rozet davranışı bozulmasın.
-- **Kapı:** kaynaktan çıkarılan hesap sanal saatle koşturulur + 3 bozma.
+### G.11 — Süreye sığdır (sabit süreli kaydırma) · **P1** · ✅ **BİTTİ (v9.14)**
+- **Ne yapıldı:** hedef süre verilip **Süreye sığdır**a basılınca gereken WPM hesaplanıp
+  uygulanıyor. **Duraklama işaretleri hedeften düşülüyor** (60 sn hedefte 12 sn duraklama →
+  metin 48 saniyede okunmalı).
+- **İkinci eksik ölçülerek bulundu:** masaüstünde hedef süre **hiç yoktu** ve tahmini süre
+  **duraklamaları saymıyordu** (`kelime/hız`). Telefonda düzeltilmiş, Mac'e taşınmamış —
+  kullanıcı "sınıra uygun" görüp çekimde sınırı aşıyordu. İkisi de kapandı.
+- **Sığmıyorsa sessizce kırpmıyor:** üç ayrı sebep (yalnız duraklamalar hedefi dolduruyor ·
+  gereken hız üst sınırın üstünde · metin çok kısa), her biri kendi mesajıyla, iki dilde.
+- **GERÇEK TARAYICIDA ÖLÇÜLDÜ ve bir tutarsızlık çıktı:** hesap 79 WPM derken kaydırıcı
+  5lik adımlarla 80e oturuyordu — mesajda yazan ile uygulanan ayrışıyordu. Çekirdek artık
+  adıma **yukarı** yuvarlıyor (aşağı yuvarlamak metni uzatır, hedefi aşar). Sonrası:
+  30 sn hedef → **80 WPM**, mesaj ve kaydırıcı aynı sayıyı söylüyor.
+- **Hesap `cekirdek/tempo.js`de**: iki kabuk aynı sayıyı göstermek zorunda.
+- **Kapı:** `tests/153` **87 iddia** + **11 kasıtlı bozma** (toplam 181). İki eski testin
+  iddiası yer değiştirdi ve **gevşemedi** (`tests/16` sıfıra bölme koruması çekirdeğe,
+  `tests/60` formül yerine iddiaya).
 
 ### G.12 — Sağdan sola diller (Arapça · İbranice · Farsça) · **P2**
 - **Ne:** senaryo yönü otomatik (`dir=auto`), hizalama, satır kırma, **altyazı ve `.srt` yönü**,

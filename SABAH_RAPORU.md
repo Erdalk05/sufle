@@ -92,6 +92,32 @@ artık kartları zorla çiziyor; Mac tarafında aynı iş sekme değişimine ba�
 `tests/152` **86 iddia** + **12 kasıtlı bozma**. Bozma turu testimin üç yerde zayıf
 olduğunu gösterdi (tema farkı, saydamlık ve `aria-pressed`) — üçü de sıkılaştırıldı.
 
+### ✅ G.11 — Süreye sığdır · v9.14
+
+**İki eksik ölçülerek bulundu.** ① Telefonda "Hedef süre" yalnız bir **rozet** besliyordu
+(ne kadar geri/ileri olduğun); hızı kullanıcı tahmin etmek zorundaydı. Rakipte bu iş
+"sabit süreli kaydırma" diye satılıyor. ② **Masaüstünde hedef süre hiç yoktu ve tahmini
+süre duraklamaları saymıyordu** (`kelime/hız`) — telefonda düzeltilmiş, Mac'e taşınmamış:
+kullanıcı burada "sınıra uygun" görüp çekimde sınırı aşabiliyordu.
+
+**Gelen:** hedef süreyi ver, **Süreye sığdır**a bas; gereken hız hesaplanıp uygulanıyor.
+**Duraklama işaretleri hedeften düşülüyor** (60 saniyelik hedefte 12 saniye duraklama varsa
+metin 48 saniyede okunmalı) — bunu atlamak "sığacak" deyip çekimde taşırmak demekti.
+
+**Sığmıyorsa sessizce kırpmıyor**, üç ayrı sebep söylüyor: yalnız duraklamalar hedefi
+dolduruyorsa (metni hızlandırmak çözmez), gereken hız üst sınırın üstündeyse, ya da metin
+hedef için çok kısaysa. Hesap `cekirdek/tempo.js`de, iki kabuk aynı sayıyı gösteriyor.
+
+**GERÇEK TARAYICIDA ÖLÇÜLDÜ** ve bir tutarsızlık çıktı: hesap **79 WPM** derken kaydırıcı
+5lik adımlarla **80**e oturuyordu — yani mesajda yazan ile uygulanan ayrışıyordu. Çekirdek
+artık kaydırıcının adımına **yukarı** yuvarlıyor (aşağı yuvarlamak metni uzatır, yani hedefi
+aşar). Ölçüm sonrası: 30 sn hedef → 80 WPM, mesaj ve kaydırıcı aynı sayıyı söylüyor.
+
+`tests/153` **87 iddia** + **11 kasıtlı bozma**. Kapı iki eski testin iddiasını da yerinden
+oynattı ve ikisi de **gevşetilmeden** taşındı: `tests/16`nın sıfıra bölme koruması artık
+çekirdekte ölçülüyor, `tests/114` benim yeni testimde bir "iç dize birleştirmesi kilidi"
+yakaladı (haklıydı) ve iddia hesaba bağlandı.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -481,10 +507,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **1 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **6 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5285 test** (gece başında 732) · yeni test dosyası: 39–152
+- **5373 test** (gece başında 732) · yeni test dosyası: 39–153
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

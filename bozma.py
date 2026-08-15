@@ -38,6 +38,7 @@ KAYNAK = {
     # G.2 — altyazı tema tablosu iki kabukta da gömülü; okunurluk kuralı
     # burada yaşıyor, yani bozulabilmesi şart.
     'altyazi': (os.path.join(REPO, 'cekirdek', 'altyazi.js'), 'SUFLE_ALTYAZI'),
+    'tempo': (os.path.join(REPO, 'cekirdek', 'tempo.js'), 'SUFLE_TEMPO'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

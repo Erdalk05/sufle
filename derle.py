@@ -70,6 +70,10 @@ PLAN = [
     # videoya yakılıyor; tablo kopyalansaydı biri düzeltilip diğeri
     # unutulurdu. Tablo veri, çizim kabuğa özel.
     ('altyazi.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.11 — süre tahmini ve hedefe sığdırma. İki kabuk AYNI sayıyı
+    # göstermek zorunda: telefonda "sınıra uygun" görüp masaüstünde taşan
+    # bir metin, kullanıcının hangi ekrana güveneceğini bilememesi demek.
+    ('tempo.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

@@ -7,7 +7,13 @@
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
+ tr:{fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
+  fitNoText:'Senaryo boş — sığdırılacak metin yok',
+  fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',
+  fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',
+  fitTooFast:'Bu hedefe sığmaz: {g} WPM gerekiyor, en yüksek {u}. Metni kısalt ya da hedefi büyüt.',
+  fitTooSlow:'Metin bu hedef için çok kısa: {g} WPM gerekiyor, en düşük {a}. Hız en düşüğe çekildi.',
+  noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
   recErr:'Kayıt başlatılamadı',needCam:'Önce kamerayı aç',voiceNo:'Bu tarayıcı sesle takibi desteklemiyor',
   voiceOn:'🎤 Konuşmaya başla — metin seni takip edecek',wipeStuck:'Depo cevap vermiyor, silme yarıda kaldı',takeGone:'Bu çekim artık arşivde yok',wakeMulti:'· TEK kelime olmalı, boşluklu tetik hiçbir zaman tanınmaz',wakeBad:'· Bu tetik harf ya da rakam içermiyor, tanınamaz',vlSet:'🎤 Sesle takip dili',voiceOff:'Sesle takip kapalı',micDenied:'Mikrofon izni gerekli',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
@@ -68,7 +74,13 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
+ en:{fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
+  fitNoText:'The script is empty — there is no text to fit',
+  fitOk:'Pace set to {w} WPM — the script now takes about {s}',
+  fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',
+  fitTooFast:'It does not fit: {g} WPM would be needed and the maximum is {u}. Shorten the script or raise the target.',
+  fitTooSlow:'The script is too short for this target: {g} WPM would be needed and the minimum is {a}. Pace set to the minimum.',
+noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',

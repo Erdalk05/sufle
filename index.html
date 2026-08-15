@@ -1051,6 +1051,8 @@
 
     <div class="row"><label for="target" data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
     <input type="range" id="target" min="0" max="600" step="15" value="0">
+    <div class="sheetbtns"><button class="cancel" id="fitBtn" data-i18n="fitBtn">Süreye sığdır</button></div>
+    <div class="hint" id="fitHint" data-i18n="fitHint">Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.</div>
     <div class="hint" data-i18n="targetHint">Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.</div>
 
     <div class="row"><label data-i18n="voiceLang">Sesle takip dili</label></div>
@@ -1452,7 +1454,9 @@ const I18N={
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
-  capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
+  capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',
+  fitBtn:'Süreye sığdır',
+  fitHint:'Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
   capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
   kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
   profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
@@ -1574,7 +1578,9 @@ const I18N={
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
-  capTema:'Caption look',kartOrnek:'You record as you read',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
+  capTema:'Caption look',kartOrnek:'You record as you read',
+  fitBtn:'Fit to duration',
+  fitHint:'Set a target duration and tap this: the pace is set so the script ends exactly then. Pause marks are taken into account.',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
   capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
   kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
   profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
@@ -1645,7 +1651,13 @@ const I18N={
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
+ tr:{fitNoTarget:'Önce hedef süre seç — sıfırken sığdıracak bir hedef yok',
+  fitNoText:'Senaryo boş — sığdırılacak metin yok',
+  fitOk:'Hız {w} WPM yapıldı — metin yaklaşık {s} sürede biter',
+  fitPause:'Bu hedefe sığmaz: yalnız duraklama işaretleri {d} saniye tutuyor. İşaretleri azalt ya da hedefi büyüt.',
+  fitTooFast:'Bu hedefe sığmaz: {g} WPM gerekiyor, en yüksek {u}. Metni kısalt ya da hedefi büyüt.',
+  fitTooSlow:'Metin bu hedef için çok kısa: {g} WPM gerekiyor, en düşük {a}. Hız en düşüğe çekildi.',
+  noCam:'Kameraya erişilemedi',camHelp:'Ayarlar → Safari → Kamera izni verin, ya da kamerasız modu kullanın.',
   recErr:'Kayıt başlatılamadı',needCam:'Önce kamerayı aç',voiceNo:'Bu tarayıcı sesle takibi desteklemiyor',
   voiceOn:'🎤 Konuşmaya başla — metin seni takip edecek',wipeStuck:'Depo cevap vermiyor, silme yarıda kaldı',takeGone:'Bu çekim artık arşivde yok',wakeMulti:'· TEK kelime olmalı, boşluklu tetik hiçbir zaman tanınmaz',wakeBad:'· Bu tetik harf ya da rakam içermiyor, tanınamaz',vlSet:'🎤 Sesle takip dili',voiceOff:'Sesle takip kapalı',micDenied:'Mikrofon izni gerekli',deleted:'Silindi',copied:'Panodan alındı',clipNo:'Panoya erişilemedi — elle yapıştır',
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
@@ -1706,7 +1718,13 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
+ en:{fitNoTarget:'Pick a target duration first — there is nothing to fit to at zero',
+  fitNoText:'The script is empty — there is no text to fit',
+  fitOk:'Pace set to {w} WPM — the script now takes about {s}',
+  fitPause:'It does not fit: the pause marks alone take {d} seconds. Remove some marks or raise the target.',
+  fitTooFast:'It does not fit: {g} WPM would be needed and the maximum is {u}. Shorten the script or raise the target.',
+  fitTooSlow:'The script is too short for this target: {g} WPM would be needed and the minimum is {a}. Pace set to the minimum.',
+noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use prompter-only mode.',
   recErr:'Could not start recording',needCam:'Open the camera first',voiceNo:'This browser has no speech recognition',
   voiceOn:'🎤 Start talking — the script will follow you',wipeStuck:'Storage is not responding, deletion stopped early',takeGone:'That take is no longer in the archive',wakeMulti:'· Must be ONE word, a trigger with spaces is never recognised',wakeBad:'· This trigger has no letters or digits, so it can never match',vlSet:'🎤 Voice-follow language',voiceOff:'Voice follow off',micDenied:'Microphone permission needed',deleted:'Deleted',copied:'Pasted from clipboard',clipNo:'Clipboard blocked — paste manually',
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
@@ -2922,7 +2940,7 @@ function modeLine(){
     ? 'Kendi ayarların. Bir platform seçersen çerçeve, tempo ve süre sınırı birlikte ayarlanır.'
     : 'Your own settings. Pick a platform to set frame, pace and time limit together.';
   const _mt=$('#text').value||active().text||'';
-  const secs=countWords(_mt)/st.wpm*60 + duraklamaSn(_mt);
+  const secs=tahminiSure(countWords(_mt), st.wpm, duraklamaSn(_mt));
   const fit = M.limit ? (secs<=M.limit
       ? (L==='tr'?' · metnin ~'+clock(secs)+' → sınıra uygun ✓':' · script ~'+clock(secs)+' → fits ✓')
       : (L==='tr'?' · metnin ~'+clock(secs)+' → '+Math.ceil(secs-M.limit)+' sn FAZLA ✗':' · script ~'+clock(secs)+' → '+Math.ceil(secs-M.limit)+'s OVER ✗'))
@@ -5700,23 +5718,10 @@ function srtToText(t){
    kullanıcı bunu ancak yayımlarken öğreniyor — üstelik karar tam da bu sayıya
    bakılarak veriliyor.
    Kurallar markup() ile AYNI olmalı; ayrışırsa gösterilen süre yine yalan olur. */
-function duraklamaSn(t){
-  let ms=0;
-  for(const x of String(t||'').split(/\s+/)){
-    if(x==='//') ms+=800;
-    else if(x==='/') ms+=350;
-    else {
-      const mw=x.match(/^\((\d+(?:[.,]\d+)?)s?\)$/);
-      if(mw) ms+=Math.min(10000,Math.round(parseFloat(mw[1].replace(',','.'))*1000));
-    }
-  }
-  if(st.breathe){
-    // Paragraf sonu = boş satır; measure() içindeki .ln.br kuralıyla aynı.
-    const sat=String(t||'').split(/\r?\n/);
-    for(let i=1;i<sat.length;i++) if(!sat[i].trim()) ms+=420;
-  }
-  return ms/1000;
-}
+/* G.11: hesap ÇEKİRDEĞE taşındı (cekirdek/tempo.js). Burada kalan tek şey
+   nefes ayarını iletmek — masaüstünde bu hesap hiç yoktu ve tahmini süre
+   duraklamaları saymıyordu; kopya yerine tek kaynak. */
+function duraklamaSn(t){ return duraklamaSaniye(t, !!st.breathe); }
 function stripInvisible(x){
   return (x||'')
     .replace(/[\u2028\u2029]/g,'\n')                   // satır/paragraf ayracı = gerçek satır sonu
@@ -6559,6 +6564,89 @@ function duzMetin(t){
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:metin.js== */
+/* ==CEKIRDEK:tempo.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/tempo.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* TEMPO — süre tahmini ve hedefe sığdırma. TEK KAYNAK (G.11).
+
+   ÖLÇÜLEN BAŞLANGIÇ (2026-08-16):
+   ① Telefonda "Hedef süre (pacing)" yalnız bir ROZET besliyordu: ne kadar
+      geri/ileri olduğunu söylüyor ama hızı SÜRMÜYOR. Kullanıcı 60 saniyeye
+      sığdırmak istiyorsa WPM ayarını kendi tahmin etmek zorundaydı.
+      Rakipte (teleprompter.com) bu iş "sabit süreli kaydırma" diye satılıyor.
+   ② Masaüstünde hedef süre HİÇ YOK ve tahmini süre duraklamaları saymıyor
+      (`kelime/hız*60`). Telefonda bu kusur düzeltilmişti — 20 cümlelik
+      nefes işaretli bir metinde ölçülen sapma 7 saniyeydi — ama Mac'e hiç
+      taşınmamış. Yarım özellik, bu deponun 1 numaralı hata sınıfı.
+
+   Hesap çekirdekte çünkü iki kabuk da aynı sayıyı göstermek zorunda:
+   kullanıcı telefonda "sınıra uygun" görüp masaüstünde 7 saniye taşarsa
+   hangisine güveneceğini bilemez. */
+
+/* İşaretlerin durdurduğu toplam süre (saniye).
+   `/` kısa, `//` uzun, `(2)` sayılı bekleme; nefes açıksa paragraf sonları.
+   Değerler sufle motorundaki duraklama süreleriyle BİREBİR aynı olmalı,
+   yoksa tahmin ile gerçek çekim ayrışır. */
+function duraklamaSaniye(metin, nefes){
+  let ms=0;
+  for(const x of String(metin||'').split(/\s+/)){
+    if(x==='//') ms+=800;
+    else if(x==='/') ms+=350;
+    else {
+      const m=x.match(/^\((\d+(?:[.,]\d+)?)s?\)$/);
+      if(m) ms+=Math.min(10000, Math.round(parseFloat(m[1].replace(',','.'))*1000));
+    }
+  }
+  if(nefes){
+    const sat=String(metin||'').split(/\r?\n/);
+    for(let i=1;i<sat.length;i++) if(!sat[i].trim()) ms+=420;
+  }
+  return ms/1000;
+}
+
+/* Metnin tahmini süresi: okuma + duraklamalar. Hız sıfır/negatif gelirse
+   (kumandadan düşebiliyor) anlamlı bir tabana çekiliyor — sıfıra bölmek
+   Sonsuz üretir ve ekranda "~Infinity" yazardı. */
+function tahminiSure(kelime, wpm, duraklama){
+  const h=Math.max(20, +wpm||0);
+  return (+kelime||0)/h*60 + (+duraklama||0);
+}
+
+/* HEDEFE SIĞDIRMA. Verilen süre içinde bitirmek için gereken WPM.
+   Duraklamalar hedeften DÜŞÜLÜR: 60 saniyelik hedefte 12 saniye duraklama
+   varsa metin 48 saniyede okunmalı. Bunu atlamak, kullanıcıya sığacak
+   diyip çekimde taşırmak demektir.
+
+   DÜRÜSTLÜK SINIRI: sığmıyorsa SESSİZCE KIRPMIYORUZ. Üç ayrı sebep var ve
+   üçü de kullanıcıya farklı bir şey söyler:
+     'duraklama' → yalnız işaretler hedefi dolduruyor, metni kısaltmak yetmez
+     'hizli'     → gereken hız üst sınırın üstünde (okunamaz)
+     'yavas'     → gereken hız alt sınırın altında (metin çok kısa)
+   Her durumda `wpm` yine döner (sınıra çekilmiş hâliyle) ki arayüz isterse
+   uygulayabilsin; ama `sigar` false ve `sebep` dolu olur. */
+function gerekenWpm(kelime, hedefSn, duraklama, altSinir, ustSinir, adim){
+  const k=+kelime||0, h=+hedefSn||0, d=+duraklama||0;
+  const alt=+altSinir||40, ust=+ustSinir||320;
+  const a=+adim>0 ? +adim : 1;
+  if(k<=0 || h<=0) return null;
+  const okumaSn = h - d;
+  if(okumaSn <= 0)
+    return {wpm:ust, sigar:false, sebep:'duraklama', okumaSn:0, gereken:null};
+  const gereken = Math.round(k/okumaSn*60);
+  /* KAYDIRICININ ADIMINA OTURT — ve YUKARI yuvarla.
+     ÖLÇÜLDÜ (gerçek Chrome): hesap 79 WPM dedi, kaydırıcı 5lik adımlarla
+     80e oturdu; yani mesaj 79 yazarken uygulanan 80 oluyordu — "ekranda
+     yazan ile eldeki ayrışıyor" sınıfı. Yön de rastgele değil: daha DÜŞÜK
+     hız metni UZATIR, yani hedefi aşar. Sığdırmanın işi budur, o yüzden
+     yukarı yuvarlanıyor (biraz erken bitmek, taşmaktan iyidir). */
+  const oturmus = Math.ceil(gereken/a)*a;
+  const wpm = Math.max(alt, Math.min(ust, oturmus));
+  if(gereken > ust) return {wpm, sigar:false, sebep:'hizli', okumaSn, gereken};
+  if(gereken < alt) return {wpm, sigar:false, sebep:'yavas', okumaSn, gereken};
+  return {wpm, sigar:true, sebep:null, okumaSn, gereken};
+}
+/* ==/CEKIRDEK:tempo.js== */
 /* ==CEKIRDEK:altyazi.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/altyazi.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -6898,8 +6986,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.'},
  '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
        en:'<b>Trimming no longer runs past the end of the video.</b> Dragging the start to the very end, or a very short take, could select a region that does not exist, so the duration on screen and the take in your hand could drift apart. The selection now always stays inside the video.<br><b>Duration unit is correct in English too</b>: the trim labels used the Turkish unit regardless of language.<br><b>Desktop</b>: both fixes landed there as well, where the whole info line had stayed Turkish.'},
  '9.12':{tr:'<b>Ses durunca sesle takip artık ölmüyor.</b> iPhone tanımayı her sessizlikte kapatıyor; uygulama bunu arıza sanıyor ve altıncı duraklamadan sonra özelliği kendisi kapatıyordu — ölçüldü, yaklaşık 13 saniye sürüyordu. Artık duraklama arıza sayılmıyor: tanıma 150 ms içinde geri dönüyor ve duraklamadan sonraki ilk kelimeler de atlanmıyor.<br><b>Gerçek arıza koruması duruyor</b>: tanıma açılıp hiç ses gelmezse yine sebebini söyleyip kapanıyor.<br><b>Masaüstü</b>: aynı düzeltme oraya da geldi. Ayrıca orada tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi.',
@@ -7245,6 +7333,24 @@ $('#eyeRecipe').onclick=applyEyeRecipe;
 bind('#weight','weight',()=>olcPlanla());
 bind('#ls','ls',()=>olcPlanla());
 bind('#scrimSl','scrim'); bind('#target','target');
+/* G.11 — SÜREYE SIĞDIR. Hedef süre bugüne dek yalnız bir rozet besliyordu
+   (ne kadar geri/ileriyim); hızı kullanıcı tahmin etmek zorundaydı.
+   Artık gereken WPM hesaplanıp uygulanıyor ve SONUÇ SÖYLENİYOR.
+   Sığmıyorsa sessizce kırpmıyoruz: sebebi üç ayrı mesajla yazılıyor. */
+$('#fitBtn').onclick=()=>{
+  const metin=$('#text').value||active().text||'';
+  const kelime=countWords(metin);
+  if(!st.target){ toast(m('fitNoTarget')); return; }
+  if(!kelime){ toast(m('fitNoText')); return; }
+  const sl=$('#wpm');
+  const r=gerekenWpm(kelime, st.target, duraklamaSn(metin), +sl.min||40, +sl.max||320, +sl.step||1);
+  if(!r){ toast(m('fitNoText')); return; }
+  st.wpm=r.wpm; sl.value=r.wpm; apply(); save();
+  if(r.sigar){ toast(m('fitOk').replace('{w}',r.wpm).replace('{s}',clock(st.target))); return; }
+  if(r.sebep==='duraklama') toast(m('fitPause').replace('{d}',Math.ceil(duraklamaSn(metin))));
+  else if(r.sebep==='hizli') toast(m('fitTooFast').replace('{g}',r.gereken).replace('{u}',sl.max));
+  else toast(m('fitTooSlow').replace('{g}',r.gereken).replace('{a}',sl.min));
+};
 $('#capOffset').oninput=e=>{ st.capOffset=(+e.target.value)/10; $('#vCapOff').textContent=st.capOffset.toFixed(1); save(); };
 $('#capBtn').onclick=()=>shareCaptions('srt');
 $('#pkgBtn').onclick=paketPaylas;
