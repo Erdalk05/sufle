@@ -291,7 +291,13 @@ tarayıcıda doğrulandı. `tests/122` kapsamı **0 eksik** diyordu çünkü yal
 sayıyor. Etiketler sözlüğe bağlandı (`mVoiceIdle`/`mVoiceOn`), `applyLang` dil değişiminde de
 tazeliyor. Bu, "kapsam sayısı yeşil" güvencesinin sınırını gösteriyor: **kapsam ölçer, kanıtlamaz.**
 
-Kalan: sekme/sheet başlık ikonları.
+**Sekme/sheet başlık ikonları — ÖLÇÜLDÜ, İŞ YOK (Tur 44).** Sayım:
+**sekme düğmelerinde emoji 0** (iki kabukta da) — krom düğmeler T41'de bitmişti, sekmeler
+zaten temizmiş. Başlıklarda kalan emoji **3**: ikisi (`🎞 Çekimlerim`, `🎛 Uzaktan kumanda`)
+**sözlükten** geliyor ve sözlükteki emoji önekleri İÇERİK sayılıyor — onlara dokunmak i18n
+birebirlik iddialarını kırar, bu sınır bilerek korunuyor. Üçüncüsü (`🎬 Çekim hazır`)
+işaretlemede ama komşu başlıklar sözlükten emoji aldığı için tek başına SVG'ye çevirmek
+tutarsızlık üretirdi. **B.2 kapandı**; yeni ikon üretilmedi çünkü ölçüm ihtiyaç göstermedi.
 
 ### 🔍 Tur 42 — i18n kapsamının kör noktası kapatıldı
 
@@ -502,7 +508,20 @@ adları verdiği için `manual` **ve** `single-shot` aranıyor; yalnız biri des
 açılıyor. Kamera kısıtı reddederse anahtar geri alınıp **sebebi söyleniyor**.
 `tests/71` artık davranışsal (yetenek taklidiyle 4 senaryo), `tests/126` 31 iddia.
 Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavramı hiç yok).
-**D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
+**D.3 Kumanda genişliği:** ⏳ **ölçüldü, kapsam farkı bilinçli (Tur 44).**
+
+| | telefon | Mac |
+|---|---|---|
+| sunum kumandası / pedal tuşları | ✅ | ✅ **SABİT eşleme**: PageDown · PageUp · Home · oklar · Boşluk |
+| tanınmayan tuşu ÖĞRETME | ✅ (tuşa bas → eylem seç) | ❌ |
+| tek / çift basış ayrımı | ✅ | ❌ |
+| profil dışa/içe aktarma | ✅ | ❌ |
+
+Yani **Mac savunmasız değil**: piyasadaki sunum kumandalarının ve sayfa çevirici pedalların
+gönderdiği tuşlar zaten karşılanıyor. Eksik olan yalnız *alışılmadık* bir tuşu öğretebilmek.
+`tests/138` **bugünkü garantiyi** kilitliyor — sabit eşleme sessizce daralırsa masaüstünde pedal
+çalışmayı bırakır ve kimse fark etmez. Öğrenmeli eşlemenin Mac'e taşınması ayrı bir tur işi;
+kapsam farkı burada yazılı olduğu için "unutulmuş iş" değil **verilmiş karar**.
 **D.4 Uzak önizleme:** ✅ **BİTTİ.** Tek başına çekim yapanın en büyük acısı — kadraja girip
 girmediğini görememek. Mac kamera karesini **320 piksele** küçültüp JPEG olarak **kendi yerel
 sunucusuna** gönderiyor, kumanda sayfası gösteriyor. **Yeni altyapı kurulmadı**: sunucu ve kumanda
@@ -777,3 +796,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 41 | 2026-08-15 | **B.2 Mac krom ikonları** — ve i18n kapsamının kör noktası | 4/4 ikon Mac'te çiziliyor (18×18, dil değişiminde kalıcı) · ikonu silen 2 tuzak kapandı (data-i18n üstte / çalışma zamanı yazımı) · **#voiceBtn İngilizcede Türkçe kalıyordu**, kapsam 0 dediği hâlde → sözlüğe bağlandı · 4 kanıtlı bozma (**63**) | ✅ 9/9 YEŞİL |
 | 42 | 2026-08-15 | **i18n kör noktası** — TR/EN çizim karşılaştırması kapıya bağlandı | 16 şüpheliden **7 gerçek kusur**: telefonda 5 title hiç çevrilmiyordu, Mac karşılama penceresi baştan sona Türkçeydi, 4 metin "yazılı ama tazelenmiyor" · beş yüzeyde **0** · denetleyicinin kendi kör noktası da kapandı · 4 kanıtlı bozma (**67**) · **4458 test, 0 hata** | ✅ 9/9 YEŞİL |
 | 43 | 2026-08-15 | **B.1 tipografi + boşluk** — ölçek ölü jetondan gerçeğe | ölçüldü: 7 punto/12 iç kenar, ölçeğe uyan 3 · **yarım piksel ikizler** tekleştirildi (7→6, 4 gizli vaka daha) · `--tx-*`/`--sp-*` **0 kullanımdan** 23+12 ve 19+16'ya · görsel değişiklik yok (kontrast 0, taşma 0) · 2 kanıtlı bozma (**69**) · **4481 test** | ✅ 9/9 YEŞİL |
+| 44 | 2026-08-15 | **B.2 kapandı · D.3 ölçüldü** — ikisi de "iş yok/iş bu kadar" diye kanıtlandı | sekme düğmelerinde emoji **0** (iş yok, yeni ikon üretilmedi) · başlıktaki 3 emojinin 2'si sözlükten (sınır korunuyor) · Mac sunum kumandası tuşlarını **zaten** karşılıyormuş, eksik olan yalnız tanınmayan tuşu öğretmek · tests/138 bugünkü garantiyi kilitliyor · 3 kanıtlı bozma (**72**) · **4502 test** | ✅ 9/9 YEŞİL |

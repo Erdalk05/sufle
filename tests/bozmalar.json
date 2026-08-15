@@ -481,5 +481,26 @@
   "kaynak": "mac",
   "bul": "  .scriptItem .meta{font-size:var(--tx-xs)",
   "koy": "  .scriptItem .meta{font-size:11.5px"
+ },
+ {
+  "ad": "D3 Macte pedal tuşu düştü (sunum kumandası sessizce ölür)",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "mac",
+  "bul": "      case 'PageDown': e.preventDefault(); togglePlay(); break;\n",
+  "koy": ""
+ },
+ {
+  "ad": "D3 telefonda çift basış ayrımı söküldü (pedal yarım kalır)",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "telefon",
+  "bul": "<button data-tap=\"2\" data-i18n=\"tap2\">Çift basış</button>",
+  "koy": ""
+ },
+ {
+  "ad": "D3 Macte yazı kutusundayken kısayol tetikleniyor",
+  "test": "138-kumanda-tuslari.js",
+  "kaynak": "mac",
+  "bul": "    if(tag==='TEXTAREA'||tag==='INPUT') return;\n    switch(e.key){",
+  "koy": "    switch(e.key){"
  }
 ]
