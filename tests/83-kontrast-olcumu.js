@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,cozJeton}=require('./kaynak');
 const tel=oku(telefonYolu());
 
 /* K4 — YÜKSEK KONTRAST TEMASINDA KONTRAST ORANI WCAG AA MI: ÖLÇÜLDÜ.
@@ -41,8 +41,18 @@ ok('hesap doğru: aynı renk 1:1', Math.abs(oran('#123456','#123456')-1)<0.001);
 ok('hesap kısa hex biçimini de anlıyor', Math.abs(oran('#000','#000000')-1)<0.001);
 
 /* ---------- RENKLER KAYNAKTAN OKUNUYOR ---------- */
-const dv=(ad)=>{ const m=tel.match(new RegExp('--'+ad+':\\s*(#[0-9a-fA-F]{3,6})'));
-                 ok('değişken bulundu: --'+ad, !!m); return m&&m[1]; };
+/* T55: yüzey renkleri artık telefonda ELLE YAZILI DEĞİL, çekirdek jetonlarına
+   bağlı (`--card:var(--s-raised)`). Test hex biçimine kilitliyse, tek kaynağa
+   geçiş "renk kayboldu" gibi görünür — oysa renk duruyor, adresi değişti.
+   Ölçülmesi gereken şey ETKİN RENK; `cozJeton` var() zincirini çözüyor. */
+/* Yorumlar ÖNCE atılıyor: `jetonlar.css` içindeki bir açıklama satırı
+   "--accent:#00C853 her işi görüyor…" diye yazıyordu ve `match` ilk eşleşmeyi
+   aldığı için testi YORUMDAN besliyordu. Bu deponun "gevşek desen" sınıfı. */
+const telCss=tel.replace(/\/\*[\s\S]*?\*\//g,'');
+const dv=(ad)=>{ const m=telCss.match(new RegExp('--'+ad+':\\s*([^;}]+?)\\s*;'));
+                 const c=m ? cozJeton(m[1].trim()) : null;
+                 const hex=c && /^#[0-9a-fA-F]{3,6}$/.test(c) ? c : null;
+                 ok('değişken çözüldü: --'+ad+' → '+(hex||c), !!hex); return hex; };
 const P={ txt:dv('txt'), muted:dv('muted'), accent:dv('accent'),
           sheetbg:dv('sheetbg'), card:dv('card'), line:dv('line') };
 if(Object.values(P).some(x=>!x)) return;
@@ -84,7 +94,11 @@ if(Object.values(P).some(x=>!x)) return;
 /* ---------- ASIL BULGU: METİN DIŞI KONTRAST VE KAPSAM ---------- */
 {
   /* Kusurun dayanağı: kutunun zemini sayfadan neredeyse ayrılmıyor. */
-  const kutuIci=(tel.match(/textarea\{[^}]*background:(#[0-9a-fA-F]{3,6})/)||[])[1];
+  /* Kutu zemini de jetona bağlandı (T55): elle yazılı #0d0d11 yerine
+     `var(--s-bg)`. Ölçülen şey yine ETKİN renk. */
+  const ham=(telCss.match(/textarea\{[^}]*background:([^;]+);/)||[])[1];
+  const cz=ham?cozJeton(ham.trim()):null;
+  const kutuIci=cz&&/^#[0-9a-fA-F]{3,6}$/.test(cz)?cz:null;
   ok('yazı kutusu zemini okunabildi', !!kutuIci);
   if(kutuIci){
     const r=oran(kutuIci,P.sheetbg);

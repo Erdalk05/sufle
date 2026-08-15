@@ -86,7 +86,7 @@ const giz = gizHam.replace(/\s+/g, ' ');
   ok('uygulamada gizlilik gövdesi var', /id="privBody"/.test(tel));
   ok('gövde iki dilde dolduruluyor', /\$\('#privBody'\)\.innerHTML=PRIV\[L\];/.test(tel));
   ok('uygulama metni de istisnayı söylüyor',
-     /Tek istisna:<\/b> 🎤 sesle takip/.test(tel) && /ses tanıma servisine/.test(tel));
+     /Tek istisna:<\/b> sesle takip/.test(tel) && /ses tanıma servisine/.test(tel));
   /* Metin dille birlikte yenilenmeli, yoksa İngilizceye geçen kullanıcı
      Türkçe gizlilik metni okur. */
   ok('dil değişince metin yenileniyor (applyLang içinde)',

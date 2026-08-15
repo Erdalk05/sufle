@@ -46,10 +46,16 @@
 
 :root{
   /* --- yüzeyler --- */
-  --s-bg:#08090C;          /* en arka zemin */
-  --s-surface:#141418;     /* sayfa/panel */
-  --s-raised:#1C1C22;      /* kart, yükseltilmiş kutu */
-  --s-line:#2A2A32;        /* ayraç */
+  /* YÜZEYLERİN BİR SICAKLIĞI VAR. Eskiler nötr griydi (#08090C→#1C1C22) ve
+     nötr gri, tasarlanmış değil "varsayılan karanlık kip" gibi okunuyor —
+     Erdal'ın "yapay zekâ tasarımı gibi" dediği şeyin ölçülebilir yarısı bu.
+     Hepsi aynı mavi-grafit yönüne kaydırıldı: renk sıcaklığı tutarlı olunca
+     ekran "seçilmiş" hissi veriyor. Açıklık basamakları KORUNDU, yani
+     kontrast oranları düşmüyor (tests/121 ve kontrast.py doğruluyor). */
+  --s-bg:#0A0C11;          /* en arka zemin */
+  --s-surface:#12151C;     /* sayfa/panel */
+  --s-raised:#1A1E27;      /* kart, yükseltilmiş kutu */
+  --s-line:#272C38;        /* ayraç */
 
   /* --- metin --- */
   --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
@@ -79,6 +85,23 @@
   /* --- boşluk: 4px ritmi. Bugün 6/7/9/11/14px karışık. --- */
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px;
 
+  /* --- YÜKSELTİ (derinlik) ---
+     Ölçüldü: uygulamada yalnız 4 `box-shadow` ve 4 `:active` vardı. Düz
+     yüzeyler "hazır şablon" hissi veriyor. Bir ışık kaynağı varsayıyoruz:
+     üstten. Her yükseltilmiş yüzeyin ÜST kenarında 1 px ince aydınlık,
+     altında yumuşak gölge — kâğıdın kalınlığı buradan okunuyor. */
+  --el-1:0 1px 2px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.055);
+  --el-2:0 8px 24px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07);
+  --el-3:0 18px 48px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+
+  /* --- HAREKET ---
+     Dokununca hiçbir şey olmaması, arayüzü "ölü" gösteriyor. Süreler kısa:
+     140 ms bir basışta fark edilir ama beklemeye dönüşmez. Hareket azaltma
+     tercihi olan kullanıcıda BU DEĞİŞKENLER SIFIRLANIR (aşağıda). */
+  --hiz-hizli:120ms; --hiz-orta:180ms;
+  --egri:cubic-bezier(.22,.61,.36,1);   /* çıkışta yavaşlayan, doğal */
+  --bas:.97;                             /* basış küçülmesi */
+
   /* --- biçim --- */
   --rad-sm:8px; --rad-md:12px; --rad-lg:16px; --rad-full:999px;
   --ring:0 0 0 3px rgba(0,212,126,.45);   /* klavye odağı — görünür olmak ZORUNDA */
@@ -89,6 +112,13 @@
    Tek görsel etkisi olan kural bu ve KASITLI: rakamların genişliği eşitlenir,
    sayaç her saniye sağa sola oynamaz. Ölçüsü değişmez, yalnız hizası. */
 .tnum,[data-tnum]{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* HAREKET AZALTMA TERCİHİNE SAYGI — tek yerden. Süreleri ve basış
+   küçülmesini sıfırlamak, her bileşende ayrı ayrı kural yazmaktan hem kısa
+   hem de UNUTULAMAZ: yeni bir bileşen jetonu kullandığı anda kurala uyuyor. */
+@media (prefers-reduced-motion: reduce){
+  :root{ --hiz-hizli:0ms; --hiz-orta:0ms; --bas:1; }
+}
 /* ==/CEKIRDEK:jetonlar.css== */
 
 *{box-sizing:border-box}

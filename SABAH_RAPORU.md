@@ -249,6 +249,6 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 ## Sayılar
 
 - **v9.10 canlıda** · v9.11 hazır — **0 commit yayınlanmamış**, `main` dalında
-- **4676 test** (gece başında 732) · yeni test dosyası: 39–142
+- **4718 test** (gece başında 732) · yeni test dosyası: 39–143
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz

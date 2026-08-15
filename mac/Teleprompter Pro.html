@@ -33,10 +33,16 @@
 
 :root{
   /* --- yüzeyler --- */
-  --s-bg:#08090C;          /* en arka zemin */
-  --s-surface:#141418;     /* sayfa/panel */
-  --s-raised:#1C1C22;      /* kart, yükseltilmiş kutu */
-  --s-line:#2A2A32;        /* ayraç */
+  /* YÜZEYLERİN BİR SICAKLIĞI VAR. Eskiler nötr griydi (#08090C→#1C1C22) ve
+     nötr gri, tasarlanmış değil "varsayılan karanlık kip" gibi okunuyor —
+     Erdal'ın "yapay zekâ tasarımı gibi" dediği şeyin ölçülebilir yarısı bu.
+     Hepsi aynı mavi-grafit yönüne kaydırıldı: renk sıcaklığı tutarlı olunca
+     ekran "seçilmiş" hissi veriyor. Açıklık basamakları KORUNDU, yani
+     kontrast oranları düşmüyor (tests/121 ve kontrast.py doğruluyor). */
+  --s-bg:#0A0C11;          /* en arka zemin */
+  --s-surface:#12151C;     /* sayfa/panel */
+  --s-raised:#1A1E27;      /* kart, yükseltilmiş kutu */
+  --s-line:#272C38;        /* ayraç */
 
   /* --- metin --- */
   --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
@@ -66,6 +72,23 @@
   /* --- boşluk: 4px ritmi. Bugün 6/7/9/11/14px karışık. --- */
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px;
 
+  /* --- YÜKSELTİ (derinlik) ---
+     Ölçüldü: uygulamada yalnız 4 `box-shadow` ve 4 `:active` vardı. Düz
+     yüzeyler "hazır şablon" hissi veriyor. Bir ışık kaynağı varsayıyoruz:
+     üstten. Her yükseltilmiş yüzeyin ÜST kenarında 1 px ince aydınlık,
+     altında yumuşak gölge — kâğıdın kalınlığı buradan okunuyor. */
+  --el-1:0 1px 2px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.055);
+  --el-2:0 8px 24px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07);
+  --el-3:0 18px 48px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+
+  /* --- HAREKET ---
+     Dokununca hiçbir şey olmaması, arayüzü "ölü" gösteriyor. Süreler kısa:
+     140 ms bir basışta fark edilir ama beklemeye dönüşmez. Hareket azaltma
+     tercihi olan kullanıcıda BU DEĞİŞKENLER SIFIRLANIR (aşağıda). */
+  --hiz-hizli:120ms; --hiz-orta:180ms;
+  --egri:cubic-bezier(.22,.61,.36,1);   /* çıkışta yavaşlayan, doğal */
+  --bas:.97;                             /* basış küçülmesi */
+
   /* --- biçim --- */
   --rad-sm:8px; --rad-md:12px; --rad-lg:16px; --rad-full:999px;
   --ring:0 0 0 3px rgba(0,212,126,.45);   /* klavye odağı — görünür olmak ZORUNDA */
@@ -76,6 +99,13 @@
    Tek görsel etkisi olan kural bu ve KASITLI: rakamların genişliği eşitlenir,
    sayaç her saniye sağa sola oynamaz. Ölçüsü değişmez, yalnız hizası. */
 .tnum,[data-tnum]{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* HAREKET AZALTMA TERCİHİNE SAYGI — tek yerden. Süreleri ve basış
+   küçülmesini sıfırlamak, her bileşende ayrı ayrı kural yazmaktan hem kısa
+   hem de UNUTULAMAZ: yeni bir bileşen jetonu kullandığı anda kurala uyuyor. */
+@media (prefers-reduced-motion: reduce){
+  :root{ --hiz-hizli:0ms; --hiz-orta:0ms; --bas:1; }
+}
 /* ==/CEKIRDEK:jetonlar.css== */
   :root{
     --bg:#0a0a0c; --panel:#141418; --panel2:#1c1c22; --line:#2a2a32;
@@ -441,29 +471,29 @@
     <span class="tnum clock" id="clock">00:00</span>
 
     <span class="pill" id="fmtPill" title="Çekim formatı" data-i18n-title="mTFmt">
-      <button data-fmt="9:16" class="on" data-i18n="mFmt916">📱 9:16</button>
-      <button data-fmt="16:9" data-i18n="mFmt169">🖥 16:9</button>
+      <button data-fmt="9:16" class="on" data-i18n="mFmt916">9:16</button>
+      <button data-fmt="16:9" data-i18n="mFmt169">16:9</button>
       <button data-fmt="1:1" data-i18n="mFmt11">⬜ 1:1</button>
-      <button data-fmt="4:5" data-i18n="mFmt45">📷 4:5</button>
-      <button data-fmt="free" data-i18n="mFmtFull">⛶ Tam</button>
+      <button data-fmt="4:5" data-i18n="mFmt45">4:5</button>
+      <button data-fmt="free" data-i18n="mFmtFull">Tam</button>
     </span>
 
     <div class="spacer"></div>
 
     <button class="btn" id="voiceBtn" title="Konuştukça kayan sufle" data-i18n-title="mTVoice"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg> <span id="voiceLbl">Sesle</span></button>
-    <button class="btn" id="camBtn">📷 Kamera</button>
+    <button class="btn" id="camBtn">Kamera</button>
     <!-- B.2: data-i18n İÇ SPAN'da. Düğmenin kendisinde kalsaydı applyLang
          textContent yazıp SVG ikonu SİLERDİ — dil değiştiren kullanıcı
          ikonu bir daha göremezdi. -->
     <button class="btn" id="readyBtn" title="Çekime hazır mıyım?" data-i18n-title="mTReady"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg> <span data-i18n="mReady">Hazır mıyım</span></button>
     <button class="btn rec" id="recBtn" disabled style="opacity:.45">● Kaydet</button>
     <button class="btn" id="undoDelBtn" title="Son silinen senaryoyu geri getir" data-i18n-title="mTUndoDel" data-i18n="mUndoDel">↺ Geri getir</button>
-    <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için" data-i18n-title="mTPip" data-i18n="mPip">🪟 Yüzen Sufle</button>
-    <button class="btn" id="takesBtn" title="Arşivdeki çekimler" data-i18n-title="mTTakes" data-i18n="takes">🎞 Çekimlerim</button>
+    <button class="btn" id="pipBtn" title="Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için" data-i18n-title="mTPip" data-i18n="mPip">Yüzen Sufle</button>
+    <button class="btn" id="takesBtn" title="Arşivdeki çekimler" data-i18n-title="mTTakes" data-i18n="takes">Çekimlerim</button>
     <button class="btn" id="scExport" title="Senaryoları dosyaya aktar (telefona taşımak için)" data-i18n-title="mTExport" data-i18n="mScripts">⬆︎ Senaryolar</button>
     <input type="file" id="scImport" accept="application/json,.json" style="display:none">
-    <button class="btn" id="restoreBk" data-i18n="restoreBk" title="Otomatik yedekten dön" data-i18n-title="mTRestoreBk">🛟 Otomatik yedekten dön</button>
-    <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n-title="mTFs" data-i18n="mFullscreen">⛶ Tam Ekran</button>
+    <button class="btn" id="restoreBk" data-i18n="restoreBk" title="Otomatik yedekten dön" data-i18n-title="mTRestoreBk">Otomatik yedekten dön</button>
+    <button class="btn" id="fsBtn" title="Tam ekran (F)" data-i18n-title="mTFs" data-i18n="mFullscreen">Tam Ekran</button>
     <button class="btn desktopOnly" id="hideBtn" title="Panelleri gizle (H)" data-i18n-title="mTHide" data-i18n="mCsClean">⇔ Sade</button>
     <button class="btn mobileOnly" id="rightToggle" title="Ayarlar" data-i18n-title="settings" aria-label="Ayarlar" data-aria="settings"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
   </div>
@@ -479,11 +509,11 @@
            liste 8.794 px, yani ~11 ekran; aramasız tek yol tek tek gözle
            taramaktı. Kutu yalnız liste UZUNKEN görünüyor: kısa listede
            fazladan bir alan, B fazında sadeleştirdiğimiz şeyin ta kendisi. -->
-      <input type="text" id="scriptFind" class="hidden" placeholder="🔎 Senaryolarda ara…" data-i18n-ph="findPh">
+      <input type="text" id="scriptFind" class="hidden" placeholder="Senaryolarda ara…" data-i18n-ph="findPh">
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
-      <h3 data-i18n="mSections">🔖 Bölümler</h3>
+      <h3 data-i18n="mSections">Bölümler</h3>
       <div class="selectish" id="secList"></div>
     </div>
     <div id="editorWrap">
@@ -496,11 +526,11 @@ Yazıyı kameranızın merceğinin hizasına getirin, BAŞLAT'a basın ve göz �
 
 Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çekimler!</textarea>
       <div class="selectish" style="margin:6px 0">
-        <button class="btn" id="tClean" data-i18n="tClean">🧹 Temizle</button>
+        <button class="btn" id="tClean" data-i18n="tClean">Temizle</button>
         <button class="btn" id="tJoin" data-i18n="tJoin">↩︎ Satırları birleştir</button>
         <button class="btn" id="tCase" data-i18n="tCase">Aa Cümle düzeni</button>
-        <button class="btn" id="tBreath" data-i18n="tBreath">🫁 Nefes işareti</button>
-        <button class="btn" id="tNum" data-i18n="tNum">🔢 Sayıları yaz</button>
+        <button class="btn" id="tBreath" data-i18n="tBreath">Nefes işareti</button>
+        <button class="btn" id="tNum" data-i18n="tNum">Sayıları yaz</button>
         <button class="btn" id="undoTool" style="display:none" data-i18n="tUndo">↺ Geri al</button>
       </div>
       <div class="editStats"><span id="wc" class="tnum">0 kelime</span><span id="rt" class="tnum">~0 sn</span></div>
@@ -514,7 +544,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <div id="prompt"><div id="scroller"></div></div>
       <div id="eyeline"></div>
       <div id="safe"></div>
-      <div id="fmtTag">📱 9:16 · 1080×1920</div>
+      <div id="fmtTag">9:16 · 1080×1920</div>
       <div id="recDot"><i></i><span id="recTime">00:00</span></div>
       <div id="audBadge"></div>
       <div id="progress"></div>
@@ -549,7 +579,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
   </div>
     <div class="ctrl" data-rtab="cam">
       <div class="field">
-        <div class="top"><label data-i18n="mode">🎯 Çekim modu</label><span class="v" id="modeV">Serbest</span></div>
+        <div class="top"><label data-i18n="mode">Çekim modu</label><span class="v" id="modeV">Serbest</span></div>
         <div class="selectish" id="modeSel">
           <button data-mode="free" class="on" data-i18n="mFree">Serbest</button>
           <button data-mode="reels" data-i18n="pfReels">Reels</button>
@@ -560,15 +590,15 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         </div>
         <div class="rb-note" id="modeHint" style="margin-top:6px"></div>
         <div class="field" id="camRow" style="display:none">
-        <div class="top"><span data-i18n="camSel">📷 Kamera</span></div>
+        <div class="top"><span data-i18n="camSel">Kamera</span></div>
         <div class="seg" id="camSeg"></div>
       </div>
       <div class="toggle" style="margin-top:8px"><span data-i18n="mSwCrop">⧉ Seçilen orana kırparak kaydet</span><div class="sw2" data-t="crop"></div></div>
         <div class="rb-note" id="cropNote" style="margin-top:4px"></div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwChroma">🟩 Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">💬 Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwChroma">Yeşil ekran (chroma key)</span><div class="sw2" data-t="chroma"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBurn">Altyazıyı videoya göm</span><div class="sw2" data-t="burnCaps"></div></div>
         <div class="field" style="margin-top:10px">
-          <div class="top"><label data-i18n="fxTitle">🎚 Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
+          <div class="top"><label data-i18n="fxTitle">Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
           <div class="seg" id="fxSeg">
             <button data-fx="off" data-i18n="aspNone">Kapalı</button>
             <button data-fx="voice" class="on" data-i18n="fxVoice">Konuşma</button>
@@ -577,7 +607,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           </div>
           <div class="rb-note" data-i18n="mNoteAudio">Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.</div>
         </div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwVad">🫁 Konuşmayı kesince sufle dursun</span><div class="sw2" data-t="vad"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwVad">Konuşmayı kesince sufle dursun</span><div class="sw2" data-t="vad"></div></div>
         <div id="chromaBox" style="display:none">
           <div class="top" style="margin-top:8px"><label data-i18n="keyColor">Perde rengi</label></div>
           <div class="selectish" id="keySel">
@@ -608,13 +638,13 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
             <button data-b="#0F3D2E" data-i18n="mDarkGreen">Koyu yeşil</button>
           </div>
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button class="btn" id="bgPick" style="flex:1" data-i18n="mBkImage">🖼 Görsel</button>
-            <button class="btn" id="bgClear" style="flex:1" data-i18n="mRemove">✕ Kaldır</button>
+            <button class="btn" id="bgPick" style="flex:1" data-i18n="mBkImage">Görsel</button>
+            <button class="btn" id="bgClear" style="flex:1" data-i18n="mRemove">Kaldır</button>
           </div>
           <input type="file" id="bgFile" accept="image/*" style="display:none">
           <div class="rb-note" style="margin-top:6px" data-i18n="mNoteChroma">Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.</div>
         </div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwSafe">🚫 Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwSafe">Platform arayüz alanları</span><div class="sw2" data-t="safe"></div></div>
       </div>
       <div class="field">
         <div class="top"><label data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="speedV">140</span></div>
@@ -633,22 +663,22 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <input type="range" id="margin" min="0" max="22" value="6">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="mEyeLine">👁 Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="eyeposV">42</span></div>
+        <div class="top"><label data-i18n="mEyeLine">Okuma Çizgisi (kameraya yaklaştır)</label><span class="v" id="eyeposV">42</span></div>
         <input type="range" id="eyepos" min="0" max="55" value="42">
       </div>
       <div class="field">
-        <div class="top"><label data-i18n="band">👁 Okuma şeridi (göz teması)</label><span class="v" id="bandV">Tümü</span></div>
+        <div class="top"><label data-i18n="band">Okuma şeridi (göz teması)</label><span class="v" id="bandV">Tümü</span></div>
         <div class="selectish" id="bandSel">
           <button data-band="0" class="on" data-i18n="bAll">Tümü</button>
           <button data-band="1" data-i18n="b1">1 satır</button>
           <button data-band="2" data-i18n="b2">2 satır</button>
           <button data-band="3" data-i18n="b3">3 satır</button>
         </div>
-        <button class="btn" id="eyeRecipe" style="margin-top:8px;width:100%" data-i18n="eyeRecipe">👁 Göz teması ayarını uygula</button>
+        <button class="btn" id="eyeRecipe" style="margin-top:8px;width:100%" data-i18n="eyeRecipe">Göz teması ayarını uygula</button>
         <div class="rb-note" id="gazeHint" style="margin-top:6px"></div>
-        <div class="top" style="margin-top:10px"><label data-i18n="mFaceDist">📏 Yüz–ekran mesafesi (cm)</label><span class="v" id="distV">60</span></div>
+        <div class="top" style="margin-top:10px"><label data-i18n="mFaceDist">Yüz–ekran mesafesi (cm)</label><span class="v" id="distV">60</span></div>
         <input type="range" id="dist" min="30" max="200" step="5" value="60">
-        <div class="top" style="margin-top:8px"><label data-i18n="mScreenH">🖥 Ekran yüksekliği (cm)</label><span class="v" id="schV">21</span></div>
+        <div class="top" style="margin-top:8px"><label data-i18n="mScreenH">Ekran yüksekliği (cm)</label><span class="v" id="schV">21</span></div>
         <input type="range" id="sch" min="12" max="45" value="21">
         <div class="top" style="margin-top:10px"><label data-i18n="mCaseView">Aa Harf düzeni (yalnız görünüm)</label></div>
         <div class="selectish" id="caseSel">
@@ -657,12 +687,12 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-c2="lower" data-i18n="caseLow">küçük</button>
         </div>
         <div class="rb-note" style="margin-top:4px" data-i18n="mNoteCase">Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.</div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBionic">⚡ Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mSwBionic">Biyonik okuma (kelime başları kalın)</span><div class="sw2" data-t="bionic"></div></div>
         <div class="rb-note" data-i18n="mNoteBionic">Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.</div>
-        <div class="top" style="margin-top:10px"><label data-i18n="capOffset">💬 Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
+        <div class="top" style="margin-top:10px"><label data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="capOffV">0.0</span></div>
         <input type="range" id="capOff" min="-20" max="20" value="0">
         <div class="rb-note" data-i18n="mNoteCap">Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.</div>
-        <div class="top" style="margin-top:10px"><label data-i18n="mCapMaxW">💬 Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
+        <div class="top" style="margin-top:10px"><label data-i18n="mCapMaxW">Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
         <input type="range" id="capMaxW" min="3" max="12" value="7">
         <div class="rb-note" data-i18n="mNoteCapW">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
       </div>
@@ -701,26 +731,26 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     </div>
 
     <div class="ctrl" data-rtab="read">
-      <div class="toggle"><span data-i18n="mSwMirror">🪞 Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
-      <div class="toggle"><span data-i18n="mSwFlip">🔃 Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
-      <div class="toggle"><span data-i18n="mSwEye">🎯 Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
+      <div class="toggle"><span data-i18n="mSwMirror">Ayna (yatay çevir)</span><div class="sw2" data-t="mirror"></div></div>
+      <div class="toggle"><span data-i18n="mSwFlip">Ters (dikey çevir)</span><div class="sw2" data-t="flip"></div></div>
+      <div class="toggle"><span data-i18n="mSwEye">Göz çizgisi</span><div class="sw2 on" data-t="eye"></div></div>
       <div class="toggle"><span data-i18n="tgHicon">◐ Yüksek kontrast</span><div class="sw2" data-t="hicon"></div></div>
-      <div class="toggle"><span data-i18n="mSwDim">🌗 Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
-      <div class="toggle"><span data-i18n="mSwHl">✨ Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
+      <div class="toggle"><span data-i18n="mSwDim">Odak karartma</span><div class="sw2 on" data-t="dim"></div></div>
+      <div class="toggle"><span data-i18n="mSwHl">Kelime vurgusu</span><div class="sw2 on" data-t="hl"></div></div>
       <div class="toggle"><span data-i18n="mSwCount">⏱ 3-2-1 sayaç</span><div class="sw2 on" data-t="count"></div></div>
 
       <!-- D.3 — ÖĞRENMELİ TUŞ EŞLEME. Sabit tablo piyasadaki kumandaları
            karşılıyor ama ALIŞILMADIK tuş gönderen pedal için kullanıcının
            yapabileceği bir şey yoktu. Telefondaki yetenek buraya taşındı. -->
       <div class="field" style="margin-top:10px">
-        <label data-i18n="mRemoteKeys">🎛 Kumanda tuşları</label>
+        <label data-i18n="mRemoteKeys">Kumanda tuşları</label>
         <div class="meta" data-i18n="mRemoteKeysHint">Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.</div>
         <div class="row" style="margin-top:6px">
           <span data-i18n="lastKeyL">Gelen son tuş</span>
           <b id="macLastKey">—</b>
         </div>
         <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-top:6px">
-          <button class="btn" id="macLearn" data-i18n="learnStart">🎯 Tuş öğret</button>
+          <button class="btn" id="macLearn" data-i18n="learnStart">Tuş öğret</button>
           <button class="btn" id="macMapReset" data-i18n="mapReset">↺ Varsayılana dön</button>
         </div>
         <div id="macLearnBox" class="hidden" style="margin-top:8px">
@@ -743,7 +773,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <!-- A.4 — ZORLANMA HARİTASI. Prova raporunun (E.4) tamamlayıcısı:
            o "nasıl okudum", bu "nerede takıldım" der. -->
       <div class="field" style="margin-top:10px">
-        <label data-i18n="mDiffTitle">🗺 Zorlanma haritası</label>
+        <label data-i18n="mDiffTitle">Zorlanma haritası</label>
         <div class="meta" data-i18n="mDiffHint">Okurken yavaşladığın, geri sardığın ve duraklattığın yerler burada birikiyor — prova ettikçe doluyor.</div>
         <div id="macDiffOut" style="margin-top:6px"></div>
         <button class="btn" id="macDiffClear" data-i18n="mDiffClear" style="margin-top:6px">↺ Haritayı sıfırla</button>
@@ -752,17 +782,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
       <div class="field">
-        <div class="top"><label data-i18n="mRemoteCtrl">📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
-        <div class="toggle" style="margin-top:8px"><span data-i18n="mPrevOn">📱 Çekimi telefonumda göster</span><div class="sw2" data-t="uzakOnizleme"></div></div>
+        <div class="top"><label data-i18n="mRemoteCtrl">Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mPrevOn">Çekimi telefonumda göster</span><div class="sw2" data-t="uzakOnizleme"></div></div>
       <div class="rb-note" data-i18n="mPrevHint">Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.</div>
       <div id="obsBox" class="rb-note" style="margin-top:10px">
-        <b data-i18n="mObsTitle">📡 Yayın yazılımı (OBS, vMix)</b><br>
+        <b data-i18n="mObsTitle">Yayın yazılımı (OBS, vMix)</b><br>
         <span data-i18n="mObsHint">OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.</span><br>
         <code id="obsUrl" style="user-select:all">—</code>
         <button class="btn" id="obsCopy" data-i18n="mObsCopy" style="margin-top:6px">Adresi kopyala</button>
       </div>
       <div id="remoteBox">
-          <div id="remoteOff" class="rb-note" data-i18n="mRemoteOff">📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
+          <div id="remoteOff" class="rb-note" data-i18n="mRemoteOff"><b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
           <div id="remoteOn" style="display:none">
             <img id="qrImg" alt="QR" style="display:none;width:140px;height:140px;border-radius:10px;background:#fff;padding:6px;margin:2px auto 8px;display:block">
             <div class="rb-note" data-i18n="mNoteQr">Telefonla QR’ı okutun ya da şu adrese girin:</div>
@@ -777,7 +807,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 <!-- KAYIT ÖNİZLEME -->
 <div id="recResult">
   <div class="rr-box">
-    <div class="rr-head"><span data-i18n="mRrHead">🎬 Çekim hazır</span> <span id="rrSize"></span></div>
+    <div class="rr-head"><span data-i18n="mRrHead">Çekim hazır</span> <span id="rrSize"></span></div>
     <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
     <video id="rrVideo" controls playsinline></video>
     <div id="provaBox" class="hidden"></div>
@@ -786,23 +816,23 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
          ölü çeviri. Kutu varsayılan gizli: budama yalnız tarayıcı
          captureStream desteklerse açılır (ölü ayar yaratma). -->
     <div id="rrTrimBox" class="hidden" style="margin:10px 0">
-      <div class="field"><div class="top"><span data-i18n="trimStart">✂️ Baştan kes</span>
+      <div class="field"><div class="top"><span data-i18n="trimStart">Baştan kes</span>
         <span class="v" id="rrTrimAV">0.0 sn</span></div>
         <input type="range" id="rrTrimA" min="0" max="1000" value="0"></div>
-      <div class="field"><div class="top"><span data-i18n="trimEnd">✂️ Sondan kes</span>
+      <div class="field"><div class="top"><span data-i18n="trimEnd">Sondan kes</span>
         <span class="v" id="rrTrimBV">—</span></div>
         <input type="range" id="rrTrimB" min="0" max="1000" value="1000"></div>
       <div class="rb-note" id="rrTrimInfo"></div>
       <div class="rr-btns" style="margin-top:6px">
         <button class="btn" id="rrTrimPrev" data-i18n="trimPrev">▶︎ Seçimi oynat</button>
-        <button class="btn primary" id="rrTrimGo" data-i18n="trimGo">✂️ Kes ve uygula</button>
+        <button class="btn primary" id="rrTrimGo" data-i18n="trimGo">Kes ve uygula</button>
       </div>
     </div>
     <div class="rr-btns">
-      <button class="btn danger" id="rrDiscard" data-i18n="mDiscard">🗑 Sil / Yeniden</button>
+      <button class="btn danger" id="rrDiscard" data-i18n="mDiscard">Sil / Yeniden</button>
       <button class="btn" id="rrClose" data-i18n="keep">Kapat</button>
-      <button class="btn" id="rrSrt" data-i18n="mCaptions">💬 Altyazı</button>
-      <button class="btn" id="rrNote" data-i18n="mPubNote">📝 Yayın notu</button>
+      <button class="btn" id="rrSrt" data-i18n="mCaptions">Altyazı</button>
+      <button class="btn" id="rrNote" data-i18n="mPubNote">Yayın notu</button>
       <button class="btn" id="rrKeep" data-i18n="mKeep">⭐ Arşive al</button>
       <button class="btn primary" id="rrDownload">⬇︎ İndir (.webm)</button>
     </div>
@@ -848,101 +878,101 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 
 const I18N={
  tr:{lookHere:'buraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
-  lockedPill:'🔒 kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'📲 Ana ekrana ekle',settings:'Ayarlar',
+  lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
+  startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
-  speedHint:'Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.',eyeLine:'👁 Okuma çizgisi konumu (kameraya yaklaştır)',
-  fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'🎯 Okuma çizgisi',tgDim:'🌗 Odak karartma',
-  tgHl:'✨ Kelime vurgusu',tgFade:'🫥 Okunanı soluklaştır',tgPause:'🫁 Paragraf sonunda nefes durağı',tgCount:'⏱ 3-2-1 geri sayım',
+  speedHint:'Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.',eyeLine:'Okuma çizgisi konumu (kameraya yaklaştır)',
+  fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'Okuma çizgisi',tgDim:'Odak karartma',
+  tgHl:'Kelime vurgusu',tgFade:'Okunanı soluklaştır',tgPause:'Paragraf sonunda nefes durağı',tgCount:'⏱ 3-2-1 geri sayım',
   font:'Yazı tipi',fSystem:'Sistem',fSerif:'Serif',fRound:'Yumuşak',fDys:'Disleksi',weight:'Kalınlık',tracking:'Harf aralığı',
   align:'Hizalama',aCenter:'Orta',aLeft:'Sol',
   caseL:'Harf düzeni (yalnız görünüm)',caseNone:'Normal',caseUp:'BÜYÜK',caseLow:'küçük',
   caseHint:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',
-  tClean:'🧹 Temizle',tJoin:'↩︎ Satırları birleştir',tCase:'Aa Cümle düzeni',toolHint:'Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.',
-  tBreath:'🫁 Nefes işareti',tNum:'🔢 Sayıları yaz',tUndo:'↺ Geri al',textColor:'Yazı rengi',cWhite:'Beyaz',cYellow:'Sarı',cGreen:'Yeşil',cBlack:'Siyah',
+  tClean:'Temizle',tJoin:'↩︎ Satırları birleştir',tCase:'Aa Cümle düzeni',toolHint:'Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.',
+  tBreath:'Nefes işareti',tNum:'Sayıları yaz',tUndo:'↺ Geri al',textColor:'Yazı rengi',cWhite:'Beyaz',cYellow:'Sarı',cGreen:'Yeşil',cBlack:'Siyah',
   cNavy:'Lacivert',bgColor:'Zemin (kamerasız modda)',scrim:'Kamera üstü karartma (okunurluk)',
-  tgMirror:'🪞 Yazıyı aynala (cam rig / beam splitter)',tgFlip:'🔃 Yazıyı dikey çevir',tgShadow:'🌑 Yazı gölgesi',
+  tgMirror:'Yazıyı aynala (cam rig / beam splitter)',tgFlip:'Yazıyı dikey çevir',tgShadow:'Yazı gölgesi',
   quality:'Kayıt kalitesi',qHint:'Cihaz desteklemezse en yakın çözünürlüğe düşer.',frameGuide:'Çerçeve kılavuzu',aspNone:'Kapalı',
-  zoom:'Yakınlaştırma',tgBack:'🔄 Arka kamera',tgTorch:'🔦 Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
-  tgRaw:'🎚 Ham ses (hiç işleme yapma)',
+  zoom:'Yakınlaştırma',tgBack:'Arka kamera',tgTorch:'Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
+  tgRaw:'Ham ses (hiç işleme yapma)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
-  lightTitle:'💡 Işık ve çerçeve denetçisi',lightBtn:'🔎 Şimdi denetle',tiltBtn:'📐 Eğim ölç',
+  lightTitle:'Işık ve çerçeve denetçisi',lightBtn:'Şimdi denetle',tiltBtn:'Eğim ölç',
   lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
-  compTitle:'🎛 Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
+  compTitle:'Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
   compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
-  tgBurn:'💬 Altyazıyı videoya göm',capSize:'Altyazı boyutu',capPos:'Altyazı konumu',cpBottom:'Alt',cpMiddle:'Orta',
+  tgBurn:'Altyazıyı videoya göm',capSize:'Altyazı boyutu',capPos:'Altyazı konumu',cpBottom:'Alt',cpMiddle:'Orta',
   burnHint:'Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.',
-  tgChroma:'🟩 Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
+  tgChroma:'Yeşil ekran (chroma key)',keyColor:'Perde rengi',kGreen:'Yeşil',kBlue:'Mavi',kCream:'Krem',
   keySim:'Eşik (ne kadarı silinsin)',keySmooth:'Kenar yumuşaklığı',newBg:'Yeni arka plan',
   spill:'Saçak temizliği (despill)',bkColor:'Düz renk',bkStudio:'Stüdyo',bkWarm:'Sıcak',bkCool:'Soğuk',
   bkBokeh:'Bokeh',bkBrand:'Marka',bkImage:'Görsel',
-  bgPick:'🖼 Görsel seç',bgClear:'✕ Görseli kaldır',
+  bgPick:'Görsel seç',bgClear:'Görseli kaldır',
   chromaHint:'Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).',
-  capOffset:'💬 Altyazı kayması (sn)',
+  capOffset:'Altyazı kayması (sn)',
   capHint:'Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.',
-  tgBionic:'⚡ Biyonik okuma (kelime başları kalın)',
-  tgSection:'🎬 Bölüm sonunda dur (bölüm bölüm çek)',
-  secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'🔍 Konuşulabilirlik denetimi',diffBtn:'🗺 Zorlanma haritası',
-  spLabel:'HIZ · WPM',readyTitle:'✅ Çekime hazır mıyım?',readyAgain:'↻ Tekrar bak',readyGo:'● Çekime başla',
-  band:'👁 Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
-  eyeRecipe:'👁 Göz teması ayarını uygula',dist:'📏 Yüz–telefon mesafesi (cm)',
-  mode:'🎯 Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
-  tgSafe:'🚫 Platform arayüz alanlarını göster',
-  micLevel:'🎙 Mikrofon seviyesi',fixAudio:'🔊 Sesi onar (mikrofonu tazele)',
-  audTest:'🔎 Ses testi (cihaza yaptır)',
+  tgBionic:'Biyonik okuma (kelime başları kalın)',
+  tgSection:'Bölüm sonunda dur (bölüm bölüm çek)',
+  secHint:'Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.',checkBtn:'Konuşulabilirlik denetimi',diffBtn:'Zorlanma haritası',
+  spLabel:'HIZ · WPM',readyTitle:'Çekime hazır mıyım?',readyAgain:'↻ Tekrar bak',readyGo:'● Çekime başla',
+  band:'Okuma şeridi (göz teması)',bAll:'Tümü',b1:'1 satır',b2:'2 satır',b3:'3 satır',
+  eyeRecipe:'Göz teması ayarını uygula',dist:'Yüz–telefon mesafesi (cm)',
+  mode:'Çekim modu',mFree:'Serbest',mStory:'Story',mPost:'IG Gönderi',mVideo:'YouTube',
+  tgSafe:'Platform arayüz alanlarını göster',
+  micLevel:'Mikrofon seviyesi',fixAudio:'Sesi onar (mikrofonu tazele)',
+  audTest:'Ses testi (cihaza yaptır)',
   audTestHint:'Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.',
   fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
-  tgSafeAudio:'🛡 Güvenli ses modu (iPhone için önerilir)',
+  tgSafeAudio:'Güvenli ses modu (iPhone için önerilir)',
   safeAudioHint:'Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone\'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.',
   micHint:'Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.',
-  noMicShort:'🔇 mikrofon yok — ses kaydedilmiyor',
-  reopenCam:'🔁 Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
-  voiceLang:'Sesle takip dili',tgLock:'🔒 Kayıtta ekranı kilitle',tgKeepAwake:'☀️ Ekranı uyanık tut',tgHideUI:'🫧 Kayıtta düğmeleri gizle',
+  noMicShort:'mikrofon yok — ses kaydedilmiyor',
+  reopenCam:'Kamerayı yeniden başlat',targetDur:'Hedef süre (pacing)',targetHint:'Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.',
+  voiceLang:'Sesle takip dili',tgLock:'Kayıtta ekranı kilitle',tgKeepAwake:'Ekranı uyanık tut',tgHideUI:'Kayıtta düğmeleri gizle',
   resetAll:'↺ Ayarları varsayılana döndür',resetHint:'Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.',
-  devBtn:'📱 Cihaz uyumluluğu',backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'🎞 Çekimlerim',scripts:'Senaryolar',
-  newScript:'＋ Yeni',paste:'📋 Yapıştır',fromFile:'📄 Dosya',sections:'🔖 Bölümler — dokun, oraya atla',
-  title:'Başlık',text:'📝 Metin',
-  markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz',delete:'🗑 Sil',apply:'✓ Uygula',
+  devBtn:'Cihaz uyumluluğu',backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'Çekimlerim',scripts:'Senaryolar',
+  newScript:'＋ Yeni',paste:'Yapıştır',fromFile:'Dosya',sections:'Bölümler — dokun, oraya atla',
+  title:'Başlık',text:'Metin',
+  markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz',delete:'Sil',apply:'Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
-  takeReady:'Çekim hazır',deleteRedo:'🗑 Sil',keep:'Kapat',saveShare:'📤 Paylaş / Kaydet',toFiles:"📁 Dosyalar'a Kaydet",
-  editBtn:'✂️ Düzenle',trimSteps:'✂️ Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'✂️ Baştan kes',trimEnd:'✂️ Sondan kes',
-  trimPrev:'▶︎ Seçimi oynat',trimGo:'✂️ Kes ve uygula',
+  takeReady:'Çekim hazır',deleteRedo:'Sil',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
+  editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
+  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
-  remote:'🎛 Uzaktan kumanda',
+  remote:'Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
-  lastKeyL:'Gelen son tuş',learnStart:'🎯 Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
+  lastKeyL:'Gelen son tuş',learnStart:'Tuş öğret',mapReset:'↺ Varsayılana dön',mapList:'Eşleme tablosu',
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
-  profL:'⚡ Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
+  profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
-  vadL:'🫁 Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
-  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'💬 Altyazı dosyası',pkgBtnL:'📦 Yayın paketi',setFindPh:'🔎 Ayarlarda ara…',restoreBk:'🛟 Otomatik yedekten dön',vfxTitle:'🎨 Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
-  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'🎚 Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
+  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
+  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
-  fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'🎯 Perdenin rengini kameradan ölç',tgMask:'🎭 Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'🎙 Mikrofon',tgEyeLine:'👁 Göz hattı kılavuzu (üçte bir)',
+  fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'Perdenin rengini kameradan ölç',tgMask:'Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'Mikrofon',tgEyeLine:'Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',mapImport:'⬇︎ Profili içe aktar',
-  noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. 🎤 sesli komut da aynı işi görür.',tSplit:'🪓 Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
-  wipeTakes:'🗑 Yıldızsızları sil',voiceTest:'🎤 Mikrofonu ve tanımayı sına',findPh:'🔎 Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
-  voiceCmdL:'🗣 Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
-  voiceCmdHint:'🎤 düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
+  noRemoteHint:'Kumandan yok mu? Ekranın <b>sol yarısına</b> çift dokunuş kilit, <b>alt şeritteki −/+</b> hız, <b>parmakla sürükleme</b> konum içindir. sesli komut da aynı işi görür.',tSplit:'Uzun satırları böl',sortNew:'Yeni önce',sortBig:'Büyük önce',sortLong:'Uzun önce',
+  wipeTakes:'Yıldızsızları sil',voiceTest:'Mikrofonu ve tanımayı sına',findPh:'Senaryolarda ara…',undoDel:'↺ Silineni geri getir',
+  voiceCmdL:'Sesli komut',voiceCmdT:'"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"',
+  voiceCmdHint:'düğmesi açıkken çalışır. Komutlar metne karışmaz — "sufle" ile başlayan iki kelimelik kalıplar komut sayılır.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mRemoteKeys:'🎛 Kumanda tuşları',mRemoteKeysHint:'Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.',mActNone:'yok',mDiffTitle:'🗺 Zorlanma haritası',mDiffHint:'Okurken yavaşladığın, geri sardığın ve duraklattığın yerler burada birikiyor — prova ettikçe doluyor.',mDiffEmpty:'Henüz işaret yok — sufleyi çalıştırıp prova et, takıldığın satırlar burada toplanır.',mDiffClear:'↺ Haritayı sıfırla',mDiffSlow:'yavaş',mDiffBack:'geri',mDiffPause:'durak',mActPrev:'↑ satır',mActNext:'↓ satır',mActFaster:'hız +',mActSlower:'hız −',mActRec:'● kayıt',mActReset:'⟲ başa',actToggle:'Başlat veya duraklat',mLearnPress:'Kumandanın tuşuna bas…',mLearnPick:'Bu tuş ne yapsın?',mLearned:'Öğrenildi:',mMapEmpty:'Öğrenilmiş tuş yok — varsayılanlar geçerli',mMapRemove:'Kaldır',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'🪟 Yüzen Sufle',mFullscreen:'⛶ Tam Ekran',mSections:'🔖 Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'✕ Kaldır',mEyeLine:'👁 Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'📏 Yüz–ekran mesafesi (cm)',mScreenH:'🖥 Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'📲 Telefon Uzaktan Kumanda',mDiscard:'🗑 Sil / Yeniden',mCaptions:'💬 Altyazı',mPubNote:'📝 Yayın notu',mKeep:'⭐ Arşive al',
+  mFmt916:'9:16',mFmt169:'16:9',mFmt11:'⬜ 1:1',mFmt45:'4:5',mFmtFull:'Tam',mReady:'Hazır mıyım',mVoiceIdle:'Sesle',mVoiceOn:'Ses: Açık',tPlay:'Başlat',mRemoteKeys:'Kumanda tuşları',mRemoteKeysHint:'Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.',mActNone:'yok',mDiffTitle:'Zorlanma haritası',mDiffHint:'Okurken yavaşladığın, geri sardığın ve duraklattığın yerler burada birikiyor — prova ettikçe doluyor.',mDiffEmpty:'Henüz işaret yok — sufleyi çalıştırıp prova et, takıldığın satırlar burada toplanır.',mDiffClear:'↺ Haritayı sıfırla',mDiffSlow:'yavaş',mDiffBack:'geri',mDiffPause:'durak',mActPrev:'↑ satır',mActNext:'↓ satır',mActFaster:'hız +',mActSlower:'hız −',mActRec:'● kayıt',mActReset:'⟲ başa',actToggle:'Başlat veya duraklat',mLearnPress:'Kumandanın tuşuna bas…',mLearnPick:'Bu tuş ne yapsın?',mLearned:'Öğrenildi:',mMapEmpty:'Öğrenilmiş tuş yok — varsayılanlar geçerli',mMapRemove:'Kaldır',mDlgErr:'Son hatalar',mDlgReady:'Hazır mıyım?',mDlgNews:' — ne değişti?',mDlgWelcome:'Sufleye hoş geldin',mDlgWelcomeBody:'1) Sağdaki editöre metnini yapıştır.\n2) ↑ ↓ tuşlarıyla hızını ayarla.\n3) ✅ Hazır mıyım ile ışığı ve sesi kontrol et, sonra K ile kaydet.',phScript:'Okuyacağın metni buraya yaz veya yapıştır…',mPlayStop:'⏸ Durdur',mPlayGo:'▶︎ Devam',mPlayStart:'▶︎ Başlat',mDevCrop:'Kırpma',mDevVoice:'Sesle takip',mDevShare:'Paylaşım',mUndoDel:'↺ Geri getir',mPip:'Yüzen Sufle',mFullscreen:'Tam Ekran',mSections:'Bölümler',mShorts:'Shorts',mNoisy:'Gürültülü',mThreshold:'Eşik',mDarkGreen:'Koyu yeşil',mRemove:'Kaldır',mEyeLine:'Okuma Çizgisi (kameraya yaklaştır)',mFaceDist:'Yüz–ekran mesafesi (cm)',mScreenH:'Ekran yüksekliği (cm)',mCaseView:'Aa Harf düzeni (yalnız görünüm)',mMono:'Mono',mTheme:'Tema',mCustomFg:'Özel: Yazı / Zemin',mRemoteCtrl:'Telefon Uzaktan Kumanda',mDiscard:'Sil / Yeniden',mCaptions:'Altyazı',mPubNote:'Yayın notu',mKeep:'⭐ Arşive al',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'🖼 Görsel',mCapMaxW:'💬 Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi',
+  mScripts:'⬆︎ Senaryolar',mCsClean:'⇔ Sade',mBkImage:'Görsel',mCapMaxW:'Satırda en fazla kelime',mFontSize:'Yazı Boyutu',mLineH:'Satır Aralığı',mMargin:'Kenar Boşluğu',mFont:'Yazı Tipi',
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
   mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...',
   /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
-  mSwCrop:'⧉ Seçilen orana kırparak kaydet',mSwChroma:'🟩 Yeşil ekran (chroma key)',mSwBurn:'💬 Altyazıyı videoya göm',mSwVad:'🫁 Konuşmayı kesince sufle dursun',mSwSafe:'🚫 Platform arayüz alanları',mSwBionic:'⚡ Biyonik okuma (kelime başları kalın)',mSwMirror:'🪞 Ayna (yatay çevir)',mSwFlip:'🔃 Ters (dikey çevir)',mSwEye:'🎯 Göz çizgisi',mSwDim:'🌗 Odak karartma',mSwHl:'✨ Kelime vurgusu',mSwCount:'⏱ 3-2-1 sayaç',mSbPlay:'<kbd>Boşluk</kbd> başlat',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> hız',mSbReset:'<kbd>R</kbd> başa',mSbLine:'<kbd>←</kbd><kbd>→</kbd> satır',mSbRec:'<kbd>K</kbd> kayıt',mSbFs:'<kbd>F</kbd> tam ekran',mSbHide:'<kbd>H</kbd> sade',
+  mSwCrop:'⧉ Seçilen orana kırparak kaydet',mSwChroma:'Yeşil ekran (chroma key)',mSwBurn:'Altyazıyı videoya göm',mSwVad:'Konuşmayı kesince sufle dursun',mSwSafe:'Platform arayüz alanları',mSwBionic:'Biyonik okuma (kelime başları kalın)',mSwMirror:'Ayna (yatay çevir)',mSwFlip:'Ters (dikey çevir)',mSwEye:'Göz çizgisi',mSwDim:'Odak karartma',mSwHl:'Kelime vurgusu',mSwCount:'⏱ 3-2-1 sayaç',mSbPlay:'<kbd>Boşluk</kbd> başlat',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> hız',mSbReset:'<kbd>R</kbd> başa',mSbLine:'<kbd>←</kbd><kbd>→</kbd> satır',mSbRec:'<kbd>K</kbd> kayıt',mSbFs:'<kbd>F</kbd> tam ekran',mSbHide:'<kbd>H</kbd> sade',
   /* Mac ipucu ve panel metinleri (A.2d) */
-  mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'🎬 Çekim hazır',
+  mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'<b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'Çekim hazır',
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Arayüz dili',
   /* Mac panel sekmesi (B.3) */
   mTabShoot:'Çekim',
   /* Durum satırı — hangi moddayım (B.5) */
-  modeVoice:'🎤 Sesle',modeAuto:'▶︎ Otomatik',modeManual:'✋ Elle',
+  modeVoice:'Sesle',modeAuto:'▶︎ Otomatik',modeManual:'Elle',
   /* Kısayol kartı (B.6) */
   keysTitle:'Klavye kısayolları',
   /* Karşılama eylemi (B.7) */
@@ -952,115 +982,115 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Otomatik yedekten dön',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Kamera',
+  camSel:'Kamera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
+  tgLock:'Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
   /* .docx içe aktarma (D.1) */
   fromFileHint:'Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'Word veya metin dosyasından',
   /* Yayın (OBS) kipi — D.5 */
-  mObsTitle:'📡 Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala',
+  mObsTitle:'Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala',
   /* Uzak önizleme — D.4 */
-  mPrevOn:'📱 Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
+  mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'🔒 Gizlilik'},
+  privTitle:'Gizlilik'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
-  lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
+  lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
+  startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
-  speedHint:'Natural speech is 120–160 WPM. Estimated duration below.',eyeLine:'👁 Reading line position (closer to lens)',
-  fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'🎯 Reading line',tgDim:'🌗 Focus dimming',
-  tgHl:'✨ Word highlight',tgFade:'🫥 Fade read words',tgPause:'🫁 Breath pause at paragraphs',tgCount:'⏱ 3-2-1 countdown',
+  speedHint:'Natural speech is 120–160 WPM. Estimated duration below.',eyeLine:'Reading line position (closer to lens)',
+  fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'Reading line',tgDim:'Focus dimming',
+  tgHl:'Word highlight',tgFade:'Fade read words',tgPause:'Breath pause at paragraphs',tgCount:'⏱ 3-2-1 countdown',
   font:'Typeface',fSystem:'System',fSerif:'Serif',fRound:'Rounded',fDys:'Dyslexia',weight:'Weight',tracking:'Letter spacing',
   align:'Alignment',aCenter:'Center',aLeft:'Left',
   caseL:'Letter case (display only)',caseNone:'Normal',caseUp:'UPPER',caseLow:'lower',
   caseHint:'Does not change the script — captions stay as written.',
-  tClean:'🧹 Clean up',tJoin:'↩︎ Join lines',tCase:'Aa Sentence case',toolHint:'Tools rewrite the script — ↺ undoes the last one. Sentence case also lowercases proper nouns; fix those by hand.',
-  tBreath:'🫁 Breath marks',tNum:'🔢 Numbers to words',tUndo:'↺ Undo',textColor:'Text color',cWhite:'White',cYellow:'Yellow',cGreen:'Green',cBlack:'Black',
+  tClean:'Clean up',tJoin:'↩︎ Join lines',tCase:'Aa Sentence case',toolHint:'Tools rewrite the script — ↺ undoes the last one. Sentence case also lowercases proper nouns; fix those by hand.',
+  tBreath:'Breath marks',tNum:'Numbers to words',tUndo:'↺ Undo',textColor:'Text color',cWhite:'White',cYellow:'Yellow',cGreen:'Green',cBlack:'Black',
   cNavy:'Navy',bgColor:'Background (no-camera mode)',scrim:'Dim over camera (legibility)',
-  tgMirror:'🪞 Mirror text (beam splitter rig)',tgFlip:'🔃 Flip text vertically',tgShadow:'🌑 Text shadow',
+  tgMirror:'Mirror text (beam splitter rig)',tgFlip:'Flip text vertically',tgShadow:'Text shadow',
   quality:'Recording quality',qHint:'Falls back to the closest resolution the device supports.',frameGuide:'Frame guide',aspNone:'Off',
-  zoom:'Zoom',tgBack:'🔄 Rear camera',tgTorch:'🔦 Torch',tgGrid:'▦ Rule of thirds + headroom',
-  tgRaw:'🎚 Raw audio (no noise suppression)',
+  zoom:'Zoom',tgBack:'Rear camera',tgTorch:'Torch',tgGrid:'▦ Rule of thirds + headroom',
+  tgRaw:'Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
-  lightTitle:'💡 Light & framing inspector',lightBtn:'🔎 Check now',tiltBtn:'📐 Measure tilt',
+  lightTitle:'Light & framing inspector',lightBtn:'Check now',tiltBtn:'Measure tilt',
   lightHint:'Samples once per second while this tab is open. Compares face-area brightness with the edges to catch backlight, blown highlights and low contrast.',
-  compTitle:'🎛 Composite recording (real crop + green screen)',tgComp:'Enable composite',
+  compTitle:'Composite recording (real crop + green screen)',tgComp:'Enable composite',
   compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
-  tgBurn:'💬 Burn captions into the video',capSize:'Caption size',capPos:'Caption position',cpBottom:'Bottom',cpMiddle:'Middle',
+  tgBurn:'Burn captions into the video',capSize:'Caption size',capPos:'Caption position',cpBottom:'Bottom',cpMiddle:'Middle',
   burnHint:'The sentence you are reading is drawn on the video — no separate subtitle file needed. Composite must be on.',
-  tgChroma:'🟩 Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
+  tgChroma:'Green screen (chroma key)',keyColor:'Screen colour',kGreen:'Green',kBlue:'Blue',kCream:'Cream',
   keySim:'Threshold (how much is removed)',keySmooth:'Edge softness',newBg:'New background',
   spill:'Spill suppression',bkColor:'Solid',bkStudio:'Studio',bkWarm:'Warm',bkCool:'Cool',
   bkBokeh:'Bokeh',bkBrand:'Brand',bkImage:'Image',
-  bgPick:'🖼 Pick image',bgClear:'✕ Remove image',
+  bgPick:'Pick image',bgClear:'Remove image',
   chromaHint:'Without a green screen the background cannot be replaced — separating a person from the background needs an AI model, which is far too heavy on a phone. A plain, evenly lit sheet or wall is enough.',
-  capOffset:'💬 Caption offset (s)',
+  capOffset:'Caption offset (s)',
   capHint:'Captions come from the script, not speech recognition — spelling is always right. Timing is when each word crossed the reading line; shift it here if they appear early or late.',
-  tgBionic:'⚡ Bionic reading (bold word starts)',
-  tgSection:'🎬 Stop at section end (shoot section by section)',
-  secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'🔍 Speakability check',diffBtn:'🗺 Struggle map',
-  spLabel:'SPEED · WPM',readyTitle:'✅ Am I ready to shoot?',readyAgain:'↻ Check again',readyGo:'● Start recording',
-  band:'👁 Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
-  eyeRecipe:'👁 Apply eye-contact setup',dist:'📏 Face-to-phone distance (cm)',
-  mode:'🎯 Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
-  tgSafe:'🚫 Show platform UI zones',
-  micLevel:'🎙 Microphone level',fixAudio:'🔊 Repair audio (refresh mic)',
-  audTest:'🔎 Audio test (let the device decide)',
+  tgBionic:'Bionic reading (bold word starts)',
+  tgSection:'Stop at section end (shoot section by section)',
+  secHint:'The prompter stops at the end of every # section; finish that take and the section gets a ✓. The Scripts sheet shows what you have shot.',checkBtn:'Speakability check',diffBtn:'Struggle map',
+  spLabel:'SPEED · WPM',readyTitle:'Am I ready to shoot?',readyAgain:'↻ Check again',readyGo:'● Start recording',
+  band:'Reading band (eye contact)',bAll:'All',b1:'1 line',b2:'2 lines',b3:'3 lines',
+  eyeRecipe:'Apply eye-contact setup',dist:'Face-to-phone distance (cm)',
+  mode:'Shooting mode',mFree:'Free',mStory:'Story',mPost:'IG Post',mVideo:'YouTube',
+  tgSafe:'Show platform UI zones',
+  micLevel:'Microphone level',fixAudio:'Repair audio (refresh mic)',
+  audTest:'Audio test (let the device decide)',
   audTestHint:'Tries every recording format and keeps the one that actually writes audio. Takes about 15 seconds.',
   fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
-  tgSafeAudio:'🛡 Safe audio mode (recommended on iPhone)',
+  tgSafeAudio:'Safe audio mode (recommended on iPhone)',
   safeAudioHint:'Opens the camera with the simplest request (no resolution ask). This is the setting that fixes silent recordings on iPhone.',
   micHint:'Talk — if the bar does not move, no audio is recorded. Check iOS Settings → Safari → Microphone, or close another app holding the mic.',
-  noMicShort:'🔇 no microphone — audio is not recorded',
-  reopenCam:'🔁 Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
-  voiceLang:'Voice-follow language',tgLock:'🔒 Lock screen while recording',tgKeepAwake:'☀️ Keep screen awake',tgHideUI:'🫧 Hide buttons while recording',
+  noMicShort:'no microphone — audio is not recorded',
+  reopenCam:'Restart camera',targetDur:'Target duration (pacing)',targetHint:'With a target set, the badge shows if you are ahead or behind.',
+  voiceLang:'Voice-follow language',tgLock:'Lock screen while recording',tgKeepAwake:'Keep screen awake',tgHideUI:'Hide buttons while recording',
   resetAll:'↺ Reset settings to defaults',resetHint:'Only settings are reset — your scripts and takes stay.',
-  devBtn:'📱 Device compatibility',backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'🎞 My takes',scripts:'Scripts',
-  newScript:'＋ New',paste:'📋 Paste',fromFile:'📄 File',sections:'🔖 Sections — tap to jump',
-  title:'Title',text:'📝 Script',
-  markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait · word{pro-nun} hint',delete:'🗑 Delete',apply:'✓ Apply',
+  devBtn:'Device compatibility',backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'My takes',scripts:'Scripts',
+  newScript:'＋ New',paste:'Paste',fromFile:'File',sections:'Sections — tap to jump',
+  title:'Title',text:'Script',
+  markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait · word{pro-nun} hint',delete:'Delete',apply:'Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
-  takeReady:'Take ready',deleteRedo:'🗑 Delete',keep:'Close',saveShare:'📤 Share / Save',toFiles:'📁 Save to Files',
-  editBtn:'✂️ Edit',trimSteps:'✂️ To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'✂️ Trim start',trimEnd:'✂️ Trim end',
-  trimPrev:'▶︎ Play selection',trimGo:'✂️ Cut and apply',
+  takeReady:'Take ready',deleteRedo:'Delete',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
+  editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
+  trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
-  remote:'🎛 Remote control',
+  remote:'Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
-  lastKeyL:'Last key received',learnStart:'🎯 Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
+  lastKeyL:'Last key received',learnStart:'Learn a key',mapReset:'↺ Reset to defaults',mapList:'Key map',
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
-  profL:'⚡ Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
+  profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
-  vadL:'🫁 Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
-  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'💬 Caption file',pkgBtnL:'📦 Publish bundle',setFindPh:'🔎 Search settings…',restoreBk:'🛟 Restore auto-backup',vfxTitle:'🎨 Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
-  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'🎚 Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
+  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
+  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
-  fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'🎯 Sample the screen colour from camera',tgMask:'🎭 Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'🎙 Microphone',tgEyeLine:'👁 Eye-line guide (rule of thirds)',
+  fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'Sample the screen colour from camera',tgMask:'Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'Microphone',tgEyeLine:'Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',mapImport:'⬇︎ Import profile',
-  noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. 🎤 voice commands do the same job.',tSplit:'🪓 Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
-  wipeTakes:'🗑 Delete unstarred',voiceTest:'🎤 Test mic and recognition',findPh:'🔎 Search scripts…',undoDel:'↺ Restore deleted',
-  voiceCmdL:'🗣 Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
-  voiceCmdHint:'Works while the 🎤 button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
+  noRemoteHint:'No clicker? <b>Double-tap the left half</b> to lock, <b>−/+ in the bottom bar</b> for speed, <b>drag</b> to move. voice commands do the same job.',tSplit:'Split long lines',sortNew:'Newest first',sortBig:'Largest first',sortLong:'Longest first',
+  wipeTakes:'Delete unstarred',voiceTest:'Test mic and recognition',findPh:'Search scripts…',undoDel:'↺ Restore deleted',
+  voiceCmdL:'Voice commands',voiceCmdT:'"prompter start / stop / faster / slower / rewind / record"',
+  voiceCmdHint:'Works while the button is on. Commands never leak into the script — only two-word phrases starting with "prompter" count.',
   /* --- Mac kabuğu (A.2b) --- */
-  mFmt916:'📱 9:16',mFmt169:'🖥 16:9',mFmt11:'⬜ 1:1',mFmt45:'📷 4:5',mFmtFull:'⛶ Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mRemoteKeys:'🎛 Remote keys',mRemoteKeysHint:'Connect a presenter remote or page-turner pedal. If it sends an unrecognised key, teach it.',mActNone:'none',mDiffTitle:'🗺 Struggle map',mDiffHint:'Where you slowed down, scrolled back or paused is collected here — it fills up as you rehearse.',mDiffEmpty:'No marks yet — run the prompter and rehearse; the lines you stumble on collect here.',mDiffClear:'↺ Clear the map',mDiffSlow:'slow',mDiffBack:'back',mDiffPause:'pause',mActPrev:'↑ line',mActNext:'↓ line',mActFaster:'faster',mActSlower:'slower',mActRec:'● record',mActReset:'⟲ restart',actToggle:'Play or pause',mLearnPress:'Press a key on your remote…',mLearnPick:'What should this key do?',mLearned:'Learned:',mMapEmpty:'No learned keys — defaults apply',mMapRemove:'Remove',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'🪟 Floating prompter',mFullscreen:'⛶ Full screen',mSections:'🔖 Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'✕ Remove',mEyeLine:'👁 Reading line (closer to the camera)',mFaceDist:'📏 Face-to-screen distance (cm)',mScreenH:'🖥 Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'📲 Phone remote control',mDiscard:'🗑 Discard / redo',mCaptions:'💬 Subtitles',mPubNote:'📝 Publish note',mKeep:'⭐ Keep in archive',
+  mFmt916:'9:16',mFmt169:'16:9',mFmt11:'⬜ 1:1',mFmt45:'4:5',mFmtFull:'Full',mReady:'Ready?',mVoiceIdle:'Voice',mVoiceOn:'Voice: on',tPlay:'Play',mRemoteKeys:'Remote keys',mRemoteKeysHint:'Connect a presenter remote or page-turner pedal. If it sends an unrecognised key, teach it.',mActNone:'none',mDiffTitle:'Struggle map',mDiffHint:'Where you slowed down, scrolled back or paused is collected here — it fills up as you rehearse.',mDiffEmpty:'No marks yet — run the prompter and rehearse; the lines you stumble on collect here.',mDiffClear:'↺ Clear the map',mDiffSlow:'slow',mDiffBack:'back',mDiffPause:'pause',mActPrev:'↑ line',mActNext:'↓ line',mActFaster:'faster',mActSlower:'slower',mActRec:'● record',mActReset:'⟲ restart',actToggle:'Play or pause',mLearnPress:'Press a key on your remote…',mLearnPick:'What should this key do?',mLearned:'Learned:',mMapEmpty:'No learned keys — defaults apply',mMapRemove:'Remove',mDlgErr:'Recent errors',mDlgReady:'Am I ready?',mDlgNews:' — what changed?',mDlgWelcome:'Welcome to Sufle',mDlgWelcomeBody:'1) Paste your text into the editor on the right.\n2) Use ↑ ↓ to set your pace.\n3) Check light and sound with Am I ready, then press K to record.',phScript:'Type or paste the text you will read…',mPlayStop:'⏸ Stop',mPlayGo:'▶︎ Resume',mPlayStart:'▶︎ Start',mDevCrop:'Cropping',mDevVoice:'Voice follow',mDevShare:'Sharing',mUndoDel:'↺ Restore deleted',mPip:'Floating prompter',mFullscreen:'Full screen',mSections:'Sections',mShorts:'Shorts',mNoisy:'Noisy',mThreshold:'Threshold',mDarkGreen:'Dark green',mRemove:'Remove',mEyeLine:'Reading line (closer to the camera)',mFaceDist:'Face-to-screen distance (cm)',mScreenH:'Screen height (cm)',mCaseView:'Aa Letter case (display only)',mMono:'Mono',mTheme:'Theme',mCustomFg:'Custom: text / background',mRemoteCtrl:'Phone remote control',mDiscard:'Discard / redo',mCaptions:'Subtitles',mPubNote:'Publish note',mKeep:'⭐ Keep in archive',
   /* Mac'in BİREBİR metinleri. Telefonla sözcük farkı var (emoji öneki,
      büyük harf); birleştirmek görünür bir UI kararıdır ve FAZ B'ye ait,
      sözlük göçünün yan etkisi olamaz. O yüzden ayrı anahtar. */
-  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'🖼 Image',mCapMaxW:'💬 Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface',
+  mScripts:'⬆︎ Scripts',mCsClean:'⇔ Plain',mBkImage:'Image',mCapMaxW:'Max words per line',mFontSize:'Font size',mLineH:'Line height',mMargin:'Side margin',mFont:'Typeface',
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
   mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...',
   /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
-  mSwCrop:'⧉ Record cropped to the chosen ratio',mSwChroma:'🟩 Green screen (chroma key)',mSwBurn:'💬 Burn subtitles into the video',mSwVad:'🫁 Pause the prompter when you stop speaking',mSwSafe:'🚫 Platform interface areas',mSwBionic:'⚡ Bionic reading (bold word beginnings)',mSwMirror:'🪞 Mirror (flip horizontally)',mSwFlip:'🔃 Invert (flip vertically)',mSwEye:'🎯 Eye line',mSwDim:'🌗 Focus dimming',mSwHl:'✨ Word highlight',mSwCount:'⏱ 3-2-1 countdown',mSbPlay:'<kbd>Space</kbd> start',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> speed',mSbReset:'<kbd>R</kbd> rewind',mSbLine:'<kbd>←</kbd><kbd>→</kbd> line',mSbRec:'<kbd>K</kbd> record',mSbFs:'<kbd>F</kbd> full screen',mSbHide:'<kbd>H</kbd> minimal',
+  mSwCrop:'⧉ Record cropped to the chosen ratio',mSwChroma:'Green screen (chroma key)',mSwBurn:'Burn subtitles into the video',mSwVad:'Pause the prompter when you stop speaking',mSwSafe:'Platform interface areas',mSwBionic:'Bionic reading (bold word beginnings)',mSwMirror:'Mirror (flip horizontally)',mSwFlip:'Invert (flip vertically)',mSwEye:'Eye line',mSwDim:'Focus dimming',mSwHl:'Word highlight',mSwCount:'⏱ 3-2-1 countdown',mSbPlay:'<kbd>Space</kbd> start',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> speed',mSbReset:'<kbd>R</kbd> rewind',mSbLine:'<kbd>←</kbd><kbd>→</kbd> line',mSbRec:'<kbd>K</kbd> record',mSbFs:'<kbd>F</kbd> full screen',mSbHide:'<kbd>H</kbd> minimal',
   /* Mac ipucu ve panel metinleri (A.2d) */
-  mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'📴 <b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'🎬 Take ready',
+  mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'<b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'Take ready',
   /* Dil düğmesi (A.2d) */
   mLangLabel:'Interface language',
   /* Mac panel sekmesi (B.3) */
   mTabShoot:'Shooting',
   /* Durum satırı — hangi moddayım (B.5) */
-  modeVoice:'🎤 Voice',modeAuto:'▶︎ Auto',modeManual:'✋ Manual',
+  modeVoice:'Voice',modeAuto:'▶︎ Auto',modeManual:'Manual',
   /* Kısayol kartı (B.6) */
   keysTitle:'Keyboard shortcuts',
   /* Karşılama eylemi (B.7) */
@@ -1070,19 +1100,19 @@ const I18N={
   /* Mac otomatik yedek ipucu (C.2) */
   mTRestoreBk:'Restore from the automatic backup',
   /* Kamera seçimi (D.2) */
-  camSel:'📷 Camera',
+  camSel:'Camera',
   /* Odak ve pozlama kilidi (D.2) */
-  tgLock:'🔒 Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
+  tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
   fromFileHint:'Word (.docx), plain text, Markdown and subtitle files. For a PDF, open it, copy the text and use Paste.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'From a Word or text file',
   /* Yayın (OBS) kipi — D.5 */
-  mObsTitle:'📡 Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address',
+  mObsTitle:'Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address',
   /* Uzak önizleme — D.4 */
-  mPrevOn:'📱 Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.',
+  mPrevOn:'Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'🔒 Privacy'}
+  privTitle:'Privacy'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -2751,7 +2781,7 @@ const MMSG={
     if(!r){ box.classList.add('hidden'); box.innerHTML=''; return; }
     const tr=L==='tr';
     const sat=(a,b)=>'<div class="kv"><span>'+a+'</span><b>'+b+'</b></div>';
-    let h='<div class="row"><label>📊 '+(tr?'Prova raporu':'Rehearsal report')+'</label></div>';
+    let h='<div class="row"><label>'+(tr?'Prova raporu':'Rehearsal report')+'</label></div>';
     h+=sat(tr?'Okunan kelime':'Words read', r.kelime);
     h+=sat(tr?'Okuma süresi':'Reading time', fmtTime(r.sure));
     if(r.sesle){
@@ -2789,13 +2819,13 @@ const MMSG={
         try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); }
         if(vidOldu>0.5 || (isFinite(dosyaSure) && kayitSure>3 && (kayitSure-dosyaSure)>1.5)){
           const nerede = vidOldu>0.5 ? vidOldu : dosyaSure;
-          if(ai) ai.innerHTML='<b style="color:#ff5252">⛔ GÖRÜNTÜ '+fmtTime(nerede)+
+          if(ai) ai.innerHTML='<b style="color:#ff5252">GÖRÜNTÜ '+fmtTime(nerede)+
             ' SANİYEDE DONMUŞ</b><br><small>Ses tam ama görüntü erken kesilmiş. '+
             'Çözünürlüğü düşür, kırpmayı kapat ve çekimi kısa tut.</small>';
         }
         // Kayit sirasindaki uyariyi kacirmis olabilir; sonuc ekrani son sans.
         else if(sesOldu>0.5){
-          if(ai) ai.innerHTML='<b style="color:#ff5252">⛔ SES '+fmtTime(sesOldu)+
+          if(ai) ai.innerHTML='<b style="color:#ff5252">SES '+fmtTime(sesOldu)+
             ' SANİYEDE KESİLDİ</b><br><small>Görüntü tam ama mikrofon çekim ortasında gitti '+
             '(USB/Bluetooth mikrofonun kopması ya da başka bir uygulamanın mikrofonu alması). '+
             'Bağlantıyı kontrol et ve tekrar çek.</small>';
