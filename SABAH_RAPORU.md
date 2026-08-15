@@ -2,14 +2,25 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 📦 v9.8 HAZIR — yayınlanmadı, yayın kararı sende (2026-08-14 akşam)
+## 📦 v9.9 HAZIR — yayınlanmadı, yayın kararı sende (2026-08-15 sabah)
 
-Pazar yol haritasının ilk 13 turu tamamlandı (`PAZAR_YOL_HARITASI.md`):
-tek çekirdek + derleme kapısı · Mac tam iki dilli (TR/EN düğmesi) · sağ panel 3 sekme ·
-SVG krom ikonları · **odak modu** (kayıtta arayüz kendiliğinden gizlenir, dokununca gelir —
-eski hâli kaydı durdurmayı imkansızlaştıran bir tuzaktı, kapandı) · rol renkleri + tabular-nums.
-Kapı 8/8 yeşil, 29 kanıtlı bozma, 22 kanıtlı test dosyası. **Onay verirsen push + canlı doğrulama
-protokolü uygulanacak.**
+Pazar yol haritasının **27 turu** tamamlandı (`PAZAR_YOL_HARITASI.md`). FAZ A, B, C, D kapandı.
+
+**Telefon:** durum satırı (hangi moddayım + sesle takip dili) · kısayol kartı (`?`) · eylemle biten
+karşılama · **dosyaya yedekleme ve geri alma** · **.docx içe aktarma** · **odak/pozlama kilidi** ·
+odak modu tuzağının kapatılması · SVG krom ikonları · rol renkleri.
+
+**Mac:** tam iki dilli (TR/EN) · sağ panel **53 kontrol → 3 sekme** · **harici kamera seçimi** ·
+**video budama** · **telefonda uzak önizleme** · **yayın (OBS) kipi** · **.docx ve metin dosyası** ·
+otomatik yedek · disleksi yazı tipi · yüksek kontrast · hareket azaltma · kayıtta odak modu.
+
+**Ölçüp ELEDİKLERİM (yapılmayan iş de karardır):** IndexedDB göçü (localStorage tavanı 4,94 MB,
+tavana 1.271 senaryo sığıyor — risk teorik), OpenDyslexic gömme (~150 KB/ağırlık),
+`ffmpeg.wasm`, `mammoth.js`, sanal kamera (tarayıcıdan **yazılamaz**).
+
+Kapı **8 adım**, 37 kanıtlı bozma, 29 kanıtlı test dosyası. Ulaşılabilirlik denetimi: **18/18 kapı
+açık, 329 sözlük anahtarının 0'ı ölü**. **Onay verirsen push + canlı doğrulama protokolü
+uygulanacak.**
 
 ## Tek cümlede
 

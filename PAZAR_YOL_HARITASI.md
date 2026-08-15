@@ -442,3 +442,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 24 | 2026-08-15 | D.1: .docx içe aktarma, sıfır bağımlılıkla | gerçek .docx uçtan uca okundu · mammoth elendi · 24 iddia · 35 bozma | ✅ 8/8 YEŞİL |
 | 25 | 2026-08-15 | D.5: yayın (OBS) kipi — şeffaf katman | gerçek sunucudan doğrulandı · 19 iddia · 36 bozma · parite tabanı mac 6→7 | ✅ 8/8 YEŞİL |
 | 26 | 2026-08-15 | D.4: uzak önizleme (telefonda kadraj) | 204/200/403/413 gerçek sunucuda ölçüldü · varsayılan kapalı · 22 iddia · 37 bozma | ✅ 8/8 YEŞİL |
+| 27 | 2026-08-15 | **v9.9 hazır** + ulaşılabilirlik denetimi | 18/18 kapı ulaşılabilir · 329 anahtarın 0'ı ölü · not tarayıcıda doğrulandı | ✅ 8/8 YEŞİL |
