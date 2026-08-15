@@ -343,7 +343,16 @@ açılıyor. Kamera kısıtı reddederse anahtar geri alınıp **sebebi söyleni
 `tests/71` artık davranışsal (yetenek taklidiyle 4 senaryo), `tests/126` 31 iddia.
 Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavramı hiç yok).
 **D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
-**D.4 Uzak önizleme:** telefon kumandasında kameranın gördüğü kare. Güçlü farklılaşma.
+**D.4 Uzak önizleme:** ✅ **BİTTİ.** Tek başına çekim yapanın en büyük acısı — kadraja girip
+girmediğini görememek. Mac kamera karesini **320 piksele** küçültüp JPEG olarak **kendi yerel
+sunucusuna** gönderiyor, kumanda sayfası gösteriyor. **Yeni altyapı kurulmadı**: sunucu ve kumanda
+sayfası zaten vardı.
+**Gerçek sunucudan uçtan uca doğrulandı:** kare yokken `204` (telefon sessizce bekler),
+gönderilince `200` ve içerik birebir, yabancı kaynak `403`, 400 KB üstü `413`.
+**Gizlilik kullanıcının:** varsayılan **kapalı**, üç koşul birden aranıyor (ayar açık + kamera açık
++ sayfa sunucudan), kare **diske hiç yazılmıyor** (sunucu tek kareyi bellekte tutuyor) ve bu
+kullanıcıya düz cümleyle söyleniyor. Bozma turu kapalıyken gönderimi yakalıyor.
+Sayfa arka plandayken tazeleme duruyor — kilitli telefonda pil ve veri yakmasın.
 **D.5 Entegrasyon:** ✅ **BİTTİ.** Ölçüm ikiye ayırdı:
 · **Zoom/Teams tarafı ZATEN çözülmüştü** — Mac'teki "🪟 Yüzen Sufle" (Document PiP) sufleyi her
 uygulamanın üstüne koyuyor. Matristeki 1 puan bunu görmemiş.
@@ -432,3 +441,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 23 | 2026-08-15 | D.6: Mac'e video budama + telefonda eksik günlükleme | ölü çeviri canlandı · 20 iddia · 34 bozma · ffmpeg.wasm elendi | ✅ 8/8 YEŞİL |
 | 24 | 2026-08-15 | D.1: .docx içe aktarma, sıfır bağımlılıkla | gerçek .docx uçtan uca okundu · mammoth elendi · 24 iddia · 35 bozma | ✅ 8/8 YEŞİL |
 | 25 | 2026-08-15 | D.5: yayın (OBS) kipi — şeffaf katman | gerçek sunucudan doğrulandı · 19 iddia · 36 bozma · parite tabanı mac 6→7 | ✅ 8/8 YEŞİL |
+| 26 | 2026-08-15 | D.4: uzak önizleme (telefonda kadraj) | 204/200/403/413 gerçek sunucuda ölçüldü · varsayılan kapalı · 22 iddia · 37 bozma | ✅ 8/8 YEŞİL |

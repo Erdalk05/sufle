@@ -250,5 +250,12 @@
   "kaynak": "mac",
   "bul": "  body.obs #stageWrap,body.obs #prompt{background:transparent!important}",
   "koy": ""
+ },
+ {
+  "ad": "D4 önizleme ayarı kapalıyken de kare gönderiliyor (gizlilik)",
+  "test": "130-uzak-onizleme.js",
+  "kaynak": "mac",
+  "bul": "    if(!state.uzakOnizleme || !location.protocol.startsWith('http')) return;",
+  "koy": ""
  }
 ]

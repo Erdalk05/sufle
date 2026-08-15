@@ -644,7 +644,9 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
       <div class="field">
         <div class="top"><label data-i18n="mRemoteCtrl">📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
-        <div id="obsBox" class="rb-note" style="margin-top:10px">
+        <div class="toggle" style="margin-top:8px"><span data-i18n="mPrevOn">📱 Çekimi telefonumda göster</span><div class="sw2" data-t="uzakOnizleme"></div></div>
+      <div class="rb-note" data-i18n="mPrevHint">Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.</div>
+      <div id="obsBox" class="rb-note" style="margin-top:10px">
         <b data-i18n="mObsTitle">📡 Yayın yazılımı (OBS, vMix)</b><br>
         <span data-i18n="mObsHint">OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.</span><br>
         <code id="obsUrl" style="user-select:all">—</code>
@@ -841,7 +843,9 @@ const I18N={
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'Word veya metin dosyasından',
   /* Yayın (OBS) kipi — D.5 */
-  mObsTitle:'📡 Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala'},
+  mObsTitle:'📡 Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala',
+  /* Uzak önizleme — D.4 */
+  mPrevOn:'📱 Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -955,7 +959,9 @@ const I18N={
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'From a Word or text file',
   /* Yayın (OBS) kipi — D.5 */
-  mObsTitle:'📡 Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address'}
+  mObsTitle:'📡 Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address',
+  /* Uzak önizleme — D.4 */
+  mPrevOn:'📱 Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1131,7 +1137,7 @@ async function docxMetni(dosya){
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -1824,6 +1830,7 @@ async function docxMetni(dosya){
       camBtn.textContent='📷 Kamerayı Kapat'; camBtn.classList.add('primary');
       recBtn.disabled=false; recBtn.style.opacity='1';
       setupCams();   // adlar ancak izinden SONRA doluyor
+      onizlemeBaslat();   // kamera açıldı: önizleme ayarı açıksa akmaya başlasın
       const vs=stream.getVideoTracks()[0].getSettings?.()||{};
       toast('Kamera açık — '+(vs.width||'?')+'×'+(vs.height||'?')+
             (stream.getAudioTracks().length?'':' · 🔇 MİKROFON YOK'));
@@ -3111,6 +3118,7 @@ async function docxMetni(dosya){
                           :'Kırpma açıldı — yeşil ekran ancak kırpılmış görüntüde çalışır');
     }
     if(k==='hicon'){ applyHicon(); }
+    if(k==='uzakOnizleme'){ state.uzakOnizleme?onizlemeBaslat():onizlemeDurdur(); }
     applyAll(); save(); });
   // format
   $$('#fmtPill button').forEach(b=>b.onclick=()=>{ state.fmt=b.dataset.fmt; applyAll(); drawSafe(); save(); });
@@ -3588,6 +3596,41 @@ async function docxMetni(dosya){
     r.onerror=()=>toast('Dosya okunamadı');
     r.readAsText(f,'utf-8'); e.target.value='';
   };
+  /* ---------- D.4 UZAK ÖNİZLEME ----------
+     Tek başına çekim yapanın en büyük acısı: kadraja girip girmediğini
+     göremiyorsun. Kamera karesi küçültülüp JPEG olarak yerel sunucuya
+     gönderiliyor, kumanda sayfası onu gösteriyor.
+
+     İSTEĞE BAĞLI ve VARSAYILAN KAPALI: çekim görüntüsü söz konusu, kullanıcı
+     açıkça istemeden gönderilmez. Kareler yalnız KENDİ makinesine ve kendi
+     ağına gider, diske hiç yazılmaz (sunucu tek kareyi bellekte tutar).
+
+     GÖNDERİM KOŞULLARI — üçü birden: ayar açık, kamera açık, sayfa sunucudan
+     açılmış. file:// altında gönderilecek yer yok; kamera kapalıyken
+     gönderilecek şey yok. Koşulsuz göndermek pil ve CPU yakardı. */
+  let onizlemeT=null, onizlemeTuval=null;
+  function onizlemeDurdur(){ if(onizlemeT){ clearInterval(onizlemeT); onizlemeT=null; } }
+  function onizlemeBaslat(){
+    onizlemeDurdur();
+    if(!state.uzakOnizleme || !location.protocol.startsWith('http')) return;
+    onizlemeT=setInterval(async()=>{
+      if(!stream || document.hidden) return;
+      try{
+        const v=$('#cam');
+        if(!v || !v.videoWidth) return;
+        if(!onizlemeTuval) onizlemeTuval=document.createElement('canvas');
+        /* 320 piksel yeter: kadraj kontrolü için, kalite için değil.
+           Büyük kare LAN'ı ve pili boşuna yorar. */
+        const g=320/v.videoWidth;
+        onizlemeTuval.width=320; onizlemeTuval.height=Math.round(v.videoHeight*g);
+        onizlemeTuval.getContext('2d').drawImage(v,0,0,onizlemeTuval.width,onizlemeTuval.height);
+        const blob=await new Promise(r=>onizlemeTuval.toBlob(r,'image/jpeg',0.5));
+        if(!blob) return;
+        await fetch('/preview',{method:'POST',body:blob});
+      }catch(e){ /* ağ hatası: bir sonraki karede yeniden denenir */ }
+    },700);
+  }
+
   /* D.5: yayın kipi. ?obs=1 varsa kabuk tümden kapanır.
      Adres kutusu yalnız SUNUCUDAN açıldığında anlamlı: file:// altında OBS
      sayfayı zaten yükleyemez ve üretilecek bir adres yok. */

@@ -7,6 +7,7 @@ Telefon kumanda:   http://<lan-ip>:8080/remote
 Sadece Python standart kütüphanesi (QR için isteğe bağlı 'qrcode').
 """
 import http.server, socketserver, threading, queue, json, os, socket
+import time   # D.4: önizleme karesinin zaman damgası
 import urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,6 +46,12 @@ REMOTE_PAGE = """<!DOCTYPE html>
  .hint{text-align:center;font-size:12px;color:#555;margin-top:auto}
 </style></head><body>
  <h1>Teleprompter <b>Pro</b> · Kumanda</h1>
+ <!-- D.4 UZAK ÖNİZLEME. Tek başına çekim yapanın en büyük acısı: kadraja
+      girip girmediğini göremiyorsun. Kare Mac'ten gelir, GİZLİ başlar ve
+      ancak ilk kare ulaşınca görünür — kare gelmiyorsa boş bir kutu
+      göstermek "bozuk" izlenimi verirdi. -->
+ <img id="prev" alt="" style="display:none;width:100%;border-radius:14px;
+   border:1px solid #2a2a32;background:#000;aspect-ratio:16/9;object-fit:contain">
  <button class="play" data-cmd='{"type":"toggle"}'>▶︎ / ⏸ Başlat / Durdur</button>
  <div class="big">
    <button data-cmd='{"type":"reset"}'>⟲ Başa Sar</button>
@@ -71,6 +78,26 @@ REMOTE_PAGE = """<!DOCTYPE html>
  <div class="hint" id="st">Aynı Wi-Fi ağında olmalısınız.</div>
 <script>
  function durum(t){document.getElementById('st').textContent=t;}
+ /* Önizleme: 700 ms'de bir tazelenir. Sayfa ARKA PLANDAYKEN durur —
+    kilitli telefonda boşuna veri ve pil harcamayalım. 204 gelirse (Mac
+    henüz kare göndermiyor) resim gizli kalır, hata gösterilmez. */
+ (function(){
+   const im=document.getElementById('prev');
+   let bekle=false;
+   setInterval(async()=>{
+     if(document.hidden||bekle) return;
+     bekle=true;
+     try{
+       const r=await fetch('/preview.jpg?t='+Date.now(),{cache:'no-store'});
+       if(r.status===200){
+         const b=await r.blob();
+         if(im.src.startsWith('blob:')) URL.revokeObjectURL(im.src);
+         im.src=URL.createObjectURL(b); im.style.display='block';
+       }
+     }catch(e){}
+     bekle=false;
+   },700);
+ })();
  // SESSIZCE YUTULAN KOMUT en can sikici hali: cekim sirasinda dugmeye basiyorsun,
  // sufle kipirdamiyor ve durum satiri hala 'Bagli' diyor — cunku nabiz 4 saniyede
  // bir. Eskiden .catch(()=>{}) ile hata tumuyle yutuluyordu. Sonucu ANINDA soyle.
@@ -122,6 +149,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self._send(404, "text/plain; charset=utf-8", "Teleprompter Pro.html bulunamadı")
         elif p.path == "/remote":
             self._send(200, "text/html; charset=utf-8", REMOTE_PAGE)
+        elif p.path == "/preview.jpg":
+            # Kare yoksa 204: telefon "bozuk resim" ikonu göstermesin, sessizce beklesin.
+            if not _onizleme["jpg"]:
+                self.send_response(204); self.end_headers(); return
+            self._send(200, "image/jpeg", _onizleme["jpg"])
         elif p.path == "/info":
             self._send(200, "application/json",
                        json.dumps({"ip": lan_ip(), "port": PORT}))
@@ -195,8 +227,27 @@ class Handler(http.server.BaseHTTPRequestHandler):
             except Exception: obj = {}
             broadcast(obj)
             self._send(200, "application/json", '{"ok":true}')
+        elif p.path == "/preview":
+            if not self._origin_tamam():
+                self._send(403, "application/json", '{"ok":false}')
+                return
+            n = int(self.headers.get("Content-Length", 0) or 0)
+            # ÜST SINIR: bozuk ya da kötü niyetli bir istek belleği şişirmesin.
+            if n > 400000:
+                self._send(413, "application/json", '{"ok":false,"sebep":"kare cok buyuk"}')
+                return
+            _onizleme["jpg"] = self.rfile.read(n) if n else None
+            _onizleme["t"] = time.time()
+            self._send(200, "application/json", '{"ok":true}')
         else:
             self._send(404, "text/plain", "yok")
+
+# ---- D.4 UZAK ÖNİZLEME ----
+# Mac uygulaması küçük bir JPEG karesini buraya POST eder, telefon kumandası
+# /preview.jpg ile okur. Kare BELLEKTE tutulur, diske YAZILMAZ: çekim görüntüsü
+# kullanıcının makinesinde kalır ve uygulama kapanınca iz bırakmaz.
+# Tek kare saklanıyor, birikme olmaz.
+_onizleme = {"jpg": None, "t": 0}
 
 def lan_ip():
     """Mac'in yerel ağ adresi. BULUNAMAZSA 127.0.0.1 döner ve bu adres telefon
