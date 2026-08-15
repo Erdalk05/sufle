@@ -1113,6 +1113,7 @@
 <div id="result">
   <h2>🎬 <span data-i18n="takeReady">Çekim hazır</span> <span id="rSize"></span></h2>
   <video id="resultVid" controls playsinline></video>
+  <div id="provaBox" class="hidden"></div>
   <div id="trimBox" class="hidden">
     <div class="row"><label data-i18n="trimStart">✂️ Baştan kes</label><span class="v" id="vTrimA">0.0 sn</span></div>
     <input type="range" id="trimA" min="0" max="1000" value="0">
@@ -3449,6 +3450,12 @@ let fxTrack=null, fxUsed=false, vidOldu=0, sesOldu=0, fxWatch=0, fxWarned=false;
    yayın notu İngilizce. Kullanıcı paketi açana kadar fark etmiyor.
    Çekim başlarken senaryonun kopyası damgalanıyor; paket onu kullanıyor. */
 let cekimSenaryo=null, cekimAltyazi=null;
+/* E.4 — RAPORUN DÜRÜSTLÜĞÜ BUNA BAĞLI. `capTimes` damgaları kelimenin okuma
+   çizgisinden GEÇTİĞİ an; çizgiyi kim sürüyorsa onu ölçer. Sesle takip
+   açıkken bu KONUŞMACIdır, kapalıyken suflenin kendi sabit akışıdır — yani
+   kapalıyken "gerçek hızın" ayarladığın WPM'in ta kendisidir ve rapor sana
+   kendi ayarını geri söyler. Uydurma rapor yerine bayrak tutuluyor. */
+let cekimSesle=false;
 let recPausedMs=0, pauseStart=0, recPaused=false, pendingDur=0, lastPath=null;
 /* kayıt saati duraklamaları saymaz — yoksa altyazı zamanları duraklama kadar kayardı */
 function recElapsed(){ if(!recT) return 0;
@@ -3506,6 +3513,7 @@ function doStartRec(){
   // metnin sonundaysak başa sar — yoksa sufle hiç akmaz, altyazı da üretilmez
   if(maxPos>1 && pos>=maxPos-5){ reset(); toast(m('rewound')); }
   chunks=[]; capTimes=new Array(words.length).fill(null); cekimAltyazi=null;
+  cekimSesle=voiceOn;   // E.4: çekim sesle takip AÇIKKEN mi başladı
   if(!stream.getAudioTracks().length) toast(m('noMic'));
   const mime=pickMime();
   const base = mime?{mimeType:mime}:{};
@@ -3840,6 +3848,7 @@ function showResult(blob){
     : (L==='tr'? 'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.'
                : 'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.');
   $('#capBtn').style.display = n?'':'none';
+  provaYaz();                         // E.4 — çekim sonrası prova raporu
   $('#trimBox').classList.add('hidden');
   // iOS Safari video akışı vermiyor: kesme orada çalışmaz. Yanlış beklenti kurma, doğru yolu göster.
   // Kırpma bu cihazda mümkün değilse DÜĞMEYİ GÖSTERME — basınca iş yapmayan
@@ -4043,6 +4052,91 @@ function tc(s,sep){
   const mi=t%60,   h=(t-mi)/60;
   const p=(n,l)=>String(n).padStart(l,'0');
   return p(h,2)+':'+p(mi,2)+':'+p(sec,2)+sep+p(ms,3);
+}
+/* ============ E.4 · PROVA RAPORU ============
+   Rakip matrisinde bu satır BOŞ: on bir üründen hiçbirinde çekimden sonra
+   "nasıl okudum" cevabı yok. Sunucu da yapay zekâ da gerekmiyor — veri zaten
+   cihazda: `cekimAltyazi` her kelimenin okuma çizgisinden geçtiği anı taşıyor
+   (altyazı bundan üretiliyor).
+
+   DÜRÜSTLÜK SINIRI: damgalar çizgiyi KİMİN sürdüğünü ölçer. Sesle takip
+   açıkken konuşmacıyı, kapalıyken suflenin sabit akışını. Kapalıyken "gerçek
+   hız" kullanıcının kendi WPM ayarıdır ve rapor ona kendi ayarını geri söyler
+   — bu yüzden o durumda hız ve duraklama YAZILMIYOR, sebebi söyleniyor.
+
+   DOLGU KELİME (şey/yani/ııı) BİLEREK YOK: onu ölçmek için konuşmanın
+   METNİNİ saklamak gerekir. Tanıma metni bugün hiçbir yere yazılmıyor ve
+   gizlilik metnimiz "konuşmanız cihazda tutulmaz" diyor. Ölçemediğimiz şeyi
+   ölçüyormuş gibi göstermek yerine yazmıyoruz. */
+const PROVA_DURAKLAMA=1.2;   // sn — bundan uzun boşluk kullanıcıya duraklama gibi gelir
+function provaRapor(kaynak, sesle){
+  if(!Array.isArray(kaynak)) return null;
+  const okunan=kaynak.filter(w=>w.t!=null);
+  /* Az kelimeyle istatistik yanıltır: 8 kelimelik bir çekimde tek duraklama
+     "hızın çok değişken" der. Eşiğin altında rapor GÖSTERİLMİYOR. */
+  if(okunan.length<12) return null;
+  const bas=okunan[0].t, son=okunan[okunan.length-1].t, sure=son-bas;
+  if(!(sure>1)) return null;
+  const r={kelime:okunan.length, sure, sesle,
+           okunmayan:kaynak.length-okunan.length};
+  r.wpm=Math.round(okunan.length/sure*60);
+
+  /* Duraklamalar: ardışık iki kelime damgası arasındaki boşluk. */
+  const dur=[];
+  for(let i=1;i<okunan.length;i++){
+    const d=okunan[i].t-okunan[i-1].t;
+    if(d>=PROVA_DURAKLAMA) dur.push({sn:d, sonra:okunan[i-1].s, t:okunan[i-1].t});
+  }
+  dur.sort((a,b)=>b.sn-a.sn);
+  r.duraklama=dur.length;
+  r.duraklamaToplam=dur.reduce((a,b)=>a+b.sn,0);
+  r.enUzun=dur[0]||null;
+
+  /* Tempo tutarlılığı: 10 saniyelik pencerelerde hız. Tek bir ortalama,
+     "başta yavaş sonda koşuyor" durumunu tümden gizler. */
+  const P=10, kova={};
+  okunan.forEach(w=>{ const k=Math.floor((w.t-bas)/P); kova[k]=(kova[k]||0)+1; });
+  const anahtar=Object.keys(kova).map(Number).sort((a,b)=>a-b);
+  /* Son pencere yarım kalmış olabilir. İlk yazımda onu tümden atıyordum ve
+     19,75 saniyelik bir çekimde ikinci pencere %97 dolu olmasına rağmen
+     düşüyordu — tempo hiç raporlanmıyordu (test yakaladı). Artık pencere
+     GERÇEK süresiyle oranlanıyor; yalnız yarıdan kısa kalan son parça
+     atılıyor, çünkü 1-2 saniyelik bir kuyruk uçuk bir hız üretir. */
+  const hizlar=anahtar.map(k=>{
+    const span=Math.min(sure,(k+1)*P)-k*P;
+    return span>=P*0.5 ? Math.round(kova[k]/span*60) : null;
+  }).filter(v=>v!=null);
+  if(hizlar.length>=2){
+    r.enYavas=Math.min(...hizlar); r.enHizli=Math.max(...hizlar);
+    r.pencere=hizlar.length;
+  }
+  return r;
+}
+function provaYaz(){
+  const box=$('#provaBox'); if(!box) return;
+  const r=provaRapor(cekimAltyazi, cekimSesle);
+  if(!r){ box.classList.add('hidden'); box.innerHTML=''; return; }
+  const tr=L==='tr';
+  const sat=(a,b)=>'<div class="kv"><span>'+a+'</span><b>'+b+'</b></div>';
+  let h='<div class="row"><label>📊 '+(tr?'Prova raporu':'Rehearsal report')+'</label></div>';
+  h+=sat(tr?'Okunan kelime':'Words read', r.kelime);
+  h+=sat(tr?'Okuma süresi':'Reading time', clock(r.sure));
+  if(r.sesle){
+    h+=sat(tr?'Gerçek hız':'Actual pace', r.wpm+' '+(tr?'kelime/dk':'wpm'));
+    h+=sat(tr?'Duraklama ('+PROVA_DURAKLAMA+' sn+)':'Pauses ('+PROVA_DURAKLAMA+'s+)',
+           r.duraklama+(r.duraklama?' · '+clock(r.duraklamaToplam):''));
+    if(r.enUzun) h+='<div class="hint">'+(tr?'En uzun duraklama '+r.enUzun.sn.toFixed(1)+' sn — "'+r.enUzun.sonra+'" kelimesinden sonra'
+                                            :'Longest pause '+r.enUzun.sn.toFixed(1)+'s — after "'+r.enUzun.sonra+'"')+'</div>';
+    if(r.pencere) h+='<div class="hint">'+(tr?'Tempo '+r.enYavas+'–'+r.enHizli+' kelime/dk arasında değişti ('+r.pencere+' × 10 sn)'
+                                             :'Pace ranged '+r.enYavas+'–'+r.enHizli+' wpm ('+r.pencere+' × 10s)')+'</div>';
+  } else {
+    /* Sesle takip kapalıydı: damgalar suflenin kendi akışını gösterir. */
+    h+='<div class="hint">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ: sesle takip kapalıydı, sufle sabit hızla aktı — ölçülen şey senin okuman değil, kendi WPM ayarın olurdu. 🎤 açıkken çekersen bu bölüm dolar.'
+                               :'Pace and pauses were NOT measured: voice follow was off, so the prompter scrolled at a fixed speed — the numbers would just echo your own WPM setting. Record with 🎤 on and this section fills in.')+'</div>';
+  }
+  if(r.okunmayan>0) h+='<div class="hint">'+(tr?'Senaryonun son '+r.okunmayan+' kelimesi okunmadan kayıt bitti'
+                                              :'The take ended with the last '+r.okunmayan+' words unread')+'</div>';
+  box.innerHTML=h; box.classList.remove('hidden');
 }
 function srtText(){
   const cues=buildCues();
@@ -5322,6 +5416,12 @@ function startVoice(){
     if(voiceOn) restartVoice(); };
   try{ sr.start(); srBasladi=performance.now(); }catch(e){ logErr('voice',e); restartVoice(); }
   voiceOn=true; $('#voiceBtn').classList.add('on');
+  /* E.4 — YAPIŞKAN: çekim ortasında açılırsa da bu çekim "sesle sürüldü"
+     sayılır. Bayrak BİLEREK eşleştiricinin (matchVoice) içinde değil:
+     oraya konunca tests/65'in yalıtılmış tezgâhı `recT` tanımsız diye
+     çöktü. Kayıt katmanına ait bir bilgi eşleştiricinin işi değil —
+     aynı ders B.5'te mod rozetinde de çıkmıştı. */
+  if(recT) cekimSesle=true;
   vHud('sessiz','',vptr,false);
   toast(m('voiceOn')); requestWake(); vRaf=requestAnimationFrame(easeLoop);
 }

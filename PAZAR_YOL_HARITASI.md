@@ -433,7 +433,31 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 **E.1** Türkçe senaryo yazarı: konu + hedef süre → kelime sayısı ayarlı metin.
 **E.2** Yeniden yazım: sadeleştir / 30 sn'ye sığdır / daha samimi.
 **E.3** Whisper (WASM veya API) → sesle takip Chrome bağımlılığından kurtulsun, Safari/Firefox açılsın.
-**E.4** Prova raporu: hız, duraklama, dolgu kelime (şey/yani/ııı). **Bu kategoride kimsede yok.**
+**E.4** ✅ **BİTTİ — sunucusuz, yapay zekâsız (Tur 37).** E fazının geri kalanı sunucu istiyor;
+bu madde İSTEMİYORMUŞ. Ölçüldü: `cekimAltyazi` her kelimenin okuma çizgisinden geçtiği anı
+zaten taşıyor (altyazı bundan üretiliyor), yani rapor **cihazda** çıkıyor.
+
+Çekimden sonra sonuç ekranında: okunan kelime, okuma süresi, **gerçek hız**, **duraklama sayısı
+ve toplamı**, **en uzun duraklama hangi kelimeden sonra**, **tempo aralığı** (10 sn'lik
+pencerelerde en yavaş–en hızlı) ve **okunmadan kalan kuyruk**.
+
+**🔴 Raporun dürüstlüğü asıl iş.** Damgalar okuma çizgisini KİMİN sürdüğünü ölçer: sesle takip
+açıkken konuşmacıyı, kapalıyken suflenin sabit akışını. Kapalıyken "gerçek hız" kullanıcının
+**kendi WPM ayarıdır** — rapor ona kendi ayarını geri söylerdi. O yüzden `cekimSesle` bayrağı
+tutuluyor ve kapalıyken **sayı yazılmıyor, sebebi yazılıyor** (iki dilde).
+**Dolgu kelime (şey/yani/ııı) BİLEREK YOK:** ölçmek için konuşmanın metnini saklamak gerekir;
+gizlilik metnimiz "konuşmanız cihazda tutulmaz" diyor. Ölçemediğini ölçüyormuş gibi göstermek
+yerine yazılmadı — `tests/137` bunun vaat edilmediğini de kilitliyor.
+
+*İki kez kendi kuralıma düştüm:* ① bayrağı önce **eşleştiricinin içine** koydum ve `tests/65`in
+yalıtılmış tezgâhı `recT` tanımsız diye çöktü — kayıt katmanına ait bilgi eşleştiricinin işi
+değil (aynı ders B.5'te mod rozetinde de çıkmıştı); bayrak arayüz katmanına taşındı ve test
+artık orada OLMADIĞINI da kilitliyor. ② tempo penceresinde son parçayı tümden atıyordum,
+19,75 saniyelik çekimde ikinci pencere %97 dolu olmasına rağmen düşüyor ve tempo hiç
+raporlanmıyordu; test yakaladı, pencere artık gerçek süresiyle oranlanıyor.
+
+**E.1 · E.2 · E.3 → Erdal kararı** (sunucu/anahtar gerektirir, CLAUDE.md gereği kendiliğinden
+başlatılmaz).
 
 ---
 
@@ -496,7 +520,13 @@ gerektiği anda kaybolan kumanda. Düğme boyu artık en dar duruma göre viewpo
 (430→51,8 · 393→46,8 · 375→44,4 · 360→42 px), `flex-wrap` son emniyet.
 **Ölçülen sonuç: beş genişlikte de taşma 0.** `tests/134` aritmetiği kaynaktan yeniden kuruyor;
 üç bozma (sabit piksel · sekizinci düğme · nowrap) testi kırdığı kanıtlandı.
-**F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
+**F.5** ⏸ **Erdal kararı — bedelini ÖLÇTÜM (Tur 37).** Bugün kodda ödeme duvarı/abonelik/satın
+alma **0** ve "ücretsiz" sözü **10 yerde** yazılı (uygulama başlığı, açıklaması, JSON-LD fiyatı,
+vitrin başlığı/açıklaması/JSON-LD'si, mağaza metni). İki test bunu kilitliyor (`tests/133`,
+`tests/135`): koda bir ödeme duvarı girdiği anda **on yerin hepsi birden yalan söylemeye başlar
+ve kapı önce kırılır** — yani karar verildiğinde metinlerin güncellenmesi unutulamaz.
+Öneri değişmedi (bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut) ama
+"bulut" katmanı sunucu ister, yani F.5 ile E fazı **aynı karara** bağlı.
 **F.6** ⏳ **meta katmanı bitti, vitrin sayfası açık.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
 `og:`/`twitter:`/JSON-LD/canonical **hiç yoktu**.
 Eklendi: anahtar kelimeli başlık (**40 karakter**, sınır 60), açıklama (**157**, sınır 160),
@@ -611,3 +641,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 34 | 2026-08-15 | **F.4 kareleri** — tezgâh kuruldu, kareler gerçek bir kusuru açığa çıkardı | 6 kare gerçek arayüzden (2 hazır · 4 taslak) · tezgâhın 3 kendi hatası ölçülüp kapatıldı · **kayıtta ▶ düğmesi 430 px iPhone'da ekran dışındaydı** → 5 genişlikte taşma **0** · tests/134 + 3 kanıtlı bozma · **4293 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 35 | 2026-08-15 | **F.6 vitrin sayfası** — tanitim.html, iddialar koda bağlı | 63 iddia · 3 genişlikte taşma **0** · TR+EN · jetonlar tek kaynaktan (derle.py 3. kabuk) · uygulamadan keşif yolu açıldı · 4 kanıtlı bozma · tests/115 kopya listeden çıkarıma geçti · **4358 test, 0 hata** | ✅ 8/8 YEŞİL |
 | 36 | 2026-08-15 | **C.3 yeniden değerlendirildi** — erteleme sürüyor, iki gerçek kusur kapandı | 800 senaryo **7,4 ms** (perf gerekçesi çürüdü) · telefonda arama+kapat dipte ulaşılamazdı → yapışkan başlık · **Mac'te senaryo araması hiç yoktu** → eklendi (Türkçe katlama ölçüldü) · gözlenemez tetikleyici düzeltildi · tests/136 + 4 kanıtlı bozma · **4381 test, 0 hata** | ✅ 8/8 YEŞİL |
+| 37 | 2026-08-15 | **E.4 prova raporu** — sunucusuz, yapay zekâsız · F.5 bedeli ölçüldü | veri zaten cihazdaydı (`cekimAltyazi`) · hız/duraklama/tempo/okunmayan kuyruk · **sesle takip kapalıyken sayı YAZILMIYOR** (kendi WPM ayarını geri söylerdi) · dolgu kelime bilerek yok (gizlilik) · 2 kez kendi kuralıma düştüm, ikisi de testle kapandı · tests/137 (33 iddia) + 4 kanıtlı bozma · **4430 test, 0 hata** | ✅ 8/8 YEŞİL |

@@ -362,5 +362,33 @@
   "kaynak": "mac",
   "bul": "    if(!uzun) kutu.value='';\n",
   "koy": ""
+ },
+ {
+  "ad": "E4 sesle bayrağı hep kapalı (rapor sessizce boş kalır)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  cekimSesle=voiceOn;   // E.4",
+  "koy": "  cekimSesle=false;   // E.4"
+ },
+ {
+  "ad": "E4 rapor sesle KAPALIYKEN de hız yazıyor (uydurma sayı)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  } else {\n    /* Sesle takip kapalıydı: damgalar suflenin kendi akışını gösterir. */\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:",
+  "koy": "  } else {\n    h+=sat(tr?'Gerçek hız':'Actual pace', r.wpm+' wpm');\n    h+='<div class=\"hint\">'+(tr?'Hız ve duraklama ÖLÇÜLEMEDİ:"
+ },
+ {
+  "ad": "E4 az kelimede de rapor üretiliyor (yanıltıcı istatistik)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  if(okunan.length<12) return null;",
+  "koy": "  if(okunan.length<0) return null;"
+ },
+ {
+  "ad": "E4 rapor sonuç ekranına bağlı değil (ölü kod)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  provaYaz();                         // E.4",
+  "koy": "  // provaYaz();                      // E.4"
  }
 ]
