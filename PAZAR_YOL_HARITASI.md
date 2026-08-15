@@ -344,7 +344,18 @@ açılıyor. Kamera kısıtı reddederse anahtar geri alınıp **sebebi söyleni
 Parite tabanı `camLock` için bilerek 13→14 (Mac'te `getCapabilities` kavramı hiç yok).
 **D.3 Kumanda genişliği:** Bluetooth klavye/pedal tuş eşlemesi (öğrenmeli, zaten var → genişlet).
 **D.4 Uzak önizleme:** telefon kumandasında kameranın gördüğü kare. Güçlü farklılaşma.
-**D.5 Entegrasyon:** sanal kamera / OBS / Zoom yolu (masaüstünde gerçekçi).
+**D.5 Entegrasyon:** ✅ **BİTTİ.** Ölçüm ikiye ayırdı:
+· **Zoom/Teams tarafı ZATEN çözülmüştü** — Mac'teki "🪟 Yüzen Sufle" (Document PiP) sufleyi her
+uygulamanın üstüne koyuyor. Matristeki 1 puan bunu görmemiş.
+· **Eksik olan yayın yazılımı yoluydu:** `?obs=1` eklendi — kabuk tümüyle kapanıyor, zemin
+**şeffaf** oluyor, geriye yalnız gölgeli metin kalıyor. OBS/vMix "Tarayıcı Kaynağı" bunu olduğu gibi
+kameranın üstüne bindiriyor. **Gerçek sunucudan doğrulandı** (`localhost:8080/?obs=1`).
+· **Hikâye tamamlandı çünkü kontrol zaten vardı:** aynı sunucudan beslenen telefon kumandası bu
+pencereyi de sürüyor. Kullanıcıya adres kutusu ve talimat gösteriliyor (yayın penceresinin
+kendisinde gizli — kimse kendi talimatını sahnede görmek istemez).
+· **🔴 SANAL KAMERA YAZILMADI VE YAZILAMAZ:** tarayıcı işletim sistemine kamera aygıtı
+kaydedemez, imzalı bir sistem eklentisi gerekir. "Yakında" sözü vermek yerine **yapılabilen yol**
+açıldı ve sınırı belgeye yazıldı.
 **D.6 Video düzenleme:** ✅ **BİTTİ.** Ölçüm sürprizliydi: **telefonda budama zaten tamdı**
 (kaydırmalar, önizleme, gerçek yeniden kayıt) — **Mac'te hiç yoktu**, üstelik paylaşılan sözlükte
 `trimStart/trimEnd/trimGo/trimPrev` anahtarları duruyordu, yani yine **ölü çeviri**.
@@ -420,3 +431,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 22 | 2026-08-15 | D.2 tamam: odak/pozlama kilidi (yeteneğe bağlı) | desteksizde satır+ipucu+durum birlikte temizleniyor · 33 bozma · 25 kanıtlı dosya | ✅ 8/8 YEŞİL |
 | 23 | 2026-08-15 | D.6: Mac'e video budama + telefonda eksik günlükleme | ölü çeviri canlandı · 20 iddia · 34 bozma · ffmpeg.wasm elendi | ✅ 8/8 YEŞİL |
 | 24 | 2026-08-15 | D.1: .docx içe aktarma, sıfır bağımlılıkla | gerçek .docx uçtan uca okundu · mammoth elendi · 24 iddia · 35 bozma | ✅ 8/8 YEŞİL |
+| 25 | 2026-08-15 | D.5: yayın (OBS) kipi — şeffaf katman | gerçek sunucudan doğrulandı · 19 iddia · 36 bozma · parite tabanı mac 6→7 | ✅ 8/8 YEŞİL |

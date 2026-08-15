@@ -130,6 +130,22 @@
     font:inherit;font-size:12.5px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
   #rtabs button.on{background:var(--accent);color:var(--on-action);border-color:transparent}
   #right .ctrl.sekmeDisi{display:none}
+  /* D.5 YAYIN (OBS) KİPİ. ?obs=1 ile açılır: kabuğun tamamı gider, zemin
+     ŞEFFAF olur ve geriye yalnız akan metin kalır. OBS/vMix "Tarayıcı
+     Kaynağı" şeffaf sayfayı olduğu gibi bindirir, yani sufle kameranın
+     üstünde görünür.
+     SANAL KAMERA YAZILMADI ve yazılamaz: tarayıcı işletim sistemine kamera
+     aygıtı kaydedemez — imzalı bir sistem eklentisi gerekir. Ölçülebilir
+     gerçek bu; "yakında" diye söz vermek yerine yayın yazılımı yolu açıldı.
+     Kontrol zaten var: telefon kumandası (QR) bu pencereyi de sürüyor,
+     çünkü aynı sunucudan besleniyor. */
+  body.obs{background:transparent!important}
+  body.obs #topbar,body.obs #left,body.obs #right,body.obs #statusbar,
+  body.obs #frame,body.obs #safe,body.obs #bilgi,body.obs #recResult{display:none!important}
+  body.obs #app{grid-template-columns:1fr!important;grid-template-rows:1fr!important}
+  body.obs #stageWrap,body.obs #prompt{background:transparent!important}
+  /* Metin şeffaf zeminde de okunsun: yayında arka plan her renk olabilir. */
+  body.obs #scroller{text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.7)}
   /* B.8 YÜKSEK KONTRAST. Sözlükte `tgHicon` anahtarı vardı ama UYGULAMA YOKTU
      — yani şu ana kadar ölü bir çeviriydi. Telefonla aynı ilkeler, Mac'in
      kendi sınıflarıyla: kenarlıklar saf beyaza, yüzeyler saf siyaha, vurgu
@@ -628,7 +644,13 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
       <div class="field">
         <div class="top"><label data-i18n="mRemoteCtrl">📲 Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
-        <div id="remoteBox">
+        <div id="obsBox" class="rb-note" style="margin-top:10px">
+        <b data-i18n="mObsTitle">📡 Yayın yazılımı (OBS, vMix)</b><br>
+        <span data-i18n="mObsHint">OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.</span><br>
+        <code id="obsUrl" style="user-select:all">—</code>
+        <button class="btn" id="obsCopy" data-i18n="mObsCopy" style="margin-top:6px">Adresi kopyala</button>
+      </div>
+      <div id="remoteBox">
           <div id="remoteOff" class="rb-note" data-i18n="mRemoteOff">📴 <b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.</div>
           <div id="remoteOn" style="display:none">
             <img id="qrImg" alt="QR" style="display:none;width:140px;height:140px;border-radius:10px;background:#fff;padding:6px;margin:2px auto 8px;display:block">
@@ -817,7 +839,9 @@ const I18N={
   /* .docx içe aktarma (D.1) */
   fromFileHint:'Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.',
   /* Mac dosyadan metin düğmesi (D.1) */
-  mTFromFile:'Word veya metin dosyasından'},
+  mTFromFile:'Word veya metin dosyasından',
+  /* Yayın (OBS) kipi — D.5 */
+  mObsTitle:'📡 Yayın yazılımı (OBS, vMix)',mObsHint:'OBS içinde Tarayıcı Kaynağı ekle ve bu adresi yapıştır. Sufle şeffaf zeminde görünür, yani kameranın üstüne biner. Kontrolü yukarıdaki QR ile telefondan yaparsın.',mObsCopy:'Adresi kopyala'},
  en:{lookHere:'look here',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'🔒 locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'📲 Add to home screen',settings:'Settings',
@@ -929,7 +953,9 @@ const I18N={
   /* .docx içe aktarma (D.1) */
   fromFileHint:'Word (.docx), plain text, Markdown and subtitle files. For a PDF, open it, copy the text and use Paste.',
   /* Mac dosyadan metin düğmesi (D.1) */
-  mTFromFile:'From a Word or text file'}
+  mTFromFile:'From a Word or text file',
+  /* Yayın (OBS) kipi — D.5 */
+  mObsTitle:'📡 Streaming software (OBS, vMix)',mObsHint:'Add a Browser Source in OBS and paste this address. The prompter appears on a transparent background, so it overlays your camera. Control it from your phone with the QR above.',mObsCopy:'Copy address'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -3562,6 +3588,22 @@ async function docxMetni(dosya){
     r.onerror=()=>toast('Dosya okunamadı');
     r.readAsText(f,'utf-8'); e.target.value='';
   };
+  /* D.5: yayın kipi. ?obs=1 varsa kabuk tümden kapanır.
+     Adres kutusu yalnız SUNUCUDAN açıldığında anlamlı: file:// altında OBS
+     sayfayı zaten yükleyemez ve üretilecek bir adres yok. */
+  const obsKip=new URLSearchParams(location.search).get('obs')==='1';
+  if(obsKip) document.body.classList.add('obs');
+  (function(){
+    const kutu=$('#obsBox');
+    if(!kutu) return;
+    if(obsKip || !location.protocol.startsWith('http')){ kutu.style.display='none'; return; }
+    const adres=location.origin+'/?obs=1';
+    $('#obsUrl').textContent=adres;
+    $('#obsCopy').onclick=async()=>{
+      try{ await navigator.clipboard.writeText(adres); toast('Adres kopyalandı'); }
+      catch(e){ logErr('obs',e); toast('Kopyalanamadı — adresi elle seçebilirsin'); }
+    };
+  })();
   $('#restoreBk').onclick=restoreBackup;
   $('#takesBtn').onclick=showTakes;
   $('#sbDev').textContent=deviceLine();

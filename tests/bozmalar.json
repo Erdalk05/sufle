@@ -243,5 +243,12 @@
   "kaynak": "docx",
   "bul": "  if(!hedef) throw new Error('document.xml yok');",
   "koy": ""
+ },
+ {
+  "ad": "D5 yayın kipinde sahne şeffaflığı söküldü (kamerayı örter)",
+  "test": "129-yayin-kipi.js",
+  "kaynak": "mac",
+  "bul": "  body.obs #stageWrap,body.obs #prompt{background:transparent!important}",
+  "koy": ""
  }
 ]

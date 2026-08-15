@@ -158,7 +158,11 @@ const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voi
    üstüne bir cihaz listesi koymak aynı işi ikinci kez sorardı. `pip` ile aynı
    sınıf: kavram karşı platformda yok, eksiklik değil.
    Taban BİLEREK yükseltildi (mac 5→6) — kapı bunu görünür kılsın diye var. */
-const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb','cams']);
+/* obs: YAYIN KİPİ MASAÜSTÜNE ÖZGÜ. OBS/vMix bir masaüstü yazılımı ve
+   sayfayı yerel sunucudan (localhost) alıyor; telefonda ne o sunucu var ne
+   de tarayıcı kaynağı kavramı. `remote` ve `pip` ile aynı sınıf: kavram
+   karşı platformda YOK, eksiklik değil. Taban BİLEREK 6→7. */
+const SADECE_MAC     = new Set(['pip','remote','pos','burn','idb','cams','obs']);
 
 const telFazla = [...tE].filter(x => !mE.has(x) && !SADECE_TELEFON.has(x));
 const macFazla = [...mE].filter(x => !tE.has(x) && !SADECE_MAC.has(x));
