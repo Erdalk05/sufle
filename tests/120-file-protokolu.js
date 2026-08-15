@@ -39,9 +39,21 @@ for (const [ad, yol] of [['telefon', telefonYolu()], ['Mac', macYolu()]]) {
   const ie = [...s.matchAll(/^\s*(?:import|export)\s+[\w{*]/gm)];
   ok(ad+': satır başında import/export yok — bulunan: '+ie.length, ie.length === 0);
 
-  /* Dış kaynak: ağ yoksa, çevrimdışıysa ya da file:// ise gelmez. */
-  const dis = [...s.matchAll(/\b(?:src|href)\s*=\s*["']https?:\/\/[^"']+/gi)];
-  ok(ad+': dış kaynak (CDN) yok — bulunan: '+dis.length, dis.length === 0);
+  /* Dış kaynak: ağ yoksa, çevrimdışıysa ya da file:// ise gelmez.
+     ÖLÇÜT YÜKLENEN KAYNAK, geçen adres değil. F.6'da SEO için eklenen
+     `<link rel="canonical" href="https://...">` bu deseni tetikledi; oysa
+     canonical bir ÜSTVERİ İŞARETÇİSİ, tarayıcı onu indirmez, çevrimdışını
+     da file:// altında açılmayı da bozmaz. Aynısı og:image ve twitter:image
+     için de geçerli — onlar `content=` taşıyor ve yalnız paylaşım
+     önizlemesinde, paylaşan platform tarafından okunuyor.
+     Gerçekten yüklenen şeyler kilitli kalıyor: her `src=`, ve `<link>`
+     etiketlerinde YÜKLEYEN rel değerleri (stylesheet/preload/prefetch/icon). */
+  const disSrc = [...s.matchAll(/\bsrc\s*=\s*["']https?:\/\/[^"']+/gi)];
+  const disLink = [...s.matchAll(/<link\b[^>]*>/gi)]
+    .filter(m => /href\s*=\s*["']https?:\/\//i.test(m[0])
+              && /rel\s*=\s*["'](?:stylesheet|preload|prefetch|icon|apple-touch-icon|manifest)/i.test(m[0]));
+  const dis = [...disSrc, ...disLink];
+  ok(ad+': dışarıdan YÜKLENEN kaynak yok — bulunan: '+dis.length, dis.length === 0);
 
   /* Sözün kanıtı: kabukta gerçekten çalışan bir betik VAR. Yukarıdaki üç
      iddia boş bir dosyada da geçerdi; bu dördüncüsü onu ayırt ediyor. */

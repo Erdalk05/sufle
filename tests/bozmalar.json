@@ -264,5 +264,12 @@
   "kaynak": "telefon",
   "bul": "  $('#privBody').innerHTML=PRIV[L];",
   "koy": ""
+ },
+ {
+  "ad": "F6 JSON-LD'ye olmayan özellik yazıldı (abartma)",
+  "test": "133-seo-vitrin.js",
+  "kaynak": "telefon",
+  "bul": "\"Word dosyası içe aktarma\"",
+  "koy": "\"Yapay zeka senaryo yazarı\""
  }
 ]

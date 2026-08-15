@@ -28,7 +28,12 @@ const tel=oku(telefonYolu());
    NOT: odağın açık sayfa İÇİNDE tutulması (odak tuzağı) ayrı bir iş —
    K7 olarak duruyor. Bu tur yalnız görünmeyen ögeleri sıradan çıkarıyor. */
 
-const govde=tel.slice(tel.indexOf('<body'), tel.indexOf('<script'));
+/* Gövde işaretlemesi: <body> ile ondan SONRAKİ ilk <script> arasında.
+   Eskiden "belgedeki ilk <script>" deniyordu ve bu, script yalnız gövdenin
+   sonunda olduğu sürece doğruydu. F.6'da <head> içine JSON-LD eklenince
+   kesit BOŞ kaldı ve 31 iddia 21e düştü — varsayım kırıldı, kod değil. */
+const bodyBas=tel.indexOf('<body');
+const govde=tel.slice(bodyBas, tel.indexOf('<script', bodyBas));
 
 /* ---------- ODAKLANABİLİR ÖGELERİ ÇIKAR ---------- */
 function odaklanabilir(html){

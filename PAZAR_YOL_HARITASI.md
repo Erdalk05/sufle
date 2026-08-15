@@ -428,7 +428,17 @@ Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 
 **Kalan F.4:** ekran görüntüleri (plan yazıldı, görseller üretilmedi).
 **F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
-**F.6** Web vitrin + Türkçe SEO ("sufle uygulaması", "teleprompter programı") — **rakipsiz alan**.
+**F.6** ✅ **meta katmanı BİTTİ.** Ölçülen başlangıç: `<title>` **tek kelimeydi** ("Sufle"),
+`og:`/`twitter:`/JSON-LD/canonical **hiç yoktu**.
+Eklendi: anahtar kelimeli başlık (**40 karakter**, sınır 60), açıklama (**157**, sınır 160),
+canonical, 6 `og:` + 4 `twitter:` etiketi, `SoftwareApplication` JSON-LD (dört platform, iki dil,
+8 özellik).
+**"Ücretsiz" sözü ÖLÇÜLDÜ:** kodda ödeme duvarı/abonelik/satın alma **0** — `tests/133` bunu
+kilitliyor; bir gün ücretli katman gelirse başlık, açıklama ve JSON-LD fiyatı **birden** yalan
+söyler ve kapı önce kırılır.
+**Abartma engeli** mağaza metnindekiyle aynı: JSON-LD `featureList`'teki her madde koddaki
+karşılığına bağlı (kanıtlandı — "yapay zekâ senaryo yazarı" yazılınca kapı kırılıyor).
+**Kalan F.6:** ayrı vitrin sayfası ve içerik — bu tur yalnız uygulamanın kendi meta katmanıydı.
 
 ---
 
@@ -477,3 +487,4 @@ Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
 | 28 | 2026-08-15 | F.4: gizlilik politikası + manifest kimliği | ağ çağrısı 0 / analitik 0 ölçüldü · istisna saklanmadı · 40 iddia · 38 bozma | ✅ 8/8 YEŞİL |
 | 29 | 2026-08-15 | F.4 mağaza metni + F.1 ön ölçümü | 20 söz koda bağlı · abartma engeli kanıtlı · iOS sesle takip engeli bulundu | ✅ 8/8 YEŞİL |
 | 30 | 2026-08-15 | **v9.9 YAYINLANDI** — Erdal onayıyla | canlı VER=9.9 · sw v81 · md5 birebir · 11/11 özellik izi canlıda sayıldı | ✅ canlı |
+| 31 | 2026-08-15 | F.6 SEO meta katmanı · v9.10 hazır | başlık 40/60 · açıklama 157/160 · abartma engeli kanıtlı · 39 bozma | ✅ 8/8 YEŞİL |

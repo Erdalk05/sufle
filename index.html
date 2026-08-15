@@ -7,11 +7,45 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000000">
-<meta name="description" content="Sufle — telefonun önünde okurken kaydet. Teleprompter + kamera + sesle takip.">
+<meta name="description" content="Ücretsiz sufle (teleprompter) uygulaması. Telefonun önünde okurken çek: sesle takip, hız denetimi, göz teması. Kurulum ve hesap yok, veriler cihazında kalır.">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<title>Sufle</title>
+<title>Sufle — Ücretsiz Teleprompter Uygulaması</title>
+<!-- F.6 TÜRKÇE SEO. Ölçülen fırsat: "sufle uygulaması" ve "teleprompter
+     programı" aramalarında Türkçe arayüzlü rakip YOK (analizde 10 rakibin
+     hiçbirinde Türkçe UI yok). Kod gerektirmeyen en yüksek getirili kalem.
+
+     BAŞLIK KISA TUTULDU (43 karakter): arama sonucunda ~60 karakterden
+     sonrası kesiliyor, ayrıca bu başlık tarayıcı sekmesinde de görünüyor.
+     Kurulu uygulamanın adı bundan bağımsız — onu manifest belirliyor.
+
+     "Ücretsiz" ÖLÇÜLDÜ, iddia edilmedi: kodda ödeme duvarı, abonelik ya da
+     satın alma yok (tests/133 bunu kilitliyor). Bir gün ücretli katman
+     gelirse bu söz DEĞİŞMELİ, yoksa yalan olur. -->
+<link rel="canonical" href="https://erdalk05.github.io/sufle/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sufle">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="Sufle — Ücretsiz Teleprompter Uygulaması">
+<meta property="og:description" content="Telefonun önünde okurken çek. Sesle takip, hız denetimi, göz teması bozulmadan kayıt. Kurulum yok, hesap yok, veriler cihazında kalır.">
+<meta property="og:url" content="https://erdalk05.github.io/sufle/">
+<meta property="og:image" content="https://erdalk05.github.io/sufle/icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sufle — Ücretsiz Teleprompter Uygulaması">
+<meta name="twitter:description" content="Telefonun önünde okurken çek. Sesle takip, hız denetimi, göz teması bozulmadan kayıt.">
+<meta name="twitter:image" content="https://erdalk05.github.io/sufle/icon-512.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication",
+ "name":"Sufle","alternateName":"Sufle Teleprompter",
+ "applicationCategory":"MultimediaApplication",
+ "operatingSystem":"iOS, Android, macOS, Windows",
+ "inLanguage":["tr","en"],
+ "description":"Telefonun önünde okurken kaydet. Sesle takip, WPM hız denetimi, göz teması araçları, sosyal video oranları ve altyazı üretimi. Kurulum gerekmez, veriler cihazda kalır.",
+ "url":"https://erdalk05.github.io/sufle/",
+ "offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},
+ "featureList":["Sesle takip","WPM hız denetimi","Kamerayla kayıt","Göz teması araçları","Reels ve Shorts oranları","Altyazı (.srt) üretimi","Word dosyası içe aktarma","Çevrimdışı çalışma"]}
+</script>
 <style>
 /* ==CEKIRDEK:jetonlar.css== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/jetonlar.css
@@ -1137,7 +1171,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.9';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.10';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -5923,6 +5957,8 @@ const NEWS={
        en:'👆 <b>Small buttons are easier to hit</b>: the tap area of the top-bar icons, segment and tab buttons is now 44 pixels — the look is unchanged, only the touchable area grew.'
        +'<br>◐ <b>Your device high contrast setting is honoured</b>: if the operating system asks for more contrast, the app starts with it on. If you turn it off later, that choice is kept.'
        +'<br>🔒 <b>Security fix in the desktop remote server</b>: another page open in your browser could drive the prompter and even stop a take. Only your own remote page can send commands now.'},
+ '9.10':{tr:'🔗 <b>Bağlantı paylaşımı düzeldi</b>: uygulamanın adresini birine gönderdiğinde artık başlık, açıklama ve simge içeren düzgün bir önizleme çıkıyor. Tarayıcı sekmesindeki ad da netleşti. Uygulamanın çalışmasında bir değişiklik yok.',
+        en:'🔗 <b>Link sharing fixed</b>: sending the app address to someone now shows a proper preview with a title, description and icon. The name in the browser tab is clearer too. Nothing about how the app works has changed.'},
  '9.9':{tr:'📄 <b>Word dosyasından metin al</b>: senaryo sayfasında Dosya ile bir .docx seçtiğinde metin doğrudan geliyor. PDF için dosyayı açıp metni kopyala, Yapıştır ile getir.<br><br>🛟 <b>Dosyaya yedekleme</b>: Senaryolar sayfasında iki yeni düğme var. Dosyaya yedekle ile bütün senaryoların tek dosyaya iner; tarayıcı verisi silinse bile o dosyadan geri alabilirsin. Aynı dosya masaüstü sürümünde de açılır.<br><br>🔒 <b>Odak ve pozlama kilidi</b>: kamera çekim ortasında arayış yapmayı bırakır, kıpırdayınca odak nefes almaz. Yalnız cihazın destekliyorsa görünür.<br><br>✋ <b>Durum satırı</b>: ekranda hangi modda olduğun yazıyor; sesle takipte dil de görünüyor, yanlış dilde açıksa hemen fark edersin.',
        en:'📄 <b>Import text from Word</b>: pick a .docx with File on the Scripts page and the text comes straight in. For a PDF, open it, copy the text and use Paste.<br><br>🛟 <b>Back up to a file</b>: two new buttons on the Scripts page. Back up to a file writes every script into one file, so you can restore them even if the browser data is cleared. The same file opens on the desktop version too.<br><br>🔒 <b>Focus and exposure lock</b>: the camera stops hunting mid-take, so the focus does not breathe when you move. It only appears if your device supports it.<br><br>✋ <b>Status line</b>: the screen now says which mode you are in, and voice follow also shows the language, so a wrong language is obvious right away.'},
  '9.8':{tr:'✨ <b>Arayüz yenilendi</b>: kayıt sırasında ekrandaki düğmeler artık kendiliğinden gizleniyor — sahne temiz, yalnız metin ve kayıt göstergesi kalıyor. Ekrana dokununca düğmeler geri gelir, birkaç saniye dokunmazsan yeniden gizlenir. Eskiden bu ayar açıkken kaydı durdurmak imkansızdı, o tuzak kapandı. Ayrıca ana düğmeler yeni çizgi ikonlarla tazelendi, süre ve hız göstergeleri artık titremiyor, vurgu rengi daha okunur bir tona alındı.',

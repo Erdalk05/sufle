@@ -100,7 +100,9 @@ function tezgah({sayfaAcik=false, sonucAcik=false}={}){
 
 /* ---------- ARKADA KAÇ DENETİM VARDI (ÖLÇÜM) ---------- */
 {
-  const govde=tel.slice(tel.indexOf('<body'), tel.indexOf('<script'));
+  /* 106 ile aynı düzeltme: <body>'den SONRAKİ ilk <script>. F.6'da head
+     içine JSON-LD eklenince eski varsayım kesiti boşalttı. */
+  const govde=tel.slice(tel.indexOf('<body'), tel.indexOf('<script', tel.indexOf('<body')));
   const re=/<(button|input|textarea|select|a)\b[^>]*>/gi; const hepsi=[]; let m;
   while((m=re.exec(govde))){
     const et=m[0];

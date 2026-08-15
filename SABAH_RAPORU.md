@@ -2,7 +2,11 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## ✅ v9.9 YAYINLANDI ve canlıdan doğrulandı (2026-08-15 sabah)
+## ✅ v9.9 YAYINLANDI ve canlıdan doğrulandı · **v9.10 hazır, yayın kararı sende**
+
+v9.9 yayınlandıktan sonra Türkçe SEO katmanı eklendi (F.6) ve sürüm **9.10** oldu.
+Kullanıcının göreceği tek fark: bağlantı paylaşımında düzgün önizleme ve net sekme adı.
+**Yayınlanmadı** — onay verirsen aynı protokol uygulanır.
 
 Pazar yol haritasının **27 turu** tamamlandı (`PAZAR_YOL_HARITASI.md`). FAZ A, B, C, D kapandı.
 
@@ -244,6 +248,6 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 ## Sayılar
 
 - **v9.7 canlıda** (v9.5 sabah · v9.6 kararlar · v9.7 masaüstü donma düzeltmesi) · yayınlanmamış iş yok
-- **4287 test** (gece başında 732) · yeni test dosyası: 39–132
+- **4320 test** (gece başında 732) · yeni test dosyası: 39–133
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 8 adım yeşil · 4 ayna birebir · `denetim.py` temiz
