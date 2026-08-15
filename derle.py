@@ -49,6 +49,12 @@ PLAN = [
     ('ikonlar.html', ['index.html']),
     # .docx okuyucu iki kabukta da kullanılıyor (D.1).
     ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
+    # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
+    ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),
+    # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
+    # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
+    ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),
 ]
 
 BASLIK = ('/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/{ad}\n'

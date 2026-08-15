@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar, macMetni}=require('./kaynak');
 const tel=oku(telefonYolu());
-const mac=oku(macYolu());
+const mac=macMetni();
 
 /* KAPANIŞTA KAYDETME
    Telefonun save()'i 120 ms geciktirilmiş. pagehide ve visibilitychange→hidden

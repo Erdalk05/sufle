@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku, macMetni}=require('./kaynak');
 const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
-const mac=oku(macYolu());
+const mac=macMetni();
 const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 
 /* L11 — MAC ARŞİV LİSTESİ BÜTÜN VİDEOLARI BELLEĞE ÇEKİYORDU.

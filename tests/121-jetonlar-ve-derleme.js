@@ -134,8 +134,17 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
      fs.existsSync(mesajYolu) && /const MSG=\{/.test(fs.readFileSync(mesajYolu, 'utf8')));
   /* Sızıntının kendisi de kilitlensin: Mac'te kamera izni için Safari yolu
      tarif edilmemeli — Mac'te Safari izni diye bir şey yok. */
+  /* KULLANICIYA GÖSTERİLEN metinde aranıyor, yorumlarda değil. mac-mesajlar.js
+     başlığı bu sızıntıyı DERS olarak anlatıyor ve ifadeyi tırnak içinde
+     anıyor; yorumu kırmızı saymak, hatanın belgelenmesini cezalandırmak
+     olurdu. Yorumları atınca iddia yerinde kalıyor: sızıntının kendisi hâlâ
+     yakalanır (aşağıda kanıtlandı). */
+  const macTemiz = oku(macYolu())
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '');
   ok('Mac dosyasına telefona özgü Safari kamera yolu sızmıyor',
-     !/Ayarlar → Safari → Kamera/.test(oku(macYolu())));
+     !/Ayarlar → Safari → Kamera/.test(macTemiz));
+  /* Ölçmeyen kapı olmasın: temizlenmiş metin gerçekten TARANABİLİR mi? */
+  ok('yorum ayıklama metni tümden silmedi', macTemiz.length > 40000);
 
   const tel = oku(telefonYolu());
   ok('telefonda sözlük işaretleyicisi var', tel.includes('/* ==CEKIRDEK:sozluk.js== */'));

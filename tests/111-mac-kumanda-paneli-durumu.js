@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {macYolu,oku}=require('./kaynak');
-const mac=oku(macYolu());
+const {macYolu,oku, macMetni}=require('./kaynak');
+const mac=macMetni();
 const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 /* ÇIKARIM İÇİN SATIR YORUMLARI AYIKLANMAZ: bu fonksiyonda
    `location.protocol+'//'+host` var ve kaba ayıklayıcı o dizeyi yorum

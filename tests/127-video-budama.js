@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, macYolu, oku, cikar}=require('./kaynak.js');
+const {telefonYolu, macYolu, oku, cikar, macMetni}=require('./kaynak.js');
 
 /* D.6 — VİDEO BUDAMA (baştan/sondan kes).
 
@@ -15,7 +15,7 @@ const {telefonYolu, macYolu, oku, cikar}=require('./kaynak.js');
    kesme, seçilen süre kadar sürer. */
 
 const tel = oku(telefonYolu());
-const mac = oku(macYolu());
+const mac = macMetni();
 const kodMac = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
 const kodTel = (tel.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
 

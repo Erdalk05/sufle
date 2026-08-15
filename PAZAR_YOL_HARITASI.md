@@ -136,7 +136,23 @@ ve kabukta `I18N`/`MSG` **tam olarak birer kez** tanımlı (ikinci tanım JS'te 
 `applyLang()` yazıldı ve başlatmaya bağlandı; **Türkçede hiçbir şeyi değiştirmediği ölçüldü**
 (85 ögenin 85'inde işaretleme metni sözlük değeriyle birebir).
 
-**A.2c** ⏳ **etiketler bitti, MESAJLAR açık.** 21 yeni anahtar + 28 öznitelik bağlandı (`data-i18n-title` / `data-i18n-ph` / `data-aria`);
+**A.2c** ✅ **BİTTİ (Tur 33).** Etiketler + öznitelikler + **mesajlar**.
+
+*Mesaj yarısı:* Mac'in 68 uyarı metni `cekirdek/mac-mesajlar.js` sözlüğüne taşındı ve `m()`
+ile bağlandı — **çevrilmemiş 67 → 0**, TR/EN parite 68/68, hiçbir İngilizce karşılıkta Türkçe
+kalıntı yok (ölçüldü). Sözlük Mac'e özeldir: telefonun `MSG`'si iOS'a özgü yollar
+("Safari → Kamera") taşıyor ve daha önce Mac'e sızmıştı.
+
+*Bu turun asıl dersi:* metin yerini değiştirince **11 test kırmızıya döndü** — hepsi
+kullanıcıya NE SÖYLENDİĞİNİ arıyordu, cümle artık anahtarın arkasındaydı. İki kolay yanlış
+vardı: testleri "bir şey söyleniyor"a gevşetmek (boş uyarı da geçerdi) ya da anahtar listesini
+testlere gömmek (sözlük değişince sessizce yalan söylerdi). Yapılan: `tests/kaynak.js` içine
+**gerçek sözlükten çözen** `macMetni()` eklendi; iddialar yine kullanıcının okuduğu cümleye
+bağlı. Çözücünün kendisi de iki hata verdi ve ikisi de ölçüldü: tek tırnakla sarmak
+"Mac'in Wi-Fi" mesajında tezgâhı kırdı, kaçış eklemek metni bozup aramayı öldürecekti —
+tırnak artık **metne bakılarak** seçiliyor.
+
+*Eski durum:* 21 yeni anahtar + 28 öznitelik bağlandı (`data-i18n-title` / `data-i18n-ph` / `data-aria`);
 `applyLang` artık `title` ve `aria-label` da çeviriyor. Parite **296/296**.
 **Kapsam 69 → 41** (aynı ölçütle önceki commit'e karşı ölçüldü).
 
@@ -516,3 +532,4 @@ kullanıcı **düğmeleri İngilizce, uyarıları Türkçe** görüyor — yarı
 mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak azaltır → taban sıkışır).
 
 | 32 | 2026-08-15 | **Denetim turu** — kendi gecemi kapımla ölçtüm | 12/14 → **14/14** kanıtlı bozma · asimetri 0 · yol haritası 3 yerde gerçeği söylemiyordu · Mac 67 çevrilmemiş mesaj bulundu |  ✅ 8/8 YEŞİL |
+| 33 | 2026-08-15 | **A.2c kapandı** — Mac uyarıları sözlüğe; testler forma değil cümleye bağlandı | çevrilmemiş toast **67 → 0** (83 çağrının 83'ü) · TR/EN 68/68 · 11 test `macMetni()` ile onarıldı · 121 yorum sızıntısını ayırt ediyor (kanıtlandı) · **4282 test, 0 hata** | ✅ 8/8 YEŞİL |

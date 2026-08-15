@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
-const src=oku(macYolu());
+const {telefonYolu,macYolu,oku, macMetni}=require('./kaynak');
+const src=macMetni();
 const grab=re=>{ const m=src.match(re); if(!m) throw new Error('bulunamadı'); return m[0]; };
 eval(grab(/  function liveCue\(\)\{[\s\S]*?\n  \}/));
 eval(grab(/  function wrapLines\(measure,txt,maxW\)\{[\s\S]*?\n  \}/));
@@ -44,7 +44,7 @@ ok('kapatırken dokunmuyor', gate('burnCaps',false,'free',false).fmt==='free');
 ok('ilgisiz anahtara dokunmuyor', gate('safe',true,'free',false).fmt==='free');
 
 // ---------- MAC DÜŞMANCA TARAMA BULGULARI (v6.8) ----------
-const macSrc=oku(macYolu());
+const macSrc=macMetni();
 // Kayıt sürerken gömme kapatılırsa akış donmuş kareye düşüyordu.
 ok('kayıt boyunca boru hattı kilitleniyor', /if\(\(burnOn\(\)\|\|capLocked\)&&cropCv\)/.test(macSrc));
 ok('kilit kayıt kaynağı seçilirken kuruluyor', /capLocked=\(srcCv===capOut\)/.test(macSrc));
@@ -61,7 +61,7 @@ ok('editör her tuşta durumla senkron', /\$\('#editor'\)\.addEventListener\('in
 // ---------- MAC ESKİ KOD TARAMASI (v7.2) ----------
 // Dördü de telefonda düzeltilmiş ama Mac'e TAŞINMAMIŞ hatalardı.
 // Örüntü: bir platformdaki düzeltme diğerine kendiliğinden geçmiyor.
-const m2=oku(macYolu());
+const m2=macMetni();
 ok('MediaRecorder.onerror bağlı', /recorder\.onerror=ev=>/.test(m2));
 ok('kayıt ölümü kullanıcıya söyleniyor', /Kayıt yarıda kesildi/.test(m2));
 ok('Blob üretilince chunks bırakılıyor', /lastBlob=new Blob\(chunks[\s\S]{0,90}?\n\s*chunks=\[\];/.test(m2));

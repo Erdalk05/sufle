@@ -1045,6 +1045,32 @@ async function docxMetni(dosya){
 }
 /* ==/CEKIRDEK:docx.js== */
 
+
+/* ==CEKIRDEK:mac-mesajlar.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/mac-mesajlar.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* Mac kullanıcı mesajları — m() ile okunur. TEK KAYNAK, YALNIZ MAC.
+
+   NEDEN AYRI DOSYA: telefonun mesajlarını (mesajlar.js) Mac'e gömmek denendi
+   ve telefona özgü metinler sızdı ("Ayarlar → Safari → Kamera"); tests/52
+   haklı olarak kırıldı, çünkü Mac'te Safari izni diye bir şey yok.
+   Kural: KABUK KULLANDIĞINI GÖMER.
+
+   NEDEN GEREKLİ: Mac'te dil düğmesi vardı ama toast mesajları Türkçe sabitti.
+   İngilizceye geçen kullanıcı düğmeleri İngilizce, UYARILARI TÜRKÇE görüyordu
+   — yarım özellik. Denetim turunda (Tur 32) ölçülerek bulundu: 67 çevrilmemiş.
+
+   ÇEVİRİ DİSİPLİNİ: bunlar kullanıcının hata anında okuduğu TEK metin. Ne
+   olduğunu ve NE YAPACAĞINI söylerler; "Hata oluştu" gibi boş cümle yok.
+   Sonu boşlukla biten anahtarlar değer eklenerek kullanılıyor; o boşluk
+   KASITLI, silinirse metin sayıya yapışır. */
+const MMSG={
+ tr:{bkNone:'Otomatik yedek yok',bkUnread:'Yedek okunamadı',lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.',scBusyRec:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',resumed:'Kaldığın yerden',noTrash:'Geri getirilecek senaryo yok',trashBack:'↺ Senaryo geri geldi',lastOne:'En az bir senaryo kalmalı',sureDel:'⚠️ Emin misin? Silmek için tekrar bas',noChange:'Değişiklik gerekmedi',camBusyChange:'Kayıt sürerken kamera değiştirilemez',camDenied:'📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile',camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\\\'u kapat ve tekrar dene',camNone:'📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç',camFirstPl:'Önce kamerayı açın',noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek',cropFail:'⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor',recCut:'⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',cropDied:'⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat',noWebGL:'Yeşil ekran için WebGL yok — yalnız kırpma',camFirst:'Önce kamerayı aç',noTake:'Kaydedilecek çekim yok',noArchive:'Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de',noNumber:'Numara bulunamadı',deleted:'Silindi',noVideo:'Bu çekimin videosu bulunamadı',noPip:'Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)',pipOn:'Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle',trimNo:'Bu tarayıcı kesmeye izin vermiyor',trimShort:'Seçim çok kısa',trimFail:'Kesilemedi — çekim olduğu gibi duruyor',shareCancel:'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin',newTab:'Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet',audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',noteDown:'📝 Yayın notu indirildi',noCaps:'Altyazı yok — kayıt sırasında sufle akmamış',pipBusyRec:'⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.',undone:'↺ Geri alındı',ratio916:'Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor',bgCleared:'Arka plan görseli kaldırıldı',bgTooBig:'Görsel çok büyük',bgLoaded:'Arka plan görseli yüklendi',voiceLost:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',voiceNo:'Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın',micDenied:'🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile',voiceOn:'Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"',noWifi:'📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.',exported:'Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)',impEmpty:'Dosyada senaryo yok',impBad:'Dosya okunamadı — Sufle yedeği mi?',fileBad:'Dosya okunamadı',fileEmpty:'Dosya boş',docxBad:'Word dosyası okunamadı — gerçekten .docx mi?',obsCopied:'Adres kopyalandı',obsCopyFail:'Kopyalanamadı — adresi elle seçebilirsin',bkBack:'Yedekten dönüldü — ',eyeMoved:'👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar',textEnd:'Metin bitti',camOn:'Kamera açık — ',camNoAccess:'Kameraya erişilemedi: ',recFail:'Kayıt başlatılamadı: ',pipFail:'Yüzen pencere açılamadı: ',trimDone:'Kesildi — yeni süre ',downloading:'İndiriliyor: ',saveFail:'Kaydedilemedi: ',imported:'İçe aktarıldı: '},
+ en:{bkNone:'No automatic backup yet',bkUnread:'The backup could not be read',lsFull:'⚠️ Storage is full — the script was NOT saved. Delete scripts you no longer use.',scBusyRec:'You cannot switch scripts while recording — stop the recording first',resumed:'Resumed where you left off',noTrash:'There is no deleted script to restore',trashBack:'↺ Script restored',lastOne:'At least one script must remain',sureDel:'⚠️ Are you sure? Press again to delete',noChange:'Nothing needed changing',camBusyChange:'You cannot switch cameras while recording',camDenied:'📷 Camera permission was not granted — allow it from the camera icon in the address bar, then reload the page',camBusy:'📷 The camera is in use by another app — close FaceTime, Zoom or Photo Booth and try again',camNone:'📷 No suitable camera found — if another camera is connected, select it',camFirstPl:'Turn the camera on first',noMic:'🔇 No microphone — the video will be recorded without sound',cropFail:'⚠️ Cropped recording could not start — recording at the camera ratio instead',recCut:'⛔ The recording stopped early — everything up to that point is kept',vidDied:'⛔ VIDEO STOPPED — audio continues but the video froze, end the recording',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the recording',cropDied:'⚠️ Cropping failed (memory) — stop the recording and start again',noWebGL:'No WebGL for the green screen — cropping only',camFirst:'Turn the camera on first',noTake:'There is no take to save',noArchive:'The archive is empty — use ⭐ Keep in archive on the result screen',noNumber:'Number not found',deleted:'Deleted',noVideo:'The video for this take could not be found',noPip:'This browser does not support the floating window — open it in Chrome or Edge (Safari does not support it)',pipOn:'Floating prompter opened — drag the window over your call',trimNo:'This browser does not allow trimming',trimShort:'The selection is too short',trimFail:'Could not trim — your take is untouched',shareCancel:'Sharing was cancelled — the file is still there, you can try again',newTab:'Opened in a new tab — right click, then Save Video As',audClip:'⚠️ The audio is clipping — move back from the microphone or speak more calmly',noteDown:'📝 Publish note downloaded',noCaps:'No subtitles — the prompter did not scroll during the recording',pipBusyRec:'⛔ This window cannot open while recording — the prompter and the video would freeze. Stop the recording first.',undone:'↺ Undone',ratio916:'Ratio set to 9:16 — this feature does not work at the free ratio',bgCleared:'Background image removed',bgTooBig:'The image is too large',bgLoaded:'Background image loaded',voiceLost:'⛔ Voice follow disconnected — turn it back on with 🎤',voiceNo:'This browser does not support voice follow — please use Chrome',micDenied:'🎤 No microphone permission — allow it from the icon in the address bar, then reload the page',voiceOn:'Speak — the text follows you · commands: "prompter start / stop / faster / rewind"',noWifi:'📵 The Wi-Fi address of this Mac was not found — your phone cannot reach it. Connect the Mac to Wi-Fi and restart the server.',exported:'Exported — open it on your phone with Scripts, then Import (Shift-click here to import)',impEmpty:'There are no scripts in the file',impBad:'The file could not be read — is it a Sufle backup?',fileBad:'The file could not be read',fileEmpty:'The file is empty',docxBad:'The Word file could not be read — is it really a .docx?',obsCopied:'Address copied',obsCopyFail:'Could not copy — you can select the address by hand',bkBack:'Restored from backup — ',eyeMoved:'👁 The reading line moved under the camera — step back a little as well, distance helps most',textEnd:'End of the text',camOn:'Camera on — ',camNoAccess:'The camera could not be opened: ',recFail:'The recording could not start: ',pipFail:'The floating window could not open: ',trimDone:'Trimmed — new length ',downloading:'Downloading: ',saveFail:'Could not save: ',imported:'Imported: '}
+};
+/* ==/CEKIRDEK:mac-mesajlar.js== */
+
   /* ---- i18n (A.2b) ----
      Sözlük telefonla ORTAK: cekirdek/sozluk.js. Mac bugüne dek Türkçeye
      gömülüydü (data-i18n sayısı 0); şimdi 85 etiket sözlükten geliyor.
@@ -1063,8 +1089,11 @@ async function docxMetni(dosya){
      I18N[L].x biçimi yerine t('x') kullanılıyor çünkü denetim.py kullanımı
      bu biçimden tarıyor; doğrudan erişim anahtarı "hiç kullanılmıyor"
      gösterip ölü anahtar alarmı veriyordu.
-     m() hâlâ yok: Mac mesajları henüz sözlüğe bağlı değil (A.2c kalanı). */
+     Mac mesajları m() ile ayrı sözlükten geliyor (cekirdek/mac-mesajlar.js). */
   const t=k=>(I18N[L][k]||I18N.tr[k]||k);
+  /* m(): Mac mesajları. Anahtar yoksa Türkçesine, o da yoksa anahtarın
+     kendisine düşer — kullanıcı hiçbir durumda BOŞ bir uyarı görmez. */
+  const m=k=>(MMSG[L][k]||MMSG.tr[k]||k);
   function applyLang(){
     document.documentElement.lang=L;
     $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; const v=I18N[L][k];
@@ -1192,7 +1221,7 @@ async function docxMetni(dosya){
   function restoreBackup(){
     try{
       const b=JSON.parse(localStorage.getItem(LS+'_yedek')||'null');
-      if(!b||!b.scripts||!b.scripts.length){ toast('Otomatik yedek yok'); return; }
+      if(!b||!b.scripts||!b.scripts.length){ toast(m('bkNone')); return; }
       /* Mevcut hâli ÇÖPE at, geri alınabilsin: yanlışlıkla yedeğe dönmek
          de bir veri kaybı biçimidir. Telefonda da aynı karar. */
       state.cop=(state.cop||[]).concat(state.scripts).slice(-5);
@@ -1200,15 +1229,15 @@ async function docxMetni(dosya){
       const s=curScript();
       $('#title').value=s.title; $('#editor').value=s.text;
       renderScripts(); buildWords(); updateStats(); reset(); save();
-      toast('Yedekten dönüldü — '+new Date(b.t).toLocaleString());
-    }catch(e){ logErr('restore',e); toast('Yedek okunamadı'); }
+      toast(m('bkBack')+new Date(b.t).toLocaleString());
+    }catch(e){ logErr('restore',e); toast(m('bkUnread')); }
   }
   function save(){
     try{ localStorage.setItem(LS,JSON.stringify(state)); lsDoluUyarildi=false; autoBackup(); }
     catch(e){
       logErr('lsFull',e);
       if(!lsDoluUyarildi){ lsDoluUyarildi=true;
-        try{ toast('⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Kullanmadığın senaryoları sil.'); }catch(_){}
+        try{ toast(m('lsFull')); }catch(_){}
       }
     }
   }
@@ -1233,7 +1262,7 @@ async function docxMetni(dosya){
   function selectScript(id){
     // Kayit surerken senaryo degistirmek altyazi damgalarini eski kelime
     // sayisinda birakiyor ve cekim yanlis baslikla arsivleniyordu.
-    if(recorder && recorder.state==='recording'){ toast('Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur'); return; }
+    if(recorder && recorder.state==='recording'){ toast(m('scBusyRec')); return; }
     syncEditorToState();
     rememberPos();
     state.current=id; const s=curScript();
@@ -1242,16 +1271,16 @@ async function docxMetni(dosya){
     // özelliği tümden ölü bırakmıştı
     const want=(s.pos||0);
     renderScripts(); buildWords(); reset(); updateStats(); save();
-    if(want>0){ setPos(Math.min(want,maxPos)); rememberPos(); toast('Kaldığın yerden'); }
+    if(want>0){ setPos(Math.min(want,maxPos)); rememberPos(); toast(m('resumed')); }
   }
   function copGeriAl(){
     const r=(state.cop||[]).pop();
-    if(!r){ toast('Geri getirilecek senaryo yok'); return; }
+    if(!r){ toast(m('noTrash')); return; }
     r.id='g'+Date.now();
     state.scripts.push(r); state.current=r.id;
     $('#title').value=r.title; $('#editor').value=r.text;
     renderScripts(); buildWords(); reset(); updateStats(); save();
-    toast('↺ Senaryo geri geldi');
+    toast(m('trashBack'));
   }
   function newScript(){
     syncEditorToState();
@@ -1264,11 +1293,11 @@ async function docxMetni(dosya){
      Mac'te duruyordu. Iki asamali onay + son 5 silinen icin geri getirme. */
   let silBekle=null, silT=null;
   function delScript(id){
-    if(state.scripts.length<=1){ toast('En az bir senaryo kalmalı'); return; }
+    if(state.scripts.length<=1){ toast(m('lastOne')); return; }
     if(silBekle!==id){
       silBekle=id; clearTimeout(silT);
       silT=setTimeout(()=>{ silBekle=null; renderScripts(); },4000);
-      renderScripts(); toast('⚠️ Emin misin? Silmek için tekrar bas');
+      renderScripts(); toast(m('sureDel'));
       return;
     }
     silBekle=null; clearTimeout(silT);
@@ -1288,7 +1317,7 @@ async function docxMetni(dosya){
   let undoText=null;
   function applyTool(fn,label){
     const cur=$('#editor').value, out=fn(cur);
-    if(out===cur){ toast('Değişiklik gerekmedi'); return; }
+    if(out===cur){ toast(m('noChange')); return; }
     undoText=cur; $('#editor').value=out;
     syncEditorToState(); buildWords(); updateStats(); save();
     $('#undoTool').style.display='';
@@ -1608,7 +1637,7 @@ async function docxMetni(dosya){
     state.eyePos=4; state.band=2; state.dim=true;
     state.margin=Math.max(state.margin,10);
     applyAll(); save();
-    toast('👁 Okuma çizgisi kameranın altına alındı — bir de geri çekil, mesafe en çok işe yarar');
+    toast(m('eyeMoved'));
   }
 
   /* ---------- ÇEKİM MODLARI ----------
@@ -1698,7 +1727,7 @@ async function docxMetni(dosya){
     $('#clock').textContent=fmtTime(elapsed);
     if($('#recDot').classList.contains('on')) showRecTime();
     highlightAt(pos + eyeOff());
-    if(pos>=maxPos+frameH()*0.15){ stop(); toast('Metin bitti'); }
+    if(pos>=maxPos+frameH()*0.15){ stop(); toast(m('textEnd')); }
     else raf=requestAnimationFrame(tick);
   }
   /* Okuma cizgisine EN YAKIN satiri sec. Eskiden "merkezi cizginin ustunde kalan
@@ -1805,7 +1834,7 @@ async function docxMetni(dosya){
         b.className=(state.camId===d.deviceId||(!state.camId&&i===0))?'on':'';
         b.onclick=async()=>{
           if(recorder&&recorder.state!=='inactive'){
-            toast('Kayıt sürerken kamera değiştirilemez'); return; }
+            toast(m('camBusyChange')); return; }
           state.camId=d.deviceId; save();
           if(stream){ stopCam(); await toggleCam(); }
           setupCams();
@@ -1836,7 +1865,7 @@ async function docxMetni(dosya){
       setupCams();   // adlar ancak izinden SONRA doluyor
       onizlemeBaslat();   // kamera açıldı: önizleme ayarı açıksa akmaya başlasın
       const vs=stream.getVideoTracks()[0].getSettings?.()||{};
-      toast('Kamera açık — '+(vs.width||'?')+'×'+(vs.height||'?')+
+      toast(m('camOn')+(vs.width||'?')+'×'+(vs.height||'?')+
             (stream.getAudioTracks().length?'':' · 🔇 MİKROFON YOK'));
     }catch(e){
       // Her hata ayni mesaji veriyordu; hata adi kullaniciya bir sey anlatmiyor.
@@ -1844,12 +1873,12 @@ async function docxMetni(dosya){
       logErr('cam',e);
       const nm=e&&e.name;
       if(nm==='NotAllowedError'||nm==='SecurityError')
-        toast('📷 Kamera izni verilmemiş — tarayıcı adres çubuğundaki kamera simgesinden izin ver, sonra sayfayı yenile');
+        toast(m('camDenied'));
       else if(nm==='NotReadableError'||nm==='AbortError')
-        toast('📷 Kamera başka uygulamada açık — FaceTime/Zoom/Photo Booth\'u kapat ve tekrar dene');
+        toast(m('camBusy'));
       else if(nm==='NotFoundError'||nm==='OverconstrainedError')
-        toast('📷 Uygun kamera bulunamadı — başka bir kamera takılıysa onu seç');
-      else toast('Kameraya erişilemedi: '+(e.message||nm));
+        toast(m('camNone'));
+      else toast(m('camNoAccess')+(e.message||nm));
     }
   }
   function stopCam(){
@@ -1860,7 +1889,7 @@ async function docxMetni(dosya){
     recBtn.disabled=true; recBtn.style.opacity='.45';
   }
   function toggleRec(){
-    if(!stream){ toast('Önce kamerayı açın'); return; }
+    if(!stream){ toast(m('camFirstPl')); return; }
     if(recorder&&recorder.state==='recording') stopRec(); else startRec();
   }
   /* mp4 destekleniyorsa onu seç — webm'i sonradan dönüştürmeye gerek kalmıyor */
@@ -1873,20 +1902,20 @@ async function docxMetni(dosya){
   }
   function startRec(){
     chunks=[]; capTimes=new Array(words.length).fill(null);
-    if(!stream.getAudioTracks().length) toast('🔇 Mikrofon yok — video sessiz kaydedilecek');
+    if(!stream.getAudioTracks().length) toast(m('noMic'));
     const mime=pickMime();
     const opts=Object.assign(mime?{mimeType:mime}:{},{videoBitsPerSecond:9000000,audioBitsPerSecond:128000});
     const src=recSource();
     if(src!==stream){ const [W,H]=cropSize(); toast('⧉ '+W+'×'+H+' olarak kaydediliyor ('+state.fmt+')'); }
-    else if(cropOn()) toast('⚠️ Kırparak kayıt kurulamadı — kamera oranıyla kaydediliyor');
+    else if(cropOn()) toast(m('cropFail'));
     try{ recorder=new MediaRecorder(src,opts); }
     catch(e){ try{ recorder=new MediaRecorder(src,mime?{mimeType:mime}:{}); }
               catch(e2){ try{ recorder=new MediaRecorder(src); }
-                         catch(e3){ toast('Kayıt başlatılamadı: '+e3.message); return; } } }
+                         catch(e3){ toast(m('recFail')+e3.message); return; } } }
     recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
     // Kayit ortada olebilir (disk dolu, kamera koptu). Yakalanmazsa kirmizi nokta
     // yanmaya devam ediyor ama kayit yok. Telefonda v5.8'de duzeltilmisti.
-    recorder.onerror=ev=>{ logErr('rec',(ev&&ev.error)||ev); toast('⛔ Kayıt yarıda kesildi — o ana kadarki bölüm duruyor'); };
+    recorder.onerror=ev=>{ logErr('rec',(ev&&ev.error)||ev); toast(m('recCut')); };
     recorder.onstop=()=>{
       // tür kaydedicinin gerçekte kullandığı türden alınır (eskiden webm'e sabitlenmişti)
       // Blob veriyi devraldi; diziyi tutmak ayni videoyu ikinci kez bellekte tutmakti
@@ -1902,7 +1931,7 @@ async function docxMetni(dosya){
     if(vIz) vIz.addEventListener('ended',()=>{
       vidOldu=(performance.now()-recStart)/1000;
       logErr('rec','video izi oldu @'+vidOldu.toFixed(1)+'s');
-      toast('⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir');
+      toast(m('vidDied'));
     },{once:true});
     /* SES OLUMU: goruntu icin gozcu vardi, ses icin YOKTU. USB/Bluetooth
        mikrofonun cekim ortasinda kopmasi burada telefondan bile olasi. Goruntu
@@ -1914,7 +1943,7 @@ async function docxMetni(dosya){
     if(aIz) aIz.addEventListener('ended',()=>{
       sesOldu=(performance.now()-recStart)/1000;
       logErr('rec','ses izi oldu @'+sesOldu.toFixed(1)+'s');
-      toast('⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir');
+      toast(m('audDied'));
     },{once:true});
     recorder.start(1000);   // saniyelik parçalar: çökmede veri kaybı en aza iner
     recStart=performance.now(); overWarned=false; showRecTime(); startAudioMonitor();
@@ -2078,10 +2107,10 @@ async function docxMetni(dosya){
     cropCv.addEventListener('webglcontextlost',ev=>{
       ev.preventDefault(); logErr('gl','context lost');
       cancelAnimationFrame(cropRaf); cropRaf=0;
-      toast('⚠️ Kırpma koptu (bellek) — kaydı durdurup tekrar başlat');
+      toast(m('cropDied'));
     });
     const useGL=initGL(cropCv);
-    if(!useGL){ cropCtx=cropCv.getContext('2d'); if(state.chroma) toast('Yeşil ekran için WebGL yok — yalnız kırpma'); }
+    if(!useGL){ cropCtx=cropCv.getContext('2d'); if(state.chroma) toast(m('noWebGL')); }
     const loop=()=>{
       if(!cropCv) return;
       if(useGL) drawGL(W,H);
@@ -2302,7 +2331,7 @@ async function docxMetni(dosya){
     vadDurdur();
     if(!state.vad) return;
     const at=stream && stream.getAudioTracks()[0];
-    if(!at){ toast('Önce kamerayı aç'); state.vad=false; applyAll(); save(); return; }
+    if(!at){ toast(m('camFirst')); state.vad=false; applyAll(); save(); return; }
     try{
       const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
       const ctx=new AC();
@@ -2408,7 +2437,7 @@ async function docxMetni(dosya){
     try{ d.transaction('takes','readwrite').objectStore('takes').delete(id); }catch(e){ logErr('idbDel',e); }
   }
   async function keepTake(){
-    if(!lastBlob){ toast('Kaydedilecek çekim yok'); return; }
+    if(!lastBlob){ toast(m('noTake')); return; }
     const ok=await mdbPut({id:'t'+Date.now(), blob:lastBlob, type:lastBlob.type, size:lastBlob.size,
       dur:(recStop-recStart)/1000, created:Date.now(),
       title:(curScript()&&curScript().title)||'Çekim', srt:(typeof srtText==='function'?srtText():'')});
@@ -2417,18 +2446,18 @@ async function docxMetni(dosya){
   async function showTakes(){
     if(diyalogKapisi()) return;
     const list=await mdbListe();
-    if(!list.length){ toast('Arşivde çekim yok — sonuç ekranında ⭐ Arşive al de'); return; }
+    if(!list.length){ toast(m('noArchive')); return; }
     const sec=list.map((t,i)=>(i+1)+') '+new Date(t.created).toLocaleString()+' · '+
       (t.size/1048576).toFixed(1)+' MB · '+t.title).join('\n');
     const c=prompt('Arşivdeki çekimler:\n\n'+sec+'\n\nAçmak için numara yaz (silmek için: 3 sil)','1');
     if(!c) return;
     const sil=/sil/i.test(c);
     const it=list[parseInt(c,10)-1];
-    if(!it){ toast('Numara bulunamadı'); return; }
-    if(sil){ await mdbDel(it.id); toast('Silindi'); return; }
+    if(!it){ toast(m('noNumber')); return; }
+    if(sil){ await mdbDel(it.id); toast(m('deleted')); return; }
     /* Video YALNIZ seçilen çekim için getiriliyor. */
     const tam=await mdbGetir(it.id);
-    if(!tam||!tam.blob){ toast('Bu çekimin videosu bulunamadı'); return; }
+    if(!tam||!tam.blob){ toast(m('noVideo')); return; }
     lastBlob=tam.blob; recStart=0; recStop=(tam.dur||0)*1000; showResult();
   }
   /* ============ YÜZEN SUFLE (overlay) ============
@@ -2450,7 +2479,7 @@ async function docxMetni(dosya){
   async function pipAc(){
     if(pipWin){ pipKapat(); return; }
     if(!pipVar()){
-      toast('Bu tarayıcı yüzen pencereyi desteklemiyor — Chrome ya da Edge ile aç (Safari desteklemiyor)');
+      toast(m('noPip'));
       return;
     }
     try{
@@ -2484,9 +2513,9 @@ async function docxMetni(dosya){
       d.addEventListener('keydown',e=>window.dispatchEvent(new KeyboardEvent('keydown',{key:e.key})));
       pipWin.addEventListener('pagehide', pipGeriAl);
       $('#pipBtn').classList.add('primary');
-      toast('Yüzen sufle açıldı — pencereyi görüşmenin üstüne sürükle');
+      toast(m('pipOn'));
       setTimeout(()=>{ measure(); setPos(pos); },120);   // yeni genişlikte satırlar değişti
-    }catch(e){ logErr('pip',e); toast('Yüzen pencere açılamadı: '+(e.message||e)); pipGeriAl(); }
+    }catch(e){ logErr('pip',e); toast(m('pipFail')+(e.message||e)); pipGeriAl(); }
   }
   /* Pencere kapanınca #prompt'u ASIL yerine geri koy. Bu adım atlanırsa
      sufle tümden kaybolur — kullanıcı uygulamayı bozuk sanır. */
@@ -2532,9 +2561,9 @@ async function docxMetni(dosya){
   async function trimUygula(){
     if(trimming) return;
     const v=$('#rrVideo'), d=trimSure();
-    if(!trimVar()||!d){ toast('Bu tarayıcı kesmeye izin vermiyor'); return; }
+    if(!trimVar()||!d){ toast(m('trimNo')); return; }
     const sec=trimB-trimA;
-    if(sec<0.3){ toast('Seçim çok kısa'); return; }
+    if(sec<0.3){ toast(m('trimShort')); return; }
     trimming=true; $('#rrTrimGo').textContent='Kesiliyor…';
     try{
       const src=(v.captureStream?v.captureStream():v.mozCaptureStream());
@@ -2561,8 +2590,8 @@ async function docxMetni(dosya){
       lastBlob=nb;
       $('#rrTrimBox').classList.add('hidden');
       showResult();
-      toast('Kesildi — yeni süre '+sec.toFixed(1)+' sn');
-    }catch(e){ logErr('trim',e); toast('Kesilemedi — çekim olduğu gibi duruyor'); }
+      toast(m('trimDone')+sec.toFixed(1)+' sn');
+    }catch(e){ logErr('trim',e); toast(m('trimFail')); }
     trimming=false; $('#rrTrimGo').textContent=t('trimGo');
   }
 
@@ -2604,7 +2633,7 @@ async function docxMetni(dosya){
     try{ v.play().catch(()=>{}); }catch(e){}
   }
   async function downloadRec(){
-    if(!lastBlob){ toast('Kaydedilecek çekim yok'); return; }
+    if(!lastBlob){ toast(m('noTake')); return; }
     const isMp4=lastBlob.type.indexOf('mp4')>=0;
     const ext=isMp4?'mp4':'webm';
     const name='cekim_'+stamp()+'.'+ext;
@@ -2619,7 +2648,7 @@ async function docxMetni(dosya){
       /* IPTAL BASARISIZLIK DEGILDIR ve SESSIZ de kalmamali: kullanici paylasim
          penceresini kapatinca Mac hicbir sey soylemiyordu, telefon ise
          "dosya duruyor, tekrar deneyebilirsin" diyor. Ayni sey soylensin. */
-      if(e && e.name==='AbortError'){ toast('Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin'); return; }
+      if(e && e.name==='AbortError'){ toast(m('shareCancel')); return; }
     }
     // 2) klasik indirme
     try{
@@ -2627,13 +2656,13 @@ async function docxMetni(dosya){
       const a=document.createElement('a');
       a.href=url; a.download=name; a.rel='noopener';
       document.body.appendChild(a); a.click(); a.remove();
-      toast('İndiriliyor: '+name);
+      toast(m('downloading')+name);
       return;
     }catch(e){}
     // 3) son çare: yeni sekmede aç, kullanıcı elle kaydetsin
     try{ window.open(lastUrl||URL.createObjectURL(lastBlob),'_blank');
-      toast('Yeni sekmede açıldı — sağ tık → Videoyu Farklı Kaydet'); }
-    catch(e){ toast('Kaydedilemedi: '+(e.message||e)); }
+      toast(m('newTab')); }
+    catch(e){ toast(m('saveFail')+(e.message||e)); }
   }
   function discardRec(){
     const v=$('#rrVideo'); v.pause(); v.removeAttribute('src'); v.load();
@@ -2665,7 +2694,7 @@ async function docxMetni(dosya){
         if(lvl>audStats.maxTepe) audStats.maxTepe=lvl;
         if(lvl>0.96){ audStats.clip++; hot=12; }
         if(hot>0){ hot--; setAudBadge('clip');
-          if(!audWarned){ audWarned=true; toast('⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş'); } }
+          if(!audWarned){ audWarned=true; toast(m('audClip')); } }
         else {
           /* SESSIZLIK ORTALAMAYI ASAGI CEKIYORDU: kaydin basinda henuz
              konusmamisken ortalama 0.015 cikip "ses kisik" yaziyordu.
@@ -2840,11 +2869,11 @@ async function docxMetni(dosya){
     const b=new Blob([yayinNotu()],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
     const a=document.createElement('a'); a.href=u; a.download='yayin-notu_'+stamp()+'.txt';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
-    toast('📝 Yayın notu indirildi');
+    toast(m('noteDown'));
   }
   function downloadSrt(){
     const cues=buildCues();
-    if(!cues.length){ toast('Altyazı yok — kayıt sırasında sufle akmamış'); return; }
+    if(!cues.length){ toast(m('noCaps')); return; }
     const b=new Blob([srtText()],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
     const a=document.createElement('a'); a.href=u; a.download='altyazi_'+stamp()+'.srt';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
@@ -2979,7 +3008,7 @@ async function docxMetni(dosya){
   function kayitSuruyor(){ return !!(recorder && recorder.state==='recording'); }
   function diyalogKapisi(){
     if(!kayitSuruyor()) return false;
-    toast('⛔ Kayıt sürerken bu pencere açılamaz — sufle ve görüntü donar. Önce kaydı durdur.');
+    toast(m('pipBusyRec'));
     return true;
   }
 
@@ -3051,7 +3080,7 @@ async function docxMetni(dosya){
   $('#tNum').onclick=()=>applyTool(numbersToWords,'Sayılar yazıya çevrildi');
   $('#undoTool').onclick=()=>{ if(undoText==null) return;
     $('#editor').value=undoText; undoText=null; syncEditorToState(); buildWords(); updateStats(); save();
-    $('#undoTool').style.display='none'; toast('↺ Geri alındı'); };
+    $('#undoTool').style.display='none'; toast(m('undone')); };
   $('#newScript').onclick=newScript;
   $('#fsBtn').onclick=()=>{ if(!document.fullscreenElement) stageWrap.requestFullscreen?.(); else document.exitFullscreen(); };
   $('#hideBtn').onclick=()=>app.classList.toggle('full');
@@ -3118,7 +3147,7 @@ async function docxMetni(dosya){
        bu deponun en sık hatası (ön koşulu/etkisi olmayan sessiz ayar). */
     if(k==='bionic'){ buildWords(); }
     if((k==='burnCaps'||k==='chroma') && state[k] && !cropOn()){
-      if(state.fmt==='free'){ state.fmt='9:16'; toast('Oran 9:16 yapıldı — bu özellik serbest oranda çalışmıyor'); }
+      if(state.fmt==='free'){ state.fmt='9:16'; toast(m('ratio916')); }
       state.crop=true;
       toast(k==='burnCaps'?'Kırpma açıldı — altyazı ancak kırpılmış görüntüye çizilebilir'
                           :'Kırpma açıldı — yeşil ekran ancak kırpılmış görüntüde çalışır');
@@ -3147,7 +3176,7 @@ async function docxMetni(dosya){
   $('#keySim').addEventListener('input',e=>{ state.keySim=+e.target.value; applyAll(); save(); });
   $('#keySmooth').addEventListener('input',e=>{ state.keySmooth=+e.target.value; applyAll(); save(); });
   $('#bgPick').onclick=()=>$('#bgFile').click();
-  $('#bgClear').onclick=()=>{ state.bgImg=null; bgReady=false; save(); toast('Arka plan görseli kaldırıldı'); };
+  $('#bgClear').onclick=()=>{ state.bgImg=null; bgReady=false; save(); toast(m('bgCleared')); };
   $('#bgFile').onchange=e=>{
     const f=e.target.files&&e.target.files[0]; if(!f) return;
     const r=new FileReader();
@@ -3159,9 +3188,9 @@ async function docxMetni(dosya){
         const c=document.createElement('canvas');
         c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc));
         c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-        let url; try{ url=c.toDataURL('image/jpeg',0.82); }catch(err){ toast('Görsel çok büyük'); return; }
-        if(url.length>1400000){ toast('Görsel çok büyük'); return; }
-        state.bgImg=url; state.bgKind='image'; save(); applyAll(); loadBg(); toast('Arka plan görseli yüklendi');
+        let url; try{ url=c.toDataURL('image/jpeg',0.82); }catch(err){ toast(m('bgTooBig')); return; }
+        if(url.length>1400000){ toast(m('bgTooBig')); return; }
+        state.bgImg=url; state.bgKind='image'; save(); applyAll(); loadBg(); toast(m('bgLoaded'));
       };
       img.src=r.result;
     };
@@ -3276,7 +3305,7 @@ async function docxMetni(dosya){
   var srFails=0, srRetryT=null;
   function restartVoice(){
     if(!voiceOn) return;
-    if(++srFails>5){ toast('⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç'); stopVoice(); return; }
+    if(++srFails>5){ toast(m('voiceLost')); stopVoice(); return; }
     clearTimeout(srRetryT);
     srRetryT=setTimeout(()=>{
       if(!voiceOn) return;
@@ -3285,7 +3314,7 @@ async function docxMetni(dosya){
   }
   function startVoice(){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR){ toast('Bu tarayıcı sesli takibi desteklemiyor — Chrome kullanın'); return; }
+    if(!SR){ toast(m('voiceNo')); return; }
     if(running) stop();
     measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0;
     vLast=performance.now(); vptr=0; syncVoicePtr();
@@ -3312,7 +3341,7 @@ async function docxMetni(dosya){
     rec.onerror=ev=>{
       const er=ev&&ev.error;
       if(er==='not-allowed'||er==='service-not-allowed'){
-        toast('🎤 Mikrofon izni yok — adres çubuğundaki simgeden izin ver, sonra sayfayı yenile');
+        toast(m('micDenied'));
         stopVoice(); return;
       }
       if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
@@ -3321,7 +3350,7 @@ async function docxMetni(dosya){
     try{ rec.start(); }catch(e){ logErr('voice',e); restartVoice(); }
     voiceOn=true; $('#voiceBtn').classList.add('primary'); $('#voiceBtn').textContent='🎤 Ses: Açık';
     $('#voiceBtn').title='Sesle takip + sesli komut: "sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"';
-    toast('Konuşun — metin sizi takip eder · komut: "sufle başla / dur / hızlan / başa dön"');
+    toast(m('voiceOn'));
     easeLoop();
   }
   function stopVoice(){
@@ -3464,7 +3493,7 @@ async function docxMetni(dosya){
     if(yerelMi){
       $('#remoteUrl').textContent='Wi-Fi adresi bulunamadı';
       img.style.display='none';
-      toast('📵 Mac\'in Wi-Fi adresi bulunamadı — telefon bu adrese ulaşamaz. Mac\'i Wi-Fi\'ye bağla ve sunucuyu yeniden başlat.');
+      toast(m('noWifi'));
       return;
     }
     const url=location.protocol+'//'+host+'/remote';
@@ -3555,7 +3584,7 @@ async function docxMetni(dosya){
     const a=document.createElement('a'); a.href=u; a.download='sufle-senaryolar.json';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(u),4000);
-    toast('Dışa aktarıldı — telefonda Senaryolar → İçe aktar ile açabilirsin (Shift+tık = içe al)');
+    toast(m('exported'));
   };
   $('#scImport').onchange=(e)=>{
     const f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -3563,7 +3592,7 @@ async function docxMetni(dosya){
     r.onload=()=>{
       try{
         const j=JSON.parse(String(r.result));
-        if(!j.scripts||!j.scripts.length){ toast('Dosyada senaryo yok'); return; }
+        if(!j.scripts||!j.scripts.length){ toast(m('impEmpty')); return; }
         // MEVCUTLARI SİLME: üstüne ekle. Yanlış dosyayla her şeyi kaybetmek olmaz.
         const gelen=j.scripts.map((x,i)=>({id:'i'+Date.now()+i, title:x.title||'İçe aktarılan', text:x.text||''}));
         state.scripts=state.scripts.concat(gelen);
@@ -3571,9 +3600,9 @@ async function docxMetni(dosya){
         $('#title').value=gelen[0].title; $('#editor').value=gelen[0].text;
         renderScripts(); buildWords(); reset(); updateStats(); save();
         toast(gelen.length+' senaryo eklendi');
-      }catch(err){ logErr('import',err); toast('Dosya okunamadı — Sufle yedeği mi?'); }
+      }catch(err){ logErr('import',err); toast(m('impBad')); }
     };
-    r.onerror=()=>toast('Dosya okunamadı');
+    r.onerror=()=>toast(m('fileBad'));
     r.readAsText(f,'utf-8'); e.target.value='';
   };
   setupCams();
@@ -3583,23 +3612,23 @@ async function docxMetni(dosya){
   $('#metinFile').onchange=async e=>{
     const f=e.target.files&&e.target.files[0]; if(!f){ return; }
     const ekle=(baslik,metin)=>{
-      if(!metin.trim()){ toast('Dosya boş'); return; }
+      if(!metin.trim()){ toast(m('fileEmpty')); return; }
       const id='f'+Date.now();
       state.scripts.unshift({id, title:baslik||'Dosyadan', text:metin});
       state.current=id;
       $('#title').value=baslik||'Dosyadan'; $('#editor').value=metin;
       renderScripts(); syncEditorToState(); buildWords(); updateStats(); reset(); save();
-      toast('İçe aktarıldı: '+(baslik||'Dosyadan'));
+      toast(m('imported')+(baslik||'Dosyadan'));
     };
     const ad=(f.name||'').replace(/\.[^.]+$/,'');
     if(/\.docx$/i.test(f.name)){
       try{ ekle(ad,(await docxMetni(f)).replace(/\r\n/g,'\n')); }
-      catch(err){ logErr('docx',err); toast('Word dosyası okunamadı — gerçekten .docx mi?'); }
+      catch(err){ logErr('docx',err); toast(m('docxBad')); }
       e.target.value=''; return;
     }
     const r=new FileReader();
     r.onload=()=>ekle(ad,String(r.result||'').replace(/\r\n/g,'\n'));
-    r.onerror=()=>toast('Dosya okunamadı');
+    r.onerror=()=>toast(m('fileBad'));
     r.readAsText(f,'utf-8'); e.target.value='';
   };
   /* ---------- D.4 UZAK ÖNİZLEME ----------
@@ -3649,8 +3678,8 @@ async function docxMetni(dosya){
     const adres=location.origin+'/?obs=1';
     $('#obsUrl').textContent=adres;
     $('#obsCopy').onclick=async()=>{
-      try{ await navigator.clipboard.writeText(adres); toast('Adres kopyalandı'); }
-      catch(e){ logErr('obs',e); toast('Kopyalanamadı — adresi elle seçebilirsin'); }
+      try{ await navigator.clipboard.writeText(adres); toast(m('obsCopied')); }
+      catch(e){ logErr('obs',e); toast(m('obsCopyFail')); }
     };
   })();
   $('#restoreBk').onclick=restoreBackup;

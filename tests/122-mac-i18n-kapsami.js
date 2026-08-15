@@ -178,10 +178,15 @@ if (taban === null || eksik.length < taban) {
 {
   const TABAN_MESAJ = path.join(REPO, 'tests', 'mac-mesaj-taban.json');
   const kodM = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
-  const cagri = [...kodM.matchAll(/toast\(((?:[^()']|'(?:[^'\\]|\\.)*')*)\)/g)];
-  /* Sabit dize taşıyan çağrı = çevrilmemiş. m('anahtar') ya da değişken
-     kullananlar çevrilmiş sayılır. */
-  const sabit = cagri.filter(c => /^'/.test(c[1].trim()) && /[A-Za-zğüşıöçĞÜŞİÖÇ]{3,}/.test(c[1]));
+  /* SAYAÇ İÇ PARANTEZE DAYANIKLI OLMALI. İlk yazımda desen `toast(` ile
+     kapanış parantezi arasını "parantez içermeyen" diye tarıyordu; mesajlar
+     m('anahtar') biçimine geçince toplam 73ten 17ye düştü ve sayaç kendi
+     kendini kör etti. Artık `toast(` sayılıyor, sınıflandırma ise hemen
+     SONRASINA bakılarak yapılıyor. */
+  const cagri = [...kodM.matchAll(/toast\(/g)];
+  /* Doğrudan tırnakla başlayan = çevrilmemiş. m( ile başlayan çevrilmiş. */
+  const sabit = [...kodM.matchAll(/toast\('((?:[^'\\]|\\.)*)'/g)]
+    .filter(c => /[A-Za-zğüşıöçĞÜŞİÖÇ]{3,}/.test(c[1]));
   console.log('   Mac toast: ' + cagri.length + ' · çevrilmemiş: ' + sabit.length);
   ok('toast çağrıları sayılabildi (ölçmeyen kapı değil)', cagri.length > 40);
 
