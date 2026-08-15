@@ -324,12 +324,18 @@ Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** ar
   iddiası yer değiştirdi ve **gevşemedi** (`tests/16` sıfıra bölme koruması çekirdeğe,
   `tests/60` formül yerine iddiaya).
 
-### G.12 — Sağdan sola diller (Arapça · İbranice · Farsça) · **P2**
+### G.12 — Sağdan sola diller (Arapça · İbranice · Farsça) · **P2** · ✅ **BİTTİ (v9.14)**
 - **Ne:** senaryo yönü otomatik (`dir=auto`), hizalama, satır kırma, **altyazı ve `.srt` yönü**,
   işaretleme dilinin RTL'de bozulmaması.
-- **Kabul:** 3 dilde 3 genişlikte **taşma 0**, kelime bölünmesi 0 (G.1'in kuralı korunur),
-  karışık metinde (Arapça + Latin rakam) sıra doğru.
+- **Yapıldı:** yön **satır satır** belirleniyor (Unicode bidi P2/P3 sadeleştirmesi); güçlü
+  karakter yoksa dayatılmıyor. Hesap `cekirdek/yon.js`de.
+- **GERÇEK TARAYICIDA ÖLÇÜLDÜ** (üç dil × üç genişlik): **4/4 satır rtl · taşma 0 · kelime
+  bölünmesi 0**, karışık satırda okuma yönü sağdan sola; Türkçe ltr kalıyor.
+- **İki sessiz kusur kapandı:** karaoke vurgusu RTL'de **yanlış uçta** yanıyordu; Arapça soru
+  işareti ve noktası cümle sonu sayılmadığı için Arapça senaryoda **klip önerisi hiç
+  üretilmiyordu**.
 - **Not:** arayüz çevirisi ayrı iş — bu madde yalnız **senaryo metni** için.
+- **Kapı:** `tests/157` **77 iddia** + **11 kasıtlı bozma** (toplam 230).
 
 ### G.13 — Erişilebilir yazı tipi seçimi · **P2**
 - **Ne:** bugünkü tek "Disleksi" anahtarı → ölçülmüş **4 aile** (sistem fontlarından) +

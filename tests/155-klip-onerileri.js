@@ -3,7 +3,11 @@ const {telefonYolu,macYolu,oku,blokKes,cekirdekOku}=require('./kaynak');
 const telHam=oku(telefonYolu()), macHam=oku(macYolu());
 const yorumsuz=s=>s.replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
-const CEK=cekirdekOku('klip.js','SUFLE_KLIP');
+const YON=cekirdekOku('yon.js','SUFLE_YON');
+/* G.12: klip cümle sonu ölçütü ortak yön kuralına devredildi (Arapça soru
+   işareti ve noktası orada tanımlı). Tezgâh o modülü de yüklemek zorunda,
+   yoksa test kodun kusurunu değil KENDİ eksiğini bildirir. */
+const CEK=YON+'\n'+cekirdekOku('klip.js','SUFLE_KLIP');
 
 /* G.6 — KLİP ÖNERİLERİ (BIGVU "Auto-Shorts" karşılığı, YAPAY ZEKÂ YOK).
 

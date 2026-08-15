@@ -210,6 +210,33 @@ duruyor" iddiası dosya genelinde arıyordu ve başka bir fonksiyondaki çağrı
 sıfırlanıyor" deseni nesnenin yazılışına kilitliydi; iddiaya taşındı ve **güçlendi** (müzik
 kazancının da sıfırlandığı ayrıca ölçülüyor).
 
+### ✅ G.12 — Sağdan sola diller (Arapça · İbranice · Farsça) · v9.14
+
+**Ölçülen başlangıç:** uygulamada `dir` ile ilgili **tek bir satır yoktu**. Tarayıcı harfleri
+doğru çiziyor ama satır soldan başlıyor, noktalama yanlış uca düşüyor, karışık cümlede sıra
+bozuk görünüyordu. Rakipte (teleprompter.com) sağdan sola destek **satılıyor**.
+
+**Yön satır satır belirleniyor**, senaryonun tamamına değil: iki dilli bir metinde tek yön
+dayatmak yarısını bozar. Kural Unicode bidi P2/P3'ün sadeleştirilmiş hâli — ilk **güçlü**
+karakter karar verir; güçlü karakter yoksa yön **dayatılmıyor** (tarayıcının kendi kuralı
+daha doğru).
+
+**GERÇEK TARAYICIDA ÖLÇÜLDÜ** (Chrome, üç dil × üç genişlik: 430/393/375 px):
+Arapça · İbranice · Farsça → **4/4 satır sağdan sola · taşma 0 · kelime bölünmesi 0**,
+karışık satırda okuma yönü sağdan sola. Türkçe → 4/4 satır soldan sağa (yön dayatılmıyor).
+
+**İki sessiz kusur daha kapandı:** ① **karaoke vurgusu yanlış uçta yanıyordu** — sağdan sola
+metinde okunan son kelime ekranın **sol** ucundadır, vurgu ise hep sağ uçtaydı; ② **Arapça
+soru işareti (؟) ve noktası (۔) cümle sonu sayılmıyordu**, yani Arapça senaryoda altyazı
+bölünmüyor ve **klip önerisi hiç üretilmiyordu**. Ölçüt ortak kurala taşındı.
+
+**Ölçüm tezgâhımın kendi kusuru da çıktı:** metni editöre yazmak sufleyi değiştirmiyor,
+senaryonun **kaydedilmesi** gerekiyor. İlk ölçümde bir dil/genişlik birleşimi "yön yok" diye
+göründü; sebep üründe değil ölçümdeydi ve düzeltilip yeniden ölçüldü.
+
+`tests/157` **77 iddia** + **11 kasıtlı bozma** (toplam 230). Dört test tezgâhı yeni imzaya
+göre süslü parantez sayan çıkarıcıya geçirildi.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -599,10 +626,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **9 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **10 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5783 test** (gece başında 732) · yeni test dosyası: 39–156
+- **5852 test** (gece başında 732) · yeni test dosyası: 39–157
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

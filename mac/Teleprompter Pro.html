@@ -548,7 +548,7 @@
     </div>
     <div id="editorWrap">
       <input id="title" placeholder="Senaryo başlığı" data-i18n-ph="mPhTitle" value="Yeni Senaryo">
-      <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın..." data-i18n-ph="mPhEditor">Merhaba! Bu Teleprompter Pro.
+      <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın..." data-i18n-ph="mPhEditor" dir="auto">Merhaba! Bu Teleprompter Pro.
 
 Telefon formatında (9:16) çekim yapıyorsanız sağ üstten formatı seçtiniz bile. Kamerayı açıp doğrudan kayıt da alabilirsiniz.
 
@@ -1762,9 +1762,11 @@ const MMSG={
     ($('#editor').value||'').split(/\r?\n/).forEach(line=>{
       const r=line.trim();
       if(!r){ html+='<div class="ln br">&nbsp;</div>'; return; }
-      if(/^#{1,3}\s*/.test(r)){ html+='<div class="ln h">'+escapeHtml(r.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
-      if(/^\[.*\]$/.test(r)){ html+='<div class="ln note">'+escapeHtml(r)+'</div>'; return; }
-      html+='<div class="ln">'+vurguYay(r).replace(/\S+/g,isaretle)+'</div>';
+      /* G.12 — yön satır satır (telefonla aynı kural). */
+      const yn=metinYonu(r), da=yn==='auto'?' dir="auto"':' dir="'+yn+'"';
+      if(/^#{1,3}\s*/.test(r)){ html+='<div class="ln h"'+da+'>'+escapeHtml(r.replace(/^#{1,3}\s*/,''))+'</div>'; return; }
+      if(/^\[.*\]$/.test(r)){ html+='<div class="ln note"'+da+'>'+escapeHtml(r)+'</div>'; return; }
+      html+='<div class="ln"'+da+'>'+vurguYay(r).replace(/\S+/g,isaretle)+'</div>';
     });
     scroller.innerHTML=html;
     words=[...scroller.querySelectorAll('.w')];
@@ -2542,15 +2544,22 @@ const MMSG={
      Vurgulanacak kelime her zaman cue'nun sonuncusudur çünkü `liveCue`
      kelimeleri okuma çizgisinden geçtikçe ekliyor — tahmin yok, ASR yok.
      Söylenmemiş kelime GÖSTERİLMEZ. */
-  function kkParcala(measure, ln){
-    const parts=String(ln||'').split(' ').filter(Boolean);
+  function kkParcala(measure, ln, yon){
+    const okuma=String(ln||'').split(' ').filter(Boolean);
+    /* G.12 — GÖRSEL SIRA. Sağdan sola metinde okuma sırası ile ekrandaki
+       sıra TERSTİR. Bunu atlamak, vurgunun cümlenin YANLIŞ UCUNDA yanması
+       demek: kullanıcı okuduğu kelimeyi değil karşı uçtakini vurgulu görür. */
+    const parts=gorselSira(okuma, yon);
     if(!parts.length) return null;
     const bosluk=measure(' ');
     const gen=parts.map(p=>measure(p));
     const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
     const xs=[]; let x=-toplam/2;
     for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
-    return {parts, xs, gen, toplam};
+    /* Vurgulanan kelime okuma sırasının SONUNCUSU; görsel sırada bu,
+       sağdan solada ilk parçadır. */
+    const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
+    return {parts, xs, gen, toplam, vurguIdx};
   }
   let kkRenkOnb='', kkVurguMetinOnb='';
   function kkVurguMetin(){
@@ -2594,6 +2603,11 @@ const MMSG={
     const kart=!!ops;
     const txt=kart&&ops.metin ? ops.metin : liveCue(); if(!txt) return;
     const onb=kart ? {} : capOnbellek;
+  /* G.12 — METİN YÖNÜ, ÖNBELLEKTEN ÖNCE hesaplanıyor: karaoke
+     parçalaması ıskalama dalında yönü kullanıyor ve aşağıda
+     tanımlamak 'başlatılmadan erişim' hatası veriyordu (ölçüldü). */
+  const yon=metinYonu(txt);
+  ctx.direction = yon==='rtl' ? 'rtl' : 'ltr';
     /* MAC PARİTESİ (G.2): punto ve konum burada SABİTTİ (42 / alt) ve
        sözlükte capSize/capPos anahtarları duruyordu — yani çevrilmiş ama
        hiçbir yere bağlanmamış ölü anahtarlar. Artık telefonla aynı
@@ -2608,7 +2622,7 @@ const MMSG={
       lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
       /* Karaoke parçalaması ve satır genişlikleri de önbellekte (telefonla
          aynı gerekçe: kare başına ölçüm 24 kat gereksiz iş demekti). */
-      kkp=((kart?ops.karaoke!==false:state.capKaraoke!==false)) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1]) : null;
+      kkp=((kart?ops.karaoke!==false:state.capKaraoke!==false)) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1], yon) : null;
       satirGen=lines.map(l=>ctx.measureText(l).width);
       Object.assign(onb,{txt, W, size, lines, kk:kkp, satirGen, t0:simdiMs()});
       if(!kart) capOnbellek=onb;
@@ -2646,7 +2660,7 @@ const MMSG={
       }
       const eskiHiza=ctx.textAlign; ctx.textAlign='left';
       p.parts.forEach((w,j)=>{
-        const sonu=(j===p.parts.length-1);
+        const sonu=(j===p.vurguIdx);
         const x=W/2+p.xs[j];
         if(sonu && tema.vurguZemin){
           const eskiG=ctx.shadowBlur; ctx.shadowBlur=0;
@@ -3826,8 +3840,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.<br><b>Sağdan sola diller</b>: Arapça, İbranice ve Farsça senaryolar artık doğru yönde akıyor. Yön satır satır belirleniyor, yani iki dilli bir senaryonun yarısı bozulmuyor; vurgulanan kelime de doğru uçta yanıyor ve Arapça soru işareti cümle sonu sayılıyor.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.<br><b>Right to left languages</b>: Arabic, Hebrew and Persian scripts now flow in the right direction. Direction is decided line by line, so a bilingual script does not break in half; the highlighted word lands on the correct side and the Arabic question mark counts as a sentence end.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
@@ -4371,7 +4385,10 @@ const KLIP_SAYI = 3;
    kısaltma listesi var ve klip sınırı için fazladan bir cümle sonu kaçırmak
    zararsız, YANLIŞ yerde kesmek zararlıdır. */
 function klipCumleSonu(kelime){
-  return /[.!?…]["')\]]?$/.test(String(kelime||''));
+  /* G.12: ölçüt ORTAK KURALA devredildi (cekirdek/yon.js). Arapça soru
+     işareti ve nokta burada tanınmıyordu; ölçüldü: Arapça senaryoda hiç
+     cümle sonu bulunamıyor ve klip ÜRETİLMİYORDU. */
+  return cumleSonuMu(kelime);
 }
 
 /* Vurgu işareti: senaryodaki (2) beklemesi ya da *vurgu* yıldızları.
@@ -4632,6 +4649,67 @@ function gerekenWpm(kelime, hedefSn, duraklama, altSinir, ustSinir, adim){
   return {wpm, sigar:true, sebep:null, okumaSn, gereken};
 }
 /* ==/CEKIRDEK:tempo.js== */
+/* ==CEKIRDEK:yon.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/yon.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* METİN YÖNÜ — sağdan sola diller (G.12). TEK KAYNAK.
+
+   ÖLÇÜLEN BAŞLANGIÇ (2026-08-16): uygulamada `dir` ile ilgili tek bir satır
+   yoktu. Arapça, İbranice ya da Farsça bir senaryo yapıştırıldığında
+   tarayıcı harfleri doğru çiziyor ama SATIR SOLDAN başlıyor, noktalama
+   yanlış uca düşüyor ve karışık cümlede (Arapça + Latin rakam) sıra bozuk
+   görünüyordu. Rakipte (teleprompter.com) sağdan sola destek satılıyor.
+
+   Yön kararı SATIR SATIR verilir, senaryonun tamamına değil: iki dilli bir
+   metinde her satırın kendi yönü vardır ve tek bir yön dayatmak yarısını
+   bozar. Kural Unicode bidi P2/P3in sadeleştirilmiş hâli: ilk GÜÇLÜ
+   karakter yönü belirler; güçlü karakter yoksa yön nötrdür (auto). */
+
+/* Arapça, İbranice, Farsça/Urduca, Süryanice, Tana ve ilgili sunum
+   biçimleri. Aralıklar Unicode blok sınırlarıdır. */
+const RTL_ARALIK = /[֐-׿؀-ۿ܀-ݏݐ-ݿހ-޿ࢠ-ࣿיִ-﷿ﹰ-﻿]/;
+/* Latin, Yunan, Kiril, Ermeni ve Türkçe harfler (güçlü soldan sağa). */
+const LTR_ARALIK = /[A-Za-zÀ-ʯͰ-֏Ḁ-῿]/;
+/* Yönü belirlemeyen ama metinde sık geçenler: rakamlar, noktalama,
+   işaretleme dilimizin karakterleri (# * / ( ) [ ] { }). */
+
+/* NOT: bir zamanlar burada `rtlHarfVar` diye ikinci bir yardımcı vardı ve
+   hiçbir yerde kullanılmıyordu — kapı haklı olarak ölü kod dedi. `metinYonu`
+   zaten aynı soruyu daha kesin yanıtlıyor (ilk GÜÇLÜ karakter kuralı). */
+
+/* Satırın yönü: ilk güçlü karaktere bakar.
+   Dönüş 'rtl' | 'ltr' | 'auto' — 'auto' yön belirleyen harf YOK demektir
+   (yalnız rakam, noktalama ya da işaret). Orada yön dayatmak yanlış olur;
+   tarayıcının kendi kuralı daha doğrudur. */
+function metinYonu(metin){
+  const s=String(metin||'');
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(RTL_ARALIK.test(c)) return 'rtl';
+    if(LTR_ARALIK.test(c)) return 'ltr';
+  }
+  return 'auto';
+}
+
+/* Cümle sonu noktalaması — RTL dillerde farklı işaretler kullanılıyor:
+   Arapça soru işareti (؟ U+061F), Arapça nokta (۔ U+06D4), İbranice sof
+   pasuk (׃ U+05C3) ve maqaf sonrası. Latin işaretler de geçerli çünkü
+   Arapça metinlerde sık kullanılıyorlar.
+   ÖLÇÜLDÜ: bu işaretler eklenmeden Arapça senaryoda altyazı ve klip
+   sınırları HİÇ oluşmuyordu — cümle sonu bulunamıyor, klip üretilmiyordu. */
+const CUMLE_SONU_RE = /[.!?…؟۔׃]["')\]]?$/;
+function cumleSonuMu(kelime){ return CUMLE_SONU_RE.test(String(kelime||'')); }
+
+/* Karaoke parçalarının GÖRSEL sırası. Soldan sağa metinde okuma sırası
+   ile görsel sıra aynıdır; sağdan solada TERSTİR.
+   Bunu atlamak, RTL bir cümlede vurgunun cümlenin YANLIŞ UCUNDA yanması
+   demek — kullanıcı okuduğu kelimeyi değil, karşı uçtakini vurgulu görür. */
+function gorselSira(parcalar, yon){
+  const p=Array.isArray(parcalar)?parcalar.slice():[];
+  return yon==='rtl' ? p.reverse() : p;
+}
+/* ==/CEKIRDEK:yon.js== */
 /* ==CEKIRDEK:altyazi.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/altyazi.js
    Değişiklik oraya yazılır, sonra: python3 derle.py

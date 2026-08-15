@@ -3,7 +3,8 @@ const {telefonYolu,macYolu,oku,blokKes,cekirdekOku}=require('./kaynak');
 const telHam=oku(telefonYolu()), macHam=oku(macYolu());
 const yorumsuz=s=>s.replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
-const CEK=cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
+const YON=cekirdekOku('yon.js','SUFLE_YON');
+const CEK=YON+'\n'+cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
 
 /* G.3 — ÖNİZLEME KARTLARI.
 
@@ -23,7 +24,7 @@ const CEK=cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
 
 function tezgah(k){
   const mW=k.match(/function wrapLines\([\s\S]*?return out\.length\?out:\[txt\|\|.{2}\];\s*\n\s*\}/);
-  const mP=k.match(/function kkParcala\(measure, ln\)\{[\s\S]*?\n\s*\}/);
+  const mP=[blokKes(k,'function kkParcala(')];
   const mR=k.match(/function kkRenk\(\)\{[\s\S]*?\n\s*\}/);
   const mV=blokKes(k,'function kkVurguMetin()');
   const mD=blokKes(k,'function drawCaption(','let capOnbellek=');

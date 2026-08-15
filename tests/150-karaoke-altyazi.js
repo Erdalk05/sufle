@@ -1,6 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu,macYolu,oku,blokKes,cekirdekOku,REPO}=require('./kaynak');
-const ALTYAZI_KAYNAK=cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
+const YON=cekirdekOku('yon.js','SUFLE_YON');
+const ALTYAZI_KAYNAK=cekirdekOku('yon.js','SUFLE_YON')+'\n'+cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
 const telHam=oku(telefonYolu()), macHam=oku(macYolu());
 const yorumsuz=s=>s.replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
@@ -22,10 +23,14 @@ const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
 
 /* ---------- 1) SAF FONKSİYON: kkParcala ---------- */
 function cikarParcala(k, ad){
-  const m=k.match(/function kkParcala\(measure, ln\)\{[\s\S]*?\n\s*\}/);
+  /* İMZA DEĞİŞTİ (G.12: yön parametresi eklendi) ve regex çıkarımı sustu.
+     Süslü parantez sayan çıkarıcı imzadan bağımsızdır. */
+  const m=[blokKes(k,'function kkParcala(')];
+  /* kkParcala artık ortak yön kuralını (gorselSira) çağırıyor; tezgâh onu
+     da yüklemeli, yoksa test kodun değil KENDİ eksiğinin raporunu verir. */
   ok(ad+': kkParcala çıkarılabildi', !!m);
   if(!m) return null;
-  return new Function('__m', m[0]+'; return kkParcala(__m, arguments[1]);');
+  return new Function('__m', YON+'\n'+m[0]+'; return kkParcala(__m, arguments[1], arguments[2]);');
 }
 /* Ölçüm fonksiyonu sahte ama TUTARLI: her karakter 10 birim, boşluk 4.
    Gerçek measureText yerine bunu koymak testin tuvalden bağımsız olmasını
@@ -85,7 +90,7 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
 /* ---------- 2) GERÇEK ÇİZİM: hangi kelime hangi renkle ---------- */
 function tezgah(k){
   const mW=k.match(/function wrapLines\([\s\S]*?return out\.length\?out:\[txt\|\|.{2}\];\s*\n\s*\}/);
-  const mP=k.match(/function kkParcala\(measure, ln\)\{[\s\S]*?\n\s*\}/);
+  const mP=[blokKes(k,'function kkParcala(')];
   const mR=k.match(/function kkRenk\(\)\{[\s\S]*?\n\s*\}/);
   const mV=blokKes(k,'function kkVurguMetin()');
   /* ÇIKARIM SÜSLÜ PARANTEZ SAYARAK: eski regex ilk ctx.restore() gördüğü

@@ -69,6 +69,10 @@ PLAN = [
     # G.2 — altyazı tema tablosu ve vurgu animasyonu. Altyazı İKİ kabukta da
     # videoya yakılıyor; tablo kopyalansaydı biri düzeltilip diğeri
     # unutulurdu. Tablo veri, çizim kabuğa özel.
+    # G.12 — metin yönü. Altyazı çizimi ve klip sınırı bunu kullandığı için
+    # altyazi.js ve klip.js'ten ÖNCE geliyor (okunurluk; çalışma sırası
+    # bakımından fonksiyonlar zaten yukarı taşınıyor).
+    ('yon.js', ['index.html', 'mac/Teleprompter Pro.html']),
     ('altyazi.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # G.11 — süre tahmini ve hedefe sığdırma. İki kabuk AYNI sayıyı
     # göstermek zorunda: telefonda "sınıra uygun" görüp masaüstünde taşan

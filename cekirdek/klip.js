@@ -24,7 +24,10 @@ const KLIP_SAYI = 3;
    kısaltma listesi var ve klip sınırı için fazladan bir cümle sonu kaçırmak
    zararsız, YANLIŞ yerde kesmek zararlıdır. */
 function klipCumleSonu(kelime){
-  return /[.!?…]["')\]]?$/.test(String(kelime||''));
+  /* G.12: ölçüt ORTAK KURALA devredildi (cekirdek/yon.js). Arapça soru
+     işareti ve nokta burada tanınmıyordu; ölçüldü: Arapça senaryoda hiç
+     cümle sonu bulunamıyor ve klip ÜRETİLMİYORDU. */
+  return cumleSonuMu(kelime);
 }
 
 /* Vurgu işareti: senaryodaki (2) beklemesi ya da *vurgu* yıldızları.

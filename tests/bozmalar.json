@@ -969,14 +969,14 @@
   "ad": "G.1 vurgu son kelime yerine İLK kelimede (telefon)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "telefon",
-  "bul": "      const sonu=(j===p.parts.length-1);",
+  "bul": "      const sonu=(j===p.vurguIdx);",
   "koy": "      const sonu=(j===0);"
  },
  {
   "ad": "G.1 vurgu son kelime yerine İLK kelimede (Mac)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "mac",
-  "bul": "        const sonu=(j===p.parts.length-1);",
+  "bul": "        const sonu=(j===p.vurguIdx);",
   "koy": "        const sonu=(j===0);"
  },
  {
@@ -1531,5 +1531,82 @@
   "kaynak": "telefon",
   "bul": "  if(rec && rec.state==='recording'){ toast(m('muzikRec')); return false; }",
   "koy": "  if(false){ return false; }"
+ },
+ {
+  "ad": "G.12 Arapça soru işareti cümle sonu sayılmıyor",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "yon",
+  "bul": "const CUMLE_SONU_RE = /[.!?…؟۔׃][\"')\\]]?$/;",
+  "koy": "const CUMLE_SONU_RE = /[.!?…][\"')\\]]?$/;"
+ },
+ {
+  "ad": "G.12 yön hep soldan sağa (RTL metin ters görünür)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "yon",
+  "bul": "    if(RTL_ARALIK.test(c)) return 'rtl';",
+  "koy": "    if(false) return 'rtl';"
+ },
+ {
+  "ad": "G.12 yön belirsizken de yön dayatılıyor",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "yon",
+  "bul": "  return 'auto';",
+  "koy": "  return 'ltr';"
+ },
+ {
+  "ad": "G.12 görsel sıra RTLde ters çevrilmiyor (vurgu yanlış uçta)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "yon",
+  "bul": "  return yon==='rtl' ? p.reverse() : p;",
+  "koy": "  return p;"
+ },
+ {
+  "ad": "G.12 görsel sıra kaynak diziyi bozuyor",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "yon",
+  "bul": "  const p=Array.isArray(parcalar)?parcalar.slice():[];",
+  "koy": "  const p=Array.isArray(parcalar)?parcalar:[];"
+ },
+ {
+  "ad": "G.12 tuval yönü hep ltr (telefon)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "telefon",
+  "bul": "  ctx.direction = yon==='rtl' ? 'rtl' : 'ltr';",
+  "koy": "  ctx.direction = 'ltr';"
+ },
+ {
+  "ad": "G.12 satır yönü yazılmıyor (telefon)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "telefon",
+  "bul": "    const yn=metinYonu(raw), da=yn==='auto'?' dir=\"auto\"':' dir=\"'+yn+'\"';",
+  "koy": "    const yn='ltr', da='';"
+ },
+ {
+  "ad": "G.12 vurgu indeksi yön tanımıyor (telefon)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "telefon",
+  "bul": "  const vurguIdx = yon==='rtl' ? 0 : parts.length-1;",
+  "koy": "  const vurguIdx = parts.length-1;"
+ },
+ {
+  "ad": "G.12 tuval yönü hep ltr (mac)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "mac",
+  "bul": "  ctx.direction = yon==='rtl' ? 'rtl' : 'ltr';",
+  "koy": "  ctx.direction = 'ltr';"
+ },
+ {
+  "ad": "G.12 satır yönü yazılmıyor (mac)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "mac",
+  "bul": "      const yn=metinYonu(r), da=yn==='auto'?' dir=\"auto\"':' dir=\"'+yn+'\"';",
+  "koy": "      const yn='ltr', da='';"
+ },
+ {
+  "ad": "G.12 vurgu indeksi yön tanımıyor (mac)",
+  "test": "157-sagdan-sola.js",
+  "kaynak": "mac",
+  "bul": "    const vurguIdx = yon==='rtl' ? 0 : parts.length-1;",
+  "koy": "    const vurguIdx = parts.length-1;"
  }
 ]
