@@ -226,7 +226,29 @@ boşluklu girintisine** kilitlenmişti (`\n  }`). Paylaşılan araçlar artık *
 `SUFLE_METIN`'i okumuyordu — bozma turu hiçbir şey ölçmeden geçiyordu; bu tuzağa oturumda
 **üçüncü kez** düşüldü ve kural artık `kaynak.js` içinde yazılı.
 
-**A.4** Mac'te eksik özellikler çekirdekten otomatik gelir.
+**A.4** ✅ **ÖNCÜLÜ BAYATMIŞ — ölçüldü (Tur 47).** Madde "Mac'te eksik: kompozit, arşiv,
+hazırlık" diyordu. Üçü de **Mac'te VAR**:
+
+| özellik | Mac'teki karşılığı |
+|---|---|
+| kompozit | `cropCv` — tuvale çizerek kayıt, kırpma + chroma key aynı shader'da |
+| arşiv | `mdbPut` / `takesBtn` — kendi IndexedDB deposu |
+| hazırlık | `readyBtn` + `mDlgReady` penceresi |
+| altyazıyı videoya gömme | `burn` (10 anma) |
+
+Üçü de `tests/15` parite listesine yazıldı ki kapanış sessizce geri alınamasın; bozma kanıtlandı.
+
+**🔴 Ama ölçüm YENİ bir gerçek boşluk buldu: zorlanma haritası.** Telefonda canlı bir özellik
+(`#diffBtn` → `renderDiff`): okurken yavaşladığın, geri sardığın ve elle duraklattığın yerler
+kelime bazında işaretleniyor, sonra satır satır sıralanıp gösteriliyor. **Mac'te hiç yok.**
+Üstelik T40'ta Mac'e taşınan prova raporunun tam tamamlayıcısı — biri "nasıl okudum" diyor,
+diğeri "nerede takıldım".
+
+**Ölçülen bedel:** üç sinyalden ikisi (elle duraklatma, geri sarma) Mac'te zaten mevcut
+kancalardan çıkar; üçüncüsü (sesle yavaşlama) Mac'in eşleştiricisinde **yok** — telefondaki
+`vPrev` karşılığı Mac'te 0 anma, yani oraya yeni kod gerekiyor. Saf kısım (işaretleme +
+satır bazında toplama) çekirdeğe taşınabilir; A.3'te kurulan kalıbın aynısı.
+**Yarım yapılmaması için ayrı bir tura bırakıldı.**
 
 **Bitti ölçütü:** bir özelliği çekirdekte değiştir → iki çıktıda da değişsin; kapı bayat-çıktıyı yakalasın.
 
@@ -845,3 +867,4 @@ mantığıyla: yeni sabit mesaj artırır → kırmızı, sözlüğe bağlamak a
 | 44 | 2026-08-15 | **B.2 kapandı · D.3 ölçüldü** — ikisi de "iş yok/iş bu kadar" diye kanıtlandı | sekme düğmelerinde emoji **0** (iş yok, yeni ikon üretilmedi) · başlıktaki 3 emojinin 2'si sözlükten (sınır korunuyor) · Mac sunum kumandası tuşlarını **zaten** karşılıyormuş, eksik olan yalnız tanınmayan tuşu öğretmek · tests/138 bugünkü garantiyi kilitliyor · 3 kanıtlı bozma (**72**) · **4502 test** | ✅ 9/9 YEŞİL |
 | 45 | 2026-08-15 | **D.3 kapandı** — Mac'te öğrenmeli tuş eşleme | sabit switch → tablo (davranış korundu) + öğrenme/tablo/sıfırlama · **gerçek tuş olayıyla doğrulandı** (F13 öğretilmeden ölü, öğretilince çalışıyor, kalıcı) · kurallar `cekirdek/kumanda.js`'e (süzgeç iki kabukta tek yerden) · vaat edilmeyen çift basış/profil GÖSTERİLMİYOR · 5 kanıtlı bozma (**77**) · **4560 test** | ✅ 9/9 YEŞİL |
 | 46 | 2026-08-15 | **A.3 ölçüldü ve taşınabilir parça taşındı** | 93 aynı adlı fonksiyondan yalnız **14'ü birebir**, 32'si sürüklenmiş · **`cleanText` iki kabukta farklı iş yapıyordu** — telefonda görünmez karakter/bidi temizliği YOKTU → `cekirdek/metin.js` ile kapandı · 5 test girinti bağımlılığını ele verdi · yardımcı `SUFLE_METIN`'i okumuyordu (3. kez) · 3 kanıtlı bozma (**79**) · **4564 test** | ✅ 9/9 YEŞİL |
+| 47 | 2026-08-15 | **A.4 ölçüldü** — öncülü bayatmış, ama yeni gerçek boşluk çıktı | kompozit/arşiv/hazırlık **üçü de Mac'te varmış** → `tests/15` parite listesine yazıldı, bozma kanıtlandı · **zorlanma haritası Mac'te hiç yok** (telefonda canlı) ve bedeli ölçüldü: sesle yavaşlama kancası Mac'te 0 · parite deseni gevşekti (`cropCv` her yerde geçiyor), yeteneği yaratan satıra bağlandı · **4570 test** | ✅ 9/9 YEŞİL |

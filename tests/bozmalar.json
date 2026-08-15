@@ -551,5 +551,12 @@
   "kaynak": "metin",
   "bul": "'vb','vs','vd'",
   "koy": "'zzz'"
+ },
+ {
+  "ad": "A4 Macte tuvale çizerek kayıt söküldü (parite kırılır)",
+  "test": "15-platform-paritesi.js",
+  "kaynak": "mac",
+  "bul": "cropCv=document.createElement('canvas')",
+  "koy": "cropCvYok=document.createElement('canvas')"
  }
 ]

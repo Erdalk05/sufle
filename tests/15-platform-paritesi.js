@@ -27,6 +27,16 @@ const KORUMALAR = [
   ['Açık ses kısıtları',            /noiseSuppression/,                       /noiseSuppression/],
   ['Kaldığın yer hatırlanır',       /function rememberPos/,                   /function rememberPos/],
   ['Çekim arşivi',                  /indexedDB\.open\('sufle'/,               /indexedDB\.open\('teleprompter_pro'/],
+  /* A.4 (Tur 47) — yol haritası "Mac'te eksik: kompozit, arşiv, hazırlık"
+     diyordu. ÖLÇÜLDÜ: üçü de Mac'te VAR; madde bayatmış. Buraya yazılıyorlar
+     ki kapanış sessizce geri alınamasın. Kompozit Mac'te `cropCv` adıyla
+     yaşıyor (kırpma + chroma key aynı shader'da), telefonda `compCv`. */
+  /* Desen YETENEĞİ YARATAN satıra bağlı: yalnız `cropCv` aramak gevşekti,
+     değişken adı başka satırlarda da geçtiği için bozma yakalanmıyordu. */
+  ['Tuvale çizerek kayıt (kompozit)', /<canvas id="compCv">/,
+                                    /cropCv=document\.createElement\('canvas'\)/],
+  ['Altyazıyı videoya gömme',       /burnCaps/,                               /burn/],
+  ['Çekime hazırlık denetimi',      /id="readyBtn"/,                          /id="readyBtn"/],
   ['Arşiv yazımı doğrulanır',       /tx\.oncomplete=\(\)=>\w+\(true\)/,      /tx\.oncomplete=\(\)=>\w+\(true\)/],
   ['Çekime hazırlık kontrolü',      /function readyChecks/,                   /function readyChecks/],
   ['Altyazı videoya gömme',         /function drawCaption/,                   /function drawCaption/],
