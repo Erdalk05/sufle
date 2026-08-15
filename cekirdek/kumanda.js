@@ -55,3 +55,37 @@ function tusEslemesiSuz(ham){
   }
   return temiz;
 }
+
+/* KUMANDA BAĞLANTI YOLLARI (G.14).
+
+   Rakip (teleprompter.com) bağlantıyı kendi seçiyor: internet yoksa
+   Bluetooth, aynı Wi-Fi'daysa yerel ağ, uzaktaysa internet. Bizde üç yolun
+   ikisi var ve üçüncüsü mimari olarak yok. ÖNEMLİ OLAN, KULLANICININ
+   HANGİSİNİN NEDEN OLMADIĞINI GÖRMESİ: "kumanda çalışmıyor" şikâyetinin
+   yarısı, çalışmayan yolun sebebini hiçbir yerde yazmamaktan geliyor.
+
+   Bu depoda ölçülmüş iki gerçek:
+   · Ucuz kumandalar Ses Aç/Kıs tuşu gönderir; iOS ve Android bu tuşları
+     tarayıcıya HİÇ vermez — uygulamanın yapabileceği bir şey yok.
+   · Telefon bir yerel sunucu ÇALIŞTIRAMAZ (tarayıcı sekmesi dinleyemez),
+     yani "ikinci cihazı kumanda yap" yolu yalnız masaüstünde var.
+
+   Dönüş: her yol için {yol, durum:'var'|'yok'|'kapali', sebep} — sebep
+   anahtarı arayüzde çevrilmiş metne dönüşür. `null` sebep yalnız durum
+   'var' iken olur. */
+function kumandaYollari(kabuk, durum){
+  const d=durum||{};
+  const mac = kabuk==='mac';
+  const yollar=[];
+  /* 1) Bluetooth / klavye: iki kabukta da var. Tuş gelmiyorsa sebebi
+        panelin canlı tanısı söylüyor (ayrı mekanizma). */
+  yollar.push({yol:'bt', durum:'var', sebep:null});
+  /* 2) Yerel ağ (ikinci cihaz kumanda): sunucu gerektiriyor. */
+  if(!mac) yollar.push({yol:'lan', durum:'yok', sebep:'telefonSunucuYok'});
+  else if(d.sunucu) yollar.push({yol:'lan', durum:'var', sebep:null});
+  else yollar.push({yol:'lan', durum:'kapali', sebep:'sunucuKapali'});
+  /* 3) İnternet üzerinden: bizim sunucumuz yok ve olmayacak — veri
+        cihazdan çıkmıyor sözü tam da bu. Bu bir eksik değil, bir KARAR. */
+  yollar.push({yol:'internet', durum:'yok', sebep:'sunucuYok'});
+  return yollar;
+}

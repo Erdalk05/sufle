@@ -1664,5 +1664,61 @@
   "kaynak": "mac",
   "bul": "  body[data-fam=mono] #scroller{font-family:\"SF Mono\",Menlo,Consolas,monospace}",
   "koy": "  /* kaldırıldı */"
+ },
+ {
+  "ad": "G.14 telefonda yerel ağ yolu 'var' gösteriliyor (olmayan yol)",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "kumanda",
+  "bul": "  if(!mac) yollar.push({yol:'lan', durum:'yok', sebep:'telefonSunucuYok'});",
+  "koy": "  if(!mac) yollar.push({yol:'lan', durum:'var', sebep:null});"
+ },
+ {
+  "ad": "G.14 kapalı sunucu ile olmayan yol aynı sebeple anlatılıyor",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "kumanda",
+  "bul": "  else yollar.push({yol:'lan', durum:'kapali', sebep:'sunucuKapali'});",
+  "koy": "  else yollar.push({yol:'lan', durum:'yok', sebep:'telefonSunucuYok'});"
+ },
+ {
+  "ad": "G.14 olumsuz durum sebepsiz dönüyor",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "kumanda",
+  "bul": "  yollar.push({yol:'internet', durum:'yok', sebep:'sunucuYok'});",
+  "koy": "  yollar.push({yol:'internet', durum:'yok', sebep:null});"
+ },
+ {
+  "ad": "G.14 internet yolu var gösteriliyor (sunucu yokken)",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "kumanda",
+  "bul": "  yollar.push({yol:'bt', durum:'var', sebep:null});",
+  "koy": "  yollar.push({yol:'bt', durum:'var', sebep:'sunucuYok'});"
+ },
+ {
+  "ad": "G.14 Macte sunucu ayakta VARSAYILIYOR (ölü adres sınıfı)",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "mac",
+  "bul": "    const ayakta=!!(nokta && nokta.classList.contains('on'));",
+  "koy": "    const ayakta=true;"
+ },
+ {
+  "ad": "G.14 bağlantı kopunca liste bayat kalıyor",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "mac",
+  "bul": "      es.onerror=()=>{ $('#connDot').classList.remove('on'); yollariYaz(); };",
+  "koy": "      es.onerror=()=>{ $('#connDot').classList.remove('on'); };"
+ },
+ {
+  "ad": "G.14 telefonda sebep yazılmıyor (yalnız ikon)",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "telefon",
+  "bul": "    sat.textContent=im+' '+yolAdi(y.yol)+' — '+durum+(y.sebep?': '+yolSebepMetni(y.sebep):'');",
+  "koy": "    sat.textContent=im+' '+yolAdi(y.yol)+' — '+durum;"
+ },
+ {
+  "ad": "G.14 telefonda internet sebebi sözlükten kopuk",
+  "test": "159-kumanda-yollari.js",
+  "kaynak": "telefon",
+  "bul": "  if(sebep==='sunucuYok') return t('yolSunucuYok');",
+  "koy": "  if(sebep==='sunucuYok') return 'yok';"
  }
 ]

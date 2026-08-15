@@ -57,6 +57,10 @@ function nobetKos({tusGeldi, yutuldu}){
     let zamanlayici=null;
     const clearTimeout=()=>{};
     const setTimeout=(f)=>{ zamanlayici=f; return 1; };
+    /* G.14: nöbetçi artık bağlantı yolları listesini de tazeliyor. Tezgâh o
+       çağrıyı karşılamak zorunda — yoksa test kodun kusurunu değil KENDİ
+       eksiğini bildirir (bu gece dördüncü vakası). */
+    const yollariYaz=()=>{};
     ${mWatch[0]}
     armRemoteWatch();
     const ilk=el.textContent;

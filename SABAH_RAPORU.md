@@ -261,6 +261,30 @@ metin), sözlüğe bağlandı.
 
 `tests/158` **75 iddia** + **8 kasıtlı bozma** (toplam 238).
 
+### ✅ G.14 — Kumanda bağlantı yolları: hangisi neden yok · v9.14
+
+Rakip bağlantıyı kendi seçiyor (internet yoksa Bluetooth, aynı Wi-Fi'daysa yerel ağ, uzaktaysa
+internet). Bizde üç yolun **ikisi var**, üçüncüsü mimari bir **karar**. Bu maddenin işi yeni
+yol açmak değil, **sebebi görünür kılmak**: "kumanda çalışmıyor" şikâyetinin yarısı, çalışmayan
+yolun sebebinin hiçbir yerde yazmamasından geliyor.
+
+Panel artık üç yolu da durumuyla ve sebebiyle listeliyor:
+**Bluetooth** ✅ · **ikinci cihaz (yerel ağ)** — telefonda ⛔ *(telefon yerel sunucu
+çalıştıramaz, bu yol yalnız masaüstünde var)*, Mac'te sunucu kapalıysa ⏸ *(Teleprompter Sunucu
+dosyasıyla aç)* · **internet** ⛔ *(bize ait sunucu yok ve olmayacak; veriniz cihazınızdan
+çıkmıyor)*.
+
+**"Kapalı" ile "yok" bilerek ayrı:** biri açılabilir, diğeri açılamaz. Aynı kelimeyle anlatmak
+kullanıcıyı boşuna uğraştırırdı.
+
+**Mac'te sunucunun ayakta olduğu VARSAYILMIYOR**, bağlantı göstergesinden okunuyor ve gösterge
+değişince liste tazeleniyor — ayrı bir bayrak tutmak iki kaynağın ayrışması demekti; bu depoda
+ölü adres gösteren kusur tam olarak böyle doğmuştu.
+
+`tests/159` **67 iddia** + **8 kasıtlı bozma** (toplam 246). Bozma turu bir iddiamın gevşek
+olduğunu gösterdi: "connDot geçiyor mu" diye bakmak, `const ayakta=true` yazan bozmayı
+geçiriyordu (yorumda da geçtiği için) — iddia değişkenin türetilmesine bağlandı.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -650,10 +674,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **11 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **12 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5918 test** (gece başında 732) · yeni test dosyası: 39–158
+- **5985 test** (gece başında 732) · yeni test dosyası: 39–159
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

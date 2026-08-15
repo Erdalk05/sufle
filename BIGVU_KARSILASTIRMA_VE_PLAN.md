@@ -349,11 +349,15 @@ Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** ar
 - **Dış font kararı korundu** ve teste bağlandı (`@font-face`, Google Fonts, `.woff` yok).
 - **Kapı:** `tests/158` **75 iddia** + **8 kasıtlı bozma** (toplam 238).
 
-### G.14 — Kumanda bağlantı zinciri · **P2 (kısmi)**
+### G.14 — Kumanda bağlantı zinciri · **P2** · ✅ **BİTTİ (v9.14)**
 - **Ne:** teleprompter.com bağlantıyı kendi seçiyor (BT → LAN → internet). Bizde BT HID ve
   LAN QR var; **internet yolu sunucu ister → Erdal kararı**. Bu maddede yapılacak olan:
   hangi yolun **neden** kullanılamadığını panelin açıkça söylemesi (bugün yalnız LAN durumu yazıyor).
-- **Kabul:** üç yol için de tek satırlık sebep; ölü adres gösterme kusuru (L9) tekrarlamasın.
+- **Yapıldı:** panel üç yolu da **durumu ve sebebiyle** listeliyor. "Kapalı" ile "yok" bilerek
+  ayrı (biri açılabilir, diğeri açılamaz). Hesap `cekirdek/kumanda.js`de.
+- **Ölü adres kusuru tekrarlamıyor:** Mac'te sunucunun ayakta olduğu varsayılmıyor, bağlantı
+  göstergesinden okunuyor ve gösterge değişince liste tazeleniyor.
+- **Kapı:** `tests/159` **67 iddia** + **8 kasıtlı bozma** (toplam 246).
 
 ### G.15 — Arka planı bulanıklaştırma (yeşil ekransız) · **ÖNCE ÖLÇÜM**
 - **Sıra:** ① platformun kendi API'si var mı ölç (`getUserMedia` kısıtları / işletim sistemi

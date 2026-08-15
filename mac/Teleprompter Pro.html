@@ -872,6 +872,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
       <div class="field">
         <div class="top"><label data-i18n="mRemoteCtrl">Telefon Uzaktan Kumanda</label><span class="v" id="connDot">●</span></div>
+        <div class="rb-note" id="yolListe" style="margin-top:6px"></div>
         <div class="toggle" style="margin-top:8px"><span data-i18n="mPrevOn">Çekimi telefonumda göster</span><div class="sw2" data-t="uzakOnizleme"></div></div>
       <div class="rb-note" data-i18n="mPrevHint">Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.</div>
       <div id="obsBox" class="rb-note" style="margin-top:10px">
@@ -1039,6 +1040,11 @@ const I18N={
   muzikSes:'Müzik düzeyi',muzikKis:'Konuşurken kıs',muzikIosKisa:'iPhone/iPad destekleyemiyor',
   muzikHamKisa:'ham ses açık',muzikYokKisa:'dosya seçilmedi',
   muzikHint:'Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.',
+  yolTitle:'Bağlantı yolları',yolBt:'Bluetooth kumanda ya da klavye',yolLan:'İkinci cihaz (yerel ağ)',
+  yolInternet:'İnternet üzerinden',yolVar:'kullanılabilir',yolYok:'yok',yolKapali:'kapalı',
+  yolTelefonSunucuYok:'telefon yerel sunucu çalıştıramaz — bu yol yalnız masaüstünde var',
+  yolSunucuKapali:'yerel sunucu çalışmıyor — Teleprompter Sunucu dosyasıyla aç',
+  yolSunucuYok:'bize ait sunucu yok ve olmayacak; veriniz cihazınızdan çıkmıyor',
   klipTitle:'Klip önerileri',
   klipHint:'Öneriler senaryonun kendisinden çıkarıldı — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alındı. Dokununca budama kutusuna yüklenir, sınırları değiştirebilirsin.',
   markaTitle:'Marka kiti',logoPick:'Logo seç',logoClear:'Logoyu kaldır',logoPos:'Logo konumu',
@@ -1174,6 +1180,11 @@ const I18N={
   muzikSes:'Music level',muzikKis:'Duck while speaking',muzikIosKisa:'not possible on iPhone or iPad',
   muzikHamKisa:'raw audio is on',muzikYokKisa:'no file picked',
   muzikHint:'The music is mixed into the recording and ducks by itself while you speak. The file never leaves your device and is not stored — pick it again each session.',
+  yolTitle:'Connection paths',yolBt:'Bluetooth remote or keyboard',yolLan:'Second device (local network)',
+  yolInternet:'Over the internet',yolVar:'available',yolYok:'not available',yolKapali:'off',
+  yolTelefonSunucuYok:'a phone cannot run a local server — this path exists on the desktop only',
+  yolSunucuKapali:'the local server is not running — start it with the Teleprompter Server file',
+  yolSunucuYok:'we run no server and never will; your data never leaves your device',
   klipTitle:'Clip suggestions',
   klipHint:'The suggestions come from the script itself — section headings, emphasis marks and reading times. No AI, and the titles are taken from your script word for word. Tap one to load it into the trim box, where you can still adjust the edges.',
   markaTitle:'Brand kit',logoPick:'Pick a logo',logoClear:'Remove the logo',logoPos:'Logo position',
@@ -3280,6 +3291,38 @@ const MMSG={
     $('#rrTrimBox').classList.remove('hidden');
     toast(m('klipSecildi').replace('{a}', k.baslik));
   }
+  /* G.14 — BAĞLANTI YOLLARI (telefonla aynı kural ve aynı çekirdek). */
+  function yolSebepMetni(sebep){
+    if(sebep==='telefonSunucuYok') return t('yolTelefonSunucuYok');
+    if(sebep==='sunucuKapali') return t('yolSunucuKapali');
+    if(sebep==='sunucuYok') return t('yolSunucuYok');
+    return '';
+  }
+  function yolAdi(yol){
+    if(yol==='bt') return t('yolBt');
+    if(yol==='lan') return t('yolLan');
+    return t('yolInternet');
+  }
+  function yollariYaz(){
+    const kap=$('#yolListe'); if(!kap) return;
+    kap.innerHTML='';
+    /* Sunucunun GERÇEKTEN ayakta olup olmadığı bağlantı noktasından okunuyor;
+       "sunucu var" diye varsaymak, bu depoda ölü adres gösteren kusurun ta
+       kendisiydi. */
+    /* Sunucunun ayakta olup olmadığını VARSAYMIYORUZ: bağlantı göstergesi
+       zaten EventSource açılınca yanıp kapanınca sönüyor, yani tek doğruluk
+       kaynağı o. Ayrı bir bayrak tutmak, iki kaynağın ayrışması demekti —
+       bu depoda ölü adres gösteren kusur tam olarak böyle doğmuştu. */
+    const nokta=$('#connDot');
+    const ayakta=!!(nokta && nokta.classList.contains('on'));
+    kumandaYollari('mac', {sunucu:ayakta}).forEach(y=>{
+      const sat=document.createElement('div');
+      const durum = y.durum==='var' ? t('yolVar') : y.durum==='kapali' ? t('yolKapali') : t('yolYok');
+      const im = y.durum==='var' ? '✅' : y.durum==='kapali' ? '⏸' : '⛔';
+      sat.textContent=im+' '+yolAdi(y.yol)+' — '+durum+(y.sebep?': '+yolSebepMetni(y.sebep):'');
+      kap.appendChild(sat);
+    });
+  }
   function trimAc(){
     /* Desteklenmiyorsa kutuyu HİÇ AÇMA — açıp sonra "olmuyor" demek,
        kullanıcının çekimiyle oynadığını sandırır. */
@@ -3856,8 +3899,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.<br><b>Sağdan sola diller</b>: Arapça, İbranice ve Farsça senaryolar artık doğru yönde akıyor. Yön satır satır belirleniyor, yani iki dilli bir senaryonun yarısı bozulmuyor; vurgulanan kelime de doğru uçta yanıyor ve Arapça soru işareti cümle sonu sayılıyor.<br><b>Masaüstünde kalınlık ve harf aralığı</b>: telefonda olan iki okunabilirlik ayarı masaüstüne de geldi. Harf aralığı değişince metin yeniden ölçülüyor, yani son satırlar görünmeden akış bitmiyor.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.<br><b>Right to left languages</b>: Arabic, Hebrew and Persian scripts now flow in the right direction. Direction is decided line by line, so a bilingual script does not break in half; the highlighted word lands on the correct side and the Arabic question mark counts as a sentence end.<br><b>Weight and letter spacing on the desktop</b>: the two readability settings that existed on the phone are now on the desktop as well. Changing letter spacing re-measures the text, so the last lines are no longer skipped.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.<br><b>Sağdan sola diller</b>: Arapça, İbranice ve Farsça senaryolar artık doğru yönde akıyor. Yön satır satır belirleniyor, yani iki dilli bir senaryonun yarısı bozulmuyor; vurgulanan kelime de doğru uçta yanıyor ve Arapça soru işareti cümle sonu sayılıyor.<br><b>Masaüstünde kalınlık ve harf aralığı</b>: telefonda olan iki okunabilirlik ayarı masaüstüne de geldi. Harf aralığı değişince metin yeniden ölçülüyor, yani son satırlar görünmeden akış bitmiyor.<br><b>Kumanda paneli hangi yolun neden olmadığını yazıyor</b>: Bluetooth kumanda, ikinci cihaz (yerel ağ) ve internet üzerinden bağlantı — üçü de durumuyla ve sebebiyle listeleniyor. Telefonda yerel sunucu çalıştırılamadığı için ikinci cihaz yolu yok; internet yolu ise bir karar: bize ait sunucu yok, veriniz cihazınızdan çıkmıyor.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.<br><b>Right to left languages</b>: Arabic, Hebrew and Persian scripts now flow in the right direction. Direction is decided line by line, so a bilingual script does not break in half; the highlighted word lands on the correct side and the Arabic question mark counts as a sentence end.<br><b>Weight and letter spacing on the desktop</b>: the two readability settings that existed on the phone are now on the desktop as well. Changing letter spacing re-measures the text, so the last lines are no longer skipped.<br><b>The remote panel now says which path is missing and why</b>: Bluetooth remote, second device over the local network, and over the internet are all listed with their status and the reason. A phone cannot run a local server, so the second-device path is not available there; the internet path is a decision, not a gap: we run no server and your data never leaves your device.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
@@ -4950,6 +4993,40 @@ function tusEslemesiSuz(ham){
   }
   return temiz;
 }
+
+/* KUMANDA BAĞLANTI YOLLARI (G.14).
+
+   Rakip (teleprompter.com) bağlantıyı kendi seçiyor: internet yoksa
+   Bluetooth, aynı Wi-Fi'daysa yerel ağ, uzaktaysa internet. Bizde üç yolun
+   ikisi var ve üçüncüsü mimari olarak yok. ÖNEMLİ OLAN, KULLANICININ
+   HANGİSİNİN NEDEN OLMADIĞINI GÖRMESİ: "kumanda çalışmıyor" şikâyetinin
+   yarısı, çalışmayan yolun sebebini hiçbir yerde yazmamaktan geliyor.
+
+   Bu depoda ölçülmüş iki gerçek:
+   · Ucuz kumandalar Ses Aç/Kıs tuşu gönderir; iOS ve Android bu tuşları
+     tarayıcıya HİÇ vermez — uygulamanın yapabileceği bir şey yok.
+   · Telefon bir yerel sunucu ÇALIŞTIRAMAZ (tarayıcı sekmesi dinleyemez),
+     yani "ikinci cihazı kumanda yap" yolu yalnız masaüstünde var.
+
+   Dönüş: her yol için {yol, durum:'var'|'yok'|'kapali', sebep} — sebep
+   anahtarı arayüzde çevrilmiş metne dönüşür. `null` sebep yalnız durum
+   'var' iken olur. */
+function kumandaYollari(kabuk, durum){
+  const d=durum||{};
+  const mac = kabuk==='mac';
+  const yollar=[];
+  /* 1) Bluetooth / klavye: iki kabukta da var. Tuş gelmiyorsa sebebi
+        panelin canlı tanısı söylüyor (ayrı mekanizma). */
+  yollar.push({yol:'bt', durum:'var', sebep:null});
+  /* 2) Yerel ağ (ikinci cihaz kumanda): sunucu gerektiriyor. */
+  if(!mac) yollar.push({yol:'lan', durum:'yok', sebep:'telefonSunucuYok'});
+  else if(d.sunucu) yollar.push({yol:'lan', durum:'var', sebep:null});
+  else yollar.push({yol:'lan', durum:'kapali', sebep:'sunucuKapali'});
+  /* 3) İnternet üzerinden: bizim sunucumuz yok ve olmayacak — veri
+        cihazdan çıkmıyor sözü tam da bu. Bu bir eksik değil, bir KARAR. */
+  yollar.push({yol:'internet', durum:'yok', sebep:'sunucuYok'});
+  return yollar;
+}
 /* ==/CEKIRDEK:kumanda.js== */
 
   /* D.3 — TUŞ EŞLEMESİ ARTIK TABLO, switch DEĞİL.
@@ -5334,8 +5411,8 @@ function tusEslemesiSuz(ham){
     img.src='/qr?d='+encodeURIComponent(url);
     try{
       const es=new EventSource('/events');
-      es.onopen=()=>$('#connDot').classList.add('on');
-      es.onerror=()=>$('#connDot').classList.remove('on');
+      es.onopen=()=>{ $('#connDot').classList.add('on'); yollariYaz(); };
+      es.onerror=()=>{ $('#connDot').classList.remove('on'); yollariYaz(); };
       es.onmessage=e=>{ try{ handleRemote(JSON.parse(e.data)); }catch(_){} };
     }catch(_){}
   }
@@ -5392,6 +5469,7 @@ function tusEslemesiSuz(ham){
     /* Sekme değişince kartları çiz: görünmezken çizmek israf, görünür olunca
        çizmemek ise BOŞ KART demek (telefonda ölçülerek yakalandı). */
     temaKartlariCiz(true);
+    yollariYaz();
   }
   $$('#rtabs button').forEach(b=>b.onclick=()=>{ state.rtab=b.dataset.rtab; save(); applyRtab(); });
   applyRtab();
