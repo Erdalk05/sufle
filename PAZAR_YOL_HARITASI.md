@@ -412,7 +412,21 @@ yazmamak mağaza başvurusunda **yanlış beyan** olurdu. Metin bunu ilk paragra
 kapalı olduğunu da. `tests/131` (40 iddia) hem belgeyi hem iddiaların **hâlâ doğru olduğunu**
 kilitliyor — biri analitik eklerse belge yalan söylemeye başlar, kapı önce kırılır.
 
-**Kalan F.4:** ekran görüntüleri (4 platform), mağaza tanıtım metni.
+**F.4 mağaza metni de BİTTİ** (`MAGAZA.md`, TR+EN): ad, kısa açıklama (karakter sınırlarına
+**sığdığı ölçüldü**), uzun açıklama, anahtar kelimeler, kategori, yaş derecelendirmesi, ekran
+görüntüsü planı. **Kural: her cümle ölçülen bir özelliğe dayanır.** `tests/132` (34 iddia) 20 somut
+sözü koddaki karşılığına bağlıyor **ve abartmayı engelliyor** — sanal kamera, PDF, bulut, yapay zekâ
+metne yazılırsa kapı kırılıyor (kanıtlandı).
+
+**F.1 ön ölçümü yapıldı** (`MAGAZA_TEKNIK.md`) — kabuk kurulmadan önce neyin gerektiğini saymak
+için. **🔴 Ölçülen en büyük engel: `SpeechRecognition` iOS WKWebView'da YOK**, yani kabuğa alınan
+PWA iOS'ta **sesle takibi kaybeder** — matriste bizim 5, liderin 3 aldığı kalem. Üç yol yazıldı
+(yerel köprü · Whisper-WASM · özelliği kapatmak) ve **karar Erdal'a bırakıldı**; kabuk bu karar
+verilmeden kurulursa ürünün en güçlü özelliğini sessizce kaybeder.
+İzinler (`Info.plist`, `AndroidManifest`) ve **yapılamayacaklar** (sanal kamera, arka planda kayıt,
+Fotoğraflar'a doğrudan yazma) sebebiyle listelendi.
+
+**Kalan F.4:** ekran görüntüleri (plan yazıldı, görseller üretilmedi).
 **F.5** Ödeme modeli: bedava = 1080p + filigran; ücretli = 4K + filigransız + altyazı + bulut.
 **F.6** Web vitrin + Türkçe SEO ("sufle uygulaması", "teleprompter programı") — **rakipsiz alan**.
 
@@ -461,3 +475,4 @@ kilitliyor — biri analitik eklerse belge yalan söylemeye başlar, kapı önce
 | 26 | 2026-08-15 | D.4: uzak önizleme (telefonda kadraj) | 204/200/403/413 gerçek sunucuda ölçüldü · varsayılan kapalı · 22 iddia · 37 bozma | ✅ 8/8 YEŞİL |
 | 27 | 2026-08-15 | **v9.9 hazır** + ulaşılabilirlik denetimi | 18/18 kapı ulaşılabilir · 329 anahtarın 0'ı ölü · not tarayıcıda doğrulandı | ✅ 8/8 YEŞİL |
 | 28 | 2026-08-15 | F.4: gizlilik politikası + manifest kimliği | ağ çağrısı 0 / analitik 0 ölçüldü · istisna saklanmadı · 40 iddia · 38 bozma | ✅ 8/8 YEŞİL |
+| 29 | 2026-08-15 | F.4 mağaza metni + F.1 ön ölçümü | 20 söz koda bağlı · abartma engeli kanıtlı · iOS sesle takip engeli bulundu | ✅ 8/8 YEŞİL |
