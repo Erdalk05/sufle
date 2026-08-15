@@ -710,6 +710,29 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="top" style="margin-top:10px"><label for="capMaxW" data-i18n="mCapMaxW">Satırda en fazla kelime</label><span class="v" id="capMaxWV">7</span></div>
         <input type="range" id="capMaxW" min="3" max="12" value="7">
         <div class="rb-note" data-i18n="mNoteCapW">Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.</div>
+        <div class="top" style="margin-top:10px"><label for="capSize" data-i18n="capSize">Altyazı boyutu</label><span class="v" id="capSizeV">42</span></div>
+        <input type="range" id="capSize" min="24" max="72" value="42">
+        <div class="top" style="margin-top:10px"><label data-i18n="capPos">Altyazı konumu</label></div>
+        <div class="seg" id="capPosSeg">
+          <button data-cp="bottom" class="on" data-i18n="cpBottom">Alt</button>
+          <button data-cp="middle" data-i18n="cpMiddle">Orta</button>
+          <button data-cp="top" data-i18n="cpTop">Üst</button>
+        </div>
+        <div class="top" style="margin-top:10px"><label data-i18n="capTema">Altyazı görünümü</label></div>
+        <div class="seg" id="capTemaSeg">
+          <button data-ct="sade" class="on" data-i18n="ctSade">Şerit</button>
+          <button data-ct="kutu" data-i18n="ctKutu">Kutu</button>
+          <button data-ct="hap" data-i18n="ctHap">Hap</button>
+          <button data-ct="seritsiz" data-i18n="ctSeritsiz">Şeritsiz</button>
+          <button data-ct="vurguHap" data-i18n="ctVurguHap">Vurgu hapı</button>
+          <button data-ct="golge" data-i18n="ctGolge">Gölge</button>
+        </div>
+        <div class="top" style="margin-top:10px"><label data-i18n="capAnim">Vurgu animasyonu</label></div>
+        <div class="seg" id="capAnimSeg">
+          <button data-ka="yok" data-i18n="kaYok">Yok</button>
+          <button data-ka="yumusak" class="on" data-i18n="kaYumusak">Yumuşak</button>
+          <button data-ka="sicra" data-i18n="kaSicra">Sıçra</button>
+        </div>
       </div>
     </div>
 
@@ -959,6 +982,8 @@ const I18N={
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
+  capTema:'Altyazı görünümü',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
+  capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
   kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
   profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
@@ -1079,6 +1104,8 @@ const I18N={
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
+  capTema:'Caption look',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
+  capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
   kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
   profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
@@ -1363,7 +1390,7 @@ const MMSG={
   const DEFAULT={
     scripts:[{id:'s1',title:'Yeni Senaryo',text:$('#editor').value}],
     current:'s1',
-    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,capKaraoke:true,crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
+    speed:140,font:64,line:15,margin:6,fam:'system',theme:'classic',mode:'free',safe:false,textCase:'none',bionic:false,seenVer:'',band:0,dist:60,sch:21,capOffset:0,capMaxW:7,capKaraoke:true,capTema:'sade',capAnim:'yumusak',capSize:42,capPos:'bottom',crop:true,chroma:false,burnCaps:false,audioFx:'voice',vad:false,cop:[],uzakOnizleme:false,keyColor:'#00b140',keySim:30,keySmooth:10,bgColor:'#101820',bgImg:null,spill:60,bgKind:'color',
     cText:'#ffffff',cBg:'#000000',fmt:'9:16',
     eyePos:18,
     mirror:false,flip:false,eye:true,dim:true,hl:true,count:true
@@ -1794,6 +1821,10 @@ const MMSG={
     }
     if($('#capOffV')){ $('#capOffV').textContent=(state.capOffset||0).toFixed(1); $('#capOff').value=Math.round((state.capOffset||0)*10); }
     if($('#capMaxWV')){ $('#capMaxWV').textContent=String(state.capMaxW||7); $('#capMaxW').value=(state.capMaxW||7); }
+    if($('#capSizeV')){ $('#capSizeV').textContent=String(state.capSize||42); $('#capSize').value=(state.capSize||42); }
+    $$('#capPosSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cp===(state.capPos||'bottom')));
+    $$('#capTemaSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ct===(state.capTema||'sade')));
+    $$('#capAnimSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ka===(state.capAnim||'yumusak')));
     $('#modeV').textContent=curMode().name;
     $('#modeHint').textContent=modeLine();
     layoutFrame();
@@ -2428,7 +2459,15 @@ const MMSG={
     for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
     return {parts, xs, gen, toplam};
   }
-  let kkRenkOnb='';
+  let kkRenkOnb='', kkVurguMetinOnb='';
+  function kkVurguMetin(){
+    if(kkVurguMetinOnb) return kkVurguMetinOnb;
+    let v='';
+    try{ v=getComputedStyle(document.documentElement).getPropertyValue('--on-warn').trim(); }
+    catch(e){ logErr('kkVurguMetin',e); }
+    kkVurguMetinOnb = v || '#231704';
+    return kkVurguMetinOnb;
+  }
   function kkRenk(){
     if(kkRenkOnb) return kkRenkOnb;
     let v='';
@@ -2437,38 +2476,92 @@ const MMSG={
     kkRenkOnb = v || '#FFB020';
     return kkRenkOnb;
   }
-  let capOnbellek={txt:'', W:0, size:0, lines:null, kk:null};
+  let capOnbellek={txt:'', W:0, size:0, lines:null, kk:null, satirGen:null, t0:0};
+  /* Yuvarlak köşeli kutu (telefonla aynı): roundRect her yerde yok. */
+  function hapYolu(ctx,x,y,w,h,r){
+    const R=Math.max(0,Math.min(r,h/2,w/2));
+    ctx.beginPath();
+    if(!R){ ctx.rect(x,y,w,h); return; }
+    ctx.moveTo(x+R,y);
+    ctx.lineTo(x+w-R,y); ctx.quadraticCurveTo(x+w,y,x+w,y+R);
+    ctx.lineTo(x+w,y+h-R); ctx.quadraticCurveTo(x+w,y+h,x+w-R,y+h);
+    ctx.lineTo(x+R,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-R);
+    ctx.lineTo(x,y+R); ctx.quadraticCurveTo(x,y,x+R,y);
+    ctx.closePath();
+  }
+  const simdiMs=()=> (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now();
   function drawCaption(ctx,W,Hh){
     const txt=liveCue(); if(!txt) return;
-    const size=Math.round(42*(W/1080));
+    /* MAC PARİTESİ (G.2): punto ve konum burada SABİTTİ (42 / alt) ve
+       sözlükte capSize/capPos anahtarları duruyordu — yani çevrilmiş ama
+       hiçbir yere bağlanmamış ölü anahtarlar. Artık telefonla aynı
+       durumdan okunuyor; eski kayıtta alan yoksa eski değerler çıkıyor. */
+    const size=Math.round((state.capSize||42)*(W/1080));
     ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    let lines;
-    let kkp;
+    let lines, kkp, satirGen;
     if(capOnbellek.lines && capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size){
-      lines=capOnbellek.lines; kkp=capOnbellek.kk;
+      lines=capOnbellek.lines; kkp=capOnbellek.kk; satirGen=capOnbellek.satirGen;
     } else {
       lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
-      /* Karaoke parçalaması da önbellekte (telefonla aynı gerekçe). */
+      /* Karaoke parçalaması ve satır genişlikleri de önbellekte (telefonla
+         aynı gerekçe: kare başına ölçüm 24 kat gereksiz iş demekti). */
       kkp=(state.capKaraoke!==false) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1]) : null;
-      capOnbellek={txt, W, size, lines, kk:kkp};
+      satirGen=lines.map(l=>ctx.measureText(l).width);
+      capOnbellek={txt, W, size, lines, kk:kkp, satirGen, t0:simdiMs()};
     }
-    const lh=size*1.25, blockH=lines.length*lh, baseY=Hh-Hh*0.16-blockH/2;
+    let tema=altyaziTema(state.capTema);
+    if(!altyaziOkunur(tema)) tema=altyaziTema('sade');
+    const lh=size*1.25, blockH=lines.length*lh;
+    const dolgu=size*(tema.dolgu||0.3);
+    const baseY=altyaziMerkezY(state.capPos, Hh, blockH);
     ctx.save();
-    ctx.fillStyle='rgba(0,0,0,.45)';
-    ctx.fillRect(0, baseY-blockH/2-size*0.35, W, blockH+size*0.7);
-    ctx.lineWidth=Math.max(3,size*0.14); ctx.strokeStyle='rgba(0,0,0,.9)';
-    ctx.fillStyle='#fff'; ctx.lineJoin='round';
+    if(tema.zemin==='bant'){
+      ctx.fillStyle='rgba(0,0,0,'+(tema.zeminAlfa)+')';
+      ctx.fillRect(0, baseY-blockH/2-dolgu, W, blockH+dolgu*2);
+    } else if(tema.zemin==='kutu' || tema.zemin==='hap'){
+      ctx.fillStyle='rgba(0,0,0,'+(tema.zeminAlfa)+')';
+      lines.forEach((ln,i)=>{
+        const g=(satirGen&&satirGen[i])||ctx.measureText(ln).width;
+        const y=baseY-blockH/2+lh*i;
+        hapYolu(ctx, W/2-g/2-dolgu, y+lh*0.06, g+dolgu*2, lh*0.88, size*(tema.yaricap||0));
+        ctx.fill();
+      });
+    }
+    const konturW=tema.konturOran? Math.max(3,size*tema.konturOran) : 0;
+    ctx.lineWidth=konturW; ctx.strokeStyle='rgba(0,0,0,.9)'; ctx.lineJoin='round';
+    if(tema.golgeOran){ ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=size*tema.golgeOran; ctx.shadowOffsetY=size*0.04; }
+    ctx.fillStyle='#fff';
     const kk = state.capKaraoke!==false;
-    lines.forEach((ln,i)=>{ const y=baseY-blockH/2+lh*(i+0.5);
+    const an = kk ? kkAnim(state.capAnim||'yumusak', simdiMs()-(capOnbellek.t0||0)) : null;
+    lines.forEach((ln,i)=>{
+      const y=baseY-blockH/2+lh*(i+0.5);
       const p = (kk && i===lines.length-1) ? kkp : null;
-      if(!p){ ctx.strokeText(ln,W/2,y); ctx.fillText(ln,W/2,y); return; }
+      if(!p){
+        if(konturW) ctx.strokeText(ln,W/2,y);
+        ctx.fillText(ln,W/2,y); return;
+      }
       const eskiHiza=ctx.textAlign; ctx.textAlign='left';
       p.parts.forEach((w,j)=>{
+        const sonu=(j===p.parts.length-1);
         const x=W/2+p.xs[j];
-        ctx.strokeText(w,x,y);
-        ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';
+        if(sonu && tema.vurguZemin){
+          const eskiG=ctx.shadowBlur; ctx.shadowBlur=0;
+          ctx.fillStyle=kkRenk();
+          hapYolu(ctx, x-size*0.14, y-lh*0.40, p.gen[j]+size*0.28, lh*0.80, size*(tema.yaricap||0));
+          ctx.fill(); ctx.shadowBlur=eskiG;
+        }
+        /* KİMLİK DÖNÜŞÜMÜ KURMA. Animasyon kapalıyken (ya da bittikten
+           sonra) an nesnesi hep {1,1,0} döner; yine de save/translate/scale
+           çağırmak kare başına dört gereksiz iş demekti. */
+        const uyg = (sonu && an && (an.olcek!==1 || an.alfa!==1 || an.kayma!==0)) ? an : null;
+        if(uyg){ ctx.save(); ctx.globalAlpha=uyg.alfa;
+          ctx.translate(x+p.gen[j]/2, y-uyg.kayma*lh); ctx.scale(uyg.olcek,uyg.olcek);
+          ctx.translate(-(x+p.gen[j]/2), -y); }
+        if(konturW && !(sonu&&tema.vurguZemin)) ctx.strokeText(w,x,y);
+        ctx.fillStyle = sonu ? (tema.vurguZemin ? kkVurguMetin() : kkRenk()) : '#fff';
         ctx.fillText(w,x,y);
+        if(uyg) ctx.restore();
       });
       ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;
     });
@@ -3405,8 +3498,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
@@ -3578,6 +3671,15 @@ function provaRapor(kaynak, sesle){
   $$('#caseSel button').forEach(b=>b.onclick=()=>{ state.textCase=b.dataset.c2; applyAll(); save(); });
   $('#capOff').addEventListener('input',e=>{ state.capOffset=(+e.target.value)/10; applyAll(); save(); });
   $('#capMaxW').addEventListener('input',e=>{ state.capMaxW=+e.target.value; applyAll(); save(); });
+  /* G.2 — Mac paritesi: punto, konum, görünüm ve animasyon. Bunların
+     sözlük anahtarları AYLARDIR duruyordu ama hiçbir yere bağlı değildi
+     (ölü çeviri); artık gerçekten çalışıyorlar. */
+  $('#capSize').addEventListener('input',e=>{ state.capSize=+e.target.value;
+    if($('#capSizeV')) $('#capSizeV').textContent=String(state.capSize);
+    capOnbellek.lines=null; applyAll(); save(); });
+  $$('#capPosSeg button').forEach(b=>b.onclick=()=>{ state.capPos=b.dataset.cp; capOnbellek.lines=null; applyAll(); save(); });
+  $$('#capTemaSeg button').forEach(b=>b.onclick=()=>{ state.capTema=b.dataset.ct; capOnbellek.lines=null; applyAll(); save(); });
+  $$('#capAnimSeg button').forEach(b=>b.onclick=()=>{ state.capAnim=b.dataset.ka; applyAll(); save(); });
   $$('#keySel button').forEach(b=>b.onclick=()=>{ state.keyColor=b.dataset.k; applyAll(); save(); });
   $$('#bgcSel button').forEach(b=>b.onclick=()=>{ state.bgColor=b.dataset.b; applyAll(); save(); });
   $$('#bgKindSel button').forEach(b=>b.onclick=()=>{ state.bgKind=b.dataset.bk;
@@ -3744,6 +3846,101 @@ function duzMetin(t){
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
 /* ==/CEKIRDEK:metin.js== */
+/* ==CEKIRDEK:altyazi.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/altyazi.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* ALTYAZI GÖRÜNÜMÜ — TEK KAYNAK (G.2).
+
+   Neden çekirdekte: altyazı iki kabukta da videoya yakılıyor. Tema tablosu
+   kopyalansaydı biri düzeltilip diğeri unutulurdu — bu deponun 1 numaralı
+   hata sınıfı (yarım özellik). Tablo veri, çizim kabuğa özel.
+
+   ÖLÇÜLEN BAŞLANGIÇ (2026-08-15): "Sade / Sosyal" seçeneği çizimi HİÇ
+   değiştirmiyordu; yalnız punto ve konumu ayarlayan bir kısayoldu
+   (`st.capStyle` çizimde bir kez bile okunmuyor). Yani uygulamanın tek bir
+   altyazı görünümü vardı. BIGVU ve teleprompter.com tema/renk/animasyon
+   satıyor; bu modül o boşluğu kapatıyor.
+
+   KURAL — HER TEMA OKUNUR OLMAK ZORUNDA: arkasında dolu bir zemin yoksa
+   metnin konturu ya da gölgesi OLMALI. Video her renkte olabilir; zeminsiz
+   ve konturusuz beyaz yazı beyaz duvarda kaybolur. tests/151 bunu tema tema
+   ölçüyor, yani yeni tema eklerken kural kendiliğinden uygulanıyor. */
+
+/* zemin: 'bant' tam genişlik şerit · 'kutu' satır arkası keskin kutu ·
+          'hap' satır arkası yuvarlak · 'yok' zemin yok
+   konturOran/golgeOran: punto ile çarpılır (punto değişince oran korunur)
+   vurguZemin: vurgulanan kelimenin ARKASINA dolu hap çizilsin mi
+   metin/vurgu/vurguMetin: 'jeton:<ad>' yazan alan kabukta jetondan okunur */
+const ALTYAZI_TEMA = {
+  /* Bugünkü görünüm birebir korunuyor: varsayılan tema hiçbir şeyi
+     değiştirmemeli, yoksa mevcut kullanıcının çekimi bir gecede başkalaşır. */
+  sade:     {zemin:'bant', zeminAlfa:0.45, dolgu:0.35, yaricap:0,
+             konturOran:0.14, golgeOran:0, vurguZemin:false},
+  kutu:     {zemin:'kutu', zeminAlfa:0.72, dolgu:0.30, yaricap:0,
+             konturOran:0.10, golgeOran:0, vurguZemin:false},
+  hap:      {zemin:'hap',  zeminAlfa:0.72, dolgu:0.34, yaricap:0.42,
+             konturOran:0.10, golgeOran:0, vurguZemin:false},
+  seritsiz: {zemin:'yok',  zeminAlfa:0,    dolgu:0.30, yaricap:0,
+             konturOran:0.20, golgeOran:0, vurguZemin:false},
+  vurguHap: {zemin:'yok',  zeminAlfa:0,    dolgu:0.30, yaricap:0.42,
+             konturOran:0.16, golgeOran:0, vurguZemin:true},
+  golge:    {zemin:'yok',  zeminAlfa:0,    dolgu:0.30, yaricap:0,
+             konturOran:0,    golgeOran:0.16, vurguZemin:false}
+};
+const ALTYAZI_TEMA_SIRA = ['sade','kutu','hap','seritsiz','vurguHap','golge'];
+
+function altyaziTema(ad){
+  return ALTYAZI_TEMA[ad] || ALTYAZI_TEMA.sade;
+}
+
+/* Zeminsiz tema kontursuz ya da gölgesiz OLAMAZ. Ayrı fonksiyon çünkü hem
+   çizim hem test aynı kuralı sorabilsin — kural koda gömülü kalırsa test
+   onu kopyalar ve kopya bir gün sessizce yalan söyler. */
+function altyaziOkunur(t){
+  if(!t) return false;
+  if(t.zemin!=='yok') return true;
+  return (t.konturOran>0) || (t.golgeOran>0) || !!t.vurguZemin;
+}
+
+/* VURGU ANİMASYONU. Kelime altyazıya girdikten sonra geçen süreye bakar.
+   `sure` bilerek kısa: altyazı okunacak bir şey, gösteri değil. 200 msnin
+   üstü, hızlı konuşmada bir sonraki kelime gelmeden bitmez ve vurgu
+   sürekli hareket hâlinde görünür (ölçüldü: 180 kelime/dakikada kelime
+   başına 333 ms).
+   Dönüş: olcek (büyütme), alfa (saydamlık), kayma (satır yüksekliği oranı). */
+function kkAnim(tur, gecen){
+  const durgun={olcek:1, alfa:1, kayma:0};
+  if(tur==='yok' || !(gecen>=0)) return durgun;
+  const sure = (tur==='sicra') ? 180 : 150;
+  const t = gecen>=sure ? 1 : gecen/sure;
+  const e = 1-Math.pow(1-t,3);            // easeOutCubic: çıkışta yavaşlar
+  if(tur==='sicra') return {olcek: 1+0.18*(1-e), alfa:1, kayma:0};
+  if(tur==='yumusak') return {olcek:1, alfa:e, kayma:(1-e)*0.22};
+  return durgun;
+}
+
+/* Konum oranı: kadrajın neresinde duracağı. Üst seçeneği yeni (G.2);
+   platform arayüzleri (Reels ölçüm çubuğu, YouTube başlığı) alt ve üst
+   kenarı yiyebildiği için oranlar kenardan içeri alınmış durumda. */
+function altyaziKonumOrani(konum){
+  if(konum==='middle') return 0.50;
+  if(konum==='top')    return 0.18;
+  return 0.84;                            // bottom (varsayılan)
+}
+
+/* Bloğun MERKEZİ nerede duracak. Oranın neyi çapaladığı konuma göre değişir:
+   altta bloğun ALT kenarı, üstte ÜST kenarı, ortada merkezin kendisi. Böylece
+   satır sayısı arttıkça altyazı kadrajın dışına doğru değil İÇERİ doğru büyür.
+   Alt ve orta için sonuç eski koddaki hesapla birebir aynı (0.84 ve 0.50):
+   yeni konum eklerken eski davranışın kayması sessiz bir gerileme olurdu. */
+function altyaziMerkezY(konum, Hh, blokY){
+  const o=altyaziKonumOrani(konum);
+  if(konum==='middle') return Hh*o;
+  if(konum==='top')    return Hh*o + blokY/2;
+  return Hh*o - blokY/2;
+}
+/* ==/CEKIRDEK:altyazi.js== */
 /* ==CEKIRDEK:zorlanma.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/zorlanma.js
    Değişiklik oraya yazılır, sonra: python3 derle.py

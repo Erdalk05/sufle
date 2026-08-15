@@ -125,13 +125,23 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
   koşuyor; `tests/150` ikisini de aynı iddialarla ölçüyor).
 - **Kapı:** `tests/150` **92 iddia** + **10 kasıtlı bozma** (hepsi kanıtlandı; toplam 148).
 
-### G.2 — Altyazı stil paketi (font · renk · animasyon · konum) · **P0**
-- **Ne:** bugünkü 2 stil → **en az 6 hazır tema** + konum 3 + kelime vurgu rengi + 3 animasyon
-  (yok · yumuşak · sıçra). **Dış font indirilmeyecek** (sıfır bağımlılık sözü) → sistem fontlarından
-  ölçülmüş 4 aile + ağırlık/harf aralığı ile fark yaratılacak.
-- **Kabul:** her tema **çizilmiş karede** kontrast ≥4,5:1 (kontrast kapısı ölçer); 430/393/375 px'te
-  taşma 0; tema değişimi kare başına maliyet **≤2 ms** (uzun senaryo tuzağı).
-- **Kapı:** `kontrast.py` tema listesini dolaşsın (ölü tema = kırmızı).
+### G.2 — Altyazı stil paketi (tema · animasyon · konum) · **P0** · ✅ **BİTTİ (v9.14)**
+- **Ölçüm önce ölü ayar buldu:** "Sade/Sosyal" seçimi **çizimi hiç değiştirmiyordu**
+  (`st.capStyle` çizimde bir kez bile okunmuyor); yalnız punto+konum kısayoluydu.
+  **Mac'te punto ve konum sabitti** (42/alt) ve `capSize`/`capPos`/`cpBottom`/`cpMiddle`
+  sözlükte duruyordu — **ölü çeviri**. Dördü de canlandı.
+- **Gelen:** 6 tema (Şerit · Kutu · Hap · Şeritsiz · Vurgu hapı · Gölge) · 3 animasyon
+  (Yok · Yumuşak · Sıçra) · **Üst** konumu. Tablo `cekirdek/altyazi.js`de, iki kabuğa da
+  aynı kaynaktan gömülüyor.
+- **Okunurluk kuralı koda bağlandı:** zeminsiz tema kontursuz/gölgesiz olamaz; `altyaziOkunur()`
+  hem çizimde uygulanıyor (okunmaz tema sadeye düşüyor) hem testte ölçülüyor.
+- **Sessiz gerileme koruması:** varsayılan tema eski görünümü birebir koruyor; alt/orta konum
+  eski formülle **1e-9 hassasiyetle** aynı.
+- **Yan bulgu (test yakaladı):** animasyon kapalıyken bile her karede kimlik dönüşümü
+  kuruluyordu — kaldırıldı.
+- **Dış font İNDİRİLMEDİ** (sıfır bağımlılık sözü korunuyor); yazı tipi ailesi işi G.13'te.
+- **Kapı:** `tests/151` **158 iddia** + **10 kasıtlı bozma**; parite iki kabukta
+  **6 tema × 3 konum** birebir aynı çizim.
 
 ### G.3 — Önizleme kartlı seçim (UI'nin asıl sıçraması) · **P0**
 - **Ne:** altyazı stili, kadraj/profil ve arka plan seçimleri **kendi çekiminden üretilmiş

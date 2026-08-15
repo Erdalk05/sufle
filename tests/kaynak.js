@@ -144,6 +144,41 @@ function metinCekirdegi() {
   return fs.readFileSync(acik || path.join(REPO, 'cekirdek', 'metin.js'), 'utf8');
 }
 
+/* SÜSLÜ PARANTEZ SAYARAK BLOK KESME.
+   Regexle fonksiyon çıkarmak bu depoda İKİ KEZ testi sessizce çökertti:
+   `[\s\S]*?\n\s*\}` deseni fonksiyonun İÇİNDEKİ ilk kapanışa takılıyor
+   (for döngüsü, iç içe forEach, erken bir ctx.restore()) ve yarım kod
+   çıkarıyor. Yarım kod SyntaxError verir; test "HATA" satırı basmadan
+   ölür, yani çıkış koduna bakmayan biri onu GEÇTİ sanır.
+   `imza` fonksiyonun başlangıcı, `bas` istenirse daha erken bir noktadan
+   (ör. önbellek değişkeninin tanımı) başlatır. */
+/* ÇEKİRDEK MODÜLÜNÜ ORTAM DEĞİŞKENİNE SAYGIYLA OKU.
+   Testin doğrudan depo dosyasını okuması, bozma turunu KÖR eder: tezgâh
+   geçici bozuk kopyayı yazar, test depodakini ölçer ve "geçti" der. Bu
+   tuzağa depoda üç kez düşüldü (docx, prova, kumanda) — dördüncüsü olmasın.
+   Yol verilmiş ama dosya yoksa sessizce depoya DÜŞMEK yerine hata ver. */
+function cekirdekOku(ad, envAd) {
+  const acik = process.env[envAd];
+  if (acik && !fs.existsSync(acik))
+    throw new Error('Verilen çekirdek yolu yok: ' + acik);
+  return fs.readFileSync(acik || path.join(REPO, 'cekirdek', ad), 'utf8');
+}
+
+function blokKes(kod, imza, bas) {
+  const iBas = bas ? kod.indexOf(bas) : -1;
+  const i = kod.indexOf(imza);
+  if (i < 0) return null;
+  let d = 0, basladi = false;
+  for (let j = kod.indexOf('{', i); j < kod.length; j++) {
+    if (kod[j] === '{') { d++; basladi = true; }
+    else if (kod[j] === '}') {
+      d--;
+      if (basladi && d === 0) return kod.slice(iBas >= 0 ? iBas : i, j + 1);
+    }
+  }
+  return null;
+}
+
 module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni,
-                   cozJeton, metinCekirdegi };
+                   cozJeton, metinCekirdegi, blokKes, cekirdekOku };
 

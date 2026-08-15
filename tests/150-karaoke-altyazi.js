@@ -1,5 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku,blokKes,cekirdekOku,REPO}=require('./kaynak');
+const ALTYAZI_KAYNAK=cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
 const telHam=oku(telefonYolu()), macHam=oku(macYolu());
 const yorumsuz=s=>s.replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
@@ -86,24 +87,36 @@ function tezgah(k){
   const mW=k.match(/function wrapLines\([\s\S]*?return out\.length\?out:\[txt\|\|.{2}\];\s*\n\s*\}/);
   const mP=k.match(/function kkParcala\(measure, ln\)\{[\s\S]*?\n\s*\}/);
   const mR=k.match(/function kkRenk\(\)\{[\s\S]*?\n\s*\}/);
-  const mD=k.match(/let capOnbellek=[\s\S]*?ctx\.restore\(\);\s*\n\s*\}/);
-  if(!mW||!mP||!mR||!mD) return null;
+  const mV=blokKes(k,'function kkVurguMetin()');
+  /* ÇIKARIM SÜSLÜ PARANTEZ SAYARAK: eski regex ilk ctx.restore() gördüğü
+     yerde kesiyordu ve karaoke ile birlikte fonksiyonun İÇİNDE de bir
+     restore() belirdi -> yarım kod, SyntaxError, sessiz ölüm. */
+  const dBlok=blokKes(k,'function drawCaption(','let capOnbellek=');
+  const mD=dBlok?[dBlok]:null;
+  if(!mW||!mP||!mR||!mD||!mV) return null;
   return (d)=>new Function('__d', [
     /* kkRenk kendi önbelleğini kullanıyor; değişken çıkarıma girmediği için
        burada tanımlanmalı. Her kos() çağrısı yeni bir Function yarattığı
        için önbellek çağrılar arasında taşınmıyor — jeton değişimini
        ölçebilmemizin sebebi bu. */
-    'let kkRenkOnb="";',
-    mW[0], mP[0], mR[0],
+    ALTYAZI_KAYNAK,
+    'let kkRenkOnb="", kkVurguMetinOnb="";',
+    mW[0], mP[0], mR[0], mV,
     'const st=__d.st||{}; const state=st;',
     'const document={documentElement:{}};',
     'const getComputedStyle=()=>({getPropertyValue:()=>__d.jeton||""});',
     'const logErr=()=>{};',
     mD[0],
     'const c={ font:"", textAlign:"center", textBaseline:"", fillStyle:"", strokeStyle:"",',
+    '  globalAlpha:1, shadowColor:"", shadowBlur:0, shadowOffsetY:0,',
     '  lineWidth:0, lineJoin:"",',
     '  measureText:s=>{ __d.say&&__d.say(); return {width:String(s).length*23}; },',
-    '  save(){}, restore(){},',
+    '  save(){ __d.iz.push({t:"save"}); }, restore(){ __d.iz.push({t:"restore"}); },',
+    '  translate:(x,y)=>__d.iz.push({t:"tasi", x:x, y:y}),',
+    '  scale:(x,y)=>__d.iz.push({t:"olcek", x:x, y:y}),',
+    '  beginPath(){}, moveTo(){}, lineTo(){}, quadraticCurveTo(){}, closePath(){},',
+    '  rect:(x,y,w,h)=>__d.iz.push({t:"dikdortgen", x:x, y:y, w:w, h:h}),',
+    '  fill:()=>__d.iz.push({t:"zemin", renk:c.fillStyle}),',
     '  fillRect:()=>__d.iz.push({t:"kutu"}),',
     '  strokeText:(t)=>__d.iz.push({t:"kontur", s:t}),',
     '  fillText:(t,x)=>__d.iz.push({t:"yazi", s:t, x:x, renk:c.fillStyle, hiza:c.textAlign}) };',
@@ -201,16 +214,7 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
      `[\s\S]*?\n\s*\}` deseni fonksiyonun İÇİNDEKİ ilk kapanışa (for
      döngüsünün süslü parantezine) takılıyor ve yarım kod çıkarıyor.
      Süslü parantez sayarak kesmek tek doğru yol. */
-  const kesBlok=(kod,imza)=>{
-    const b=kod.indexOf(imza); if(b<0) return null;
-    let i=kod.indexOf('{',b), d=0;
-    for(let j=i;j<kod.length;j++){
-      if(kod[j]==='{') d++;
-      else if(kod[j]==='}'){ d--; if(d===0) return kod.slice(b,j+1); }
-    }
-    return null;
-  };
-  const govde=kesBlok(k,'function liveCue()');
+  const govde=blokKes(k,'function liveCue()');
   const m=govde?[govde]:null;
   ok(ad+': liveCue çıkarılabildi', !!m);
   if(!m) continue;
@@ -243,15 +247,8 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
    kaba ayıklayıcı (CLAUDE.md'de yazılı) dize içindeki bir yıldız-eğik
    çiftine takılıp araya giren işaretlemeyi de silebiliyor. Kod BİÇİMİNE
    dair iddialar için yorumsuz metin doğru, işaretleme için ham metin. */
-const blokKes=(kod,imza)=>{
-  const b=kod.indexOf(imza); if(b<0) return '';
-  let i=kod.indexOf('{',b), d=0;
-  for(let j=i;j<kod.length;j++){
-    if(kod[j]==='{') d++;
-    else if(kod[j]==='}'){ d--; if(d===0) return kod.slice(b,j+1); }
-  }
-  return '';
-};
+/* blokKes ortak dosyadan geliyor (tests/kaynak.js) — aynı çıkarım
+   kusuru iki testte birden çıktı, kural tek yerde dursun. */
 {
   const sozluk=oku(require('path').join(__dirname,'..','cekirdek','sozluk.js'));
   for(const anahtar of ['tgKaraoke','kkHint']){
@@ -272,7 +269,7 @@ for(const [ad,ham,kod,dev] of [['telefon',telHam,tel,'st'],['masaüstü',macHam,
   ok(ad+': eksik alan açık sayılıyor', new RegExp(dev+'\\.capKaraoke!==false').test(kod));
   /* Boş catch YALNIZ kkRenk içinde aranmalı: depoda başka yerlerde
      taban dahilinde boş catch var, tüm dosyaya bakan iddia yalan söyler. */
-  const govde=blokKes(ham,'function kkRenk()');
+  const govde=blokKes(ham,'function kkRenk()')||'';
   ok(ad+': kkRenk gövdesi bulundu', govde.length>0);
   ok(ad+': kkRenk sessizce yutmuyor', govde.length>0 && !/catch\([a-z]*\)\s*\{\s*\}/.test(govde));
 }

@@ -32,6 +32,38 @@ ayara çevirirdi. Kontrast ölçüldü: **siyah zeminde 11,48:1**, beyazdan ayr�
 
 `tests/150` **92 iddia** + **10 kasıtlı bozma** (hepsi kanıtlandı, toplam 148).
 
+### ✅ G.2 — Altyazı görünüm paketi (6 tema · 3 animasyon · üst konum) · v9.14
+
+**Ölçüm önce bir ölü ayar buldu:** bugüne kadarki "Sade / Sosyal" seçimi **çizimi hiç
+değiştirmiyordu** — o ayar çizimde bir kez bile okunmuyor, yalnız punto ve konumu ayarlayan
+bir kısayoldu. Yani uygulamanın **tek bir altyazı görünümü** vardı.
+**Masaüstü daha kötüydü:** punto ve konum **sabitti** (42 / alt), ama sözlükte "Altyazı
+boyutu", "Altyazı konumu", "Alt", "Orta" anahtarları duruyordu — çevrilmiş ama hiçbir yere
+bağlanmamış **ölü çeviri**. Dördü de artık gerçekten çalışıyor.
+
+**Gelen:** Şerit · Kutu · Hap · Şeritsiz · Vurgu hapı · Gölge (6 tema), vurgu animasyonu
+(Yok · Yumuşak · Sıçra) ve altyazıya **Üst** konumu. Tema tablosu çekirdek modülünde,
+yani iki kabuğa da aynı kaynaktan gömülüyor.
+
+**Kural koda bağlandı:** zemini olmayan tema **kontursuz ya da gölgesiz olamaz** — açık
+renkli videoda beyaz yazı kaybolur. Kural hem çizimde uygulanıyor (okunmaz tema çizilmiyor,
+sadeye düşüyor) hem testte ölçülüyor, yani **yeni tema eklerken kendiliğinden işliyor**.
+
+**Sessiz gerileme koruması:** varsayılan tema eski görünümü **birebir** koruyor; alt ve orta
+konum eski formülle matematiksel olarak aynı çıkıyor ve test bunu 1e-9 hassasiyetle ölçüyor.
+
+**Test bir israfı yakaladı:** animasyon kapalıyken bile her karede kimlik dönüşümü
+kuruluyordu (save/translate/scale/restore); artık dönüşüm yalnız gerçekten değişen bir şey
+varsa kuruluyor.
+
+**Kapının kendi kör noktası da kapandı:** testler çekirdek modülünü DOĞRUDAN depodan
+okuyordu, yani bozma turu geçici bozuk kopyayı yazsa bile test depodakini ölçüp "geçti"
+derdi. Bu tuzağa depoda daha önce üç kez düşülmüş; artık ortam değişkenine saygılı ortak
+bir okuyucu var ve yanlış yol verilirse sessizce depoya düşmek yerine hata veriyor.
+
+`tests/151` **158 iddia** + **10 kasıtlı bozma**. Parite: iki kabuk **6 tema × 3 konumda
+birebir aynı çizimi** üretiyor (izler JSON olarak karşılaştırıldı).
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -424,7 +456,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **1 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5034 test** (gece başında 732) · yeni test dosyası: 39–150
+- **5192 test** (gece başında 732) · yeni test dosyası: 39–151
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

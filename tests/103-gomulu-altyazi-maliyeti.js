@@ -1,5 +1,8 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku,blokKes,cekirdekOku,REPO}=require('./kaynak');
+/* Altyazı tema tablosu ve animasyon çekirdekte (cekirdek/altyazi.js);
+   çizim onu çağırıyor, yani tezgâh da onu yüklemek zorunda. */
+const ALTYAZI_KAYNAK=cekirdekOku('altyazi.js','SUFLE_ALTYAZI');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 const macKod=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
@@ -47,9 +50,14 @@ for(const [ad,k] of [['telefon',kod],['masaüstü',macKod]]){
 /* ---------- GERÇEK ÇİZİMİ KOŞTUR ---------- */
 function tezgah(k){
   const mW=k.match(/function wrapLines\([\s\S]*?return out\.length\?out:\[txt\|\|.{2}\];\s*\n\s*\}/);
-  const mD=k.match(/let capOnbellek=[\s\S]*?ctx\.restore\(\);\s*\n\s*\}/);
+  /* ÇIKARIM SÜSLÜ PARANTEZ SAYARAK: eski regex ilk ctx.restore() gördüğü
+     yerde kesiyordu ve karaoke ile birlikte fonksiyonun İÇİNDE de bir
+     restore() belirdi -> yarım kod, SyntaxError, sessiz ölüm. */
+  const dBlok=blokKes(k,'function drawCaption(','let capOnbellek=');
+  const mD=dBlok?[dBlok]:null;
   if(!mW||!mD) return null;
   return (d)=>new Function('__d', `
+    ${ALTYAZI_KAYNAK}
     ${mW[0]}
     /* KARAOKE BU TEZGÂHTA KAPALI. Bu dosyanın iddiası DÜZEN ÖNBELLEĞİ ve
        satır sayımı ('yazi:' izlerini 2ye bölerek satır çıkarıyor); karaoke

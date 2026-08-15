@@ -969,15 +969,15 @@
   "ad": "G.1 vurgu son kelime yerine İLK kelimede (telefon)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "telefon",
-  "bul": "ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';",
-  "koy": "ctx.fillStyle = (j===0) ? kkRenk() : '#fff';"
+  "bul": "      const sonu=(j===p.parts.length-1);",
+  "koy": "      const sonu=(j===0);"
  },
  {
   "ad": "G.1 vurgu son kelime yerine İLK kelimede (Mac)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "mac",
-  "bul": "ctx.fillStyle = (j===p.parts.length-1) ? kkRenk() : '#fff';",
-  "koy": "ctx.fillStyle = (j===0) ? kkRenk() : '#fff';"
+  "bul": "        const sonu=(j===p.parts.length-1);",
+  "koy": "        const sonu=(j===0);"
  },
  {
   "ad": "G.1 vurgu ÜST satırlara da taşıyor (telefon)",
@@ -1034,5 +1034,75 @@
   "kaynak": "telefon",
   "bul": "  capKaraoke:true,",
   "koy": "  capKaraoke:false,"
+ },
+ {
+  "ad": "G.2 okunmaz tema kabul ediliyor (zeminsiz+kontursuz)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  return (t.konturOran>0) || (t.golgeOran>0) || !!t.vurguZemin;",
+  "koy": "  return true;"
+ },
+ {
+  "ad": "G.2 seritsiz temanın konturu söküldü (beyaz duvarda kaybolur)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  seritsiz: {zemin:'yok',  zeminAlfa:0,    dolgu:0.30, yaricap:0,\n             konturOran:0.20, golgeOran:0, vurguZemin:false},",
+  "koy": "  seritsiz: {zemin:'yok',  zeminAlfa:0,    dolgu:0.30, yaricap:0,\n             konturOran:0, golgeOran:0, vurguZemin:false},"
+ },
+ {
+  "ad": "G.2 alt konum eski hesaptan kaydı (sessiz gerileme)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  return 0.84;                            // bottom (varsayılan)",
+  "koy": "  return 0.80;                            // bottom (varsayılan)"
+ },
+ {
+  "ad": "G.2 üstte blok kadraj dışına taşıyor",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  if(konum==='top')    return Hh*o + blokY/2;",
+  "koy": "  if(konum==='top')    return Hh*o - blokY/2;"
+ },
+ {
+  "ad": "G.2 sıçra animasyonu aşırı büyütüyor",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  if(tur==='sicra') return {olcek: 1+0.18*(1-e), alfa:1, kayma:0};",
+  "koy": "  if(tur==='sicra') return {olcek: 1+0.60*(1-e), alfa:1, kayma:0};"
+ },
+ {
+  "ad": "G.2 animasyon hızlı temponun ötesine uzadı",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "altyazi",
+  "bul": "  const sure = (tur==='sicra') ? 180 : 150;",
+  "koy": "  const sure = (tur==='sicra') ? 900 : 800;"
+ },
+ {
+  "ad": "G.2 telefonda tema hep sade (seçim ölü ayar)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "telefon",
+  "bul": "  let tema=altyaziTema(st.capTema);",
+  "koy": "  let tema=altyaziTema('sade');"
+ },
+ {
+  "ad": "G.2 Mac yine sabit puntoya döndü (ölü çeviri geri geldi)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "mac",
+  "bul": "    const size=Math.round((state.capSize||42)*(W/1080));",
+  "koy": "    const size=Math.round(42*(W/1080));"
+ },
+ {
+  "ad": "G.2 vurgu hapının üstündeki metin de vurgu renginde (okunmaz)",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "telefon",
+  "bul": "      ctx.fillStyle = sonu ? (tema.vurguZemin ? kkVurguMetin() : kkRenk()) : '#fff';",
+  "koy": "      ctx.fillStyle = sonu ? kkRenk() : '#fff';"
+ },
+ {
+  "ad": "G.2 animasyon kimlik dönüşümünü yine her karede kuruyor",
+  "test": "151-altyazi-temalari.js",
+  "kaynak": "telefon",
+  "bul": "      const uyg = (sonu && an && (an.olcek!==1 || an.alfa!==1 || an.kayma!==0)) ? an : null;",
+  "koy": "      const uyg = (sonu && an) ? an : null;"
  }
 ]

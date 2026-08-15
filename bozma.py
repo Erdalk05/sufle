@@ -35,6 +35,9 @@ KAYNAK = {
     'kumanda': (os.path.join(REPO, 'cekirdek', 'kumanda.js'), 'SUFLE_KUMANDA'),
     'metin': (os.path.join(REPO, 'cekirdek', 'metin.js'), 'SUFLE_METIN'),
     'zorlanma': (os.path.join(REPO, 'cekirdek', 'zorlanma.js'), 'SUFLE_ZORLANMA'),
+    # G.2 — altyazı tema tablosu iki kabukta da gömülü; okunurluk kuralı
+    # burada yaşıyor, yani bozulabilmesi şart.
+    'altyazi': (os.path.join(REPO, 'cekirdek', 'altyazi.js'), 'SUFLE_ALTYAZI'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

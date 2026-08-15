@@ -66,6 +66,10 @@ PLAN = [
     ('kumanda.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Zorlanma haritası: prova raporunun tamamlayıcısı, hesabı ortak.
     ('zorlanma.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.2 — altyazı tema tablosu ve vurgu animasyonu. Altyazı İKİ kabukta da
+    # videoya yakılıyor; tablo kopyalansaydı biri düzeltilip diğeri
+    # unutulurdu. Tablo veri, çizim kabuğa özel.
+    ('altyazi.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),
