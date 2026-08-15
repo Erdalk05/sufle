@@ -38,10 +38,14 @@ for(const [ad,k] of [['telefon',kod],['masaüstü',macKod]]){
      Alanların varlığı aranıyor, yazılış sırası/uzunluğu değil. */
   ok(ad+': altyazı düzeni önbelleğe alınıyor',
      /let capOnbellek=\{[^}]*txt:''[^}]*W:0[^}]*size:0[^}]*lines:null[^}]*\}/.test(k));
+  /* DESEN GEVŞETİLDİ (G.3): önizleme kartları çizimi ayrı bir önbellek
+     nesnesiyle çağırıyor (kart, kaydın önbelleğini kirletemez), o yüzden
+     değişkenin ADI artık capOnbellek olmak zorunda değil. İDDİA aynı:
+     anahtar metin + genişlik + puntoyu BİRLİKTE tutuyor. */
   ok(ad+': önbellek anahtarı metin, genişlik ve puntoyu birlikte tutuyor',
-     /capOnbellek\.lines && capOnbellek\.txt===txt && capOnbellek\.W===W && capOnbellek\.size===size/.test(k));
+     /(\w+)\.lines && \1\.txt===txt && \1\.W===W && \1\.size===size/.test(k));
   ok(ad+': ıskalayınca yeniden hesaplanıp saklanıyor',
-     /capOnbellek=\{txt, W, size, lines[,}]/.test(k));
+     /(capOnbellek=|Object\.assign\(\w+,)\{txt, W, size, lines[,}]/.test(k));
   /* Yazı biçimi HER KAREDE kurulmalı: çizim çağrıları buna bağlı, onu
      önbelleğe almak yanlış olurdu. */
   ok(ad+': yazı biçimi yine her karede kuruluyor', /ctx\.font='800 '\+size\+'px/.test(k));

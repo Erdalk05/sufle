@@ -64,6 +64,34 @@ bir okuyucu var ve yanlış yol verilirse sessizce depoya düşmek yerine hata v
 `tests/151` **158 iddia** + **10 kasıtlı bozma**. Parite: iki kabuk **6 tema × 3 konumda
 birebir aynı çizimi** üretiyor (izler JSON olarak karşılaştırıldı).
 
+### ✅ G.3 — Önizleme kartları: ayarın ADI değil SONUCU seçiliyor · v9.14
+
+BIGVU altyazı görünümünü küçük resim kartlarıyla seçtiriyor; bizde ayar adı yazan düğmeler
+vardı. **"Hap" ne demek olduğunu ancak deneyerek öğrenirsin.** Artık altı görünüm, **senin
+kendi kamera görüntünün üstünde** kart olarak duruyor.
+
+**Kart, uygulamanın KENDİ çizimini çağırıyor.** Ayrı bir taklit çizim en kolay yol olurdu ve
+bu deponun bilinen tuzağına düşerdi: kopya bir gün asıl çizimden ayrılır, kullanıcı kartta
+gördüğünden başka bir şey kaydeder.
+
+**En büyük risk önbellekti ve kapatıldı:** çizim önbelleği metin+genişlik+punto anahtarıyla
+çalışıyor; kart bambaşka bir metni bambaşka bir genişlikte çiziyor. Paylaşılsaydı kart
+çizilir çizilmez bir sonraki **kayıt karesi yanlış satırlarla** çizilirdi — üstelik yalnız
+ayarlar açıkken, yani hata "bazen" görünürdü. Kart kendi önbelleğiyle çalışıyor ve
+`tests/152` bunu **davranışla** ölçüyor (kart çizildikten sonra önbellekte hâlâ kayıt metni
+duruyor, kayıt karesi yeniden ölçülmüyor).
+
+**GERÇEK TARAYICIDA ÖLÇÜLDÜ** (Chrome, 430 px, sahte kamera): 6 kart çizildi · **6 kartın
+6'sı birbirinden farklı görünüm** üretti (yani kartlar gerçekten farkı gösteriyor) · tema
+değişimi **1,8 ms** · adsız öge **0** · sayfa taşması **yok**.
+
+**Ölçüm bir eksik yakaladı:** panel kapalıyken kart çizmemek doğru (görünmeyeni çizmek
+israf), ama panel **açılınca da** kimse çizmiyordu ve altı kart boş görünüyordu. Açılış
+artık kartları zorla çiziyor; Mac tarafında aynı iş sekme değişimine bağlandı.
+
+`tests/152` **86 iddia** + **12 kasıtlı bozma**. Bozma turu testimin üç yerde zayıf
+olduğunu gösterdi (tema farkı, saydamlık ve `aria-pressed`) — üçü de sıkılaştırıldı.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -456,7 +484,7 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **1 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5192 test** (gece başında 732) · yeni test dosyası: 39–151
+- **5285 test** (gece başında 732) · yeni test dosyası: 39–152
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

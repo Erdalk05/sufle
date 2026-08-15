@@ -302,10 +302,13 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
   }
 }
 for(const [ad,ham,kod,dev] of [['telefon',telHam,tel,'st'],['masaüstü',macHam,mac,'state']]){
-  ok(ad+': tema seçici arayüzde', /id="capTemaSeg"/.test(ham));
+  /* G.3 ile tema seçimi düğme şeridinden ÖNİZLEME KARTLARINA geçti; iddia
+     "seg var mı" değil "tema seçilebiliyor mu" olmalı. Kartların kendi
+     davranışı tests/152de ölçülüyor. */
+  ok(ad+': tema seçici arayüzde', /id="capTemaKart"/.test(ham));
   ok(ad+': animasyon seçici arayüzde', /id="capAnimSeg"/.test(ham));
   ok(ad+': üst konum düğmesi var', /data-cp="top"/.test(ham));
-  ok(ad+': altı tema düğmesi var', (ham.match(/data-ct="/g)||[]).length===6);
+  ok(ad+': tema seçenekleri çekirdek listesinden geliyor', /ALTYAZI_TEMA_SIRA/.test(kod));
   ok(ad+': tema durumdan okunuyor', new RegExp(dev+'\\.capTema').test(kod));
   ok(ad+': animasyon durumdan okunuyor', new RegExp(dev+'\\.capAnim').test(kod));
   ok(ad+': okunmaz tema çizilmiyor', /altyaziOkunur\(tema\)/.test(kod));

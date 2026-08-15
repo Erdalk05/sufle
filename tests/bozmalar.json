@@ -59,8 +59,8 @@
   "ad": "I2 altyazı önbelleği yok",
   "test": "103-gomulu-altyazi-maliyeti.js",
   "kaynak": "telefon",
-  "bul": "capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size",
-  "koy": "capOnbellek.txt===txt && capOnbellek.size===size"
+  "bul": "  if(onb.lines && onb.txt===txt && onb.W===W && onb.size===size){",
+  "koy": "  if(false){"
  },
  {
   "ad": "J1 arşiv güncellemesi iki işlem",
@@ -1011,15 +1011,15 @@
   "ad": "G.1 eksik alan KAPALI sayılıyor — eski kayıtta özellik ölü (telefon)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "telefon",
-  "bul": "const kk = st.capKaraoke!==false;",
-  "koy": "const kk = !!st.capKaraoke;"
+  "bul": "  const kk = kart ? (ops.karaoke!==false) : (st.capKaraoke!==false);",
+  "koy": "  const kk = kart ? (ops.karaoke!==false) : (!!st.capKaraoke);"
  },
  {
   "ad": "G.1 eksik alan KAPALI sayılıyor (Mac)",
   "test": "150-karaoke-altyazi.js",
   "kaynak": "mac",
-  "bul": "const kk = state.capKaraoke!==false;",
-  "koy": "const kk = !!state.capKaraoke;"
+  "bul": "    const kk = kart ? (ops.karaoke!==false) : (state.capKaraoke!==false);",
+  "koy": "    const kk = kart ? (ops.karaoke!==false) : (!!state.capKaraoke);"
  },
  {
   "ad": "G.1 vurgu rengi jeton yerine elle yazıldı (telefon)",
@@ -1081,14 +1081,14 @@
   "ad": "G.2 telefonda tema hep sade (seçim ölü ayar)",
   "test": "151-altyazi-temalari.js",
   "kaynak": "telefon",
-  "bul": "  let tema=altyaziTema(st.capTema);",
+  "bul": "  let tema=altyaziTema(kart&&ops.tema ? ops.tema : st.capTema);",
   "koy": "  let tema=altyaziTema('sade');"
  },
  {
   "ad": "G.2 Mac yine sabit puntoya döndü (ölü çeviri geri geldi)",
   "test": "151-altyazi-temalari.js",
   "kaynak": "mac",
-  "bul": "    const size=Math.round((state.capSize||42)*(W/1080));",
+  "bul": "    const size=Math.round((kart&&ops.punto ? ops.punto : (state.capSize||42))*(W/1080));",
   "koy": "    const size=Math.round(42*(W/1080));"
  },
  {
@@ -1104,5 +1104,89 @@
   "kaynak": "telefon",
   "bul": "      const uyg = (sonu && an && (an.olcek!==1 || an.alfa!==1 || an.kayma!==0)) ? an : null;",
   "koy": "      const uyg = (sonu && an) ? an : null;"
+ },
+ {
+  "ad": "G.3 kart kaydın önbelleğini kirletiyor (telefon)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  const onb=kart ? {} : capOnbellek;",
+  "koy": "  const onb=capOnbellek;"
+ },
+ {
+  "ad": "G.3 kart canlı cue metnini gösteriyor (telefon)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  const txt=kart&&ops.metin ? ops.metin : liveCue(); if(!txt) return;",
+  "koy": "  const txt=liveCue(); if(!txt) return;"
+ },
+ {
+  "ad": "G.3 kart kaydın önbelleğini kirletiyor (mac)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "mac",
+  "bul": "    const onb=kart ? {} : capOnbellek;",
+  "koy": "    const onb=capOnbellek;"
+ },
+ {
+  "ad": "G.3 kart canlı cue metnini gösteriyor (mac)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "mac",
+  "bul": "    const txt=kart&&ops.metin ? ops.metin : liveCue(); if(!txt) return;",
+  "koy": "    const txt=liveCue(); if(!txt) return;"
+ },
+ {
+  "ad": "G.3 kartta tema yok sayılıyor (altı kart aynı görünür)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  let tema=altyaziTema(kart&&ops.tema ? ops.tema : st.capTema);",
+  "koy": "  let tema=altyaziTema(st.capTema);"
+ },
+ {
+  "ad": "G.3 kartta animasyon uygulanıyor (yarı saydam örnek)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  const an = kk ? kkAnim(kart ? (ops.anim||'yok') : (st.capAnim||'yumusak'), simdiMs()-(onb.t0||0)) : null;",
+  "koy": "  const an = kk ? kkAnim(st.capAnim||'yumusak', simdiMs()-(onb.t0||0)) : null;"
+ },
+ {
+  "ad": "G.3 kart listesi elle yazıldı (yeni tema görünmez)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  ALTYAZI_TEMA_SIRA.forEach(ad=>{",
+  "koy": "  ['sade','kutu','hap'].forEach(ad=>{"
+ },
+ {
+  "ad": "G.3 panel açılışında kart çizimi yok (boş kartlar)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  if(id==='#sheet') temaKartlariCiz(true);",
+  "koy": "  if(id==='#sheet') 0;"
+ },
+ {
+  "ad": "G.3 kartta kamera çarpıtılarak sığdırılıyor",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "      const o=Math.max(W/cam.videoWidth, H/cam.videoHeight);",
+  "koy": "      const o=Math.min(W/cam.videoWidth, H/cam.videoHeight);"
+ },
+ {
+  "ad": "G.3 etiket anahtarı açık t() çağrısı olmaktan çıktı",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    case 'vurguHap': return t('ctVurguHap');",
+  "koy": "    case 'vurguHap': return TEMA_ETIKET[ad];"
+ },
+ {
+  "ad": "G.3 seçili kart ekran okuyucuya bildirilmiyor",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    b.setAttribute('aria-pressed', b.dataset.ct===(st.capTema||'sade') ? 'true' : 'false');",
+  "koy": "    b.removeAttribute('aria-pressed');"
+ },
+ {
+  "ad": "G.3 Macte sekme değişiminde kart çizilmiyor",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "mac",
+  "bul": "    temaKartlariCiz(true);",
+  "koy": "    0;"
  }
 ]

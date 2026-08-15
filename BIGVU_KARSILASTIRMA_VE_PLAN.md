@@ -143,13 +143,21 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 - **Kapı:** `tests/151` **158 iddia** + **10 kasıtlı bozma**; parite iki kabukta
   **6 tema × 3 konum** birebir aynı çizim.
 
-### G.3 — Önizleme kartlı seçim (UI'nin asıl sıçraması) · **P0**
-- **Ne:** altyazı stili, kadraj/profil ve arka plan seçimleri **kendi çekiminden üretilmiş
-  küçük resimle** seçilsin (BIGVU'nun kart şeridi, ama içerik senin videon).
-- **Neden:** "ayar adı" değil "sonuç" gösterilir; jargon = görünmezlik kuralının UI karşılığı.
-- **Kabul:** kart üretimi **≤150 ms** (tek kare, düşük çözünürlük); kart yokken eski liste
-  çalışmaya devam etsin (ön koşulu olan ayar = ölü ayar kuralı).
-- **Kapı:** `ekran.py` ile kart şeridinin çizildiği doğrulansın; adsız öge 0.
+### G.3 — Önizleme kartlı seçim (UI'nin asıl sıçraması) · **P0** · ✅ **BİTTİ (v9.14)**
+- **Ne yapıldı:** altyazı görünümü artık **kendi kamera görüntünün üstünde altı kart** olarak
+  seçiliyor. Kart, uygulamanın **kendi çizimini** çağırıyor (`drawCaption` + `ops`), yani
+  kartta gördüğün ile kaydettiğin aynı kod.
+- **GERÇEK TARAYICIDA ÖLÇÜLDÜ** (Chrome, 430 px, sahte kamera): 6 kart çizildi ·
+  **6 kartın 6'sı birbirinden farklı görünüm** üretti · tema değişimi **1,8 ms**
+  (kabul ölçütü 150 ms idi) · adsız öge **0** · sayfa taşması **yok**.
+- **En büyük risk önbellekti:** kart bambaşka metni bambaşka genişlikte çiziyor; önbellek
+  paylaşılsaydı bir sonraki **kayıt karesi yanlış satırlarla** çizilirdi. Kart kendi
+  önbelleğiyle çalışıyor, `tests/152` bunu davranışla ölçüyor.
+- **Ölçüm bir eksik yakaladı:** panel açılınca kartlar boş kalıyordu (çizim yalnız görünürken
+  yapılıyor, ama açılışta kimse tetiklemiyordu) → açılış zorla çiziyor, Mac'te sekme değişimi.
+- **Kart listesi çekirdek tema listesinden üretiliyor**: yeni tema eklenince kart
+  kendiliğinden çıkar; elle yazılmış altı düğme olsaydı yedinci tema görünmezdi.
+- **Kapı:** `tests/152` **86 iddia** + **12 kasıtlı bozma** (toplam 170).
 
 ### G.4 — Marka kiti (logo · renk · alt bant) · **P1**
 - **Ne:** cihazdan seçilen logo (PNG/SVG) çekime yakılabilsin; marka rengi altyazı+alt banda

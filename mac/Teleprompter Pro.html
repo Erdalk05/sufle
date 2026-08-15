@@ -268,6 +268,14 @@
   .selectish button.on{background:var(--accent);color:#04210f;border-color:transparent}
   .toggle{display:flex;align-items:center;justify-content:space-between;padding:var(--sp-2) 0}
   .toggle span{font-size:12px}
+  /* G.3 — önizleme kartları (telefonla aynı kural: ayarın ADI değil SONUCU). */
+  .kartlar{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px}
+  .kart{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;
+    background:var(--s-raised);border:1px solid var(--s-line);border-radius:var(--rad-md);
+    padding:6px;min-height:var(--tap);color:var(--t-mid);font-size:var(--tx-xs);cursor:pointer}
+  .kart canvas{display:block;border-radius:8px;background:#000}
+  .kart.on{border-color:var(--r-action);color:var(--t-hi)}
+  .kart:focus-visible{outline:none;box-shadow:var(--ring)}
   .sw2{position:relative;width:42px;height:24px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;transition:.15s}
   .sw2::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#777;transition:.15s}
   .sw2.on{background:var(--accent)}
@@ -719,14 +727,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-cp="top" data-i18n="cpTop">Üst</button>
         </div>
         <div class="top" style="margin-top:10px"><label data-i18n="capTema">Altyazı görünümü</label></div>
-        <div class="seg" id="capTemaSeg">
-          <button data-ct="sade" class="on" data-i18n="ctSade">Şerit</button>
-          <button data-ct="kutu" data-i18n="ctKutu">Kutu</button>
-          <button data-ct="hap" data-i18n="ctHap">Hap</button>
-          <button data-ct="seritsiz" data-i18n="ctSeritsiz">Şeritsiz</button>
-          <button data-ct="vurguHap" data-i18n="ctVurguHap">Vurgu hapı</button>
-          <button data-ct="golge" data-i18n="ctGolge">Gölge</button>
-        </div>
+        <div class="kartlar" id="capTemaKart" role="group" data-aria="capTema"></div>
         <div class="top" style="margin-top:10px"><label data-i18n="capAnim">Vurgu animasyonu</label></div>
         <div class="seg" id="capAnimSeg">
           <button data-ka="yok" data-i18n="kaYok">Yok</button>
@@ -982,7 +983,7 @@ const I18N={
   ssUsed:'Son kullanılan',ssName:'Ada göre',ssLen:'Uzunluğa göre',
   csClean:'Sade',csSocial:'Sosyal (büyük, ortada)',capMaxW:'Satırda en fazla kelime',
   tgKaraoke:'Konuşulan kelimeyi vurgula',
-  capTema:'Altyazı görünümü',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
+  capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
   capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
   kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
   profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
@@ -1104,7 +1105,7 @@ const I18N={
   ssUsed:'Recently used',ssName:'By name',ssLen:'By length',
   csClean:'Clean',csSocial:'Social (big, centred)',capMaxW:'Max words per line',
   tgKaraoke:'Highlight the spoken word',
-  capTema:'Caption look',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
+  capTema:'Caption look',kartOrnek:'You record as you read',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
   capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
   kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
   profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
@@ -1823,7 +1824,7 @@ const MMSG={
     if($('#capMaxWV')){ $('#capMaxWV').textContent=String(state.capMaxW||7); $('#capMaxW').value=(state.capMaxW||7); }
     if($('#capSizeV')){ $('#capSizeV').textContent=String(state.capSize||42); $('#capSize').value=(state.capSize||42); }
     $$('#capPosSeg button').forEach(b=>b.classList.toggle('on',b.dataset.cp===(state.capPos||'bottom')));
-    $$('#capTemaSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ct===(state.capTema||'sade')));
+    temaKartlariCiz();
     $$('#capAnimSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ka===(state.capAnim||'yumusak')));
     $('#modeV').textContent=curMode().name;
     $('#modeHint').textContent=modeLine();
@@ -2490,31 +2491,41 @@ const MMSG={
     ctx.closePath();
   }
   const simdiMs=()=> (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now();
-  function drawCaption(ctx,W,Hh){
-    const txt=liveCue(); if(!txt) return;
+  function drawCaption(ctx,W,Hh,ops){
+    /* G.3 — ÖNİZLEME KARTLARI AYNI ÇİZİMİ KULLANIR. `ops` verilirse metin,
+       tema, konum ve punto oradan gelir; verilmezse hiçbir şey değişmez.
+       Kartı ayrı bir "taklit çizimle" üretmek en kolay yol olurdu ve bu
+       depoda bilinen bir tuzağa düşerdi: kopya bir gün asıl çizimden ayrılır
+       ve kullanıcı kartta gördüğünden başka bir şey kaydeder.
+       ÖNBELLEK DE AYRILIYOR: kart çizimi kaydın satır önbelleğini kirletirse
+       bir sonraki kare yanlış satırlarla çizilir. */
+    const kart=!!ops;
+    const txt=kart&&ops.metin ? ops.metin : liveCue(); if(!txt) return;
+    const onb=kart ? {} : capOnbellek;
     /* MAC PARİTESİ (G.2): punto ve konum burada SABİTTİ (42 / alt) ve
        sözlükte capSize/capPos anahtarları duruyordu — yani çevrilmiş ama
        hiçbir yere bağlanmamış ölü anahtarlar. Artık telefonla aynı
        durumdan okunuyor; eski kayıtta alan yoksa eski değerler çıkıyor. */
-    const size=Math.round((state.capSize||42)*(W/1080));
+    const size=Math.round((kart&&ops.punto ? ops.punto : (state.capSize||42))*(W/1080));
     ctx.font='800 '+size+'px -apple-system,"SF Pro Text",Helvetica,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
     let lines, kkp, satirGen;
-    if(capOnbellek.lines && capOnbellek.txt===txt && capOnbellek.W===W && capOnbellek.size===size){
-      lines=capOnbellek.lines; kkp=capOnbellek.kk; satirGen=capOnbellek.satirGen;
+    if(onb.lines && onb.txt===txt && onb.W===W && onb.size===size){
+      lines=onb.lines; kkp=onb.kk; satirGen=onb.satirGen;
     } else {
       lines=wrapLines(x=>ctx.measureText(x).width, txt, W*0.86);
       /* Karaoke parçalaması ve satır genişlikleri de önbellekte (telefonla
          aynı gerekçe: kare başına ölçüm 24 kat gereksiz iş demekti). */
-      kkp=(state.capKaraoke!==false) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1]) : null;
+      kkp=((kart?ops.karaoke!==false:state.capKaraoke!==false)) ? kkParcala(x=>ctx.measureText(x).width, lines[lines.length-1]) : null;
       satirGen=lines.map(l=>ctx.measureText(l).width);
-      capOnbellek={txt, W, size, lines, kk:kkp, satirGen, t0:simdiMs()};
+      Object.assign(onb,{txt, W, size, lines, kk:kkp, satirGen, t0:simdiMs()});
+      if(!kart) capOnbellek=onb;
     }
-    let tema=altyaziTema(state.capTema);
+    let tema=altyaziTema(kart&&ops.tema ? ops.tema : state.capTema);
     if(!altyaziOkunur(tema)) tema=altyaziTema('sade');
     const lh=size*1.25, blockH=lines.length*lh;
     const dolgu=size*(tema.dolgu||0.3);
-    const baseY=altyaziMerkezY(state.capPos, Hh, blockH);
+    const baseY=altyaziMerkezY(kart&&ops.konum ? ops.konum : state.capPos, Hh, blockH);
     ctx.save();
     if(tema.zemin==='bant'){
       ctx.fillStyle='rgba(0,0,0,'+(tema.zeminAlfa)+')';
@@ -2532,8 +2543,8 @@ const MMSG={
     ctx.lineWidth=konturW; ctx.strokeStyle='rgba(0,0,0,.9)'; ctx.lineJoin='round';
     if(tema.golgeOran){ ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=size*tema.golgeOran; ctx.shadowOffsetY=size*0.04; }
     ctx.fillStyle='#fff';
-    const kk = state.capKaraoke!==false;
-    const an = kk ? kkAnim(state.capAnim||'yumusak', simdiMs()-(capOnbellek.t0||0)) : null;
+    const kk = kart ? (ops.karaoke!==false) : (state.capKaraoke!==false);
+    const an = kk ? kkAnim(kart ? (ops.anim||'yok') : (state.capAnim||'yumusak'), simdiMs()-(onb.t0||0)) : null;
     lines.forEach((ln,i)=>{
       const y=baseY-blockH/2+lh*(i+0.5);
       const p = (kk && i===lines.length-1) ? kkp : null;
@@ -2566,6 +2577,74 @@ const MMSG={
       ctx.fillStyle='#fff'; ctx.textAlign=eskiHiza;
     });
     ctx.restore();
+  }
+  /* G.3 — TEMA ÖNİZLEME KARTLARI (telefonla aynı gerekçe ve aynı çizim). */
+  const KART_W=132, KART_H=76;
+  const TEMA_ETIKET={sade:'ctSade', kutu:'ctKutu', hap:'ctHap',
+                     seritsiz:'ctSeritsiz', vurguHap:'ctVurguHap', golge:'ctGolge'};
+  function kartEtiketi(ad){ return TEMA_ETIKET[ad] || ad; }
+  /* Etiket METNİ açıkça t() ile çağrılıyor. Anahtarı değişkenle vermek
+     çalışıyor ama ölü anahtar taraması yalnız t('...') ve data-i18n
+     görüyor: bu depoda çalışma zamanı etiketleri i18n kapsamının kör
+     noktası olarak zaten bir kez yakalandı. */
+  function temaEtiketMetni(ad){
+    switch(ad){
+      case 'sade':     return t('ctSade');
+      case 'kutu':     return t('ctKutu');
+      case 'hap':      return t('ctHap');
+      case 'seritsiz': return t('ctSeritsiz');
+      case 'vurguHap': return t('ctVurguHap');
+      case 'golge':    return t('ctGolge');
+    }
+    return ad;
+  }
+  function temaKartlariKur(){
+    const kap=$('#capTemaKart'); if(!kap || kap.dataset.kuruldu) return;
+    ALTYAZI_TEMA_SIRA.forEach(ad=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='kart'; b.dataset.ct=ad;
+      const cv=document.createElement('canvas');
+      cv.width=KART_W*2; cv.height=KART_H*2;
+      cv.style.width=KART_W+'px'; cv.style.height=KART_H+'px';
+      const et=document.createElement('span');
+      et.dataset.i18n=kartEtiketi(ad); et.textContent=temaEtiketMetni(ad);
+      b.appendChild(cv); b.appendChild(et);
+      b.onclick=()=>{ state.capTema=ad; capOnbellek.lines=null; applyAll(); save(); temaKartlariCiz(true); };
+      kap.appendChild(b);
+    });
+    kap.dataset.kuruldu='1';
+  }
+  let kartSonCiz=0;
+  function temaKartlariCiz(zorla){
+    const kap=$('#capTemaKart'); if(!kap) return;
+    temaKartlariKur();
+    if(!zorla && !kap.offsetParent) return;
+    const simdi=simdiMs();
+    if(!zorla && simdi-kartSonCiz<1200) return;
+    kartSonCiz=simdi;
+    const ornek=t('kartOrnek');
+    const vid=$('#cam');
+    const canli = vid && vid.readyState>=2 && vid.videoWidth>0;
+    $$('#capTemaKart .kart').forEach(b=>{
+      b.classList.toggle('on', b.dataset.ct===(state.capTema||'sade'));
+      b.setAttribute('aria-pressed', b.dataset.ct===(state.capTema||'sade') ? 'true' : 'false');
+      const cv=b.querySelector('canvas'); if(!cv) return;
+      const c=cv.getContext('2d'); if(!c) return;
+      const W=cv.width, H=cv.height;
+      c.clearRect(0,0,W,H);
+      if(canli){
+        const o=Math.max(W/vid.videoWidth, H/vid.videoHeight);
+        const gw=vid.videoWidth*o, gh=vid.videoHeight*o;
+        try{ c.drawImage(vid, (W-gw)/2, (H-gh)/2, gw, gh); }
+        catch(e){ logErr('kartKamera',e); }
+      } else {
+        const g=c.createLinearGradient(0,0,0,H);
+        g.addColorStop(0,'#2A3140'); g.addColorStop(1,'#0F1219');
+        c.fillStyle=g; c.fillRect(0,0,W,H);
+      }
+      drawCaption(c, W, H, {metin:ornek, tema:b.dataset.ct, anim:'yok',
+                            konum:'bottom', punto:150, karaoke:true});
+    });
   }
   function stopFx(){
     if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
@@ -3498,8 +3577,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.',
-       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.'},
+ '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.',
+       en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.'},
    '9.13':'BUDAMA: seçim artık videonun sonunu aşmıyor. Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda var olmayan bir bölge seçiliyordu ve ekranda yazan süre ile eldeki çekim ayrışabiliyordu.\n\nBudama bilgisi ve süre birimi artık İngilizce arayüzde de İngilizce; burada satırın TAMAMI Türkçe kalıyordu. Telefonla aynı matematiği kullandığı da ölçüldü.',
    '9.12':'SESLE TAKİP: Safari tanımayı her sessizlikte kapatıyor. Uygulama bunu arıza sanıyordu; duraklama artık arıza sayılmıyor ve tanıma 150 ms içinde geri dönüyor.\n\nAyrıca tanıma ölmüşken mikrofonun sonsuza kadar açık kalması engellendi: sayaç eskiden her başlatmada sıfırlandığı için "tanıma çalışmıyor" durumu hiç yakalanamıyordu. Bu düzeltme telefonda bir tur önce yapılmıştı, masaüstü geride kalmıştı.\n\nAsıl kusur iPhone tarafındaydı: orada özellik altı duraklamadan sonra kendini kapatıyordu.',
    '9.1':'🔊 "Ses çok kısık" yanlış uyarısı düzeltildi: kaydın başında henüz konuşmamışken uyarı çıkıyor, mikrofona yaklaşınca bu sefer kırpma alarmı veriyordu. Artık ortalamaya değil son saniyelerin tepesine bakıyor.\n\n⚡ Biyonik okuma eklendi (kelime başları kalın) — metin ayarlarında.\n\n♿ Ayar anahtarları artık Tab ile odaklanıp Boşluk/Enter ile açılıyor; ekran okuyucu adlarını ve açık/kapalı durumlarını söylüyor.\n\n🎬 Çekim sırasında açılan pencereler görüntüyü donduruyordu: kayıt sürerken "Çekimlerim" ya da "Hazır mıyım"a basınca hem sufle hem kaydedilen video tek karede kalıyordu. Artık kayıt sürerken açılmıyor, sebebini söylüyor.\n\n🆕 Bu pencereye alttaki sürüm numarasına tıklayarak istediğin zaman ulaşabilirsin.',
@@ -3678,7 +3757,6 @@ function provaRapor(kaynak, sesle){
     if($('#capSizeV')) $('#capSizeV').textContent=String(state.capSize);
     capOnbellek.lines=null; applyAll(); save(); });
   $$('#capPosSeg button').forEach(b=>b.onclick=()=>{ state.capPos=b.dataset.cp; capOnbellek.lines=null; applyAll(); save(); });
-  $$('#capTemaSeg button').forEach(b=>b.onclick=()=>{ state.capTema=b.dataset.ct; capOnbellek.lines=null; applyAll(); save(); });
   $$('#capAnimSeg button').forEach(b=>b.onclick=()=>{ state.capAnim=b.dataset.ka; applyAll(); save(); });
   $$('#keySel button').forEach(b=>b.onclick=()=>{ state.keyColor=b.dataset.k; applyAll(); save(); });
   $$('#bgcSel button').forEach(b=>b.onclick=()=>{ state.bgColor=b.dataset.b; applyAll(); save(); });
@@ -4500,6 +4578,9 @@ function tusEslemesiSuz(ham){
     $$('#right .ctrl').forEach(c=>c.classList.toggle('sekmeDisi', c.dataset.rtab!==t));
     $$('#rtabs button').forEach(b=>{ b.classList.toggle('on', b.dataset.rtab===t);
       b.setAttribute('aria-selected', b.dataset.rtab===t?'true':'false'); });
+    /* Sekme değişince kartları çiz: görünmezken çizmek israf, görünür olunca
+       çizmemek ise BOŞ KART demek (telefonda ölçülerek yakalandı). */
+    temaKartlariCiz(true);
   }
   $$('#rtabs button').forEach(b=>b.onclick=()=>{ state.rtab=b.dataset.rtab; save(); applyRtab(); });
   applyRtab();
