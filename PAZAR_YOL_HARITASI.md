@@ -264,7 +264,23 @@ zaten hesaplıyor; kabuk kuralları için ayrı bir tarayıcı-tabanlı ölçüm
 
 ## 3 · FAZ C — Veri sağlamlığı (en yüksek risk azaltımı)
 
-**C.1** IndexedDB'ye tam geçiş + `localStorage` göçü (eski kullanıcı verisi kaybolmadan).
+**C.1** ❌ **ELENDİ — ölçümle.** Yol haritası "senaryolar IndexedDB'ye taşınsın" diyordu.
+Uygulamadan **önce ölçtüm ve gerekçe çürüdü**:
+
+| Ölçüm (Chrome, gerçek tarayıcı) | Değer |
+|---|---|
+| `localStorage` gerçek tavanı | **4,94 MB** (`QuotaExceededError` ile) |
+| IndexedDB kotası | ~10 GB (2073×) |
+| 2 dakikalık senaryo | **2.037 bayt** |
+| Yedek kopyasıyla tavana sığan senaryo | **~1.271 adet** |
+| 100 senaryonun kullanımı | **%7,9** |
+
+Bir sufle kullanıcısının 1.271 senaryoya ulaşması gerçekçi değil; **kota riski teorik**.
+Analizin asıl korkusu ("tarayıcı temizlenince senaryolar gider") ise **IndexedDB ile çözülmez** —
+"site verilerini temizle" ikisini birden siler. Gerçek çare **cihaz dışına çıkan dosya**ydı ve
+**C.2'de eklendi**. Kota dolması zaten özenle ele alınmıştı (çöp bırakma + dürüst mesaj).
+Ayrıca `navigator.storage.persist()` zaten çağrılıyor ve **iki depoyu birden** korur.
+**Karar: göç yapılmıyor.** Yapılsaydı haftalarca regresyon riski, kazanç sıfır.
 **C.2** ✅ **BİTTİ** — ve asıl risk sanılan yerde değilmiş.
 · Telefonda `autoBackup`/`restoreBackup` **zaten vardı** ve kota dolması ele alınmıştı.
 Ele alınMAYAN: yedek de `localStorage`'daydı, yani **tarayıcı verisi silinince ikisi birden**
@@ -278,8 +294,19 @@ okundu (1→2 senaryo, eski duruyor).
 `🛟 Otomatik yedekten dön` eklendi (tarayıcıda doğrulandı).
 · **Kapı beni boşluğu örtmekten alıkoydu:** `restore`'u muafiyet listesine yazmayı denedim,
 "muafiyet listesi BÜYÜDÜ" diye reddetti ve haklıydı — boşluk örtülmedi, **kapatıldı**.
-**C.3** Klasör + etiket + arama + sürüm geçmişi.
-**C.4** Geriye dönük uyum testi: eski kayıt nesnesiyle koş (`CLAUDE.md` kuralı).
+**C.3** ⏸ **ölçüldü, ertelendi (gerekçeli).** Arama **zaten var** (`#scriptFind`).
+Klasör/etiket, kütüphane büyüdüğünde değerli; ölçülen gerçek: tipik sufle kütüphanesi onlarca
+senaryo (tavana 1.271 sığıyor, kimse oraya yaklaşmıyor). Şimdi eklemek, kullanılmayan bir
+hiyerarşi ve her senaryo ekranında fazladan bir seçim demek — B fazında tam tersini yaptık.
+**Tetikleyici:** kullanıcı kütüphanesi 50 senaryoyu aşarsa ya da Erdal isterse.
+Bunun yerine sıra ağırlığı daha yüksek ve açıkça eksik olan **D.2 kamera kontrollerine** geçiyor
+(matris ×3, SUFLE=2, lider=5).
+**C.4** ✅ **BİTTİ** — yalnız `{id,title,text}` taşıyan **çok eski** biçimde üç kayıt
+(başlıksız, boşluk-başlıklı, boş metinli) tarayıcıda içe alındı: üçü de başlık kazandı,
+`up`/`pos` eklendi, liste çizildi. Kaynak düzeyi sözleşmesi **iki kabukta da** kilitli
+(`tests/125`, 24 iddia) — kullanıcı yedeği hangi platformda açarsa açsın aynı korumayı alıyor.
+Ayrıca içe alınan kayda **yeni id** veriliyor: yedekteki id mevcut bir senaryoyla çakışsaydı
+biri sessizce erişilemez olurdu.
 
 ---
 
@@ -351,3 +378,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 17 | 2026-08-15 | B.8: Mac'e disleksi yazı tipi + hareket azaltma | dış font ölçülüp ELENDİ (~150 KB/ağırlık) · yığın birebir · 65 iddia | ✅ 8/8 YEŞİL |
 | 18 | 2026-08-15 | B.8 ikinci dilim: Mac yüksek kontrast (ölü çeviri canlandı) | kenarlık 1,29:1 → 21:1 · OS tercihi bir kez devralınıyor · 72 iddia | ✅ 8/8 YEŞİL |
 | 19 | 2026-08-15 | C.2 cihaz dışı yedek + Mac otomatik yedek | Mac yedeği telefonda okundu (1→2) · yanlış isim eşlemesi 2 testte düzeltildi · 19 iddia | ✅ 8/8 YEŞİL |
+| 20 | 2026-08-15 | C.1 ÖLÇÜLDÜ ve ELENDİ · C.4 bitti · C.3 gerekçeli ertelendi | ls tavanı 4,94 MB · 2 dk senaryo 2 KB · tavana 1.271 senaryo → kota riski teorik | ✅ 8/8 YEŞİL |

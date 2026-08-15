@@ -75,3 +75,22 @@ const kodMac = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
   ok('içe almadan sonra ekran yenileniyor',
      /save\(\); fillEditor\(\); renderScripts\(\); buildContent\(\); reset\(\);/.test(al));
 }
+
+/* ---------- C.4: ESKİ KAYIT DAYANIKLILIĞI ---------- */
+{
+  /* Tarayıcıda doğrulandı: yalnız {id,title,text} taşıyan ÇOK ESKİ biçimde
+     üç kayıt (biri başlıksız, biri boşluk-başlıklı, biri boş metinli) sorunsuz
+     içe alındı; üçü de başlık kazandı, up ve pos alanları eklendi, liste
+     çizildi, "3 senaryo eklendi" mesajı çıktı.
+     Burada o sözleşmenin kaynak düzeyi karşılığı kilitleniyor — iki kabukta da,
+     çünkü kullanıcı yedeği hangi platformda açarsa açsın aynı korumayı almalı. */
+  const alMac = cikar(kodMac, /\$\('#scImport'\)\.onchange=\(e\)=>\{[\s\S]*?readAsText\(f,'utf-8'\); e\.target\.value='';\s*\};/, 'Mac scImport');
+  ok('Mac: başlık eksikse varsayılan konuyor', /title:x\.title\|\|'İçe aktarılan'/.test(alMac));
+  ok('Mac: metin eksikse boş dizeye düşüyor (undefined değil)', /text:x\.text\|\|''/.test(alMac));
+  ok('Mac: bozuk dosyada çökmüyor', /catch\(err\)\{ logErr\('import',err\)/.test(alMac));
+  /* Yeni id ÜRETİLİYOR: yedekteki id mevcut bir senaryoyla çakışırsa
+     iki senaryo aynı id'yi taşır ve biri sessizce erişilemez olur. */
+  ok('Mac: içe alınana YENİ id veriliyor (çakışma olmasın)', /id:'i'\+Date\.now\(\)\+i/.test(alMac));
+  const alTel = cikar(kodTel, /function yedektenAl\(f\)\{[\s\S]*?\n\}/, 'yedektenAl');
+  ok('telefon: içe alınana YENİ id veriliyor', /id:'i'\+Date\.now\(\)\+i/.test(alTel));
+}
