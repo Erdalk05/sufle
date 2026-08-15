@@ -1,0 +1,33 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kabuk ölçümü</title>
+<style>body{font:15px -apple-system;background:#0A0C11;color:#e9ecf2;margin:0;
+  padding:calc(env(safe-area-inset-top) + 16px) 20px 20px}
+h1{font-size:17px;margin:0 0 4px}p{color:#8b93a7;font-size:12px;margin:0 0 14px}
+#c>div{padding:9px 0;border-bottom:1px solid #272C38;display:flex;justify-content:space-between;gap:10px}
+b{font-weight:600}i{font-style:normal;text-align:right;font-size:12px}
+.y{color:#00D47E}.k{color:#ff5a5f}</style></head><body>
+<h1>Paketlenmiş kabuk ölçümü</h1><p id="o">kaynak…</p><div id="c"></div>
+<script>
+var C=document.getElementById('c');
+function y(a,t,n){var d=document.createElement('div');
+  d.innerHTML='<b>'+a+'</b><i class="'+(t?'y':'k')+'">'+(t?'✓ ':'✗ ')+(n||'')+'</i>';C.appendChild(d);}
+document.getElementById('o').textContent='kaynak: '+location.origin+' · protokol: '+location.protocol
+  +' · güvenli bağlam: '+(window.isSecureContext?'EVET':'HAYIR');
+/* ① KALICI DEPOLAMA — senaryolar ve çekim arşivi buna bağlı. Çalışmazsa
+   kullanıcı uygulamayı her kapattığında her şeyini kaybeder. */
+try{ localStorage.setItem('sufle_olc','1');
+     y('localStorage yazma/okuma', localStorage.getItem('sufle_olc')==='1'); }
+catch(e){ y('localStorage yazma/okuma', false, String(e.name)); }
+try{ y('IndexedDB', !!window.indexedDB); }catch(e){ y('IndexedDB', false); }
+/* ② MEDYA — kabuğun tüm varlık sebebi. */
+y('mediaDevices var', !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia));
+y('MediaRecorder var', typeof MediaRecorder!=='undefined');
+y('SpeechRecognition var', !!(window.SpeechRecognition||window.webkitSpeechRecognition));
+if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+  navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(function(s){
+    y('KAMERA+MİKROFON İZNİ', true, s.getTracks().length+' iz');
+    s.getTracks().forEach(function(t){t.stop();});
+  }).catch(function(e){ y('KAMERA+MİKROFON İZNİ', false, e.name); });
+}else y('KAMERA+MİKROFON İZNİ', false, 'API yok');
+</script></body></html>

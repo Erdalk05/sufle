@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>Sufle</string>
+  <key>CFBundleDisplayName</key><string>Sufle</string>
+  <key>CFBundleIdentifier</key><string>com.erdalkiziroglu.sufle</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>9.11</string>
+  <key>CFBundleExecutable</key><string>Sufle</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>LSRequiresIPhoneOS</key><true/>
+  <key>UILaunchScreen</key><dict/>
+  <key>UISupportedInterfaceOrientations</key>
+  <array><string>UIInterfaceOrientationPortrait</string></array>
+  <!-- BU ÜÇ METİN OLMADAN UYGULAMA İZİN İSTERKEN ÇÖKER. Apple bunları
+       kullanıcıya aynen gösteriyor; jargon değil sebep yazılmalı. -->
+  <key>NSCameraUsageDescription</key>
+  <string>Kendini çekerken sufle metnini kameranın hemen yanında okuyabilmen için.</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Videonun sesini kaydetmek ve sesle takipte metni konuşmana göre kaydırmak için.</string>
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>Sesle takip için: okudukça metin kendiliğinden kaysın diye konuşman metinle eşleştirilir.</string>
+</dict></plist>

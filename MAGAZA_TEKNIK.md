@@ -74,6 +74,39 @@ buydu. Uçtan uca tanıma ayrıca ağ ve mikrofon izni ister; simülatörde ger�
 mikrofon yok. Gerçek cihazda ilk kabuk denemesinde bu ayrıca sınanmalı.
 **iOS sürümü değiştiğinde ölçümü tekrarla** — betik bunun için duruyor.
 
+## ✅ İKİNCİ ENGEL DE ÖLÇÜLDÜ — paketlenmiş kabuk (`file://`) çalışıyor
+
+T51 API'lerin **varlığını** ölçtü ama kabuğun asıl mimarî varsayımını değil:
+*uygulama dosyası pakete gömülüp `file://` ile açılırsa kamera/mikrofon izni ve
+kalıcı depolama çalışır mı?* Tutmazsa kabuğun mimarisi değişirdi (yerel HTTP
+sunucusu ya da özel şema gerekirdi) — yani sonradan değil ÖNCE bilinmesi gereken şey.
+
+**Ölçüm** (`ios-kabuk/`, 2026-08-15 18:17, iOS simülatörü): elle derlenmiş gerçek bir
+WKWebView kabuğu, sayfa `loadFileURL` ile pakete gömülü hâlden açıldı
+(`ios-kabuk/kabuk.swift` · `Kabuk-Info.plist` · kare `ios-kabuk/sonuc-kabuk.png`).
+
+| ölçülen | sonuç |
+|---|---|
+| kaynak / protokol | `file://` · güvenli bağlam **EVET** |
+| localStorage yazma/okuma | ✅ |
+| IndexedDB | ✅ |
+| mediaDevices | ✅ |
+| MediaRecorder | ✅ |
+| SpeechRecognition | ✅ |
+| **kamera + mikrofon izni** | ✅ (2 iz geldi) |
+
+**Kritik ayrıntı — kabuk kodunun kendisi:** `requestMediaCapturePermissionFor`
+temsilcisi yazılmazsa WKWebView kamera/mikrofon isteğini **sessizce reddeder** ve
+uygulama "kamera açılmıyor" der. Bu deponun 2 numaralı hata sınıfının (tam
+gerektiği anda sessizce çalışmayan şey) kabuk tarafındaki karşılığı; kabuk
+kurulurken ilk yazılacak satır budur. `allowsInlineMediaPlayback=true` de şart,
+yoksa iOS kaydı kendi tam ekran oynatıcısına alır ve **sufle görünmez olur**.
+
+**Dürüstlük sınırı:** simülatörde gerçek mikrofon/kamera donanımı yok — ölçülen
+şey iznin **verilebildiği ve akışın kurulabildiği**. Gerçek cihazda kayıt kalitesi
+ayrıca sınanmalı. Ayrıca service worker `file://`'de çalışmaz; kabukta zaten
+gereksiz (dosyalar yerel), ama **çevrimdışı yolun kabukta farklı olduğu** yazılı kalsın.
+
 ## Mevcut PWA'nın karşıladıkları
 
 Manifest tam (ad, ikonlar 192/512/maskable, kategoriler, `id`, `share_target`,

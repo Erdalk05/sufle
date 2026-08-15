@@ -830,6 +830,38 @@ değil kendi bayatlığını bildiriyordu; artık `bozma.py`'den çıkarılıyor
 
 ---
 
+## 7 · FAZ G — BIGVU'nun üstüne çıkma turu (2026-08-15 akşamı açıldı)
+
+Erdal BIGVU'nun ödeme ekranını gönderip *"tüm özelliklerini incele, UI ve kullanım
+bakımından onların üstüne çıkar, TODO olarak planla"* dedi. BIGVU'nun 15 modülü
+çıkarıldı, Sufle'nin karşılığı **kaynaktan sayıldı** ve plan ayrı dosyaya yazıldı:
+**`BIGVU_KARSILASTIRMA_VE_PLAN.md`**.
+
+**Turun stratejik dayanağı (ölçülmüş):** BIGVU altyazıyı **buluttaki ASR ile tahmin
+ediyor** (%92–95 doğruluk, internet şart, ücretli). Bizde `cekimAltyazi` **her
+kelimenin okuma çizgisinden geçtiği anı** taşıyor — kelime doğruluğu **%100**, tahmin
+edilen tek şey zamanlama. Yani rakibin en pahalı modülünü **sunucusuz, çevrimdışı ve
+daha doğru** yapabiliyoruz. Tur 56'nın ölçümü de aynı yönü gösteriyordu: sunucusuz
+tavan **81,9**, bugün **63,0** — BIGVU **65,3**.
+
+| madde | ne | öncelik | durum |
+|---|---|---|---|
+| **G.1** | karaoke altyazı (kelime kelime senkron vurgu) | P0 | ⏳ açık |
+| **G.2** | altyazı stil paketi (6+ tema, animasyon, konum) | P0 | ⏳ açık |
+| **G.3** | önizleme kartlı seçim (UI sıçraması) | P0 | ⏳ açık |
+| **G.4** | marka kiti (logo · renk · alt bant) | P1 | ⏳ açık |
+| **G.5** | müzik yatağı + ducking (iOS riski ölçülecek) | P1 | ⏳ açık |
+| **G.6** | klip üreteci (Auto-Shorts karşılığı, AI'sız) | P1 | ⏳ açık |
+| **G.7** | intro/outro + alt bant animasyonu | P2 | ⏳ açık |
+| **G.8** | içerik planlayıcı (cihazda, hesapsız) | P2 | ⏳ açık |
+| **G.9** | göz teması düzeltme (ML) | — | ölçülecek, sonra karar |
+| **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | P1 | ⏳ açık |
+
+Sunucu/hesap isteyenler (AI senaryo, avatar, ses klonlama, B-roll, analitik, tek tıkla
+yayınlama, bulut, ekip) **FAZ E ile aynı tek soruya** bağlı ve Erdal kararıdır.
+
+---
+
 ## Karar bekleyen (Erdal)
 
 - **Bağımsız ürün mü, edugo modülü mü?** Analiz "edugo modülü" öneriyor; kullanıcı "markete çıkmak" dedi

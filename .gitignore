@@ -17,3 +17,7 @@
 # İkili dosya oldukları için geçmişi şişirirler; mağazaya hazır olanlar
 # depoda durur, taslaklar `python3 ekran.py` ile bir komutta geri gelir.
 magaza/ekranlar/*.taslak.png
+
+# kabuk derleme çıktısı — ikili, depoya girmez
+ios-kabuk/.build/
+ios-olcum/.build/
