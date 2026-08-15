@@ -97,6 +97,17 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
   ok('sözlükte emojili etiket yok — ' + kirli.length + (kirli.length ? ' → ' + kirli[0] : ''),
      kirli.length === 0);
 
+  /* KÖR NOKTA (kasıtlı bozma turunda yakalandı): yalnız `cekirdek/sozluk.js`
+     okunuyordu. Sözlük kabuklara GÖMÜLDÜĞÜ için, birinin gömülü kopyaya
+     doğrudan emoji yazması testten kaçıyordu. Ölçülen şey artık kullanıcının
+     gerçekten gördüğü kopya: her iki kabuktaki gömülü sözlük. */
+  for (const [ad, src] of [['telefon', tel], ['Mac', mac]]) {
+    const g = (src.match(/==CEKIRDEK:sozluk\.js==[\s\S]*?==\/CEKIRDEK:sozluk\.js==/) || [''])[0];
+    ok(ad + ' gömülü sözlüğü ayrılabildi (ölçmeyen kapı olmasın)', g.length > 500);
+    const e = [...g.matchAll(/\w+:'([^']*)'/g)].map(m => m[1]).filter(v => emoji.test(v));
+    ok(ad + ' gömülü sözlüğünde emojili etiket yok — ' + e.length, e.length === 0);
+  }
+
   /* İşaretlemedeki VARSAYILAN metinler de temiz olmalı: sözlüğü temizleyip
      işaretlemeyi bırakmak iki platformu ayrıştırıyordu (tests/122 yakaladı,
      32 etiket uyuşmuyordu). */

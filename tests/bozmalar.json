@@ -670,5 +670,54 @@
     "kaynak": "telefon",
     "bul": "if(!IS_WK){ micTouched=true; startAudioMonitor(); }",
     "koy": "if(true){ micTouched=true; startAudioMonitor(); }"
+  },
+  {
+    "ad": "T55 yüzeyler tek kaynaktan koparıldı (jetonlar.css yine ölü ayar olur)",
+    "test": "143-tasarim-kimligi.js",
+    "kaynak": "telefon",
+    "bul": "--card:var(--s-raised)",
+    "koy": "--card:#1e1e24"
+  },
+  {
+    "ad": "T55 basış geri bildirimi söküldü (dokunulan şey tepki vermez)",
+    "test": "143-tasarim-kimligi.js",
+    "kaynak": "telefon",
+    "bul": "transform:scale(var(--bas));box-shadow:none}",
+    "koy": "box-shadow:none}"
+  },
+  {
+    "ad": "T55 kaydırıcı dolgusu ham değerden hesaplanıyor (min sıfır değilse hiç boşalmaz)",
+    "test": "143-tasarim-kimligi.js",
+    "kaynak": "telefon",
+    "bul": "const o=mx>mn ? (v-mn)/(mx-mn)*100 : 0;",
+    "koy": "const o=mx>0 ? v/mx*100 : 0;"
+  },
+  {
+    "ad": "T55 dolgu yalnız sürüklerken tazeleniyor (hazır kurulum sonrası eski oranda kalır)",
+    "test": "143-tasarim-kimligi.js",
+    "kaynak": "telefon",
+    "bul": "  railHepsi();          // değerler programla da değişiyor; her açılışta tazele\n",
+    "koy": ""
+  },
+  {
+    "ad": "T55 sözlüğe süs emojisi geri geldi (iki platform ayrışır)",
+    "test": "143-tasarim-kimligi.js",
+    "kaynak": "telefon",
+    "bul": "tabRead:'Okuma'",
+    "koy": "tabRead:'🎯 Okuma'"
+  },
+  {
+    "ad": "T55 rekabet belgesi kendi sınırını gizledi (tahmin ölçüm sanılır)",
+    "test": "144-rekabet-olcumu.js",
+    "kaynak": "rekabet",
+    "bul": "hâlâ tahmin",
+    "koy": "hepsi ölçüldü"
+  },
+  {
+    "ad": "T55 sunucusuz tavan iddiası belgeden silindi (karar dayanaksız kalır)",
+    "test": "144-rekabet-olcumu.js",
+    "kaynak": "rekabet",
+    "bul": "**81,9**",
+    "koy": "**yüksek**"
   }
 ]

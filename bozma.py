@@ -42,6 +42,10 @@ KAYNAK = {
     # iddia burada yaşıyor, çürütüldüğü de burada yazılı.
     'magaza_teknik': (os.path.join(REPO, 'MAGAZA_TEKNIK.md'), 'SUFLE_MAGAZA_TEKNIK'),
     'fiyat': (os.path.join(REPO, 'FIYATLANDIRMA.md'), 'SUFLE_FIYAT'),
+    # Rekabet ölçümü de bozulabilmeli: "sunucu işletmek istiyor muyuz?"
+    # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
+    # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.
+    'rekabet': (os.path.join(REPO, 'belgeler', 'REKABET_30_OLCULDU.md'), 'SUFLE_REKABET'),
     # Vitrin sayfası da: kullanıcının uygulamayı açmadan ÖNCE okuduğu
     # sözler burada; abartma engeli ancak abartarak kanıtlanır.
     'vitrin': (os.path.join(REPO, 'tanitim.html'), 'SUFLE_VITRIN'),
