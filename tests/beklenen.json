@@ -114,7 +114,7 @@
  "113-kapsam-kapisi.js": 36,
  "114-test-kalitesi.js": 15,
  "115-bozma-turu.js": 30,
- "116-sabah-raporu.js": 25,
+ "116-sabah-raporu.js": 26,
  "117-cmd-origin.js": 17,
  "118-hedef-ve-kontrast.js": 33,
  "119-mac-donduran-diyalog.js": 27,
@@ -139,5 +139,6 @@
  "138-kumanda-tuslari.js": 21,
  "139-mac-tus-ogretme.js": 58,
  "140-zorlanma-haritasi.js": 39,
- "141-fiyatlandirma.js": 25
+ "141-fiyatlandirma.js": 25,
+ "142-sesle-takip-nobetcisi.js": 21
 }

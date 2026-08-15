@@ -642,5 +642,33 @@
   "kaynak": "telefon",
   "bul": "function openTrim(){",
   "koy": "function openTrim(){ if(!window.isPremium) return;"
+ },
+ {
+  "ad": "T54 sessiz ölüm nöbetçisi söküldü (kullanıcı sebebini göremez)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "  sesGeldi=false; clearTimeout(sessizNobet);\n",
+  "koy": ""
+ },
+ {
+  "ad": "T54 sonuç gelince nöbetçi susmuyor (çalışırken hata basar)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "    sesGeldi=true; clearTimeout(sessizNobet); sessizNobet=null;\n",
+  "koy": ""
+ },
+ {
+  "ad": "T54 nöbetçi kamerayı ayırt etmiyor (yanlış yere yönlendirir)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "toast(kamera ? m('voiceSilentCam') : m('voiceSilent'));",
+  "koy": "toast(m('voiceSilent'));"
+ },
+ {
+  "ad": "T54 iOS ses ölçer koruması kalktı (mikrofonu Web Audio tutar)",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "if(!IS_WK){ micTouched=true; startAudioMonitor(); }",
+  "koy": "if(true){ micTouched=true; startAudioMonitor(); }"
  }
 ]

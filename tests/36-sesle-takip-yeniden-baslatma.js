@@ -31,6 +31,9 @@ function kos({hemenOlur=true, sonucGeliyor=false, yasaMs=0, tavan=400}={}){
   const iz={tur:0, durdu:false, uyari:false};
   new Function('__iz','__hemen','__sonuc','__yasa','__tavan', `
     let voiceOn=true, sr={}, srFails=0, srRetryT=null, srBasladi=0;
+    /* T54'te eklenen sessiz olum nobetcisi stopVoice icinde temizleniyor;
+       bu tezgah yeniden BASLATMAYI siniyor, nobetciyi degil. */
+    let sesGeldi=false, sessizNobet=null;
     const SR_SAGLIKLI_MS=3000;
     let saat=0;
     const performance={ now:()=>saat };
@@ -110,6 +113,8 @@ const stopSrc = cikar(tel, /function stopVoice\(\)\{[\s\S]*?vHud'\)\.classList\.
 function kapatAcTuru(){
   const f = new Function(`
     let voiceOn=false, sr=null, srFails=0, srRetryT=null, srBasladi=0, vRaf=0, vBadge='', vHudT=0;
+    let sesGeldi=false, sessizNobet=null;   // T54 nobetcisi stopVoice icinde temizleniyor
+    const clearTimeout=()=>{};
     const SR_SAGLIKLI_MS=3000;
     const cancelAnimationFrame=()=>{};
     const $=()=>({classList:{remove(){},add(){}}});
