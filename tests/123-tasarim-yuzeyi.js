@@ -211,3 +211,33 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
      /function newsElle\(\)\{[^}]*#onbActions'\)\.classList\.add\('hidden'\)[^}]*showNews\(\)/.test(kodTel)
      && /\$\('#newsBtn'\)\.onclick=newsElle;/.test(kodTel));
 }
+
+/* ---------- 9. ERİŞİLEBİLİRLİK (B.8) ---------- */
+{
+  /* DIŞ FONT GÖMÜLMEDİ, ölçülerek karar verildi: OpenDyslexic tek ağırlık
+     ~150 KB base64, dört ağırlık Mac dosyasını ikiye katlardı ve "tek dosya,
+     sıfır bağımlılık" sözünü bozardı. Telefon bu sorunu zaten SİSTEM
+     fontlarıyla çözmüştü; Mac'e aynı yığın taşındı — yığının BİREBİR aynı
+     olması şart, yoksa iki platform aynı ayarda farklı görünür. */
+  const dysTel = (tel.match(/body\.f-dys\s+#scroller\{([^}]*)\}/) || [])[1] || '';
+  const dysMac = (mac.match(/body\[data-fam=dys\] #scroller\{([^}]*)\}/s) || [])[1] || '';
+  ok('telefonda disleksi yazı tipi var', /Comic Neue/.test(dysTel));
+  ok('Mac\'te disleksi yazı tipi VAR (eskiden yoktu)', /Comic Neue/.test(dysMac));
+  const yigin = x => (x.match(/font-family:([^;]*)/) || [])[1] || '';
+  ok('iki kabukta font yığını BİREBİR aynı',
+     yigin(dysTel).replace(/\s+/g,'') === yigin(dysMac).replace(/\s+/g,''));
+  /* Harf aralığı disleksi okunurluğunda fontun kendisi kadar etkili —
+     birinde olup öbüründe olmaması sessiz bir fark yaratırdı. */
+  ok('harf aralığı iki kabukta da uygulanıyor',
+     /letter-spacing:\.02em/.test(dysTel) && /letter-spacing:\.02em/.test(dysMac));
+  ok('Mac\'te disleksi düğmesi UI\'da', /<button data-fam="dys" data-i18n="fDys">/.test(mac));
+
+  /* Hareket azaltma: telefonda vardı, Mac'te yoktu. Sufle akışı DURMAZ —
+     o süsleme değil ürünün işi; duran şey nabız ve panel geçişleri. */
+  ok('telefon hareket azaltmayı gözetiyor', /@media \(prefers-reduced-motion: reduce\)/.test(tel));
+  ok('Mac hareket azaltmayı gözetiyor (eskiden gözetmiyordu)',
+     /@media \(prefers-reduced-motion: reduce\)/.test(mac));
+  const rm = (mac.match(/@media \(prefers-reduced-motion: reduce\)\{([\s\S]*?)\n  \}/) || [])[1] || '';
+  ok('Mac kuralı sufle akışını DURDURMUYOR (yalnız süsleme)',
+     rm.length > 0 && !/#scroller\b/.test(rm) && !/#prompt\b/.test(rm));
+}

@@ -242,7 +242,18 @@ eylemle bitiyor: **"Metnimi yapıştır"** → senaryo sayfası açılıyor + me
 İkincil "Önce kendim bakayım" yalnız kapatıyor (baskı yok). Eylem satırı **yalnız gerçek ilk
 kurulumda** görünür; sürüm notu için elle açıldığında gizleniyor (sayfa iki amaca hizmet ediyor).
 Tarayıcıda üç davranış da doğrulandı.
-**B.8 Erişilebilirlik sütunu.** OpenDyslexic + Lexend, kontrast temaları, AA 4.5:1 zorunlu, ekran okuyucu.
+**B.8 Erişilebilirlik sütunu.** ⏳ **iki dilim bitti.**
+**🔴 DIŞ FONT GÖMÜLMEDİ — ölçülerek karar verildi.** OpenDyslexic tek ağırlık ~150 KB base64,
+dört ağırlık Mac dosyasını **ikiye katlardı** ve "tek dosya, sıfır bağımlılık" sözünü bozardı.
+Üstelik gerek de yoktu: telefon bu işi **sistem fontlarıyla zaten çözmüştü**
+(`Chalkboard SE / Comic Sans MS / Comic Neue` + `.02em` harf aralığı).
+· **Gerçek boşluk Mac'teydi:** 4 yazı tipi seçeneği vardı, **disleksi yoktu** — analizin "okul
+bağlamında altın değerinde" dediği özellik masaüstünde eksikti. Eklendi, yığın telefonla **birebir**
+(tarayıcıda doğrulandı: font + `1.28px` harf aralığı uygulanıyor).
+· **Hareket azaltma** Mac'e eklendi (telefonda vardı). Sufle akışı **durmuyor** — o süsleme değil
+ürünün işi; duran şey nabız ve panel geçişleri.
+**Kalan:** Mac'te yüksek kontrast teması (sözlükte `tgHicon` anahtarı var ama **uygulama yok**),
+kontrast denetiminin kapıya bağlanması.
 **Bitti ölçütü:** ilk açılışta görünen kontrol sayısı ≤ 5; kontrast denetimi 0 ihlal; dört platformda aynı.
 
 ---
@@ -321,3 +332,4 @@ Hazırlık yapılır, anahtar/uç bağlama onayla.
 | 14 | 2026-08-15 | B.5 telefon: mod rozeti (Elle/Otomatik/Sesle+dil) | tarayıcıda geçiş kanıtlı · senkron güncelleme · 30 bozma · **KAPI 8/8 YEŞİL** | ✅ 8/8 |
 | 15 | 2026-08-15 | B.6 kısayol kartı (iki kabuk) | Mac kartı 7 satır, gerçek bağlardan · telefon kullanıcının haritasını gösteriyor · 51 iddia | ✅ 8/8 YEŞİL |
 | 16 | 2026-08-15 | B.7 karşılama eylemle bitiyor (tur yerine aktivasyon) | tarayıcıda 3 davranış kanıtlı · 57 iddia · kapsam tabanı gevşetilmedi | ✅ 8/8 YEŞİL |
+| 17 | 2026-08-15 | B.8: Mac'e disleksi yazı tipi + hareket azaltma | dış font ölçülüp ELENDİ (~150 KB/ağırlık) · yığın birebir · 65 iddia | ✅ 8/8 YEŞİL |

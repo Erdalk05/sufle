@@ -130,6 +130,16 @@
     font:inherit;font-size:12.5px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
   #rtabs button.on{background:var(--accent);color:var(--on-action);border-color:transparent}
   #right .ctrl.sekmeDisi{display:none}
+  /* B.8 HAREKET AZALTMA. Telefonda vardı, Macte YOKTU. İşletim sisteminde
+     "hareketi azalt" açan kullanıcı (vestibüler rahatsızlık, migren) burada
+     yanıp sönen noktalar ve kayan paneller görüyordu.
+     SUFLENİN KENDİ AKIŞI DURMAZ — o süsleme değil ürünün işi. Duran şeyler:
+     kayıt noktasının nabzı, panel kayması, düğme geçişleri. Telefondaki
+     kuralın aynısı, aynı gerekçeyle. */
+  @media (prefers-reduced-motion: reduce){
+    #recDot i,.rec-dot,#left,#right,.btn,.sw2,.seg button,#rtabs button{
+      animation:none!important;transition:none!important}
+  }
   .btn.rec{background:#e53935;color:#fff;border-color:transparent}
   .btn.rec.active{animation:pulse 1.2s infinite}
   @keyframes pulse{50%{filter:brightness(.7)}}
@@ -213,6 +223,14 @@
   body[data-fam=mono] #scroller{font-family:"SF Mono",Menlo,Consolas,monospace}
   body[data-fam=system] #scroller{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   body[data-fam=round] #scroller{font-family:"Avenir Next","Trebuchet MS",sans-serif}
+  /* B.8 DİSLEKSİ SEÇENEĞİ. Telefonda vardı, Macte YOKTU — analizde
+     "okul bağlamında altın değerinde" denen özellik masaüstünde eksikti.
+     Yığın telefonla BİREBİR aynı ve hepsi SİSTEM fontu: OpenDyslexic
+     gömmek tek dosya-sıfır bağımlılık sözünü bozardı (ölçüldü: tek ağırlık
+     ~150 KB base64, dört ağırlık dosyayı ikiye katlar). Harf aralığı da
+     telefonla aynı; disleksi okunurluğunda fontun kendisi kadar etkili. */
+  body[data-fam=dys] #scroller{font-family:"Chalkboard SE","Comic Sans MS","Comic Neue",cursive;
+    letter-spacing:.02em}
   /* ayna / ters */
   #frame.caseUp #scroller{text-transform:uppercase}
   #frame.caseLow #scroller{text-transform:lowercase}
@@ -553,6 +571,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
           <button data-fam="serif" data-i18n="fSerif">Serif</button>
           <button data-fam="round" data-i18n="fRound">Yumuşak</button>
           <button data-fam="mono" data-i18n="mMono">Mono</button>
+          <button data-fam="dys" data-i18n="fDys">Disleksi</button>
         </div>
       </div>
       <div class="field" style="margin-top:11px">
