@@ -386,8 +386,22 @@
   #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-size:34vh;font-weight:800;color:var(--accent);z-index:8;text-shadow:0 0 60px rgba(0,200,83,.4)}
 
   /* alt durum çubuğu */
-  #statusbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:14px;
+  /* ÖLÇÜLDÜ (2026-08-17, gerçek tarayıcı, 1280/1440/1680 px): çubuk her
+     genişlikte 608 px kalıyor ve 151 PX YÜKSEKLİĞE kırılıyordu — kısayol
+     etiketlerinin her biri kendi içinde bölünüyordu ("tam / ekran"), cihaz
+     özeti altı satıra iniyordu. Sonuç: video görüntüsünün altını kaplayan,
+     okunmayan bir blok. Sebep, daralan kapsayıcıda `white-space` serbestti
+     ve satır kırma tek çare olarak kalıyordu.
+     Çözüm: her öge KENDİ İÇİNDE kırılmasın (nowrap), çubuk ÖGELER ARASINDA
+     kırılsın (flex-wrap) ve dar pencerede de sığsın diye genişlik tavanı
+     pencereye bağlansın. Cihaz özeti en uzun parça olduğu için taşarsa
+     üç nokta ile kısalıyor — okunmayan altı satır yerine okunur bir satır. */
+  #statusbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+    gap:6px 14px;width:max-content;max-width:min(96%,940px);
     background:rgba(10,10,12,.8);border:1px solid var(--line);border-radius:12px;padding:7px 14px;font-size:12px;color:var(--muted);z-index:7;backdrop-filter:blur(6px)}
+  #statusbar>span,#statusbar>button{white-space:nowrap}
+  #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}
   #statusbar b{color:var(--txt)}
   kbd{background:#26262e;border:1px solid #3a3a44;border-radius:4px;padding:1px 6px;font-size:var(--tx-xs);color:#cfcfd6}
 

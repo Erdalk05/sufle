@@ -100,3 +100,37 @@ ok('geniş ekranda düğme büyümeye devam etmiyor (üst sınır ' + cbMax + ')
    geri gelir. */
 ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
    /flex-wrap:\s*wrap/.test(barCss));
+
+/* ---------- MASAÜSTÜ DURUM ÇUBUĞU (2026-08-17, KULLANARAK bulundu) ----------
+
+   Uygulamayı gerçek tarayıcıda gezdiren denetim turunda çıktı: Mac kabuğunda
+   alt durum çubuğu (kısayollar + WPM + cihaz özeti + sürüm + dil) ÜÇ farklı
+   pencere genişliğinde de 608 px kalıyor ve 151 PX YÜKSEKLİĞE kırılıyordu.
+   Sebep: daralan kapsayıcıda satır kırma tek çare olarak kalıyordu, o yüzden
+   her etiket KENDİ İÇİNDE bölünüyordu ("tam / ekran") ve cihaz özeti altı
+   satıra iniyordu. Video görüntüsünün altını kaplayan, okunmayan bir blok.
+
+   ÖLÇÜLEN (aynı tarayıcı, aynı sayfalar):
+     genişlik      önce        sonra
+     1152 px      608 × 151    549 × 87
+     1280 px      608 × 151    672 × 66
+     1440 px      608 × 151    826 × 66
+     1680 px      608 × 151    940 × 66
+
+   Kilitlenen kural: öge KENDİ İÇİNDE kırılmaz, çubuk ÖGELER ARASINDA kırılır. */
+{
+  const { macYolu } = require('./kaynak.js');
+  const mac = oku(macYolu());
+  const sb = (mac.match(/#statusbar\{[^}]*\}/) || [''])[0];
+  ok('masaüstü durum çubuğu bulundu', !!sb);
+  ok('çubuk ögeler arasında satır kırabiliyor', /flex-wrap:\s*wrap/.test(sb));
+  ok('çubuk pencerenin genişliğini kullanıyor (max-content)', /width:\s*max-content/.test(sb));
+  ok('çubuğun genişlik tavanı pencereye bağlı (dar pencerede taşmaz)',
+     /max-width:\s*min\(/.test(sb));
+  /* Asıl kusur buydu: etiketin kendi içinde kırılması. */
+  ok('çubuk ögeleri kendi içinde kırılmıyor',
+     /#statusbar>span,#statusbar>button\{white-space:nowrap\}/.test(mac));
+  /* Cihaz özeti en uzun parça; taşarsa altı satır yerine üç nokta. */
+  ok('cihaz özeti taşarsa kısalıyor (altı satıra inmiyor)',
+     /#sbDev\{[^}]*text-overflow:ellipsis/.test(mac));
+}

@@ -2854,5 +2854,26 @@
   "kaynak": "telefon",
   "bul": "      if(rec && rec.state==='recording' && !chunks.length) toast(m('recNoData'));",
   "koy": "      if(rec && rec.state==='recording') toast(m('recNoData'));"
+ },
+ {
+  "ad": "masaüstü durum çubuğu ögeleri kendi içinde kırılıyor (151 px blok)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "mac",
+  "bul": "  #statusbar>span,#statusbar>button{white-space:nowrap}",
+  "koy": "  #statusbar>span,#statusbar>button{white-space:normal}"
+ },
+ {
+  "ad": "masaüstü durum çubuğu pencere genişliğini kullanmıyor",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "mac",
+  "bul": "    gap:6px 14px;width:max-content;max-width:min(96%,940px);",
+  "koy": "    gap:6px 14px;max-width:min(96%,940px);"
+ },
+ {
+  "ad": "cihaz özeti kısalmıyor (altı satıra iniyor)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "mac",
+  "bul": "  #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}",
+  "koy": "  #sbDev{max-width:min(46ch,52%)}"
  }
 ]
