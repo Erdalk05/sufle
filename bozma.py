@@ -79,6 +79,7 @@ KAYNAK = {
     'sw': (os.path.join(REPO, 'sw.js'), 'SUFLE_SW'),
     # Mac yerel sunucusu: kumanda ve uzak önizleme yolunun tamamı burada.
     'sunucu': (os.path.join(REPO, 'mac', 'teleprompter_server.py'), 'SUFLE_SUNUCU'),
+    'iphone_sunucu': (os.path.join(REPO, 'yerel-sunucu', 'iphone_server.py'), 'SUFLE_IPHONE_SUNUCU'),
     # Rekabet ölçümü de bozulabilmeli: "sunucu işletmek istiyor muyuz?"
     # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
     # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.

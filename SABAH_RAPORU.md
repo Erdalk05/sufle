@@ -971,6 +971,27 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### ✅ KANIT TURU KAPANDI — 162 test dosyasının 159'u kasıtlı bozmayla kanıtlı
+
+Gecenin başında **66/161** dosya kanıtlıydı; şimdi **159/162**. Kalan üç dosya
+kapının KENDİ denetimleri (`114` test kalitesi · `115` bozma turu · `77` iddia
+sayacı) ve onları kasıtlı bozmayla kanıtlamak **mümkün değil**: `bozma.py`
+yalnız KAYNAK tablosundaki ürün dosyalarını bozabiliyor, testleri değil. Üçü de
+bunun yerine **sentetik örneklerle** sınanıyor (kötü örneği görmeli, iyi örneği
+görmemeli) — bu sınır belgede yazılı, gizlenmedi.
+
+Bu son turda kilitlenenler arasında ürünün en pahalı kusur sınıfları var:
+senaryo çoğaltmanın **ikinci sürümü sessizce düşürmesi**, boşluklu tetik
+kelimesinin sessizce kabul edilip **hiç eşleşmemesi**, uzun metinde ileri
+sıçramanın yakalanmaması, Macte sarmalayan noktalamanın vurguyu bozması,
+iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
+sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
+dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
+
+**Sayılar:** 6279 test · **379 kanıtlı bozma** · kanıtlı dosya **159/162**.
+
+---
+
 ### 🧱 KANITLI TEST 136 → 148 · en kritik on iki kural daha kilitlendi
 
 Bu turda kapatılanlar arasında ürünün güvenlik ve doğruluk çekirdeği var:
@@ -1142,7 +1163,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6279 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **368 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **379 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

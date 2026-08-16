@@ -1,7 +1,11 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path'), {execFileSync}=require('child_process');
 const {REPO}=require('./kaynak');
-const SUNUCU=path.join(REPO,'yerel-sunucu','iphone_server.py');
+/* Ortam değişkenine saygılı: bozma turu bu dosyayı geçici kopyada bozuyor,
+   doğrudan depodan okuyan test o bozmayı hiç görmezdi (2026-08-16 dersi). */
+const SUNUCU=(()=>{ const v=process.env.SUFLE_IPHONE_SUNUCU;
+  if(v && !fs.existsSync(v)) throw new Error('Verilen yol yok: '+v);
+  return v || path.join(REPO,'yerel-sunucu','iphone_server.py'); })();
 const kaynak=fs.readFileSync(SUNUCU,'utf8');
 
 /* E10 — iPHONE HTTPS SUNUCUSU: SIFIR TESTİ VARDI.

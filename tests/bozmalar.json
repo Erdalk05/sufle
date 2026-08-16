@@ -2574,5 +2574,82 @@
   "kaynak": "tempo",
   "bul": "      const m=x.match(/^\\((\\d+(?:[.,]\\d+)?)s?\\)$/);",
   "koy": "      const m=x.match(/^\\((\\d+)s?\\)$/);"
+ },
+ {
+  "ad": "iPhone sunucusu ölü adres kuralını Macten ayırıyor",
+  "test": "75-iphone-sunucu.js",
+  "kaynak": "iphone_sunucu",
+  "bul": "    return (not ip) or ip.startswith(\"127.\") or ip == \"::1\" or ip == \"localhost\"",
+  "koy": "    return not ip"
+ },
+ {
+  "ad": "Mac altyazı süre sınırı telefondan ayrıştı (parite kırıldı)",
+  "test": "82-altyazi-platform-paritesi.js",
+  "kaynak": "mac",
+  "bul": "  const CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;",
+  "koy": "  const CAP_MAXCH=42, CAP_MAXSEC=6.0, CAP_GAP=0.08;"
+ },
+ {
+  "ad": "tetik kelimesi kutusu kumanda panelinden çıkarıldı",
+  "test": "76-kumanda-tani-paneli.js",
+  "kaynak": "telefon",
+  "bul": "<input type=\"text\" id=\"wakeWord\" placeholder=\"örn: hazir\" maxlength=\"20\">",
+  "koy": "<input type=\"text\" id=\"wakeWordX\" placeholder=\"örn: hazir\" maxlength=\"20\">"
+ },
+ {
+  "ad": "boşluklu tetik kelimesi sessizce kabul ediliyor (hiç eşleşmez)",
+  "test": "73-tetik-kelimesi.js",
+  "kaynak": "telefon",
+  "bul": "  if(ham && /\\s/.test(ham)) sebep=m('wakeMulti');",
+  "koy": "  if(false) sebep=m('wakeMulti');"
+ },
+ {
+  "ad": "senaryo çoğaltma alan alan kopyalıyor (ikinci sürüm sessizce düşer)",
+  "test": "43-ikinci-surum-tasima.js",
+  "kaynak": "telefon",
+  "bul": "      const c=Object.assign(JSON.parse(JSON.stringify(s)),\n                            {id:uid(), title:(s.title||'')+' ·', up:Date.now()});",
+  "koy": "      const c={id:uid(), title:(s.title||'')+' ·', up:Date.now(), text:s.text};"
+ },
+ {
+  "ad": "Macte sarmalayan noktalama vurguyu bozuyor (yıldızlar ekranda kalır)",
+  "test": "48-mac-isaretleme.js",
+  "kaynak": "mac",
+  "bul": "    const sar=tok.match(/^([(\"'\\u201c\\u2018\\u00ab\\[]*)([\\s\\S]*?)([)\"'\\u201d\\u2019\\u00bb\\],.;:!?\\u2026]*)$/) || [,'',tok,''];",
+  "koy": "    const sar=[,'',tok,''];"
+ },
+ {
+  "ad": "uzun metinde ileri sıçrama yakalanmıyor (sufle geride kalır)",
+  "test": "65-sesli-takip-uzun-metin.js",
+  "kaynak": "telefon",
+  "bul": "  const genis = lastHitAt>0 && kayipSure>1200;",
+  "koy": "  const genis = false;"
+ },
+ {
+  "ad": "telefonda çok kelimeli vurgu kelimeye dağıtılmıyor (yıldızlar ekranda kalır)",
+  "test": "70-cok-kelimeli-vurgu.js",
+  "kaynak": "telefon",
+  "bul": "    ic.split(/\\s+/).map(w=>'*'+w+'*').join(' '));",
+  "koy": "    ic);"
+ },
+ {
+  "ad": "tempo ölçümü sayaç yerine aktif kelime indeksine dönüyor (yanlış WPM)",
+  "test": "16-olcum-butunlugu.js",
+  "kaynak": "telefon",
+  "bul": "  const done=tempoWords;",
+  "koy": "  const done=activeIdx+1;"
+ },
+ {
+  "ad": "dokunma hedefi örtüsü 44 pikselin altına düştü",
+  "test": "118-hedef-ve-kontrast.js",
+  "kaynak": "telefon",
+  "bul": "    width:max(100%,44px);height:max(100%,44px)}",
+  "koy": "    width:100%;height:100%}"
+ },
+ {
+  "ad": "yedek porta düşünce /info hâlâ eski portu bildiriyor (QR boş porta yollar)",
+  "test": "29-yerel-sunucu.js",
+  "kaynak": "sunucu",
+  "bul": "            PORT = p          # ← /info ve QR artık GERÇEK portu bildiriyor",
+  "koy": "            pass"
  }
 ]
