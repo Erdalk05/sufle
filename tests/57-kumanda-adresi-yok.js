@@ -1,7 +1,8 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {REPO, macYolu, oku, cikar}=require('./kaynak');
-const sunucu=fs.readFileSync(path.join(REPO,'mac','teleprompter_server.py'),'utf8');
+const {REPO, macYolu, oku, cikar, sunucuYolu}=require('./kaynak');
+const SUNUCU_YOLU=require('./kaynak.js').sunucuYolu();
+const sunucu=fs.readFileSync(SUNUCU_YOLU,'utf8');
 const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* LAN ADRESİ BULUNAMAYINCA ÖLÜ ADRES ÇALIŞIYORMUŞ GİBİ BİLDİRİLİYORDU
@@ -29,7 +30,7 @@ ok('ulaşılamaz adresi ayırt eden yardımcı var', /def lan_yok\(ip\):/.test(s
   if(python){
     const kod=`
 import importlib.util,sys
-spec=importlib.util.spec_from_file_location("srv", ${JSON.stringify(path.join(REPO,'mac','teleprompter_server.py'))})
+spec=importlib.util.spec_from_file_location("srv", ${JSON.stringify(SUNUCU_YOLU)})
 m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 for ip in ["127.0.0.1","127.1.2.3","::1","localhost","",None,"192.168.1.42","10.0.0.7"]:
     print(repr(ip), m.lan_yok(ip))

@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
+const {macYolu, oku, cikar, REPO, repoOku, sunucuYolu}=require('./kaynak.js');
 
 /* D.4 — UZAK ÖNİZLEME: telefon kumandasında kameranın gördüğü kare.
 
@@ -20,7 +20,7 @@ const {macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
 
 const mac = oku(macYolu());
 const kod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
-const srv = fs.readFileSync(path.join(REPO,'mac','teleprompter_server.py'),'utf8');
+const srv = fs.readFileSync(require('./kaynak.js').sunucuYolu(),'utf8');
 
 /* ---------- SUNUCU TARAFI ---------- */
 {

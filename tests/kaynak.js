@@ -266,6 +266,16 @@ function dizeSil(kod){
   return out.join('');
 }
 
+/* Mac yerel sunucusunun yolu — ortam değişkenine saygılı.
+   ÖLÇÜLDÜ (2026-08-16): dört test bu dosyayı DOĞRUDAN okuyordu ve dosya
+   `bozma.py` KAYNAK tablosunda hiç yoktu; yani kumanda sunucusunun tamamı
+   kasıtlı bozma turunun dışındaydı. */
+function sunucuYolu() {
+  const v = process.env.SUFLE_SUNUCU;
+  if (v && !fs.existsSync(v)) throw new Error('Verilen yol yok: ' + v);
+  return v || path.join(REPO, 'mac', 'teleprompter_server.py');
+}
+
 /* Depodaki HERHANGİ bir dosyayı ortam değişkenine saygılı okur.
    NEDEN VAR (2026-08-16de ölçüldü): kapının 8. adımı dosyayı geçici kopyada
    bozup testin ayırt ettiğini kanıtlıyor — ama test dosyayı DOĞRUDAN depodan
@@ -280,5 +290,5 @@ function repoOku(goreli, envAd){
 }
 
 module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, repoOku,
-                   cozJeton, metinCekirdegi, blokKes, cekirdekOku, dizeSil };
+                   cozJeton, metinCekirdegi, blokKes, cekirdekOku, dizeSil, sunucuYolu };
 

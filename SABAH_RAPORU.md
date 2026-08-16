@@ -971,6 +971,25 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🔌 BEŞİNCİ KÖR NOKTA: yerel sunucunun TAMAMI bozma turunun dışındaymış
+
+Kanıtsız dosyaları kapatırken çıktı: `mac/teleprompter_server.py` **KAYNAK
+tablosunda hiç yoktu** ve dört test onu doğrudan okuyordu. Yani telefon-Mac
+kumandası, uzak önizleme ve `/cmd` ucunun tamamı kasıtlı bozma turunun
+dışındaydı — o dosyada bir kural sessizce gevşetilse hiçbir test bunu
+söylemezdi. Tabloya eklendi, `sunucuYolu()` tek kaynağa alındı ve dört test env
+destekli okumaya taşındı; ardından iki bozma ile kanıtlandı (ulaşılamaz adresin
+ayırt edilmesi ve kumanda sayfasının hatayı sessizce yutmaması).
+
+**Kanıtlı test dosyası 125 → 136** (bozma 343 → 355). Bu turda kapatılanlar:
+görünmez karakter temizliği (kırılmayan boşluk), SRT içe aktarımında zaman
+kodlarının ayıklanması, nefesle akışın sınır bölgesinde durumu koruması, altyazı
+satır sarmasında kelime kaybı, ses kodu kırpma eşiği, uyumluluk panelinin gerçek
+kapıyı çağırması, "sonraki çekimde" uyarısının tekrarlanmaması, kumanda profili
+içe aktarma ve yeniden ölçümden sonra sesli takip hedefinin kurulması.
+
+---
+
 ### 🔇 SESSİZ TEST BULUNDU — bir dosya kurulduğundan beri kırmızı veremiyormuş
 
 Kopya-test avı sürerken daha kötüsü çıktı: **`tests/01` içindeki `ok` yardımcısı
@@ -1106,7 +1125,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6279 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **343 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **355 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

@@ -2,7 +2,7 @@ const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCo
 const {execFileSync, spawn} = require('child_process');
 const net = require('net');
 const fs = require('fs'), os = require('os'), path = require('path');
-const {REPO} = require('./kaynak');
+const {REPO, sunucuYolu} = require('./kaynak');
 
 /* MAC UZAKTAN KUMANDA SUNUCUSU — GERÇEKTEN KOŞTURULUYOR
    teleprompter_server.py Mac'in QR kumandasının tamamı (SSE /events +
@@ -17,7 +17,7 @@ const {REPO} = require('./kaynak');
 
    Bu dosya sunucuyu gerçekten başlatıp HTTP konuşur. Python yoksa atlar. */
 
-const SUNUCU = path.join(REPO, 'mac', 'teleprompter_server.py');
+const SUNUCU = require('./kaynak.js').sunucuYolu();
 
 let python = null;
 try { execFileSync('python3', ['--version'], {stdio:'ignore'}); python = 'python3'; } catch(_) {}

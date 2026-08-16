@@ -77,6 +77,8 @@ KAYNAK = {
     # ikisi de sessizce gevşetilebilir ve ikisi de vaadi doğrudan bozar.
     'gizlilik': (os.path.join(REPO, 'GIZLILIK.md'), 'SUFLE_GIZLILIK'),
     'sw': (os.path.join(REPO, 'sw.js'), 'SUFLE_SW'),
+    # Mac yerel sunucusu: kumanda ve uzak önizleme yolunun tamamı burada.
+    'sunucu': (os.path.join(REPO, 'mac', 'teleprompter_server.py'), 'SUFLE_SUNUCU'),
     # Rekabet ölçümü de bozulabilmeli: "sunucu işletmek istiyor muyuz?"
     # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
     # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.

@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {REPO}=require('./kaynak');
-const kaynak=fs.readFileSync(path.join(REPO,'mac','teleprompter_server.py'),'utf8');
+const {REPO, sunucuYolu}=require('./kaynak');
+const kaynak=fs.readFileSync(require('./kaynak.js').sunucuYolu(),'utf8');
 
 /* KUMANDADA SESSİZCE YUTULAN KOMUT
    Elde tutulan kumanda sayfası komutu şöyle gönderiyordu:

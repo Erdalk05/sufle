@@ -2399,5 +2399,89 @@
   "kaynak": "telefon",
   "bul": "  if(!st[k] || comp.on) return true;",
   "koy": "  if(!st[k]) return true;"
+ },
+ {
+  "ad": "kırılmayan boşluk temizlenmiyor (kelime eşleşmesi bozulur)",
+  "test": "03-metin-temizleme-ve-cop.js",
+  "kaynak": "telefon",
+  "bul": "    .replace(/\\u00A0/g,' ')                            // kırılmayan boşluk",
+  "koy": "    // kirilmayan bosluk birakiliyor"
+ },
+ {
+  "ad": "SRT içe aktarımı zaman kodlarını metne katıyor",
+  "test": "12-arama-profil-altyazi.js",
+  "kaynak": "telefon",
+  "bul": "    .filter(l=>!/^\\s*\\d+\\s*$/.test(l) && !/-->/.test(l) && !/^WEBVTT/i.test(l))",
+  "koy": "    .filter(l=>true)"
+ },
+ {
+  "ad": "nefesle akış sınır bölgesinde durumu korumuyor (akış titrer)",
+  "test": "14-nefesle-akis-ve-yuzen.js",
+  "kaynak": "telefon",
+  "bul": "  if(rms >= esik)     return {sesli:suAn, bekle:0};       // sınırda: durumu koru",
+  "koy": "  if(rms >= esik)     return {sesli:true, bekle:0};"
+ },
+ {
+  "ad": "altyazı satır sarması kelimeyi kaybediyor",
+  "test": "04-altyazi-sarma-ve-siralama.js",
+  "kaynak": "telefon",
+  "bul": "function wrapLines(measure, txt, maxW){\n  const out=[]; let cur='';",
+  "koy": "function wrapLines(measure, txt, maxW){\n  const out=[]; let cur='';\n  txt=String(txt).split(' ').slice(0,-1).join(' ');"
+ },
+ {
+  "ad": "ses kodu kırpma eşiğini yok sayıyor (bozuk ses iyi görünür)",
+  "test": "32-cekim-notu.js",
+  "kaynak": "telefon",
+  "bul": "  if(audStats.clip/audStats.n*100 > 2) return 'clip';",
+  "koy": "  if(false) return 'clip';"
+ },
+ {
+  "ad": "uyumluluk paneli kesme için kendi kuralını yazıyor (gerçek kapıdan kopuk)",
+  "test": "50-uyumluluk-paneli.js",
+  "kaynak": "telefon",
+  "bul": "    ['Uygulama içi kesme','In-app trimming', canTrim(), 'Galeri/Fotoğraflar uygulamasında kırp (kayıpsız)'],",
+  "koy": "    ['Uygulama içi kesme','In-app trimming', !/iphone|ipad/i.test(navigator.userAgent), 'Galeri/Fotoğraflar uygulamasında kırp (kayıpsız)'],"
+ },
+ {
+  "ad": "kayıt sürerken 'sonraki çekimde' uyarısı her seferinde tekrarlanıyor",
+  "test": "55-sonraki-cekimde.js",
+  "kaynak": "telefon",
+  "bul": "  if(sonrakiUyarildi) return;\n  sonrakiUyarildi=true;",
+  "koy": "  sonrakiUyarildi=true;"
+ },
+ {
+  "ad": "kayıt yokken de 'sonraki çekimde' uyarısı çıkıyor (gereksiz gürültü)",
+  "test": "55-sonraki-cekimde.js",
+  "kaynak": "telefon",
+  "bul": "  if(!(rec && rec.state==='recording')) return;\n  if(sonrakiUyarildi) return;",
+  "koy": "  if(sonrakiUyarildi) return;"
+ },
+ {
+  "ad": "yeniden ölçümden sonra sesli takip hedefi kurulmuyor (konum geri bozulur)",
+  "test": "64-sesli-takip-yeniden-olcum.js",
+  "kaynak": "telefon",
+  "bul": "  if(voiceOn) syncVoicePtr();\n}\nwindow.addEventListener('resize',()=>olcPlanla());",
+  "koy": "}\nwindow.addEventListener('resize',()=>olcPlanla());"
+ },
+ {
+  "ad": "sunucu ulaşılamaz adresi ayırt etmiyor (telefona ölü adres verilir)",
+  "test": "57-kumanda-adresi-yok.js",
+  "kaynak": "sunucu",
+  "bul": "    return (not ip) or ip.startswith(\"127.\") or ip == \"::1\" or ip == \"localhost\"",
+  "koy": "    return False"
+ },
+ {
+  "ad": "kumanda profili içe aktarma düğmesi kayboldu",
+  "test": "58-kumanda-profili-ice-aktarma.js",
+  "kaynak": "telefon",
+  "bul": "id=\"mapImport\"",
+  "koy": "id=\"mapImportX\""
+ },
+ {
+  "ad": "kumanda sayfası hata geri bildirimini sessizce yutuyor",
+  "test": "56-kumanda-komut-geribildirimi.js",
+  "kaynak": "sunucu",
+  "bul": "   .catch(()=>durum('\\u26a0\\ufe0f Komut gecmedi \\u2014 baglantiyi kontrol et'));}",
+  "koy": "   .catch(()=>{});}"
  }
 ]
