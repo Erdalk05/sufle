@@ -971,6 +971,31 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🔇 SESSİZ TEST BULUNDU — bir dosya kurulduğundan beri kırmızı veremiyormuş
+
+Kopya-test avı sürerken daha kötüsü çıktı: **`tests/01` içindeki `ok` yardımcısı
+yalnız YAZDIRIYOR, çıkış kodunu hiç ayarlamıyordu.** Yani dosya iddialarını
+"✗ HATA" diye bassa bile koşturucu **geçti** sayıyordu; kasıtlı bozma turunda iki
+bozma tam bu yüzden "yakalanmadı" dedi. Kapının en sessiz kusuru bu: ölçen ama
+**sonucu bildirmeyen** test.
+
+Onarıldı ve `tests/114` artık **her test dosyasının** çıkış kodunu
+ayarlayabildiğini denetliyor (denetimin kendisi sentetik örnekle sınanıyor).
+Taramada başka sessiz dosya çıkmadı — **161 dosyada tek vaka**.
+
+Aynı turda iki kopya-test daha onarıldı: **`tests/10`** (`cover()` ve renk
+ortalaması yeniden yazılmıştı — gerçek kod artık kaynaktan çıkarılıp koşuyor,
+üstelik "kırpma kaynağın dışına taşmıyor" gibi ölçülmemiş bir kural da eklendi)
+ve **`tests/01`** (`ensureComp` kopyaydı; gerçek kural beş durumda koşturuluyor:
+kamera yokken ayarın geri alınması, kompozitin ikinci kez başlatılmaması,
+kapalı ayarda sessizlik, açılamama hâlinde geri alma).
+
+**Kanıtlı test dosyası 122 → 125** (bozma 337 → 343); ayrıca ayar aramasının
+"etiketi buldum ama denetimi açmadım" kusuru ve gizli bloğu sınıfla açması da
+kilitlendi.
+
+---
+
 ### 🪞 KOPYA TEST BULUNDU — tests/02 kendi kopyasını ölçüyormuş
 
 Kanıtsız dosyaları kapatırken bir bozma ısrarla yakalanmadı: hata günlüğünün
@@ -1079,9 +1104,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6253 test** (gece başında 732) · yeni test dosyası: 39–162
+- **6279 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **337 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **343 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

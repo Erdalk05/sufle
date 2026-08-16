@@ -128,3 +128,29 @@ ok('işaretleme birleştirmesi kilitleyen desen yok'+
   ok('yanlış yol gerçekten hata fırlatıyor', firlatti);
   ok('doğru yolda hâlâ çalışıyor', typeof require('./kaynak').telefonYolu()==='string');
 }
+
+/* ---------- HER TEST GERÇEKTEN KIRMIZI VEREBİLİYOR MU ----------
+   ÖLÇÜLDÜ (2026-08-16): `tests/01` içindeki `ok` yardımcısı yalnız YAZDIRIYOR,
+   çıkış kodunu ayarlamıyordu. Yani o dosya kurulduğundan beri kapıyı hiç
+   kırmızıya çeviremiyor, iddiaları "✗ HATA" diye bassa bile koşturucu geçti
+   sayıyordu — kasıtlı bozma turunda iki bozma bu yüzden "yakalanmadı" dedi.
+   Kapının en sessiz kusuru budur: ölçen ama SONUCU BİLDİRMEYEN test. */
+{
+  const testDizin=__dirname;
+  const kotu=[];
+  for(const f of fs.readdirSync(testDizin).filter(a=>/^\d+.*\.js$/.test(a))){
+    const metin=fs.readFileSync(path.join(testDizin,f),'utf8');
+    /* Ölçüt DAVRANIŞ: dosya bir başarısızlıkta süreç çıkış kodunu
+       değiştirebilmeli. İki meşru yol var: `process.exitCode` ya da
+       `process.exit(...)`. */
+    if(!/process\.exitCode/.test(metin) && !/process\.exit\(/.test(metin)) kotu.push(f);
+  }
+  ok('her test dosyası çıkış kodunu ayarlayabiliyor'+(kotu.length?' — '+kotu.join(', '):''),
+     kotu.length===0);
+  /* Denetimin kendisi sınanıyor (bu iddiayı bozma turuyla kanıtlamak mümkün
+     değil: `tests/114` KAYNAK tablosunda yok, kendini bozduramaz). */
+  const tara=(metin)=>!/process\.exitCode/.test(metin) && !/process\.exit\(/.test(metin);
+  ok('denetim: sessiz testi yakalıyor', tara("const ok=(n,c)=>console.log(n);")===true);
+  ok('denetim: exitCode ayarlayanı geçiriyor',
+     tara("const ok=(n,c)=>{ if(!c) process."+"exitCode=1; };")===false);
+}

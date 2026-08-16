@@ -47,3 +47,56 @@ function avg(pixels){ let r=0,g=0,b=0; const px=pixels.length/4;
 ok('düz yeşilden yeşil çıkıyor', avg([0,177,64,255, 0,177,64,255])==='#00b140');
 ok('iki rengin ortalaması', avg([0,0,0,255, 255,255,255,255])==='#808080');
 ok('tek haneli değerler sıfırla dolduruluyor', avg([1,2,3,255])==='#010203');
+
+/* ---------- KOPYA BLOKLARIN GERÇEK KARŞILIĞI ----------
+   ÖLÇÜLDÜ (2026-08-16): bu dosyadaki `cover()` ve `avg()` KOPYAYDI — kaynak
+   değişse bu test yine yeşil kalırdı (aynı sınıf `tests/02`de yakalandı ve
+   orada hata günlüğü tavanı sökülmesine rağmen test geçmişti).
+   Aşağıdaki iki blok kuralı KAYNAKTAN çıkarıp koşturuyor. */
+{
+  const {blokKes}=require('./kaynak');
+  const kod=src.replace(/\/\*[\s\S]*?\*\//g,'');
+
+  /* ① ARKA PLAN "COVER" KIRPMASI — gerçek kod `bgYukle` içinde. */
+  {
+    const govde=(kod.match(/const sA=img\.width\/img\.height[\s\S]*?drawImage\(img,[^;]*;/)||[])[0];
+    ok('gerçek cover matematiği çıkarılabildi', !!govde);
+    if(govde){
+      const kes=new Function('__img','__tw','__th', `
+        const img=__img, tw=__tw, th=__th; const iz={};
+        const x={ drawImage:(im,sx,sy,cw2,ch2)=>{ iz.sx=sx; iz.sy=sy; iz.cw=cw2; iz.ch=ch2; } };
+        ${govde}
+        return iz;
+      `);
+      const r1=kes({width:4000,height:3000},1080,1920);
+      ok('gerçek: yatay foto dikey hedefte kırpılıyor',
+         Math.abs(r1.cw/r1.ch-1080/1920)<0.001);
+      ok('gerçek: kırpma ortalanmış', r1.sx>0 && Math.abs(r1.sx*2+r1.cw-4000)<0.01);
+      const r2=kes({width:1080,height:1920},1080,1920);
+      ok('gerçek: aynı oranda kırpma yok',
+         Math.abs(r2.cw-1080)<0.01 && Math.abs(r2.ch-1920)<0.01);
+      const r3=kes({width:1000,height:4000},1080,1920);
+      ok('gerçek: aşırı dikey de doğru',
+         Math.abs(r3.cw/r3.ch-1080/1920)<0.001 && r3.cw<=1000 && r3.ch<=4000);
+      /* Kırpma KAYNAK görselin dışına taşmamalı: taşarsa tarayıcı siyah
+         kenar çiziyor ve arka plan çerçeveli görünüyor. */
+      ok('gerçek: kırpma kaynağın içinde kalıyor',
+         r1.sx>=0 && r1.sy>=0 && r1.sx+r1.cw<=4000.01 && r1.sy+r1.ch<=3000.01);
+    }
+  }
+
+  /* ② YEŞİL EKRAN RENGİNİ ÖRNEKLEME — gerçek kod `#pickKey` işleyicisinde. */
+  {
+    const govde=(kod.match(/let r=0,g=0,b=0; const px=d\.length\/4;[\s\S]*?join\(''\);/)||[])[0];
+    ok('gerçek renk ortalaması çıkarılabildi', !!govde);
+    if(govde){
+      const ort=new Function('__d', `const d=__d;\n${govde}\nreturn hex;`);
+      ok('gerçek: düz yeşilden yeşil çıkıyor', ort([0,177,64,255, 0,177,64,255])==='#00b140');
+      ok('gerçek: iki rengin ortalaması', ort([0,0,0,255, 255,255,255,255])==='#808080');
+      /* TEK HANELİ DEĞER SIFIRLA DOLDURULMALI: '#123' gibi kısa bir dize CSS'te
+         BAŞKA bir renk demek ve yeşil ekran eşiği yanlış yerden ölçerdi. */
+      ok('gerçek: tek haneli değerler sıfırla dolduruluyor', ort([1,2,3,255])==='#010203');
+      ok('gerçek: çıktı her zaman 7 karakter', ort([9,9,9,255]).length===7);
+    }
+  }
+}

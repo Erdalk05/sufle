@@ -2357,5 +2357,47 @@
   "kaynak": "telefon",
   "bul": "  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
   "koy": "  // gunluk diske yazilmiyor"
+ },
+ {
+  "ad": "arka plan görseli oranı korumadan yükleniyor (yatay foto eziliyor)",
+  "test": "10-shader-ve-bithizi.js",
+  "kaynak": "telefon",
+  "bul": "      if(sA>tA) cw=img.height*tA; else ch=img.width/tA;",
+  "koy": "      cw=img.width; ch=img.height;"
+ },
+ {
+  "ad": "yeşil ekran rengi tek haneli değerleri sıfırla doldurmuyor",
+  "test": "10-shader-ve-bithizi.js",
+  "kaynak": "telefon",
+  "bul": "    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');",
+  "koy": "    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16)).join('');"
+ },
+ {
+  "ad": "ayar araması etiketi buluyor ama denetimi açmıyor (bulunan ama kullanılamayan sonuç)",
+  "test": "93-ayar-aramasi.js",
+  "kaynak": "telefon",
+  "bul": "    if(hit){\n      const c=[...pane.children];",
+  "koy": "    if(false){\n      const c=[...pane.children];"
+ },
+ {
+  "ad": "ayar araması gizli bloğu sınıfla açmıyor (sonuç görünmez kalır)",
+  "test": "93-ayar-aramasi.js",
+  "kaynak": "telefon",
+  "bul": "  const ac = el => { el.style.display=''; if(el.classList.contains('hidden')) el.classList.add('aramaAcik'); };",
+  "koy": "  const ac = el => { el.style.display=''; };"
+ },
+ {
+  "ad": "kamera yokken ayar geri alınmıyor (açık ama ölü anahtar)",
+  "test": "01-on-kosul-kapisi.js",
+  "kaynak": "telefon",
+  "bul": "  if(!stream){ st[k]=false; apply(); save(); toast(m('needCam')); return false; }",
+  "koy": "  if(!stream){ toast(m('needCam')); return false; }"
+ },
+ {
+  "ad": "kompozit açıkken bir daha başlatılıyor (WebGL bağlamı yeniden kurulur)",
+  "test": "01-on-kosul-kapisi.js",
+  "kaynak": "telefon",
+  "bul": "  if(!st[k] || comp.on) return true;",
+  "koy": "  if(!st[k]) return true;"
  }
 ]
