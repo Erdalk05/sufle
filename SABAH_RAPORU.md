@@ -1384,7 +1384,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **1 commit yayınlanmamış** (`main` dalında, v9.17). Canlı sürüm v9.16 ile depo
   arasındaki fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6406 test** (gece başında 732) · yeni test dosyası: 39–166
+- **6475 test** (gece başında 732) · yeni test dosyası: 39–166
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **394 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
