@@ -302,6 +302,45 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 📊 REKABET TURU — puanı koddan yeniden ölçtüm (63,0 → **64,3**)
+
+30 kategorilik rubrik `tests/144`te aritmetiğiyle duruyordu; gecenin on özelliğinden
+sonra **hangi kategorinin oynadığı koddan** karara bağlandı. Sonuç: **64,3/100**,
+hâlâ 4. sıra ama BIGVU (65,3) ile aramızda **1,0 puan** kaldı.
+
+**Puan yalnız İKİ kategoride oynadı** — ve asıl bilgi bu:
+
+| kategori | önce | şimdi | neden |
+|---|---|---|---|
+| 15 · Video düzenleme / kırpma (×2) | 3 | **4** | klip önerisi + kesim artık kaynağı koruyor → tek çekimden çok klip |
+| 28 · Çok dil ve RTL (×2) | 1 | **3** | satır satır bidi, RTL noktalaması, karaoke vurgusu doğru uçta |
+
+Kalan sekiz özellik puanı **değiştirmedi**, çünkü altısı zaten tavanda olan kategorilere
+düştü (altyazı 5, sosyal format 5) ve müzik yatağı **asıl üründe (iPhone) çalışmıyor**.
+Bu turun dersi tek cümle: **özellik saymak puan kazandırmıyor, kategorinin ölçtüğü şeyi
+yapmak kazandırıyor.**
+
+**🔴 Ve ölçüm bir kusur buldu: klip önerisinin yarısı ölüymüş.** Öneri üç klip
+gösteriyordu ama telefonda "Kes ve uygula" `dbDel(curTakeId)` ile **kaynak çekimi
+siliyordu** — ilk klipten sonra diğer iki öneri ulaşılamaz oluyordu ve kullanıcı
+sildiğini hiç görmüyordu (masaüstünde silme yoktu ama kaynak bellekte eziliyordu,
+sonuç aynı). Onarıldı: klip **yeni çekim** olarak arşivleniyor, kaynak duruyor,
+**"↩ Tam çekim"** düğmesiyle dönülüyor ve kesim mesajı da bunu söylüyor.
+`tests/160` **41 iddia** + **5 kasıtlı bozma**. 15. kategorinin 4 alması bu onarımdan
+SONRA doğru oldu — puanı önce yazıp sonra hak etmek, tam da bu belgenin karşı çıktığı şey.
+
+**Belgenin kendi kör noktası da kapandı:** `REKABET_30_OLCULDU.md` bugüne dek yalnız
+*düzelttiği* satırları yazıyordu, kalan 19 satır belgede hiç görünmüyordu — yani
+okuyan kişi 64,3'ün nereden geldiğini denetleyemiyordu. Tablo artık **30 satırın
+tamamı** ve her satır durumunu söylüyor: **ölçüldü (12) · sıfır doğrulandı (6) ·
+tahmin korundu (12)**. `tests/144` tabloyu diziyle karşılaştırıyor, ayrışırsa kapı kırılır.
+
+**Açık bırakılan çelişki (bilerek):** `PAZAR_YOL_HARITASI.md` 20. kategoriyi (Platform
+kapsamı) 3, rekabet belgesi 2 okuyor. Ölçmeden birini diğerine uydurmak bu deponun
+yasakladığı şey; ölçüm turu tanımlandı (dört platformda kurulum + çevrimdışı açılış).
+
+---
+
 ### 🔍 DENETİM TURU — gecenin işini kendi kapımla ölçtüm
 
 **Üç gerçek bulgu çıktı ve üçü de kapının KENDİ kör noktalarıydı.**
@@ -720,12 +759,13 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **14 commit yayınlanmamış**
-  (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
-  dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **6018 test** (gece başında 732) · yeni test dosyası: 39–159
+  **15 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
+  tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
+  kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
+  bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
+- **6069 test** (gece başında 732) · yeni test dosyası: 39–160
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **260 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

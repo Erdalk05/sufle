@@ -46,6 +46,11 @@ const belD = bel.replace(/\s+/g, ' ');
     '22 · kalıcı hata günlüğü':   [tel, /logErr\(/],
     '26 · ayarlarda arama':       [tel, /Ayarlarda ara/],
     '30 · OBS tarayıcı kaynağı':  [mac, /\?obs=1/],
+    /* 16 Ağustos: iki kategori FAZ G ile yükseldi, dayanakları burada. */
+    '15 · klip önerisi':          [tel, /function klipOnerileri\(/],
+    '15 · kesim kaynağı koruyor': [tel, /kesKaynak=\{blob:lastBlob/],
+    '28 · satır yönü':            [tel, /function metinYonu\(/],
+    '28 · RTL noktalaması':       [tel, /؟/],
   };
   for (const ad in KANIT) {
     const [src, d] = KANIT[ad];
@@ -79,14 +84,18 @@ const belD = bel.replace(/\s+/g, ' ');
   /* Skor belgede yazılı; aritmetiği burada TEKRAR yapılıyor. Elle yazılmış bir
      sayı, kategoriler değişince sessizce yanlışa döner. */
   const AGIRLIK = [5,5,4,4,3,3,3,2,4,3,4,3,2,3,2,3,3,2,2,4,4,4,3,2,5,2,3,2,2,3];
-  const PUAN    = [4,4,5,4,3,5,3,3,0,5,4,3,4,5,3,5,0,0,0,2,0,3,5,5,4,3,5,1,0,3];
+  /* 16 Ağustos, FAZ G sonrası: 15. kategori 3→4 (klip önerisi + kesim artık
+     kaynağı koruyor, tek çekimden çok klip çıkıyor), 28. kategori 1→3
+     (satır satır bidi, RTL noktalaması, karaoke vurgusu doğru uçta). */
+  const PUAN    = [4,4,5,4,3,5,3,3,0,5,4,3,4,5,4,5,0,0,0,2,0,3,5,5,4,3,5,3,0,3];
   ok('30 kategori var', AGIRLIK.length === 30 && PUAN.length === 30);
 
   const top = AGIRLIK.reduce((a, w, i) => a + w * PUAN[i], 0);
   const mx  = AGIRLIK.reduce((a, w) => a + w * 5, 0);
   const skor = top / mx * 100;
-  ok('ölçülen skor 63,0 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 63.0) < 0.1);
-  ok('belge aynı skoru yazıyor', /\*\*63,0\*\*/.test(bel));
+  ok('ölçülen skor 64,3 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 64.3) < 0.1);
+  ok('belge aynı skoru yazıyor', /\*\*64,3\*\*/.test(bel));
+  ok('belge ilk ölçümü de saklıyor (63,0)', /63,0/.test(bel));
 
   /* Sunucusuz tavan: sıfır alan altı kategori hiç kazanılamazsa ulaşılabilecek
      en yüksek skor. Belgenin ana çıkarımı bu sayıya dayanıyor. */
@@ -95,7 +104,35 @@ const belD = bel.replace(/\s+/g, ' ');
   const tavan = (mx - sifirAgirlik * 5) / mx * 100;
   ok('sunucusuz tavan 81,9 (' + tavan.toFixed(1) + ')', Math.abs(tavan - 81.9) < 0.1);
   ok('belge tavanı yazıyor', /81,9/.test(bel));
-  ok('belge kalan kazanılabilir payı yazıyor', /18,9/.test(bel));
+
+  /* BELGE İLE DİZİ AYRIŞMASIN. Skor burada, tablo orada duruyordu; ikisi
+     ayrı ayrı elle güncellenirse belge sessizce başka bir ürünü anlatmaya
+     başlar. Tablo artık koddan okunuyor. */
+  const SATIR = /^\| (\d+) \| ([^|]+) \| ×(\d) \| (\d) \| (ölçüldü|sıfır doğrulandı|tahmin korundu) \|$/gm;
+  const satirlar = [...bel.matchAll(SATIR)];
+  ok('belgede 30 satırlık tam rubrik var (' + satirlar.length + ')', satirlar.length === 30);
+  let uyum = true, sira = true;
+  satirlar.forEach((sm, i) => {
+    if (+sm[1] !== i + 1) sira = false;
+    if (+sm[3] !== AGIRLIK[i] || +sm[4] !== PUAN[i]) uyum = false;
+  });
+  ok('tablo sırası 1..30', sira);
+  ok('tablodaki ağırlık ve puanlar diziyle aynı', uyum);
+  /* Sıfır puanlı satırın durumu "tahmin korundu" olamaz: sıfırların ölçüldüğü
+     bu belgenin ana çıkarımının dayanağı. */
+  ok('sıfır puanlı satırların hepsi ölçülmüş',
+     satirlar.every(sm => +sm[4] !== 0 || sm[5] === 'sıfır doğrulandı'));
+  const olculen = satirlar.filter(sm => sm[5] !== 'tahmin korundu').length;
+  ok('30 kategorinin 18i ölçülmüş (' + olculen + ')', olculen === 18);
+  /* Ölçülmemiş satırların VARLIĞI da yazılı olmalı: belge kendi boşluğunu
+     saklarsa "hepsi ölçüldü" sanılır. */
+  ok('ölçülmeyen satırların olduğu belgede yazılı', /tahmin korundu/.test(bel));
+  /* Kalan pay TÜRETİLİYOR: elle yazılan bir fark, skor değişince sessizce
+     yanlışa döner (18,9 tam da böyle bayatlamıştı). */
+  const kalan = tavan - skor;
+  const kalanYazi = kalan.toFixed(1).replace('.', ',');
+  ok('belge kalan kazanılabilir payı doğru yazıyor (' + kalanYazi + ')',
+     new RegExp(kalanYazi.replace(',', '[,.]')).test(bel));
 }
 
 /* ---------- BELGE KENDİ SINIRINI SÖYLÜYOR MU ---------- */

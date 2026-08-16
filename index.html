@@ -1329,6 +1329,9 @@
     <button class="danger" id="redoBtn" data-i18n="deleteRedo">Sil</button>
     <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
     <button class="cancel" id="editBtn" data-i18n="editBtn">Düzenle</button>
+    <!-- Kesmeden sonra tam çekime dönüş: üç klip önerisi tek kesimle
+         tükenmesin (ölçüldü, G.6 turunda çıktı). -->
+    <button class="cancel" id="kaynakBtn" data-i18n="kaynakBtn" style="display:none">↩ Tam çekim</button>
     <button class="cancel" id="capBtn" data-i18n="capBtnL">Altyazı dosyası</button>
     <button class="cancel" id="pkgBtn" data-i18n="pkgBtnL">Yayın paketi</button>
   </div>
@@ -1490,7 +1493,7 @@ const I18N={
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
   takeReady:'Çekim hazır',deleteRedo:'Sil',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
   editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
-  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',
+  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
   remote:'Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
@@ -1630,7 +1633,7 @@ const I18N={
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
   takeReady:'Take ready',deleteRedo:'Delete',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
   editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
-  trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',
+  trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
   remote:'Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
@@ -1775,7 +1778,7 @@ const MSG={
   noShare:'Bu tarayıcıda paylaşım yok — Safari\'de aç',
   rewound:'↺ Metin başa sarıldı',
   toFilesDone:'📁 Dosyalar\'a indi — Dosyalar uygulamasında aç, oradan Fotoğraflar\'a taşıyabilirsin',
-  savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Kesildi',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
+  savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Klip kaydedildi — tam çekim arşivde duruyor, başka klip de kesebilirsin',kaynakGeri:'↩ Tam çekime dönüldü — sıradaki klibi seçebilirsin',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
   noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
@@ -1844,7 +1847,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   noShare:'No sharing in this browser — open in Safari',
   rewound:'↺ Rewound to the start',
   toFilesDone:'📁 Saved to Files — open it there to move it into Photos',
-  savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Trimmed',trimFail:'Trim failed — try trimming in Photos',
+  savedFiles:'Downloaded to Files → open it in the Files app → Share → Save Video',trimShort:'Selection too short',trimming:'Cutting…',trimDone:'✂️ Clip saved — the full take is still in the archive, you can cut another clip',kaynakGeri:'↩ Back to the full take — pick the next clip',trimFail:'Trim failed — try trimming in Photos',
   noMicShort:'no mic',micOk:'audio ✓',micQuiet:'silent — talk',
   micIosOff:'off on iPhone (it was silencing recordings)',audTesting:'Testing… (15s)',audTestWin:'✓ Found a format that records audio',audTestNone:'⚠️ No format produced audio',micRefresh:'🔊 Refreshing microphone…',micFixed:'🔊 Microphone refreshed — record again',
   audClip:'⚠️ Audio is clipping — back off the mic or speak softer',
@@ -4196,6 +4199,9 @@ function renderFx(){
 
 /* ============ KAYIT ============ */
 let rec=null, chunks=[], recT=0, lastBlob=null, resultUrl=null, lastDur=0, curTakeId=null;
+/* Kesmeden önceki TAM çekim: klip önerilerinin ikincisi ve üçüncüsü
+   buradan erişiliyor. Bellekte tutuluyor, arşivde de duruyor. */
+let kesKaynak=null;
 let fxTrack=null, fxUsed=false, vidOldu=0, sesOldu=0, fxWatch=0, fxWarned=false;
 /* PAKET, ÇEKİMİ YAPILAN SENARYOYU ANLATMALI — O AN AÇIK OLANI DEĞİL.
    Yayın paketi ve yayın notu metni active() ile alıyordu. Çekimden sonra ⇄ ile
@@ -4638,12 +4644,16 @@ function showResult(blob){
   $('#editBtn').style.display = ct ? '' : 'none';
   $('#trimSteps').style.display = ct ? 'none' : '';
   $('#result').classList.add('open'); arkayiKilitle();
+  /* Kaynağa dönüş düğmesi YALNIZ kesimden sonra: hiç kesilmemişken
+     dönülecek bir yer yok, düğmeyi göstermek yanıltırdı. */
+  $('#kaynakBtn').style.display = kesKaynak ? '' : 'none';
   klipleriGoster();
   try{ v.play().catch(()=>{}); }catch(e){}
 }
 function closeResult(){
   const v=$('#resultVid'); v.pause(); v.removeAttribute('src'); v.load();
   if(resultUrl){ URL.revokeObjectURL(resultUrl); resultUrl=null; }
+  kesKaynak=null;                    // çekim kapandı, dönülecek kaynak da yok
   $('#result').classList.remove('open'); arkayiKilitle(); reset();
 }
 function fileName(){
@@ -4777,8 +4787,15 @@ async function doTrim(){
     await done;
     const nb=new Blob(parts,{type:(r2.mimeType||lastBlob.type||'video/mp4').split(';')[0]});
     if(nb.size<1000) throw new Error('empty');
+    /* ÖLÇÜLDÜ (2026-08-16, rekabet turu): burada `dbDel(curTakeId)` vardı,
+       yani kesme KAYNAK ÇEKİMİ SİLİYORDU. Klip önerileri üç klip gösterip
+       ilkini kestiği anda diğer ikisi ULAŞILAMAZ oluyordu — üstelik sessizce,
+       çünkü kullanıcı sildiğini hiç görmüyordu. Bu deponun 2 numaralı hata
+       sınıfı: tam da gerektiği anda çalışmayan özellik.
+       Artık klip YENİ çekim olarak arşivleniyor, kaynak duruyor ve
+       "↩ Tam çekim" ile geri dönülüyor. Silme kullanıcının kararı kalır. */
+    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId};
     lastBlob=nb; lastDur=sel;
-    if(curTakeId) await dbDel(curTakeId);
     await autoSaveTake();
     $('#trimBox').classList.add('hidden');
     showResult(lastBlob);
@@ -8776,6 +8793,14 @@ $('#trimB').oninput=trimUpdate;
 $('#trimPrev').onclick=async()=>{ const v=$('#resultVid'); v.currentTime=trimA; await v.play().catch(()=>{});
   const iv=setInterval(()=>{ if(v.currentTime>=trimB){ clearInterval(iv); v.pause(); } },80); };
 $('#trimGo').onclick=doTrim;
+/* Kesilen klipten TAM ÇEKİME dönüş. Klip zaten arşive yazıldı, yani
+   dönüş bir şey kaybettirmiyor: sıradaki klip önerisi buradan seçiliyor. */
+$('#kaynakBtn').onclick=()=>{
+  if(!kesKaynak) return;
+  lastBlob=kesKaynak.blob; lastDur=kesKaynak.dur||0; curTakeId=kesKaynak.id||null;
+  kesKaynak=null;
+  showResult(lastBlob); toast(m('kaynakGeri'));
+};
 $('#keepBtn').onclick=()=>{ toast(m('takeKept')); closeResult(); };
 $('#redoBtn').onclick=async()=>{ if(curTakeId){ await dbDel(curTakeId); curTakeId=null; }
   lastBlob=null; toast(m('deleted')); closeResult(); };

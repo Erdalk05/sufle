@@ -142,7 +142,7 @@
  "141-fiyatlandirma.js": 25,
  "142-sesle-takip-nobetcisi.js": 21,
  "143-tasarim-kimligi.js": 48,
- "144-rekabet-olcumu.js": 35,
+ "144-rekabet-olcumu.js": 46,
  "145-erisilebilir-ad-ve-csp.js": 32,
  "146-vaat-kilidi.js": 45,
  "147-sesle-takip-ios-sessizlik.js": 32,
@@ -157,5 +157,6 @@
  "156-muzik-yatagi.js": 133,
  "157-sagdan-sola.js": 69,
  "158-yazi-tipi-erisilebilirlik.js": 66,
- "159-kumanda-yollari.js": 67
+ "159-kumanda-yollari.js": 67,
+ "160-klip-kaynak-korunuyor.js": 41
 }

@@ -83,8 +83,15 @@ Bu, FAZ G'nin bir numaralı maddesi olmasının sebebi.
 **Onların gerçek üstünlüğü (dürüstlük sınırı):** AI üretimi (senaryo, avatar, ses, B-roll),
 bulut/ekip ve tek tıkla yayınlama. Bunların hepsi **sunucu ve hesap** ister; `FIYATLANDIRMA.md`
 ve rekabet ölçümü (Tur 52 · Tur 56) aynı sonuca bağımsız yollardan varmıştı: **sunucusuz
-tavanımız 81,9 puan, bugün 63,0** — yani sunucuya hiç dokunmadan hâlâ **18,9 puanlık** iş var
+tavanımız 81,9 puan, o gün 63,0** — yani sunucuya hiç dokunmadan hâlâ **18,9 puanlık** iş var
 ve bu iş liderin (BIGVU 65,3) üstüne çıkmaya yeter. FAZ G bu 18,9 puanın peşindedir.
+
+**FAZ G sonrası yeniden ölçüm (16 Ağustos, v9.14): 63,0 → 64,3.** BIGVU ile aramızda
+**1,0 puan** kaldı. Ders şu: on özellik eklendi ama puan yalnız **iki** kategoride
+oynadı, çünkü altısı zaten tavanda olan kategorilere düştü (altyazı 5, sosyal format 5)
+ve biri asıl üründe (iPhone) çalışmıyor (müzik). **Özellik saymak puan kazandırmıyor;
+kategorinin ölçtüğü şeyi yapmak kazandırıyor.** Hangi özelliğin neyi değiştirdiği ve
+**değiştirmediği** `belgeler/REKABET_30_OLCULDU.md`de satır satır yazılı.
 
 ---
 
@@ -209,6 +216,14 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
   sınırları değiştirebiliyor.
 - **Kapı:** `tests/155` **117 iddia** + **12 kasıtlı bozma** (toplam 207). Bozma turu testimin
   iki veri kusurunu buldu (ölçmeyen damga verisi ve hiç koşmayan başlık iddiası).
+- 🔴 **SONRADAN ÖLÇÜLDÜ (16 Ağustos) — özellik yarısı ölüymüş.** Klip önerisi üç klip
+  gösteriyordu ama telefonda kesme `dbDel(curTakeId)` ile **kaynak çekimi siliyordu**:
+  ilk klip kesildiği anda diğer iki öneri ulaşılamaz oluyordu ve kullanıcı sildiğini
+  görmüyordu. Masaüstünde silme yoktu ama kaynak bellekte eziliyordu — sonuç aynı.
+  **Onarıldı:** klip **yeni çekim** olarak arşivleniyor, kaynak duruyor, "↩ Tam çekim"
+  düğmesiyle dönülüyor; kesim mesajı da kaynağın durduğunu söylüyor.
+  `tests/160` **41 iddia** + **5 kasıtlı bozma**. Bu kusur, "özelliği yaptım" ile
+  "özellik işe yarıyor" arasındaki farkın bu turdaki örneğidir.
 
 ### G.7 — Intro/outro + alt bant animasyonu · **P2**
 - **Kabul:** kayıt boru hattını yavaşlatmayacak; yalnız çekim sonrası uygulanacak.

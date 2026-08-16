@@ -842,26 +842,35 @@ ediyor** (%92–95 doğruluk, internet şart, ücretli). Bizde `cekimAltyazi` **
 kelimenin okuma çizgisinden geçtiği anı** taşıyor — kelime doğruluğu **%100**, tahmin
 edilen tek şey zamanlama. Yani rakibin en pahalı modülünü **sunucusuz, çevrimdışı ve
 daha doğru** yapabiliyoruz. Tur 56'nın ölçümü de aynı yönü gösteriyordu: sunucusuz
-tavan **81,9**, bugün **63,0** — BIGVU **65,3**.
+tavan **81,9**, o gün **63,0** — BIGVU **65,3**.
 
-| madde | ne | öncelik | durum |
-|---|---|---|---|
-| **G.1** | karaoke altyazı (kelime kelime senkron vurgu) | P0 | ⏳ açık |
-| **G.2** | altyazı stil paketi (6+ tema, animasyon, konum) | P0 | ⏳ açık |
-| **G.3** | önizleme kartlı seçim (UI sıçraması) | P0 | ⏳ açık |
-| **G.4** | marka kiti (logo · renk · alt bant) | P1 | ⏳ açık |
-| **G.5** | müzik yatağı + ducking (iOS riski ölçülecek) | P1 | ⏳ açık |
-| **G.6** | klip üreteci (Auto-Shorts karşılığı, AI'sız) | P1 | ⏳ açık |
-| **G.7** | intro/outro + alt bant animasyonu | P2 | ⏳ açık |
-| **G.8** | içerik planlayıcı (cihazda, hesapsız) | P2 | ⏳ açık |
-| **G.9** | göz teması düzeltme (ML) | — | ölçülecek, sonra karar |
-| **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | P1 | ⏳ açık |
-| **G.11** | süreye sığdır (sabit süreli kaydırma) | P1 | ⏳ açık |
-| **G.12** | sağdan sola diller (Arapça/İbranice) | P2 | ⏳ açık |
-| **G.13** | erişilebilir yazı tipi seçimi (dış font YOK) | P2 | ⏳ açık |
-| **G.14** | kumanda bağlantı zinciri — sebebi yazsın | P2 | ⏳ açık |
-| **G.15** | yeşil ekransız arka plan bulanıklığı | — | önce ölçüm |
-| **G.16** | PDF içe aktarma | — | **ALMA** (gerekçe yazılı) |
+**TUR KAPANDI (16 Ağustos, v9.14).** On bir madde bitti (G.1–G.6, G.10–G.14 ve G.17),
+biri gerekçeli **alınmadı** (G.16 · PDF), dördü **açık kaldı** ve dördünün de sebebi
+ölçülmemiş olması (G.7, G.8, G.9, G.15) — açık maddeyi kapalı göstermek bu deponun
+en pahalı hata sınıfı. Rekabet skoru yeniden ölçüldü: **63,0 → 64,3** (hâlâ 4.,
+BIGVU'nun **1,0 puan** altında). Puan yalnız iki kategoride oynadı (15 · video
+düzenleme 3→4, 28 · çok dil ve RTL 1→3) ve diğer sekiz özelliğin **neden puan
+değiştirmediği** `belgeler/REKABET_30_OLCULDU.md`'de tek tek yazılı — özellik
+saymak puan kazandırmıyor, kategorinin ölçtüğü şeyi yapmak kazandırıyor.
+
+| madde | ne | durum (16 Ağustos) |
+|---|---|---|
+| **G.1** | karaoke altyazı (kelime kelime senkron vurgu) | ✅ karaoke altyazı — `tests/150` (kelime bazlı, ASR yok) |
+| **G.2** | altyazı stil paketi (6+ tema, animasyon, konum) | ✅ 6 tema + animasyon + konum — `cekirdek/altyazi.js`, `tests/151` |
+| **G.3** | önizleme kartlı seçim (UI sıçraması) | ✅ önizleme kartları — `tests/152` (çizilmiş kartta 0 ihlal) |
+| **G.4** | marka kiti (logo · renk · alt bant) | ✅ marka kiti — `cekirdek/marka.js`, `tests/154` (kontrast hesabıyla okunur metin) |
+| **G.5** | müzik yatağı + ducking (iOS riski ölçülecek) | ✅ müzik yatağı + kısılma — `cekirdek/muzik.js`, `tests/156`; iOS'ta **kapalı ve sebebi yazılı** |
+| **G.6** | klip üreteci (Auto-Shorts karşılığı, AI'sız) | ✅ klip önerileri — `cekirdek/klip.js`, `tests/155`; kesim kaynağı koruyor `tests/160` |
+| **G.7** | intro/outro + alt bant animasyonu | ⏳ **açık (P2)** — alt bant tarafı G.4 ile geldi; intro/outro video birleştirme gerektiriyor ve tarayıcıda maliyeti **ölçülmedi** |
+| **G.8** | içerik planlayıcı (cihazda, hesapsız) | ⏳ **açık (P2)** — karar verilmedi; localStorage tavanı (4,94 MB) ölçülü, iş kendisi yapılmadı |
+| **G.9** | göz teması düzeltme (ML) | ⏸ **karar ölçüme bağlı** — model boyutu ve kare hızı ölçülmedi, o yüzden ne alındı ne elendi |
+| **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | ✅ vitrin + mağaza metni — `tests/132`, `tests/133` (her cümle koda bağlı) |
+| **G.11** | süreye sığdır (sabit süreli kaydırma) | ✅ süreye sığdır — `cekirdek/tempo.js`, `tests/153` (adım yukarı yuvarlanıyor) |
+| **G.12** | sağdan sola diller (Arapça/İbranice) | ✅ sağdan sola — `cekirdek/yon.js`, `tests/157` (3 dil × 3 genişlik ölçüldü) |
+| **G.13** | erişilebilir yazı tipi seçimi (dış font YOK) | ✅ 5 yazı tipi ailesi + kalınlık/aralık paritesi — `tests/158`; dış font indirilmiyor |
+| **G.14** | kumanda bağlantı zinciri — sebebi yazsın | ✅ kumanda yolları + sebep — `tests/159` |
+| **G.15** | yeşil ekransız arka plan bulanıklığı | ⏸ önce ölçüm — açık |
+| **G.16** | PDF içe aktarma | ⛔ **ALINMADI** (gerekçe yazılı) |
 
 **Teleprompter.com turu (aynı gün):** asıl işi sufle olan rakip ölçüldü. Onlarda **Pro'ya
 kilitli** olan aynalama, temiz ses ve altyazı bizde **ücretsiz ve zaten var**; bizde eksik

@@ -1,6 +1,6 @@
 # F.5 — Fiyatlandırma: ölçüm ve öneri
 
-**Ölçüm tarihi:** 15 Ağustos 2026 · **Ölçülen sürüm:** 9.10
+**Ölçüm tarihi:** 15 Ağustos 2026 · **Güncellendi:** 16 Ağustos 2026 (FAZ G sonrası) · **Ölçülen sürüm:** 9.14
 **Durum:** karar Erdal'ın. Bu belge **karar vermiyor**, kararın zeminini ölçüyor.
 
 Yol haritasındaki öneri şuydu:
@@ -26,7 +26,17 @@ Bugün yayında ve ücretsiz olanlar (`index.html`, v9.10'da sayıldı):
 | Uzaktan kumanda | ✅ ücretsiz |
 | `.docx` içe aktarma | ✅ ücretsiz |
 | Prova raporu · zorlanma haritası | ✅ ücretsiz |
+| **Karaoke altyazı + 6 altyazı teması** | ✅ ücretsiz (FAZ G, 16 Ağustos) |
+| **Marka kiti — logo ve alt bant** | ✅ ücretsiz (BIGVU bunu abonelikte satıyor) |
+| **Klip önerileri (Auto-Shorts karşılığı)** | ✅ ücretsiz, yapay zekâ yok, ölçümden çıkıyor |
+| **Süreye sığdır (hedef süreye göre WPM)** | ✅ ücretsiz |
+| **Müzik yatağı + konuşurken kısılma** | ✅ ücretsiz (masaüstü; iOS'ta kayıt sesini kestiği için kapalı, sebebi yazılı) |
+| **Sağdan sola diller (Arapça · İbranice · Farsça)** | ✅ ücretsiz |
+| **Beş yazı tipi ailesi + kalınlık ve harf aralığı** | ✅ ücretsiz |
 
+Liste 15 Ağustos'tan bu yana **yedi satır büyüdü** ve büyümenin tamamı,
+rakiplerin ücretli katmanında duran şeylerden geliyor: BIGVU'da marka kiti ve
+otomatik klipler abonelikte, altyazı stilleri abonelikte.
 Öneri uygulanırsa **4K, altyazı ve filigransızlık kullanıcıdan GERİ ALINIR.**
 Verilmiş bir şeyi geri almak, hiç vermemekten çok daha ağır bir güven kaybıdır;
 mağaza yorumlarında en hızlı 1 yıldız üreten hamle budur. Bu depo "tutulmayan söz
@@ -74,6 +84,9 @@ Uygulanabilir olan tek yer burası ve gerçek bir maliyeti karşılıyor:
 | AI senaryo yazarı / yeniden yazım (E.1, E.2) | token maliyeti, kontrol sunucuda | Erdal kararı (anahtar) |
 
 **3) Filigran EKLENMESİN.** Bugün yok; eklemek var olan çıktıyı kötüleştirmek olur.
+Marka kiti bunun tam tersini yapıyor: filigranı **kullanıcının kendi logosu** olarak
+ve **kullanıcı isterse** koyuyor. Ücretsiz katmana filigran basan rakiplerin
+karşısındaki en açık fark bu.
 
 **4) Karar aslında tek soruya indi:** *sunucu işletmek istiyor muyuz?*
 · **Hayır** → ürün ücretsiz kalır, gelir yok, işletme maliyeti de yok. Ürün
@@ -84,3 +97,22 @@ Uygulanabilir olan tek yer burası ve gerçek bir maliyeti karşılıyor:
 
 **Bu belge bir sonraki adımı beklemede tutuyor: mimari karar verilmeden fiyat
 yazmak, ölçülmemiş bir söz vermek olur.**
+
+---
+
+## 16 Ağustos eki — rekabet ölçümü aynı kapıya çıktı
+
+`belgeler/REKABET_30_OLCULDU.md` bağımsız yoldan aynı sonuca vardı:
+
+| ölçüm | değer |
+|---|---|
+| Bugünkü ağırlıklı skor | **64,3 / 100** (4. sıra; BIGVU 65,3) |
+| **Sunucu işletmeden ulaşılabilecek tavan** | **81,9** |
+| Sunucusuz kazanılabilecek kalan pay | **17,7 puan** |
+| Sunucu/hesap/pazar gerektiren kategorilerin ağırlığı | 17/94 — yani skorun **%18'i** |
+
+Yani ücretsiz-ve-sunucusuz kalmanın bedeli ölçülü: **tavan 81,9**, bugünkü liderin
+(80,6) hemen üstü. Ürünü lider yapmak için sunucu ŞART DEĞİL; sunucu yalnız son
+%18'lik dilim için gerekiyor ve o dilimin tamamı zaten para gerektiren şeyler
+(bulut, AI, mağaza konumu). Fiyat kararı bu yüzden hâlâ tek soruya iniyor ve
+cevabı "hayır" olduğunda ürün **eksik kalmıyor**, tavanı 81,9 oluyor.

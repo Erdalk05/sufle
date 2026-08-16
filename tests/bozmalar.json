@@ -1769,5 +1769,54 @@
   "kaynak": "kapsam",
   "bul": "        if eski is not None and eski > len(fns):",
   "koy": "        if False:"
+ },
+ {
+  "ad": "kesme kaynak çekimi siliyor (üç klip önerisi tek kesimde tükeniyor)",
+  "test": "160-klip-kaynak-korunuyor.js",
+  "kaynak": "telefon",
+  "bul": "    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId};\n    lastBlob=nb; lastDur=sel;\n    await autoSaveTake();",
+  "koy": "    lastBlob=nb; lastDur=sel;\n    if(curTakeId) await dbDel(curTakeId);\n    await autoSaveTake();"
+ },
+ {
+  "ad": "telefonda dönüş kaynağı boşaltmıyor (ikinci basış tam çekimi tekrar yükler)",
+  "test": "160-klip-kaynak-korunuyor.js",
+  "kaynak": "telefon",
+  "bul": "  kesKaynak=null;\n  showResult(lastBlob); toast(m('kaynakGeri'));",
+  "koy": "  showResult(lastBlob); toast(m('kaynakGeri'));"
+ },
+ {
+  "ad": "telefonda kaynak yokken de klip eziliyor",
+  "test": "160-klip-kaynak-korunuyor.js",
+  "kaynak": "telefon",
+  "bul": "  if(!kesKaynak) return;\n  lastBlob=kesKaynak.blob;",
+  "koy": "  lastBlob=kesKaynak&&kesKaynak.blob;"
+ },
+ {
+  "ad": "masaüstünde kaynak çekim üstüne yazılıyor",
+  "test": "160-klip-kaynak-korunuyor.js",
+  "kaynak": "mac",
+  "bul": "      kesKaynak={blob:lastBlob};\n      lastBlob=nb;",
+  "koy": "      lastBlob=nb;"
+ },
+ {
+  "ad": "dönüş düğmesi kesim olmadan da görünüyor",
+  "test": "160-klip-kaynak-korunuyor.js",
+  "kaynak": "telefon",
+  "bul": "  $('#kaynakBtn').style.display = kesKaynak ? '' : 'none';",
+  "koy": "  $('#kaynakBtn').style.display = '';"
+ },
+ {
+  "ad": "rekabet belgesi ile puan dizisi ayrışıyor (tablo bayat kalıyor)",
+  "test": "144-rekabet-olcumu.js",
+  "kaynak": "rekabet",
+  "bul": "| 28 | Çok dil ve RTL | ×2 | 3 | ölçüldü |",
+  "koy": "| 28 | Çok dil ve RTL | ×2 | 5 | ölçüldü |"
+ },
+ {
+  "ad": "ölçülmemiş kategori ölçülmüş gibi gösteriliyor",
+  "test": "144-rekabet-olcumu.js",
+  "kaynak": "rekabet",
+  "bul": "| 9 | Bulut senkron ve çok cihaz | ×4 | 0 | sıfır doğrulandı |",
+  "koy": "| 9 | Bulut senkron ve çok cihaz | ×4 | 0 | tahmin korundu |"
  }
 ]
