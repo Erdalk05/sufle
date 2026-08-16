@@ -302,6 +302,30 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🎯 FAZ G KAPANDI — G.8 de ölçüldü, açık madde kalmadı · kanıtlı test 105
+
+**G.8 (içerik planlayıcı) ölçüldü ve yeni durum alanı ALINMADI.** Üç soru da
+koddan yanıtlandı: ① yeni alan eski kayıtlarda `undefined` olur, yani her okuma
+`(s.x||…)` ile korunmalı (deponun 6 numaralı hata sınıfı); ② depo tavanı sorun
+değil — 4,94 MB'ı dolduran şey arka plan görseli ve metin, birkaç baytlık durum
+alanı değil; ③ **bilginin çoğu zaten var**: `s.up` (son güncelleme) her senaryoda
+tutuluyor ama listede gösterilmiyor, ve çekim arşivi her çekime senaryonun
+**başlığını** yazdığı için "bu senaryoyu kaç kez çektim" **arşivden türetilebiliyor**.
+
+Karar gerekçesi tek cümle: **tutulan durum bakım ister ve güncellenmezse yalan
+söyler; türetilen bilgi yalan söyleyemez.** Sıradaki turun ucuz işi kabul
+ölçütleriyle yazıldı (senaryo listesinde "son değişiklik · n çekim" satırı;
+`s.up` yoksa satır hiç yazılmaz, arşiv bir kez okunur, okunamazsa sayı hiç
+gösterilmez). **FAZ G'de açık madde kalmadı** — dört maddenin dördü de (G.7, G.8,
+G.9, G.15) ölçülüp gerekçesiyle elendi, ertelendi ya da türetilmiş çözüme bağlandı.
+
+**Kanıtlı test dosyası 100 → 105** (bozma 308 → 313): kayıt gözcüsünün
+duraklatmayı arıza sanmaması, bildirimin canlı bölge olması (ekran okuyucu),
+fenerin yeni akışa uygulanması, arşiv silmenin iptal olayına bağlı olması ve
+altyazı çakışma düzeltmesi.
+
+---
+
 ### 🧾 KANITSIZ TESTLER 94 → 100 · KAPININ İKİNCİ KÖR NOKTASI · G.7 ÖLÇÜLDÜ
 
 Altı eski dosya daha kanıtlandı (31 · 33 · 34 · 44 · 67 · 92): yayın paketinin
@@ -951,13 +975,13 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  **21 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
+  **22 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6179 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **308 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **313 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

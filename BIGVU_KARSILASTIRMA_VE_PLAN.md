@@ -251,7 +251,33 @@ Yani G.7 bir "yapılır mı" sorusu değil, **öncelik** sorusu: aynı emek 15. 
 #### Önceki plan
 - **Kabul:** kayıt boru hattını yavaşlatmayacak; yalnız çekim sonrası uygulanacak.
 
-### G.8 — İçerik planlayıcı (cihazda) · **P2**
+### G.8 — İçerik planlayıcı (cihazda) · ✅ **ÖLÇÜLDÜ (16 Ağustos) → YENİ DURUM ALANI ALINMADI**
+
+Ölçüm koddan yapıldı, üç sorunun üçü de yanıtlandı:
+
+| soru | ölçüm |
+|---|---|
+| Yeni alan eski kayıtları bozar mı? | Durum tek JSON olarak yazılıyor (`localStorage.setItem(LS,JSON.stringify(st))`); yeni alan eski kayıtlarda **undefined** olur, yani her okuma `(s.x\|\|…)` ile korunmalı — deponun 6 numaralı hata sınıfı |
+| Depo tavanı sorun mu? | Hayır: senaryo başına birkaç bayt. Tavan (4,94 MB) **arka plan görseli** ve metin yüzünden doluyor, durum alanı yüzünden değil |
+| Bilgi zaten var mı? | **BÜYÜK ÖLÇÜDE EVET.** `s.up` (son güncelleme) her senaryoda **zaten tutuluyor** ama listede **gösterilmiyor**. Çekim arşivi de her çekime senaryonun **başlığını** yazıyor (`title:active().title`), yani "bu senaryoyu kaç kez çektim" **arşivden türetilebilir** |
+
+**Karar:** "çekilecek / çekildi / yayınlandı" diye **yeni bir durum alanı tutmak
+ALINMADI.** Sebep ölçülü: tutulan durum **bakım ister** (kullanıcı elle
+güncellemezse yalan söyler) ve **yeni veri = geriye dönük uyumluluk riski**.
+Oysa aynı sorunun iki parçası zaten **ölçülmüş veriden türetilebiliyor**:
+son güncelleme (`s.up`) ve çekim sayısı (arşivdeki başlık eşleşmesi). Bu depoda
+kural nettir: **ölçülebilen şeyi tutma, türet.**
+
+**Sıradaki tura bırakılan ucuz iş (kabul ölçütü yazılı):** senaryo listesinde
+başlık altına *"· son değişiklik <tarih> · <n> çekim"* satırı. Kabul: ① `s.up`
+yoksa satır **hiç** yazılmaz (eski kayıt bozulmaz), ② çekim sayısı arşivden
+**bir kez** okunur (liste her çizimde IndexedDB'ye gitmez), ③ arşiv okunamazsa
+sayı **hiç gösterilmez** (uydurulmuş sıfır yasak), ④ iki kabukta da aynı.
+Yalnız "yayınlandı" bilgisi türetilemez — onu tutmak için kullanıcının elle
+işaretlemesi gerekir ve o ancak ①–④ oturduktan sonra tartışılır.
+
+<!-- ölçümden önceki plan notu -->
+#### Önceki plan
 - **Ne:** senaryolara "çekilecek/çekildi/yayınlandı" durumu + tarih; **hesapsız, cihazda**.
 - **Kabul:** localStorage tavanı (4,94 MB) ölçülmüş sınırın içinde kalsın.
 

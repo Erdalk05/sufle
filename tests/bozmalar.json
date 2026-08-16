@@ -2154,5 +2154,40 @@
   "kaynak": "mesajlar",
   "bul": "voiceSilentCam:'🎤 Tanıma açıldı",
   "koy": "voiceSilentCamX:'🎤 Tanıma açıldı"
+ },
+ {
+  "ad": "kayıt gözcüsü duraklatmayı arıza sanıyor (yanlış alarm)",
+  "test": "88-kayit-gozcusu.js",
+  "kaynak": "telefon",
+  "bul": "    if(recPaused || (rec && rec.state==='paused')) return;",
+  "koy": "    if(false) return;"
+ },
+ {
+  "ad": "bildirim canlı bölge değil (ekran okuyucu hiçbir uyarıyı duymaz)",
+  "test": "84-canli-bolge-duyuru.js",
+  "kaynak": "telefon",
+  "bul": "<div class=\"toast\" id=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"></div>",
+  "koy": "<div class=\"toast\" id=\"toast\"></div>"
+ },
+ {
+  "ad": "fener yeni akışa uygulanmıyor (ayar açık ama ışık yanmaz)",
+  "test": "71-kamera-fener-zoom.js",
+  "kaynak": "telefon",
+  "bul": "function applyTorch(){ if(!vTrack) return; try{ vTrack.applyConstraints({advanced:[{torch:!!st.torch}]}); }catch(e){} }",
+  "koy": "function applyTorch(){ return; }"
+ },
+ {
+  "ad": "silme iptal olayına bağlı değil (arşiv silme sessizce asılı kalır)",
+  "test": "86-silme-askida-kalma.js",
+  "kaynak": "telefon",
+  "bul": "    tx.onabort=()=>{ logErr('dbDel',tx.error); bitir(false); };",
+  "koy": ""
+ },
+ {
+  "ad": "altyazı çakışma düzeltmesi söküldü (üst üste binen kuyruklar)",
+  "test": "81-altyazi-kaymasi-cakisma.js",
+  "kaynak": "telefon",
+  "bul": "  for(let n=1;n<cues.length;n++){\n    const onceki=cues[n-1];\n    if(cues[n].start < onceki.end){",
+  "koy": "  for(let n=1;n<cues.length;n++){\n    const onceki=cues[n-1];\n    if(false){"
  }
 ]

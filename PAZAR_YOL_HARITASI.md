@@ -845,8 +845,9 @@ daha doğru** yapabiliyoruz. Tur 56'nın ölçümü de aynı yönü gösteriyord
 tavan **81,9**, o gün **63,0** — BIGVU **65,3**.
 
 **TUR KAPANDI (16 Ağustos, v9.14).** On bir madde bitti (G.1–G.6, G.10–G.14 ve G.17),
-biri gerekçeli **alınmadı** (G.16 · PDF), yalnız biri **açık kaldı** (G.8 · içerik planlayıcı);
-**G.7, G.9 ve G.15 ölçüldü ve gerekçeyle elendi/ertelendi** — açık maddeyi kapalı göstermek bu deponun
+biri gerekçeli **alınmadı** (G.16 · PDF), **AÇIK MADDE KALMADI**;
+G.7, G.8, G.9 ve G.15 tek tek ölçüldü ve gerekçeleriyle elendi, ertelendi ya da
+türetilmiş çözüme bağlandı — açık maddeyi kapalı göstermek bu deponun
 en pahalı hata sınıfı. Rekabet skoru yeniden ölçüldü: **63,0 → 64,3** (hâlâ 4.,
 BIGVU'nun **1,0 puan** altında). Puan yalnız iki kategoride oynadı (15 · video
 düzenleme 3→4, 28 · çok dil ve RTL 1→3) ve diğer sekiz özelliğin **neden puan
@@ -862,7 +863,7 @@ saymak puan kazandırmıyor, kategorinin ölçtüğü şeyi yapmak kazandırıyo
 | **G.5** | müzik yatağı + ducking (iOS riski ölçülecek) | ✅ müzik yatağı + kısılma — `cekirdek/muzik.js`, `tests/156`; iOS'ta **kapalı ve sebebi yazılı** |
 | **G.6** | klip üreteci (Auto-Shorts karşılığı, AI'sız) | ✅ klip önerileri — `cekirdek/klip.js`, `tests/155`; kesim kaynağı koruyor `tests/160` |
 | **G.7** | intro/outro + alt bant animasyonu | ✅ **ölçüldü → ertelendi**: muxer yok (WebCodecs kapsayıcı yazmıyor), yeniden-kaydetme yolu gerçek zamanlı + iOS'ta `captureStream` yok → asıl üründe çalışmaz |
-| **G.8** | içerik planlayıcı (cihazda, hesapsız) | ⏳ **açık (P2)** — karar verilmedi; localStorage tavanı (4,94 MB) ölçülü, iş kendisi yapılmadı |
+| **G.8** | içerik planlayıcı (cihazda, hesapsız) | ✅ **ölçüldü → yeni durum alanı alınmadı**: `s.up` zaten var, çekim sayısı arşivden türetilebilir; tutulan durum bakım ister ve yalan söyler |
 | **G.9** | göz teması düzeltme (ML) | ✅ **ölçüldü → alınmadı**: `FaceDetector` yok, bakış kısıtı yok, WebNN yok; model indirmek gerekir (`tests/161`) |
 | **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | ✅ vitrin + mağaza metni — `tests/132`, `tests/133` (her cümle koda bağlı) |
 | **G.11** | süreye sığdır (sabit süreli kaydırma) | ✅ süreye sığdır — `cekirdek/tempo.js`, `tests/153` (adım yukarı yuvarlanıyor) |
