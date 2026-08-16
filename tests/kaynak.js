@@ -164,14 +164,58 @@ function cekirdekOku(ad, envAd) {
   return fs.readFileSync(acik || path.join(REPO, 'cekirdek', ad), 'utf8');
 }
 
+/* ÖLÇÜLDÜ (2026-08-16): bu tezgâh süslü parantezleri KÖRÜ KÖRÜNE sayıyordu ve
+   dizeyle düzenli ifadenin içindekileri de sayıyordu. `duzMetin` içindeki
+   `\{[^}]{1,24}\}` deseni yüzünden fonksiyon YARISINDAN kesiliyor, çağıran
+   test ya çöküyor ya da yarım kodu ölçüp yanlış sonuç veriyordu — bu depoda
+   en pahalı hata sınıfı, çünkü kırmızı vermek yerine YANLIŞ ÖLÇÜYOR.
+   Artık küçük bir tarayıcı var: dize ('/"/`), satır ve blok yorumu, düzenli
+   ifade sabiti ve kaçış karakteri atlanıyor. Düzenli ifade sabiti, bir
+   önceki anlamlı karakterden anlaşılıyor (JS'te `/` hem bölme hem desen).
+   `tests/161` bu tezgâhı İKİ KABUKTAKİ HER fonksiyonla sınıyor: çıkarılan
+   her blok ayrıştırılabilmeli. */
 function blokKes(kod, imza, bas) {
   const iBas = bas ? kod.indexOf(bas) : -1;
   const i = kod.indexOf(imza);
   if (i < 0) return null;
+  const bosMu = c => c === ' ' || c === '\t' || c === '\n' || c === '\r';
+  /* `/` bölme mi desen mi: bir önceki anlamlı karakter değer bitiriyorsa
+     (harf, rakam, `)`, `]`) bölmedir; aksi hâlde desen başlangıcıdır. */
+  const desenMi = (j) => {
+    let k = j - 1;
+    while (k >= 0 && bosMu(kod[k])) k--;
+    if (k < 0) return true;
+    return !/[A-Za-z0-9_$)\]]/.test(kod[k]);
+  };
   let d = 0, basladi = false;
-  for (let j = kod.indexOf('{', i); j < kod.length; j++) {
-    if (kod[j] === '{') { d++; basladi = true; }
-    else if (kod[j] === '}') {
+  let j = kod.indexOf('{', i);
+  if (j < 0) return null;
+  for (; j < kod.length; j++) {
+    const c = kod[j];
+    if (c === '\\') { j++; continue; }
+    if (c === '/' && kod[j + 1] === '/') { j = kod.indexOf('\n', j); if (j < 0) return null; continue; }
+    if (c === '/' && kod[j + 1] === '*') { j = kod.indexOf('*/', j); if (j < 0) return null; j++; continue; }
+    if (c === '"' || c === "'" || c === '`') {
+      const tir = c;
+      for (j++; j < kod.length; j++) {
+        if (kod[j] === '\\') { j++; continue; }
+        if (kod[j] === tir) break;
+      }
+      continue;
+    }
+    if (c === '/' && desenMi(j)) {
+      let sinif = false;
+      for (j++; j < kod.length; j++) {
+        if (kod[j] === '\\') { j++; continue; }
+        if (kod[j] === '[') sinif = true;
+        else if (kod[j] === ']') sinif = false;
+        else if (kod[j] === '/' && !sinif) break;
+        else if (kod[j] === '\n') return null;   // desen satır sonuna taşmaz
+      }
+      continue;
+    }
+    if (c === '{') { d++; basladi = true; }
+    else if (c === '}') {
       d--;
       if (basladi && d === 0) return kod.slice(iBas >= 0 ? iBas : i, j + 1);
     }
@@ -179,6 +223,42 @@ function blokKes(kod, imza, bas) {
   return null;
 }
 
+/* Dize, düzenli ifade ve yorum İÇERİĞİNİ boşlukla değiştirir; uzunluk ve
+   satır sayısı KORUNUR. Süslü parantez/köşeli parantez sayan her ölçüm buna
+   muhtaç: `const RTL_ARALIK = /[֐-׿]/` satırındaki köşeli parantezi saymak,
+   derinlik takibini olduğu gibi yanıltıyordu (2026-08-16de ölçüldü —
+   çekirdeğin bildirimleri "0 bildirim" görünüyordu). */
+function dizeSil(kod){
+  const out=kod.split('');
+  const bosMu=c=>c===' '||c==='\t'||c==='\n'||c==='\r';
+  const desenMi=j=>{ let k=j-1; while(k>=0&&bosMu(kod[k])) k--; if(k<0) return true;
+                     return !/[A-Za-z0-9_$)\]]/.test(kod[k]); };
+  const sil=(a,b)=>{ for(let k=a;k<b&&k<out.length;k++) if(out[k]!=='\n') out[k]=' '; };
+  for(let j=0;j<kod.length;j++){
+    const c=kod[j];
+    if(c==='/'&&kod[j+1]==='/'){ const e=kod.indexOf('\n',j); const s2=e<0?kod.length:e; sil(j,s2); j=s2; continue; }
+    if(c==='/'&&kod[j+1]==='*'){ const e=kod.indexOf('*/',j); const s2=e<0?kod.length:e+2; sil(j,s2); j=s2-1; continue; }
+    if(c==='"'||c==="'"||c==='`'){
+      const tir=c; let k=j+1;
+      for(;k<kod.length;k++){ if(kod[k]==='\\'){k++;continue;} if(kod[k]===tir) break; }
+      sil(j+1,k); j=k; continue;
+    }
+    if(c==='/'&&desenMi(j)){
+      let k=j+1, sinif=false, bitti=false;
+      for(;k<kod.length;k++){
+        if(kod[k]==='\\'){k++;continue;}
+        if(kod[k]==='[') sinif=true;
+        else if(kod[k]===']') sinif=false;
+        else if(kod[k]==='\n') break;
+        else if(kod[k]==='/'&&!sinif){ bitti=true; break; }
+      }
+      if(bitti){ sil(j+1,k); j=k; }
+      continue;
+    }
+  }
+  return out.join('');
+}
+
 module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni,
-                   cozJeton, metinCekirdegi, blokKes, cekirdekOku };
+                   cozJeton, metinCekirdegi, blokKes, cekirdekOku, dizeSil };
 

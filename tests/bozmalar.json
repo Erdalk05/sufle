@@ -1606,8 +1606,8 @@
   "ad": "G.12 vurgu indeksi yön tanımıyor (mac)",
   "test": "157-sagdan-sola.js",
   "kaynak": "mac",
-  "bul": "    const vurguIdx = yon==='rtl' ? 0 : parts.length-1;",
-  "koy": "    const vurguIdx = parts.length-1;"
+  "bul": "  const vurguIdx = yon==='rtl' ? 0 : parts.length-1;",
+  "koy": "  const vurguIdx = parts.length-1;"
  },
  {
   "ad": "G.13 Macte kalınlık ayarı ölü (sabit değere döndü)",
@@ -1818,5 +1818,33 @@
   "kaynak": "rekabet",
   "bul": "| 9 | Bulut senkron ve çok cihaz | ×4 | 0 | sıfır doğrulandı |",
   "koy": "| 9 | Bulut senkron ve çok cihaz | ×4 | 0 | tahmin korundu |"
+ },
+ {
+  "ad": "çekirdek modülü yükleme anında kod koşturuyor (sıra ölümcül olur)",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "klip",
+  "bul": "const KLIP_SAYI = 3;",
+  "koy": "const KLIP_SAYI = 3;\nconsole.log(ALTYAZI_TEMA_SIRA.length);"
+ },
+ {
+  "ad": "derleme sırası bağımlılığı bozuyor (klip.js yon.jsten önce)",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "derle",
+  "bul": "    ('yon.js', ['index.html', 'mac/Teleprompter Pro.html']),\n    ('altyazi.js', ['index.html', 'mac/Teleprompter Pro.html']),",
+  "koy": "    ('altyazi.js', ['index.html', 'mac/Teleprompter Pro.html']),\n    ('yon.js', ['index.html', 'mac/Teleprompter Pro.html']),"
+ },
+ {
+  "ad": "tezgâh desen içindeki süslü parantezi sayıyor (yarım blok ölçer)",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "tezgah",
+  "bul": "    if (c === '/' && desenMi(j)) {",
+  "koy": "    if (false) {"
+ },
+ {
+  "ad": "çekirdeğe taşınan hesap kabuğa geri kopyalandı",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "tekrar_taban",
+  "bul": "\"birebir\": [",
+  "koy": "\"birebir\": [\n  \"kkParcala\","
  }
 ]

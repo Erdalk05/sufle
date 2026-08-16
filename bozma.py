@@ -46,6 +46,12 @@ KAYNAK = {
     # Kapının kendi betiği de bozulabilmeli: kapsam kapısının etkisiz
     # kaldığı bir gece ancak böyle yakalanır.
     'kapsam': (os.path.join(REPO, 'kapsam.py'), 'SUFLE_KAPSAM'),
+    # Derleme sırası ve TEST TEZGÂHI da bozulabilmeli. Tezgâh yarım blok
+    # çıkardığında test kırmızı vermez, YANLIŞ ÖLÇER — bu deponun en pahalı
+    # sınıfı (2026-08-16da `duzMetin` üstünde ölçüldü).
+    'derle': (os.path.join(REPO, 'derle.py'), 'SUFLE_DERLE'),
+    'tezgah': (os.path.join(REPO, 'tests', 'kaynak.js'), 'SUFLE_TEZGAH'),
+    'tekrar_taban': (os.path.join(REPO, 'tests', 'tekrar-taban.json'), 'SUFLE_TEKRAR'),
     # Mağaza metni de bozulabilmeli: abartma engelinin gerçekten
     # çalıştığı ancak metne olmayan bir özellik yazılarak kanıtlanır.
     'magaza': (os.path.join(REPO, 'MAGAZA.md'), 'SUFLE_MAGAZA'),

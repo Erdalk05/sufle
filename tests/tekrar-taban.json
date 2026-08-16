@@ -1,0 +1,23 @@
+{
+ "_not": "İki kabukta BİREBİR AYNI gövdeye sahip fonksiyonlar (2026-08-16 ölçümü). Bu liste yalnız KÜÇÜLEBİLİR: yeni bir ad eklenirse tests/161 kırılır. Küçültme yolu, hesabı cekirdek/ altına taşımak (kkParcala ve vurguYay böyle çıktı). Çizim yapanlar (drawMarka, hapYolu) kabukta kalabilir ama tekrar oldukları da gizlenmesin.",
+ "birebir": [
+  "drawMarka",
+  "hapYolu",
+  "kkRenk",
+  "kkVurguMetin",
+  "klipBasliklari",
+  "klipSebepMetni",
+  "markaBantAnahtari",
+  "markaHazir",
+  "muzikBirak",
+  "sesBaglamiIsit",
+  "sozZamanAsimi",
+  "stopAudioFx",
+  "stopAudioMonitor",
+  "syncVoicePtr",
+  "temaEtiketMetni",
+  "verCmp",
+  "yolAdi",
+  "yolSebepMetni"
+ ]
+}

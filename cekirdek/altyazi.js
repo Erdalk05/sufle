@@ -88,3 +88,30 @@ function altyaziMerkezY(konum, Hh, blokY){
   if(konum==='top')    return Hh*o + blokY/2;
   return Hh*o - blokY/2;
 }
+
+/* KARAOKE PARÇALAMA — satırı görsel parçalara böler ve vurgulanacak parçayı
+   söyler. İKİ KABUKTA DA BİREBİR AYNI 398 karakterdi (2026-08-16 denetim
+   turunda ölçüldü); bu deponun ölçülmüş hata sınıfı tam olarak budur:
+   sürüklenmiş kopya bir tarafta düzeltilir, diğerinde unutulur ve iki
+   platform aynı çekim için farklı şey gösterir (`metin.js`teki `cleanText`
+   vakası). Ölçüm KABUĞUN işi (yazı tipi ve tuval oradadır), yerleşim
+   hesabı ortak: `measure` geri çağrısı dışarıdan geliyor.
+   Yön kuralı `yon.js`ten (gorselSira) geliyor ve o modül BU dosyadan ÖNCE
+   gömülüyor. */
+function kkParcala(measure, ln, yon){
+  const okuma=String(ln||'').split(' ').filter(Boolean);
+  /* G.12 — GÖRSEL SIRA. Sağdan sola metinde okuma sırası ile ekrandaki
+     sıra TERSTİR. Bunu atlamak, vurgunun cümlenin YANLIŞ UCUNDA yanması
+     demek: kullanıcı okuduğu kelimeyi değil karşı uçtakini vurgulu görür. */
+  const parts=gorselSira(okuma, yon);
+  if(!parts.length) return null;
+  const bosluk=measure(' ');
+  const gen=parts.map(p=>measure(p));
+  const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
+  const xs=[]; let x=-toplam/2;
+  for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
+  /* Vurgulanan kelime okuma sırasının SONUNCUSU; görsel sırada bu,
+     sağdan solada ilk parçadır. */
+  const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
+  return {parts, xs, gen, toplam, vurguIdx};
+}

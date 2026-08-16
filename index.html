@@ -2316,10 +2316,6 @@ function bionic(w){
    `***x***` gibi dengesiz yazımlar olduğu gibi duruyor (eski davranış korundu;
    ilk denememde bunları vurguya çeviriyordum, testler 06 ve 17 yakaladı).
    Eşleşmeyen tek yıldız da duruyor — yazım hatasını gizlemektense göstermek yeğ. */
-function vurguYay(satir){
-  return satir.replace(/(?<!\*)\*{1,2}(?!\*)([^\s*](?:[^*\n]*[^\s*])?)\*{1,2}(?!\*)/g,(m,ic)=>
-    ic.split(/\s+/).map(w=>'*'+w+'*').join(' '));
-}
 function markup(raw){
   let out='';
   vurguYay(raw).split(/\s+/).forEach(tok=>{
@@ -3511,23 +3507,6 @@ function wrapLines(measure, txt, maxW){
    Satırı parçalara ayırmak AYRI FONKSİYON çünkü tuval olmadan sınanabilsin
    (wrapLines'ta olduğu gibi) — ölçüm sayısı satırdaki kelime kadar ve
    sonuç aynı önbellekte tutuluyor, yani kare başına yeni maliyet yok. */
-function kkParcala(measure, ln, yon){
-  const okuma=String(ln||'').split(' ').filter(Boolean);
-  /* G.12 — GÖRSEL SIRA. Sağdan sola metinde okuma sırası ile ekrandaki
-     sıra TERSTİR. Bunu atlamak, vurgunun cümlenin YANLIŞ UCUNDA yanması
-     demek: kullanıcı okuduğu kelimeyi değil karşı uçtakini vurgulu görür. */
-  const parts=gorselSira(okuma, yon);
-  if(!parts.length) return null;
-  const bosluk=measure(' ');
-  const gen=parts.map(p=>measure(p));
-  const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
-  const xs=[]; let x=-toplam/2;
-  for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
-  /* Vurgulanan kelime okuma sırasının SONUNCUSU; görsel sırada bu,
-     sağdan solada ilk parçadır. */
-  const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
-  return {parts, xs, gen, toplam, vurguIdx};
-}
 /* Vurgu rengi JETONDAN gelir. Elle yazılan renk, jeton dosyasını ölü ayara
    çevirir — bu depoda bir kez oldu (jetonlar.css yüzey renkleri). */
 let kkRenkOnb='', kkVurguMetinOnb='';
@@ -6926,6 +6905,18 @@ function duzMetin(t){
     .replace(/\*/g,'')                     // *vurgu*
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
+
+/* ÇOK KELİMELİ VURGUYU KELİMEYE DAĞIT — `*çok önemli*` iki belirtece
+   bölünüyor ve hiçbiri `*…*` kalıbına uymuyordu; vurgu hiç çalışmıyor,
+   yıldızlar ekranda kalıyordu.
+   SINIRLAR KASITLI: yıldızın yanında boşluk olmamalı (`3 * 4 * 5` çarpma
+   kalsın), yıldız dizisi dengeli olmalı (`***x***` olduğu gibi durur) ve
+   eşleşmeyen tek yıldız korunur — yazım hatasını gizlemektense göstermek yeğ.
+   İki kabukta BİREBİR AYNI kopyaydı (2026-08-16 ölçümü); tek kaynağa alındı. */
+function vurguYay(satir){
+  return satir.replace(/(?<!\*)\*{1,2}(?!\*)([^\s*](?:[^*\n]*[^\s*])?)\*{1,2}(?!\*)/g,(m,ic)=>
+    ic.split(/\s+/).map(w=>'*'+w+'*').join(' '));
+}
 /* ==/CEKIRDEK:metin.js== */
 /* ==CEKIRDEK:muzik.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/muzik.js
@@ -7444,6 +7435,33 @@ function altyaziMerkezY(konum, Hh, blokY){
   if(konum==='middle') return Hh*o;
   if(konum==='top')    return Hh*o + blokY/2;
   return Hh*o - blokY/2;
+}
+
+/* KARAOKE PARÇALAMA — satırı görsel parçalara böler ve vurgulanacak parçayı
+   söyler. İKİ KABUKTA DA BİREBİR AYNI 398 karakterdi (2026-08-16 denetim
+   turunda ölçüldü); bu deponun ölçülmüş hata sınıfı tam olarak budur:
+   sürüklenmiş kopya bir tarafta düzeltilir, diğerinde unutulur ve iki
+   platform aynı çekim için farklı şey gösterir (`metin.js`teki `cleanText`
+   vakası). Ölçüm KABUĞUN işi (yazı tipi ve tuval oradadır), yerleşim
+   hesabı ortak: `measure` geri çağrısı dışarıdan geliyor.
+   Yön kuralı `yon.js`ten (gorselSira) geliyor ve o modül BU dosyadan ÖNCE
+   gömülüyor. */
+function kkParcala(measure, ln, yon){
+  const okuma=String(ln||'').split(' ').filter(Boolean);
+  /* G.12 — GÖRSEL SIRA. Sağdan sola metinde okuma sırası ile ekrandaki
+     sıra TERSTİR. Bunu atlamak, vurgunun cümlenin YANLIŞ UCUNDA yanması
+     demek: kullanıcı okuduğu kelimeyi değil karşı uçtakini vurgulu görür. */
+  const parts=gorselSira(okuma, yon);
+  if(!parts.length) return null;
+  const bosluk=measure(' ');
+  const gen=parts.map(p=>measure(p));
+  const toplam=gen.reduce((a,b)=>a+b,0)+bosluk*(parts.length-1);
+  const xs=[]; let x=-toplam/2;
+  for(let i=0;i<parts.length;i++){ xs.push(x); x+=gen[i]+bosluk; }
+  /* Vurgulanan kelime okuma sırasının SONUNCUSU; görsel sırada bu,
+     sağdan solada ilk parçadır. */
+  const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
+  return {parts, xs, gen, toplam, vurguIdx};
 }
 /* ==/CEKIRDEK:altyazi.js== */
 /* ==CEKIRDEK:zorlanma.js== */

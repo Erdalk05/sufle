@@ -1,5 +1,5 @@
 const ok2=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku,blokKes}=require('./kaynak');
 const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -22,29 +22,35 @@ const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
      · eşleşmeyen tek yıldız ekranda duruyor — yazım hatasını gizlemektense
        göstermek yeğ. Bu tek durumda ekran ile paket hâlâ ayrışıyor. */
 
+/* ÇIKARIM GİRİNTİYE KİLİTLİYDİ: Mac desenleri kapanışı `\n  }` diye
+   arıyordu, yani fonksiyonun iç boşluğunu iddia ediyorlardı. `vurguYay`
+   çekirdeğe taşınıp girintisi değişince desen KOMŞU fonksiyonu da yuttu ve
+   test davranış hiç bozulmadan çöktü (bu deponun ölçülmüş 'biçime kilitlenmiş
+   desen' sınıfı). Artık süslü parantez sayan `blokKes` kullanılıyor: iddia
+   fonksiyonun kendisine bağlı, yazıldığı yere değil. */
 function kur(src, adlar){
   const parcalar=[];
-  for(const [ad,re] of adlar){
-    const m=src.match(re);
-    ok2('çıkarılabildi: '+ad, !!m);
-    if(!m) return null;
-    parcalar.push(m[0]);
+  for(const [ad,imza] of adlar){
+    const g=blokKes(src, imza);
+    ok2('çıkarılabildi: '+ad, !!g);
+    if(!g) return null;
+    parcalar.push(g);
   }
   return parcalar.join('\n');
 }
 
 const telSrc=kur(tel,[
-  ['telefon esc',      /function esc\([\s\S]*?\n\}/],
-  ['telefon bionic',   /function bionic\([\s\S]*?\n\}/],
-  ['telefon vurguYay', /function vurguYay\(satir\)\{[\s\S]*?\n\}/],
-  ['telefon markup',   /function markup\(raw\)\{[\s\S]*?\n\}/],
-  ['telefon duzMetin', /function duzMetin\(t\)\{[\s\S]*?\n\}/],
+  ['telefon esc',      'function esc('],
+  ['telefon bionic',   'function bionic('],
+  ['telefon vurguYay', 'function vurguYay('],
+  ['telefon markup',   'function markup('],
+  ['telefon duzMetin', 'function duzMetin('],
 ]);
 const macSrc=kur(mac,[
-  ['Mac escapeHtml',  /function escapeHtml\([\s\S]*?\n  \}/],
-  ['Mac biyonik',     /function biyonik\([\s\S]*?\n  \}/],
-  ['Mac vurguYay',    /function vurguYay\(satir\)\{[\s\S]*?\n  \}/],
-  ['Mac isaretle',    /function isaretle\(tok\)\{[\s\S]*?\n  \}/],
+  ['Mac escapeHtml',  'function escapeHtml('],
+  ['Mac biyonik',     'function biyonik('],
+  ['Mac vurguYay',    'function vurguYay('],
+  ['Mac isaretle',    'function isaretle('],
 ]);
 if(!telSrc || !macSrc) return;
 

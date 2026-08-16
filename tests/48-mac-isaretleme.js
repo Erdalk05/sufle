@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar,blokKes}=require('./kaynak');
 const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -17,14 +17,18 @@ const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    Telefondaki kurallar Mac'e taşındı; duraklamalar artık gerçekten bekletiyor. */
 
 const macIsaretle=new Function('escapeHtml','biyonik',
-  cikar(mac,/function vurguYay\(satir\)\{[\s\S]*?\n  \}/,'Mac vurguYay')+'\n'+
+  /* GİRİNTİYE KİLİTLENMİŞTİ: desen kapanışı `\n  }` diye arıyordu, yani
+     fonksiyonun İÇ BOŞLUĞUNU iddia ediyordu. `vurguYay` çekirdeğe taşınınca
+     (tek kaynak) girinti değişti ve desen komşu fonksiyonu da yuttu.
+     İddia girintiye değil FONKSİYONUN KENDİSİNE bağlandı. */
+  blokKes(mac,'function vurguYay(')+'\n'+
   cikar(mac,/function isaretle\(tok\)\{[\s\S]*?\n  \}/,'Mac isaretle')+
   '; return {isaretle,vurguYay};')(s=>s,s=>s);
 /* Satır düzeyi: dağıtım buildWords içinde yapılıyor, tek belirteçte değil. */
 const isaretle=tok=>macIsaretle.vurguYay(tok).replace(/\S+/g,macIsaretle.isaretle);
 /* markup artık çok kelimeli vurguyu dağıtan vurguYay'a bağımlı (B1, tests/70). */
 const markup=new Function('esc','bionic',
-  cikar(tel,/function vurguYay\(satir\)\{[\s\S]*?\n\}/,'telefon vurguYay')+'\n'+
+  blokKes(tel,'function vurguYay(')+'\n'+
   cikar(tel,/function markup\(raw\)\{[\s\S]*?\n\}/,'telefon markup')+'; return markup;')(s=>s,s=>s);
 
 /* Mac HTML varlıklarıyla yazıyor (kaynak dosyada okunur kalsın diye) — karşılaştırmadan önce çöz. */

@@ -302,6 +302,48 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🧩 ÇEKİRDEK ZİNCİRİ TURU — üç bulgu, üçü de ÖLÇÜM ARACININ kör noktası
+
+Gecede altı yeni çekirdek modülü eklendi (yon · altyazi · tempo · marka · klip · muzik)
+ve "bunlar birbirine nasıl bağlı, derleme sırası bunu garanti ediyor mu" sorusunun
+yanıtı hiçbir yerde yoktu. Ölçtüm.
+
+**① Test tezgâhı YARIM FONKSİYON çıkarıyormuş.** `blokKes` süslü parantezleri körü
+körüne sayıyordu; `duzMetin` içindeki `\{[^}]{1,24}\}` deseni yüzünden fonksiyon
+**yarısından kesiliyordu**. Bu, kırmızı vermeyen bir kusur sınıfı: test ya çöküyor ya
+da yarım kodu ölçüp **yanlış sonuç** veriyordu. Tezgâha dize/desen/yorum tanıyan bir
+tarayıcı yazıldı ve `tests/161` onu **iki kabuktaki 560 fonksiyonun hepsiyle** sınıyor:
+çıkarılan her blok ayrıştırılabilmeli. (Aynı kör nokta `dizeSil` ile ikinci bir yerde
+daha çıktı: köşeli parantez sayan derinlik takibi, `RTL_ARALIK = /[֐-׿]/` satırındaki
+parantezi sayıp çekirdeği "0 bildirim" görüyordu.)
+
+**② İki kabukta BİREBİR AYNI 20 fonksiyon gövdesi varmış.** Bu, deponun ölçülmüş hata
+sınıfı: `cleanText` bir tarafta düzeltilmiş, diğerinde unutulmuştu. İkisi çekirdeğe
+taşındı — **`kkParcala`** (398 krkt, karaoke yerleşimi) `altyazi.js`e, **`vurguYay`**
+`metin.js`e. Kalan **18**'i `tests/tekrar-taban.json`a yazıldı: liste yalnız
+**küçülebilir**, yeni ad eklenirse kapı kırılır ve artık kopya olmayan bir adı listede
+bırakmak da yasak (taban şişirilerek yeni kopyaya yer açılmasın — kapsam tabanının bir
+kez zehirlendiği sınıfın aynısı).
+
+**③ Derleme sırası doğruymuş ama hiçbir şey onu korumuyormuş.** Bugün zararsız, çünkü
+fonksiyon bildirimleri yukarı taşınıyor ve çekirdekte **yükleme anında koşan tek satır
+yok**. Bir modüle böyle bir satır girdiği gün sıra ölümcül olur (TDZ/ReferenceError) ve
+kimse fark etmez. Artık ikisi de ölçülüyor: hiçbir modül yükleme anında kod koşturamaz,
+ve bir modül başka modülün adını kullanıyorsa `derle.py` onu **önce** gömmek zorunda
+(`klip.js` → `yon.js` bağı testte adıyla kilitli).
+
+**Ölü kod taraması temiz çıktı:** altı modülün tüm bildirimleri ya kabukta çağrılıyor ya
+modül içinde kullanılıyor. (`rtlHarfVar` bu kapıya bir kez takılmış ve silinmişti.)
+
+Dört yeni kasıtlı bozma, bunların dördü de **kapının kendi araçlarını** bozuyor
+(`derle.py` sırası · `tests/kaynak.js` tezgâhı · tekrar tabanı · çekirdek modülü).
+Bozma turu ayrıca **iki eski bozmanın girintiye kilitlendiğini** ortaya çıkardı:
+`vurguYay` çekirdeğe taşınınca girintisi değişti ve iki test (48 ve 70) davranış hiç
+bozulmadan kırıldı — CLAUDE.mddeki "biçime kilitlenmiş desen" sınıfının bu turdaki iki
+vakası. İkisi de iddiaya bağlandı, gevşetilmedi.
+
+---
+
 ### 📊 REKABET TURU — puanı koddan yeniden ölçtüm (63,0 → **64,3**)
 
 30 kategorilik rubrik `tests/144`te aritmetiğiyle duruyordu; gecenin on özelliğinden
@@ -763,9 +805,9 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6069 test** (gece başında 732) · yeni test dosyası: 39–160
+- **6159 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **260 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **264 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

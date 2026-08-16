@@ -76,3 +76,15 @@ function duzMetin(t){
     .replace(/\*/g,'')                     // *vurgu*
     .replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 }
+
+/* ÇOK KELİMELİ VURGUYU KELİMEYE DAĞIT — `*çok önemli*` iki belirtece
+   bölünüyor ve hiçbiri `*…*` kalıbına uymuyordu; vurgu hiç çalışmıyor,
+   yıldızlar ekranda kalıyordu.
+   SINIRLAR KASITLI: yıldızın yanında boşluk olmamalı (`3 * 4 * 5` çarpma
+   kalsın), yıldız dizisi dengeli olmalı (`***x***` olduğu gibi durur) ve
+   eşleşmeyen tek yıldız korunur — yazım hatasını gizlemektense göstermek yeğ.
+   İki kabukta BİREBİR AYNI kopyaydı (2026-08-16 ölçümü); tek kaynağa alındı. */
+function vurguYay(satir){
+  return satir.replace(/(?<!\*)\*{1,2}(?!\*)([^\s*](?:[^*\n]*[^\s*])?)\*{1,2}(?!\*)/g,(m,ic)=>
+    ic.split(/\s+/).map(w=>'*'+w+'*').join(' '));
+}
