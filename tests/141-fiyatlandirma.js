@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, oku, REPO}=require('./kaynak.js');
+const {telefonYolu, oku, REPO, repoOku}=require('./kaynak.js');
 
 /* F.5 — FİYATLANDIRMA ZEMİNİ.
 
@@ -79,8 +79,8 @@ const bel = fs.readFileSync(belgeYol, 'utf8').replace(/\s+/g, ' ');
 {
   /* Belge "on yerde ücretsiz yazıyor ve kapı kilitliyor" diyor. Sayı burada
      ölçülüyor ki belge kendi kendine bayatlamasın. */
-  const vitrin = fs.readFileSync(path.join(REPO, 'tanitim.html'), 'utf8');
-  const magaza = fs.readFileSync(path.join(REPO, 'MAGAZA.md'), 'utf8');
+  const vitrin = repoOku('tanitim.html','SUFLE_VITRIN');
+  const magaza = repoOku('MAGAZA.md','SUFLE_MAGAZA');
   const kac = (tel.match(/Ücretsiz|"price":"0"/g) || []).length
             + (vitrin.match(/[Üü]cretsiz|free|"price":"0"/g) || []).length
             + (magaza.match(/ücretsiz|free/gi) || []).length;

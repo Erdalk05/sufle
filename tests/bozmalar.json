@@ -1853,5 +1853,75 @@
   "kaynak": "telefon",
   "bul": "<script>",
   "koy": "<script>\n/* selfie_segmentation */"
+ },
+ {
+  "ad": "kaydırma dt kıstırması kalktı (takılan kare metni fırlatır)",
+  "test": "74-kaydirma-altin-test.js",
+  "kaynak": "telefon",
+  "bul": "  const dt=Math.min(0.1,(now-lastT)/1000); lastT=now;",
+  "koy": "  const dt=(now-lastT)/1000; lastT=now;"
+ },
+ {
+  "ad": "WPM üst sınırı insan hızının üstüne çıktı",
+  "test": "17-kritik-degerler.js",
+  "kaynak": "telefon",
+  "bul": "function nudgeWpm(d){ st.wpm=Math.min(320,Math.max(40,st.wpm+d));",
+  "koy": "function nudgeWpm(d){ st.wpm=Math.min(900,Math.max(40,st.wpm+d));"
+ },
+ {
+  "ad": "SRT zaman damgası milisaniyeyi doldurmuyor (00:00:01,7)",
+  "test": "80-srt-zaman-damgasi.js",
+  "kaynak": "telefon",
+  "bul": "  return p(h,2)+':'+p(mi,2)+':'+p(sec,2)+sep+p(ms,3);",
+  "koy": "  return p(h,2)+':'+p(mi,2)+':'+p(sec,2)+sep+String(ms);"
+ },
+ {
+  "ad": "kayıt ölünce süre SONRA ölçülüyor (sıfır süreli çekim)",
+  "test": "41-disk-dolu.js",
+  "kaynak": "telefon",
+  "bul": "    pendingDur=recElapsed();        // süreyi ÖNCE ölç: onstop hangi sırada gelirse gelsin doğru olsun\n    logErr('rec',(ev&&ev.error)||ev);\n    toast(m('recDied')); buzz([60,40,60]);\n    if(body.classList.contains('rec')) stopRec();",
+  "koy": "    logErr('rec',(ev&&ev.error)||ev);\n    toast(m('recDied')); buzz([60,40,60]);\n    if(body.classList.contains('rec')) stopRec();\n    pendingDur=recElapsed();"
+ },
+ {
+  "ad": "service worker gezinmeyi önbellekten veriyor (eski sürüm asılı kalır)",
+  "test": "28-service-worker.js",
+  "kaynak": "sw",
+  "bul": "    e.respondWith(fetch(req).catch(() => caches.match('./index.html')));",
+  "koy": "    e.respondWith(caches.match('./index.html').then(h => h || fetch(req)));"
+ },
+ {
+  "ad": "kapanışta konum yazılmadan bırakılıyor (zamanlayıcıya güveniliyor)",
+  "test": "27-kapanista-kaydetme.js",
+  "kaynak": "telefon",
+  "bul": "function kapanistaYaz(){ rememberPos(); saveNow(); }",
+  "koy": "function kapanistaYaz(){ rememberPos(); save(); }"
+ },
+ {
+  "ad": "anahtarlara switch rolü verilmiyor (ekran okuyucu düğme sanır)",
+  "test": "23-erisilebilirlik.js",
+  "kaynak": "telefon",
+  "bul": "  s.setAttribute('tabindex','0'); s.setAttribute('role','switch');",
+  "koy": "  s.setAttribute('tabindex','0');"
+ },
+ {
+  "ad": "service worker gezinmeyi önbellekten veriyor (yeni sürüm kimseye ulaşmaz)",
+  "test": "28-service-worker.js",
+  "kaynak": "sw",
+  "bul": "    e.respondWith(fetch(req).catch(() => caches.match('./index.html')));",
+  "koy": "    e.respondWith(caches.match('./index.html').then(h => h || fetch(req)));"
+ },
+ {
+  "ad": "sözlükte Mac karşılığı düşürüldü (i18n kapsamı sessizce erir)",
+  "test": "122-mac-i18n-kapsami.js",
+  "kaynak": "sozluk",
+  "bul": "  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',",
+  "koy": "  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',"
+ },
+ {
+  "ad": "gizlilik sözü belgeden çıkarıldı",
+  "test": "131-magaza-hazirlik.js",
+  "kaynak": "gizlilik",
+  "bul": "# Sufle — Gizlilik Politikası",
+  "koy": "# Sufle — Privacy notes"
  }
 ]

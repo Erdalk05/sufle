@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {macYolu, oku, REPO}=require('./kaynak.js');
+const {macYolu, oku, REPO, repoOku}=require('./kaynak.js');
 
 /* A.2b/c — MAC i18n KAPSAM KAPISI.
 
@@ -120,7 +120,7 @@ if (taban === null || eksik.length < taban) {
 
 /* ---------- applyLang TÜRKÇEDE NO-OP MU ---------- */
 {
-  const soz = fs.readFileSync(path.join(REPO, 'cekirdek', 'sozluk.js'), 'utf8');
+  const soz = repoOku('cekirdek/sozluk.js','SUFLE_SOZLUK');
   (0, eval)(soz.replace('const I18N=', 'globalThis.__SUFLE_I18N='));
   const I = globalThis.__SUFLE_I18N;
   ok('sözlük okunabildi', !!I && !!I.tr && Object.keys(I.tr).length > 250);

@@ -293,7 +293,7 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
 
 /* ---------- 6) AYAR, SÖZLÜK, ÖLÜ ÇEVİRİNİN CANLANMASI ---------- */
 {
-  const sozluk=oku(path.join(REPO,'cekirdek','sozluk.js'));
+  const sozluk=cekirdekOku('sozluk.js','SUFLE_SOZLUK');
   const anahtarlar=['capTema','ctSade','ctKutu','ctHap','ctSeritsiz','ctVurguHap','ctGolge',
                     'capAnim','kaYok','kaYumusak','kaSicra','cpTop'];
   for(const a of anahtarlar){

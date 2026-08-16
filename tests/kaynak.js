@@ -259,6 +259,19 @@ function dizeSil(kod){
   return out.join('');
 }
 
-module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni,
+/* Depodaki HERHANGİ bir dosyayı ortam değişkenine saygılı okur.
+   NEDEN VAR (2026-08-16de ölçüldü): kapının 8. adımı dosyayı geçici kopyada
+   bozup testin ayırt ettiğini kanıtlıyor — ama test dosyayı DOĞRUDAN depodan
+   okuyorsa bozmayı hiç görmez ve "yakalanmadı" der. Yani `sw.js`, `sozluk.js`,
+   `GIZLILIK.md` gibi kaynaklar için bozma turu SESSİZCE etkisizdi.
+   Verilen yol yoksa hata: sessizce gerçek dosyaya düşmek, bozmayı hiç
+   uygulamadan "geçti" demek olurdu (bu depoda bir kez yaşandı). */
+function repoOku(goreli, envAd){
+  const v = envAd ? process.env[envAd] : null;
+  if (v && !fs.existsSync(v)) throw new Error('Verilen yol yok: ' + v);
+  return fs.readFileSync(v || path.join(REPO, goreli), 'utf8');
+}
+
+module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, repoOku,
                    cozJeton, metinCekirdegi, blokKes, cekirdekOku, dizeSil };
 

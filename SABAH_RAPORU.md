@@ -302,6 +302,37 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🕳 KAPININ KENDİ KÖR NOKTASI — bozma turu 19 yerde SESSİZCE etkisizmiş
+
+Bu turun sorusu şuydu: yarım fonksiyon çıkaran tezgâh, ESKİ testlerin
+iddialarını da anlamsızlaştırmış olabilir mi? **Ölçtüm ve hipotez ÇÜRÜDÜ:**
+tezgâhı kullanan bütün çağrı noktalarında eski ve yeni çıkarım **birebir aynı**
+(0 fark). Yani kusur gerçekti ama etkisi yalnız iki testte görülmüştü.
+
+**Ama ölçüm başka bir şey buldu ve o gerçekten büyük.** Kapının 8. adımı bir
+dosyayı geçici kopyada bozup testin ayırt ettiğini kanıtlıyor — **test dosyayı
+doğrudan depodan okuyorsa bozmayı hiç görmez.** `tests/28` tam bunu yapıyordu:
+`sw.js` bozuldu, test sağlam dosyayı okudu, tur "yakalanmadı" dedi. Ölçüm:
+**19 (test, kaynak) çifti korumasızdı** — service worker, sözlük, mesajlar,
+jetonlar, gizlilik belgesi, mağaza metni, vitrin, `derle.py` ve tezgâhın kendisi.
+Yani en kritik dosyalarımız için **kasıtlı bozma silahı boştu**.
+
+Onarım: `repoOku(yol, env)` tek kaynağa alındı, **on üç test** env destekli
+okumaya taşındı ve `tests/115` bunu **sıfırda kilitledi** — bozulabilir bir
+kaynağı env desteksiz okuyan test kırmızı verir. Tarayıcının kendisi de sentetik
+örneklerle sınanıyor (kötü örneği görmeli, iyi örneği ve yalnız adı geçen
+dosyayı görmemeli), çünkü bu iddiayı kasıtlı bozmayla kanıtlamak mümkün değil:
+bozma turu yalnız KAYNAK tablosundaki dosyaları bozabiliyor, testleri değil.
+
+**Ayrıca kanıtsız test dosyası sayısı ölçüldü: 161 test dosyasının 95'inde hiç
+kasıtlı bozma yoktu** (hepsi bozma otomasyonundan önce yazılmış eski dosyalar).
+Bu turda **yedisi kanıtlandı** (kaydırma altın testi, kritik değerler, SRT zaman
+damgası, disk dolu, kapanışta kaydetme, erişilebilirlik, service worker) ve
+kanıtlı dosya sayısı **66 → 73** oldu. Kalan 88 dosya sonraki turların işi;
+sayı `tests/bozma-taban.json` ile yalnız yukarı gidebiliyor.
+
+---
+
 ### 🔬 G.15 ÖLÇÜM TURU — arka plan bulanıklığı: platform vermiyorsa MODEL gerekir
 
 Plan "önce ölç" diyordu; ölçtüm (gerçek Chrome 151, güvenli bağlam):
@@ -824,9 +855,9 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6163 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6168 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **265 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **275 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

@@ -255,7 +255,7 @@ for(const [ad,k] of [['telefon',tel],['masaüstü',mac]]){
 /* blokKes ortak dosyadan geliyor (tests/kaynak.js) — aynı çıkarım
    kusuru iki testte birden çıktı, kural tek yerde dursun. */
 {
-  const sozluk=oku(require('path').join(__dirname,'..','cekirdek','sozluk.js'));
+  const sozluk=cekirdekOku('sozluk.js','SUFLE_SOZLUK');
   for(const anahtar of ['tgKaraoke','kkHint']){
     const bulunan=[...sozluk.matchAll(new RegExp(anahtar+":'([^']*)'",'g'))].map(m=>m[1]);
     ok('sözlükte '+anahtar+' iki dilde de var (TR+EN)', bulunan.length===2);
@@ -295,7 +295,7 @@ for(const [ad,ham,kod,dev] of [['telefon',telHam,tel,'st'],['masaüstü',macHam,
   const L=hex=>{ const n=parseInt(hex.slice(1),16);
     return 0.2126*lin((n>>16)&255)+0.7152*lin((n>>8)&255)+0.0722*lin(n&255); };
   const oran=(a,b)=>{ const x=L(a),y=L(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); };
-  const jeton=(oku(require('path').join(__dirname,'..','cekirdek','jetonlar.css'))
+  const jeton=(cekirdekOku('jetonlar.css','SUFLE_JETON')
     .match(/--r-warn:\s*(#[0-9a-fA-F]{6})/)||[])[1];
   ok('vurgu rengi jeton dosyasında tanımlı', !!jeton);
   if(jeton){

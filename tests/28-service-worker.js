@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {REPO}=require('./kaynak');
-const src=fs.readFileSync(path.join(REPO,'sw.js'),'utf8');
+const {REPO, repoOku}=require('./kaynak');
+const src=repoOku('sw.js','SUFLE_SW');
 
 /* SERVICE WORKER — PWA'NIN GÜNCELLEME YOLU
    Bugüne kadar tek denetimi kapının "CACHE sayısı arttı mı" kontrolüydü;

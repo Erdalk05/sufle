@@ -114,6 +114,56 @@ function kos(args, kayitIcerik){
      toplamlar.length===1 && +toplamlar[0]===etiketler.length);
 }
 
+/* ---------- BOZMA TURU O TESTE ULAŞABİLİYOR MU ---------- */
+{
+  /* ÖLÇÜLDÜ (2026-08-16): kapının 8. adımı dosyayı geçici kopyada bozup
+     testin ayırt ettiğini kanıtlıyor — ama test dosyayı DOĞRUDAN depodan
+     okuyorsa bozmayı hiç görmez. `tests/28` tam bunu yapıyordu: `sw.js`
+     bozulmuş, test sağlam dosyayı okumuş ve "bozma yakalanmadı" demişti.
+     Yani en kritik kaynaklarımız (service worker, sözlük, gizlilik belgesi,
+     jetonlar) için bozma turu SESSİZCE etkisizdi — kapının kendi kör noktası.
+     Ölçülen: 19 (test, kaynak) çifti korumasızdı; hepsi env destekli okumaya
+     taşındı ve bu iddia sıfırda kilitliyor. */
+  const bozmaPy_metni=fs.readFileSync(bozmaPy,'utf8');
+  const kaynakGovde=(bozmaPy_metni.match(/KAYNAK = \{([\s\S]*?)\n\}/)||['',''])[1];
+  const KAYNAKLAR2=[...kaynakGovde.matchAll(/'([a-z_]+)':\s*\(os\.path\.join\(REPO,\s*([^)]*)\),\s*'([A-Z_]+)'\)/g)]
+    .map(m=>({ad:m[1], dosya:m[2].replace(/['\s]/g,'').split(',').pop(), env:m[3]}));
+  ok('KAYNAK tablosu ayrıştırıldı ('+KAYNAKLAR2.length+')', KAYNAKLAR2.length>=15);
+  const testDizin=path.join(REPO,'tests');
+  const tara=(dosyalar)=>{
+    const bulunan=[];
+    for(const [f,metin] of dosyalar) for(const k of KAYNAKLAR2){
+      /* Telefon ve Mac zaten `kaynak.js` üzerinden env destekli okunuyor. */
+      if(k.ad==='telefon'||k.ad==='mac') continue;
+      /* Dosyayı GERÇEKTEN okuyan bir çağrı olmalı: yalnız adı geçmesi
+         (dışlama listesi, yorum) kusur değil — ilk sürüm böyle iki sahte
+         ihlal üretmişti ve sahte ihlal, gerçek olanı gizler. */
+      const okuyor=new RegExp("(readFileSync|oku|repoOku|cekirdekOku)\\([^\\n]*'"+
+        k.dosya.replace('.','\\.')+"'").test(metin);
+      if(okuyor && !metin.includes(k.env))
+        bulunan.push(f+' → '+k.dosya+' ('+k.env+')');
+    }
+    return bulunan;
+  };
+
+  /* TARAYICININ KENDİSİ ÖLÇÜLÜYOR. Bu iddiayı kasıtlı bozmayla kanıtlamak
+     mümkün değil (bozma turu yalnız KAYNAK tablosundaki dosyaları bozabiliyor,
+     testleri değil), o yüzden tarayıcı sentetik örneklerle sınanıyor:
+     görmezse kapı sessizce yeşil kalırdı. */
+  ok('tarayıcı korumasız okumayı görüyor',
+     tara([['sahte-kotu.js', "const s=fs.readFileSync(path.join(REPO,'sw.js'),'utf8');"]]).length===1);
+  ok('tarayıcı env destekli okumayı görmezden geliyor',
+     tara([['sahte-iyi.js', "const s=repoOku('sw.js','SUFLE_SW');"]]).length===0);
+  ok('tarayıcı yalnız ADI geçen dosyayı ihlal saymıyor',
+     tara([['sahte-anma.js', "/* sw.js hakkinda bir yorum */ const x=1;"]]).length===0);
+
+  const dosyalar=fs.readdirSync(testDizin).filter(a=>/^\d+.*\.js$/.test(a))
+    .map(f=>[f, fs.readFileSync(path.join(testDizin,f),'utf8')]);
+  const korumasiz=tara(dosyalar);
+  ok('bozulabilir kaynağı env desteksiz okuyan test yok'+
+     (korumasiz.length?' — '+korumasiz.slice(0,4).join(' · '):''), korumasiz.length===0);
+}
+
 /* ---------- KANITLI TEST SAYISI DÜŞMESİN ---------- */
 {
   const tb=path.join(REPO,'tests','bozma-taban.json');

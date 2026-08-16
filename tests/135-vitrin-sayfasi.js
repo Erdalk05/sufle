@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, oku, REPO}=require('./kaynak.js');
+const {telefonYolu, oku, REPO, repoOku}=require('./kaynak.js');
 
 /* F.6 — VİTRİN SAYFASI (tanitim.html).
 
@@ -165,7 +165,7 @@ const temiz = v.replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '')
   ok('uygulamaya bağlantı var', /href="\.\/index\.html"/.test(v));
   ok('gizlilik belgesine bağlantı var', /href="\.\/GIZLILIK\.md"/.test(v));
   ok('bağlantı hedefi gerçekten var', fs.existsSync(path.join(REPO, 'index.html')) &&
-     fs.existsSync(path.join(REPO, 'GIZLILIK.md')));
+     fs.existsSync(process.env.SUFLE_GIZLILIK || path.join(REPO, 'GIZLILIK.md')));
   ok('canonical vitrin adresini gösteriyor',
      /<link rel="canonical" href="https:\/\/erdalk05\.github\.io\/sufle\/tanitim\.html">/.test(v));
 }
@@ -176,7 +176,7 @@ const temiz = v.replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '')
      etmez. Vitrin de derle.py ile aynı jetonları gömüyor. */
   ok('jeton bloğu gömülü', /==CEKIRDEK:jetonlar\.css==/.test(v));
   ok('renkler jetondan okunuyor', /var\(--r-action\)/.test(v) && /var\(--s-bg\)/.test(v));
-  const jeton = fs.readFileSync(path.join(REPO, 'cekirdek/jetonlar.css'), 'utf8');
+  const jeton = repoOku('cekirdek/jetonlar.css','SUFLE_JETON');
   const cek = /--r-action:(#[0-9A-Fa-f]{6})/;
   ok('gömülü jeton kaynakla aynı (bayat kopya değil)',
      (jeton.match(cek) || [])[1] === (v.match(cek) || [])[1]);

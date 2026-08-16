@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, oku, macMetni, cikar, cozJeton, REPO}=require('./kaynak.js');
+const {telefonYolu, oku, macMetni, cikar, cozJeton, REPO, repoOku}=require('./kaynak.js');
 
 /* TASARIM KİMLİĞİ — TUR 55.
 
@@ -31,7 +31,7 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
 
 /* ---------- ① DERİNLİK VE BASIŞ ---------- */
 {
-  const jet = fs.readFileSync(path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
+  const jet = repoOku('cekirdek/jetonlar.css','SUFLE_JETON');
   for (const j of ['--el-1', '--el-2', '--el-3'])
     ok('yükselti jetonu tanımlı: ' + j, new RegExp(j + ':').test(jet));
 
@@ -53,7 +53,7 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
 
 /* ---------- HAREKET AZALTMA TERCİHİ ---------- */
 {
-  const jet = fs.readFileSync(path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
+  const jet = repoOku('cekirdek/jetonlar.css','SUFLE_JETON');
   /* Süreleri tek yerden sıfırlamak, her bileşende ayrı kural yazmaktan
      kısa DEĞİL — unutulamaz olduğu için tercih edildi: yeni bir bileşen
      jetonu kullandığı anda kurala uyuyor. */
@@ -91,7 +91,7 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
 /* ---------- ③ ETİKETLERDE SÜS EMOJİSİ YOK ---------- */
 {
   const emoji = /[\u{1F300}-\u{1FAFF}]/u;
-  const sz = fs.readFileSync(path.join(REPO, 'cekirdek', 'sozluk.js'), 'utf8');
+  const sz = repoOku('cekirdek/sozluk.js','SUFLE_SOZLUK');
   const kirli = [...sz.matchAll(/\w+:'([^']*)'/g)].map(m => m[1])
                   .filter(v => emoji.test(v));
   ok('sözlükte emojili etiket yok — ' + kirli.length + (kirli.length ? ' → ' + kirli[0] : ''),
@@ -119,7 +119,7 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
   /* SINIR: bu kural ETİKETLER içindir. Geri bildirim emojileri DURUM
      bildiriyor (✅ oldu / ⚠️ dikkat / ⛔ olmaz) ve onlar süs değil; silinirse
      kullanıcı sonucu ayırt edemez. Kuralın kapsamı burada kilitleniyor. */
-  const msg = fs.readFileSync(path.join(REPO, 'cekirdek', 'mesajlar.js'), 'utf8');
+  const msg = repoOku('cekirdek/mesajlar.js','SUFLE_MESAJ');
   ok('durum emojileri mesajlarda DURUYOR', emoji.test(msg) || /[✅⚠⛔]/.test(msg));
 }
 

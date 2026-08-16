@@ -8,7 +8,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
    unutulur. Tezgâh gerçek çekirdeği yüklüyor — kopya değil. */
 function cekirdek(){
   const fs2=require('fs'), path2=require('path');
-  return fs2.readFileSync(path2.join(require('./kaynak.js').REPO,'cekirdek','kumanda.js'),'utf8');
+  return require('./kaynak.js').cekirdekOku('kumanda.js','SUFLE_KUMANDA');
 }
 
 /* KUMANDA PROFİLİ: DIŞA AKTARMA VARDI, İÇE AKTARMA YOKTU

@@ -42,7 +42,14 @@ const modul={};
 /* Çekirdek dosyaları da ORTAM DEĞİŞKENİNDEN okunuyor (bozma.py bunları
    geçici kopyada bozuyor); gerçek dosyayı okumak, bozmayı hiç görmemek
    demekti — kapı kendini kandırırdı. */
-const ENVAD={'mesajlar.js':'SUFLE_MESAJ','mac-mesajlar.js':'SUFLE_MACMESAJ'};
+const ENVAD={'sozluk.js':'SUFLE_SOZLUK','mesajlar.js':'SUFLE_MESAJ',
+  'mac-mesajlar.js':'SUFLE_MACMESAJ','docx.js':'SUFLE_DOCX','prova.js':'SUFLE_PROVA',
+  'metin.js':'SUFLE_METIN','kumanda.js':'SUFLE_KUMANDA','zorlanma.js':'SUFLE_ZORLANMA',
+  'yon.js':'SUFLE_YON','altyazi.js':'SUFLE_ALTYAZI','tempo.js':'SUFLE_TEMPO',
+  'marka.js':'SUFLE_MARKA','klip.js':'SUFLE_KLIP','muzik.js':'SUFLE_MUZIK'};
+/* Eşleme AÇIK yazılıyor, addan türetilmiyor: türetilmiş ad sessizce
+   tutmayabilir ve o zaman bozma turu bu dosyaya hiç ulaşmaz (kapının
+   2026-08-16da ölçülen kör noktası). */
 const cekYolu=(ad)=>yolVer(ENVAD[ad]||('SUFLE_'+ad.replace('.js','').replace('-','').toUpperCase()),
                            path.join(CEK,ad));
 for(const ad of PLAN){

@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {macYolu, oku, cikar, REPO}=require('./kaynak.js');
+const {macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
 
 /* D.4 — UZAK ÖNİZLEME: telefon kumandasında kameranın gördüğü kare.
 
@@ -83,7 +83,7 @@ const srv = fs.readFileSync(path.join(REPO,'mac','teleprompter_server.py'),'utf8
   /* Kullanıcı ne olduğunu bilmeli: nereye gittiği ve diske yazılmadığı
      açıkça yazılı — jargon değil, düz cümle. */
   ok('nereye gittiği açıkça yazılı', /data-i18n="mPrevHint"/.test(mac));
-  const soz = fs.readFileSync(path.join(REPO,'cekirdek','sozluk.js'),'utf8');
+  const soz = repoOku('cekirdek/sozluk.js','SUFLE_SOZLUK');
   ok('açıklama gizlilik sözü veriyor (kendi ağın, diske yazılmaz)',
      /kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz/.test(soz));
 }

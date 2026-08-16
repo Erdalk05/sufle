@@ -26,7 +26,9 @@ const jetonYolu = (() => {
     throw new Error('Verilen yol yok: ' + v + ' (SUFLE_JETON) — bozma turu hiçbir şey ölçmez.');
   return v || path.join(REPO, 'cekirdek', 'jetonlar.css');
 })();
-const derleYolu = path.join(REPO, 'derle.py');
+const derleYolu = (()=>{ const v=process.env.SUFLE_DERLE;
+  if(v && !fs.existsSync(v)) throw new Error('Verilen yol yok: '+v);
+  return v || path.join(REPO, 'derle.py'); })();
 const kapiYolu  = path.join(REPO, 'kapi.sh');
 
 /* ---------- 1. KONTRAST: değerden hesapla ---------- */
@@ -91,7 +93,7 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
      "kabuk depodaki kaynağa göre taze mi", geçici bozma kopyasıyla ilgisi yok.
      Karıştırılsaydı bozma turunda bu bölüm de kırılır ve 1. bölümdeki kontrast
      iddiasının gerçekten ayırt edip etmediği belirsiz kalırdı. */
-  const kaynak = fs.readFileSync(path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
+  const kaynak = fs.readFileSync(jetonYolu, 'utf8');
   /* Kaynaktan RASTGELE değil, ayırt edici bir satır seç: ölçümle bulunmuş
      ve kolay kolay tesadüfen bulunmayacak bir değer. */
   const imza = (kaynak.match(/--t-low:\s*(#[0-9A-Fa-f]{6})/)||[])[1];

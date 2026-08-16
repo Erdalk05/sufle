@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, oku, REPO}=require('./kaynak.js');
+const {telefonYolu, oku, REPO, repoOku}=require('./kaynak.js');
 
 /* F.4 — MAĞAZA HAZIRLIĞI: manifest + gizlilik.
 
@@ -20,7 +20,7 @@ const {telefonYolu, oku, REPO}=require('./kaynak.js');
 
 const tel = oku(telefonYolu());
 const man = JSON.parse(fs.readFileSync(path.join(REPO,'manifest.json'),'utf8'));
-const gizHam = fs.readFileSync(path.join(REPO,'GIZLILIK.md'),'utf8');
+const gizHam = repoOku('GIZLILIK.md','SUFLE_GIZLILIK');
 /* Belge sarmalı düz yazı: "ses tanıma\nservisine" gibi satır sonunda bölünen
    ifadeler desenle bulunamıyordu. Boşlukları tekleştirip arıyoruz — aranan
    şey CÜMLE, satır düzeni değil. İlk yazımda buna takılıp belgeyi değil

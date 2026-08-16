@@ -1,8 +1,8 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu,oku,cikar,REPO}=require('./kaynak');
+const {telefonYolu,oku,cikar,REPO, repoOku}=require('./kaynak');
 const tel=oku(telefonYolu());
-const sw=fs.readFileSync(path.join(REPO,'sw.js'),'utf8');
+const sw=repoOku('sw.js','SUFLE_SW');
 const manifestHam=fs.readFileSync(path.join(REPO,'manifest.json'),'utf8');
 
 /* MANİFEST BAĞLARI

@@ -106,7 +106,11 @@ ok('işaretleme birleştirmesi kilitleyen desen yok'+
   /* Bu gece üç bozma "yakalanmadı" göründü; oysa bozma dosyaları hiç
      yazılmamıştı ve tezgâh sessizce DEPODAKİ gerçek dosyaya düşmüştü.
      Açıkça verilen yol yanlışsa artık hata veriyor. */
-  const k=fs.readFileSync(path.join(TDIR,'kaynak.js'),'utf8');
+  /* Tezgâh da bozulabilir bir kaynak: env desteği olmadan bozma turu
+     bu iddiaya hiç ulaşamazdı. */
+  const k=(()=>{ const v=process.env.SUFLE_TEZGAH;
+    if(v && !fs.existsSync(v)) throw new Error('Verilen yol yok: '+v);
+    return fs.readFileSync(v || path.join(TDIR,'kaynak.js'),'utf8'); })();
   ok('verilen yol yoksa hata veriliyor (sessizce depoya düşmüyor)',
      /if \(acikYol && !fs\.existsSync\(acikYol\)\)/.test(k));
   ok('telefon yolu bu korumadan geçiyor', /'telefon index\.html', process\.env\.SUFLE_TELEFON\)/.test(k));
