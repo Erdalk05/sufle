@@ -109,3 +109,13 @@ function klipOnerileri(kelimeler, ayar){
   }
   return secilen.sort((x,y)=>x.bas-y.bas);
 }
+
+/* Klibin NEDEN önerildiğinin kullanıcıya görünen karşılığı. Sebep anahtarları
+   bu modülde üretiliyor; metne çevirisi de burada durmalı, yoksa yeni bir
+   sebep eklenince kabuklardan biri sessizce eski listeyle kalır. */
+function klipSebepMetni(k){
+  if(k.sebep==='bolum') return m('klipBolum');
+  if(k.sebep==='vurgu') return m('klipVurgu').replace('{n}', k.vurgu);
+  if(k.sebep==='acilis') return m('klipAcilis');
+  return m('klipCumle');
+}

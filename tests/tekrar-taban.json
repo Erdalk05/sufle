@@ -1,12 +1,11 @@
 {
- "_not": "İki kabukta BİREBİR AYNI gövdeye sahip fonksiyonlar (2026-08-16 ölçümü). Bu liste yalnız KÜÇÜLEBİLİR: yeni bir ad eklenirse tests/161 kırılır. Küçültme yolu, hesabı cekirdek/ altına taşımak (kkParcala ve vurguYay böyle çıktı). Çizim yapanlar (drawMarka, hapYolu) kabukta kalabilir ama tekrar oldukları da gizlenmesin.",
+ "_not": "İki kabukta BİREBİR AYNI gövdeye sahip fonksiyonlar. Bu liste yalnız KÜÇÜLEBİLİR ve artık kopya olmayan bir ad listede BIRAKILAMAZ (tests/161 ikisini de ölçüyor). Küçültme yolu, hesabı cekirdek/ altına taşımak: kkParcala→altyazi.js, vurguYay→metin.js, temaEtiketMetni→altyazi.js, klipSebepMetni→klip.js, yolAdi+yolSebepMetni→kumanda.js böyle çıktı. KALANLARIN TAŞINMAMA SEBEBİ (2026-08-16 ölçümü): drawMarka·hapYolu·kkRenk·kkVurguMetin·klipBasliklari·markaBantAnahtari — tuval/DOM işi, çizim kabuğa özel (repo kuralı: tablo veri, çizim kabukta); markaHazir·muzikBirak·sesBaglamiIsit·stopAudioFx·stopAudioMonitor·syncVoicePtr — kabuğun kendi durum ve ses bağlamı değişkenlerine bağlı (st./state., AudioContext), taşınırsa bağımlılık kabuğa geri döner; verCmp·sozZamanAsimi — SAF ve taşınabilir ama sahibi olan bir modül yok; yalnız bu ikisi için yeni bir çekirdek modülü açmanın bedeli (derle sırası, kapı yüzeyi, bozma kaynağı) faydasından büyük. Üçüncü bir kopya çıkarsa karar yeniden verilir.",
  "birebir": [
   "drawMarka",
   "hapYolu",
   "kkRenk",
   "kkVurguMetin",
   "klipBasliklari",
-  "klipSebepMetni",
   "markaBantAnahtari",
   "markaHazir",
   "muzikBirak",
@@ -15,9 +14,6 @@
   "stopAudioFx",
   "stopAudioMonitor",
   "syncVoicePtr",
-  "temaEtiketMetni",
-  "verCmp",
-  "yolAdi",
-  "yolSebepMetni"
+  "verCmp"
  ]
 }

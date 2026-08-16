@@ -89,3 +89,17 @@ function kumandaYollari(kabuk, durum){
   yollar.push({yol:'internet', durum:'yok', sebep:'sunucuYok'});
   return yollar;
 }
+
+/* Yol adları ve olumsuz durum sebepleri: kural bu modülde, metin karşılığı da
+   burada. İki kabukta birebir aynı kopyalardı. */
+function yolAdi(yol){
+  if(yol==='bt') return t('yolBt');
+  if(yol==='lan') return t('yolLan');
+  return t('yolInternet');
+}
+function yolSebepMetni(sebep){
+  if(sebep==='telefonSunucuYok') return t('yolTelefonSunucuYok');
+  if(sebep==='sunucuKapali') return t('yolSunucuKapali');
+  if(sebep==='sunucuYok') return t('yolSunucuYok');
+  return '';
+}

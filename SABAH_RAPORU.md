@@ -302,6 +302,46 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🧾 KANITSIZ TESTLERİ AZALTMA TURU — 73 → 85 dosya
+
+Kapının en sert ölçütü "test ayırt ediyor mu" ve o ölçüt yalnız **kasıtlı bozma**
+ile kanıtlanıyor. Ölçülen boşluk büyüktü: 161 test dosyasının **88'inde** hiç bozma
+yoktu. Bu turda **on iki dosya** daha kanıtlandı — hepsi kullanıcıya en pahalıya
+mal olacak davranışı koruyanlar:
+
+| test | bozma neyi söküyor |
+|---|---|
+| 13 · kayıt yolu | mikrofon kaybolunca seçim temizlenmiyor → kayıt sessiz gider |
+| 18 · sesle takip | kaybolunca geniş aramaya geç geçiliyor · yanlış kelime eşiği gevşetildi (sufle YANLIŞ yere atlar) |
+| 26 · kayıtta diyalog | Macte kayıt sürerken diyalog engeli kalkıyor → kayıt donar |
+| 35 · arşiv askıda | IndexedDB isteği zaman aşımısız → arşiv sonsuza kadar asılı |
+| 37 · kamera kurtarma | kopan kamera izi yeniden bağlanmıyor |
+| 40 · kayıtta ses ölümü | ses izi ölümü dinlenmiyor → sessizce sessiz kayıt |
+| 42 · arşiv kurtarma | kurtarma kutusu hep gizli → çıkış yolu yok |
+| 69 · yeniden ölçüm | ölçüm her karede değil her olayda → tempo düşer |
+| 79 · arşiv üstveri | liste videoları da taşıyor → ölçülmüş bellek kazası sınıfı |
+| 87 · kayıt türü | MP4 önceliği kalkıyor → galeri ve iOS kabul etmiyor |
+| 91 · altyazı bağı | altyazı çekimin damgası yerine EKRANDAKİ metinden üretiliyor |
+| 94 · ön koşullu ayar | ayarın sebebi yazılmıyor → ölü ayar sınıfı |
+
+**Kanıtlı dosya 73 → 85, bozma 275 → 291.** Kalan 76 dosya sonraki turların işi;
+taban yalnız yukarı gidiyor.
+
+**Tekrar tabanı da küçüldü (18 → 14).** Dört çeviri-eşlemesi çekirdeğe taşındı:
+`temaEtiketMetni`→`altyazi.js`, `klipSebepMetni`→`klip.js`, `yolAdi`+`yolSebepMetni`
+→`kumanda.js`. Kalan on dördün **taşınmama sebebi tabana yazıldı**: altısı tuval/DOM
+işi (çizim kabuğa özel), altısı kabuğun kendi durum ve ses bağlamına bağlı, ikisi
+(`verCmp`, `sozZamanAsimi`) saf ve taşınabilir ama **sahibi olan modül yok** — yalnız
+ikisi için yeni bir çekirdek modülü açmanın bedeli faydasından büyük; üçüncü kopya
+çıkarsa karar yeniden verilir.
+
+**Taşımanın öğrettiği bir şey daha var:** bir hesap çekirdeğe taşınınca, o hesabı
+KABUKTAN okuyan testler için artık çekirdeği bozmak yetmiyor — bozma gömülü kopyaya
+(`telefon`/`mac`) inmeli. İki bozma önce bu yüzden "yakalanmadı" dedi; kaynak
+düzeltildi, iddia gevşetilmedi.
+
+---
+
 ### 🕳 KAPININ KENDİ KÖR NOKTASI — bozma turu 19 yerde SESSİZCE etkisizmiş
 
 Bu turun sorusu şuydu: yarım fonksiyon çıkaran tezgâh, ESKİ testlerin
@@ -855,9 +895,9 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6168 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6176 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **275 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **291 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

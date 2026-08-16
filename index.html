@@ -3744,17 +3744,6 @@ function kartEtiketi(ad){ return TEMA_ETIKET[ad] || ad; }
    çalışıyor ama ölü anahtar taraması yalnız t('...') ve data-i18n
    görüyor: bu depoda çalışma zamanı etiketleri i18n kapsamının kör
    noktası olarak zaten bir kez yakalandı. */
-function temaEtiketMetni(ad){
-  switch(ad){
-    case 'sade':     return t('ctSade');
-    case 'kutu':     return t('ctKutu');
-    case 'hap':      return t('ctHap');
-    case 'seritsiz': return t('ctSeritsiz');
-    case 'vurguHap': return t('ctVurguHap');
-    case 'golge':    return t('ctGolge');
-  }
-  return ad;
-}
 function temaKartlariKur(){
   const kap=$('#capTemaKart'); if(!kap || kap.dataset.kuruldu) return;
   ALTYAZI_TEMA_SIRA.forEach(ad=>{
@@ -4688,12 +4677,6 @@ function klipBasliklari(){
     if(t) harita[i+1]=t;
   });
   return harita;
-}
-function klipSebepMetni(k){
-  if(k.sebep==='bolum') return m('klipBolum');
-  if(k.sebep==='vurgu') return m('klipVurgu').replace('{n}', k.vurgu);
-  if(k.sebep==='acilis') return m('klipAcilis');
-  return m('klipCumle');
 }
 function klipleriGoster(){
   const kutu=$('#klipBox'); if(!kutu) return;
@@ -7102,6 +7085,16 @@ function klipOnerileri(kelimeler, ayar){
   }
   return secilen.sort((x,y)=>x.bas-y.bas);
 }
+
+/* Klibin NEDEN önerildiğinin kullanıcıya görünen karşılığı. Sebep anahtarları
+   bu modülde üretiliyor; metne çevirisi de burada durmalı, yoksa yeni bir
+   sebep eklenince kabuklardan biri sessizce eski listeyle kalır. */
+function klipSebepMetni(k){
+  if(k.sebep==='bolum') return m('klipBolum');
+  if(k.sebep==='vurgu') return m('klipVurgu').replace('{n}', k.vurgu);
+  if(k.sebep==='acilis') return m('klipAcilis');
+  return m('klipCumle');
+}
 /* ==/CEKIRDEK:klip.js== */
 /* ==CEKIRDEK:marka.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/marka.js
@@ -7463,6 +7456,22 @@ function kkParcala(measure, ln, yon){
   const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
   return {parts, xs, gen, toplam, vurguIdx};
 }
+
+/* Tema adının kullanıcıya görünen karşılığı. İKİ KABUKTA BİREBİR AYNI
+   kopyaydı (2026-08-16 tekrar ölçümü): tema listesi burada, adı orada
+   durursa yeni bir tema eklenince biri güncellenir diğeri unutulur — ve
+   kullanıcı iki platformda iki farklı ad görür. `t()` kabuktan geliyor. */
+function temaEtiketMetni(ad){
+  switch(ad){
+    case 'sade':     return t('ctSade');
+    case 'kutu':     return t('ctKutu');
+    case 'hap':      return t('ctHap');
+    case 'seritsiz': return t('ctSeritsiz');
+    case 'vurguHap': return t('ctVurguHap');
+    case 'golge':    return t('ctGolge');
+  }
+  return ad;
+}
 /* ==/CEKIRDEK:altyazi.js== */
 /* ==CEKIRDEK:zorlanma.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/zorlanma.js
@@ -7618,6 +7627,20 @@ function kumandaYollari(kabuk, durum){
   yollar.push({yol:'internet', durum:'yok', sebep:'sunucuYok'});
   return yollar;
 }
+
+/* Yol adları ve olumsuz durum sebepleri: kural bu modülde, metin karşılığı da
+   burada. İki kabukta birebir aynı kopyalardı. */
+function yolAdi(yol){
+  if(yol==='bt') return t('yolBt');
+  if(yol==='lan') return t('yolLan');
+  return t('yolInternet');
+}
+function yolSebepMetni(sebep){
+  if(sebep==='telefonSunucuYok') return t('yolTelefonSunucuYok');
+  if(sebep==='sunucuKapali') return t('yolSunucuKapali');
+  if(sebep==='sunucuYok') return t('yolSunucuYok');
+  return '';
+}
 /* ==/CEKIRDEK:kumanda.js== */
 
 const DEFAULT_MAP={
@@ -7683,17 +7706,6 @@ let remoteTap={k:'',t:0}, tapT=null;
    yol var ve üçüncüsü mimari bir KARAR. Kullanıcının göreceği şey hangisinin
    NEDEN olmadığı: "kumanda çalışmıyor" şikâyetinin yarısı, çalışmayan yolun
    sebebinin hiçbir yerde yazmamasından geliyor. */
-function yolSebepMetni(sebep){
-  if(sebep==='telefonSunucuYok') return t('yolTelefonSunucuYok');
-  if(sebep==='sunucuKapali') return t('yolSunucuKapali');
-  if(sebep==='sunucuYok') return t('yolSunucuYok');
-  return '';
-}
-function yolAdi(yol){
-  if(yol==='bt') return t('yolBt');
-  if(yol==='lan') return t('yolLan');
-  return t('yolInternet');
-}
 function yollariYaz(){
   const kap=$('#yolListe'); if(!kap) return;
   kap.innerHTML='';

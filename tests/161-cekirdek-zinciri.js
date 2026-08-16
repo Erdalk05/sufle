@@ -197,7 +197,7 @@ for(const ad of PLAN){
   ok('yeni birebir kopya eklenmedi'+(yeni.length?' — '+yeni.join(', '):''), yeni.length===0);
   /* Taşınanlar geri gelmemeli: çekirdeğe alınan bir hesabın kabuğa geri
      kopyalanması, bu turun tamamını geri alır. */
-  for(const f of ['kkParcala','vurguYay']){
+  for(const f of ['kkParcala','vurguYay','temaEtiketMetni','klipSebepMetni','yolAdi','yolSebepMetni']){
     ok(f+' artık kabukta ayrı yazılmıyor (çekirdekte)', cekAd.has(f) && !tekrar.includes(f));
   }
   /* TABAN SADECE KÜÇÜLEBİLİR ve YALAN SÖYLEYEMEZ: artık kopya olmayan bir

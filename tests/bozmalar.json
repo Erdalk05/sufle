@@ -1923,5 +1923,117 @@
   "kaynak": "gizlilik",
   "bul": "# Sufle — Gizlilik Politikası",
   "koy": "# Sufle — Privacy notes"
+ },
+ {
+  "ad": "mikrofon kaybolunca seçim temizlenmiyor (kayıt sessiz gider)",
+  "test": "13-kayit-yolu-ve-durum.js",
+  "kaynak": "telefon",
+  "bul": "        st.micId=null; save();",
+  "koy": "        save();"
+ },
+ {
+  "ad": "ses izi ölümü dinlenmiyor (kayıt sessizce sessiz kalır)",
+  "test": "40-kayitta-ses-olumu.js",
+  "kaynak": "telefon",
+  "bul": "  const aIz=stream.getAudioTracks()[0];",
+  "koy": "  const aIz=null;"
+ },
+ {
+  "ad": "arşiv kurtarma kutusu her zaman gizli (çıkış yolu yok)",
+  "test": "42-arsiv-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "  box.style.display = arsivHatasi ? '' : 'none';",
+  "koy": "  box.style.display = 'none';"
+ },
+ {
+  "ad": "arşiv listesi videoları da taşıyor (12 MP fotoğraf sınıfı bellek kazası)",
+  "test": "79-arsiv-ustveri-video.js",
+  "kaynak": "telefon",
+  "bul": "      const {blob, ...ustveri}=c.value;      // videoyu BIRAK\n      ustveri.videoVar=!!blob;",
+  "koy": "      const ustveri={...c.value};\n      ustveri.videoVar=!!c.value.blob;"
+ },
+ {
+  "ad": "MP4 önceliği kalktı (galeri ve iOS webm kabul etmiyor)",
+  "test": "87-kayit-turu-ve-uzanti.js",
+  "kaynak": "telefon",
+  "bul": "    ? ['video/mp4','video/webm']",
+  "koy": "    ? ['video/webm','video/mp4']"
+ },
+ {
+  "ad": "IndexedDB isteği zaman aşımısız (arşiv sonsuza kadar asılı kalır)",
+  "test": "35-arsiv-askida-kalma.js",
+  "kaynak": "telefon",
+  "bul": "  }, 10000, [], 'dbListe');",
+  "koy": "  }, 10000000, [], 'dbListe');"
+ },
+ {
+  "ad": "ön koşullu ayarın sebebi yazılmıyor (ölü ayar sınıfı)",
+  "test": "94-on-kosullu-ayarlar.js",
+  "kaynak": "telefon",
+  "bul": "    ['stopAtSection', ()=>sections.length>0,\n     L==='tr'?'senaryoda bölüm başlığı yok (# ile ekle)':'no section headings in the script'],",
+  "koy": "    ['stopAtSection', ()=>sections.length>0, ''],"
+ },
+ {
+  "ad": "yeniden ölçüm her karede değil her olayda (tempo düşer)",
+  "test": "69-yeniden-olcum-kare-basina.js",
+  "kaynak": "telefon",
+  "bul": "function olcPlanla(){\n  if(olcRaf!=null) return;\n  olcRaf=requestAnimationFrame(()=>{ olcRaf=null; yenidenOlc(); });\n}",
+  "koy": "function olcPlanla(){\n  yenidenOlc();\n}"
+ },
+ {
+  "ad": "altyazı çekimin anlık görüntüsü yerine EKRANDAKİ metinden üretiliyor",
+  "test": "91-altyazi-cekime-baglandi.js",
+  "kaynak": "telefon",
+  "bul": "  const kaynak = cekimAltyazi\n    ? cekimAltyazi\n    : words.map((w,i)=>({s:w.textContent, ln:wordLine[i], t:capTimes[i]}));",
+  "koy": "  const kaynak = words.map((w,i)=>({s:w.textContent, ln:wordLine[i], t:capTimes[i]}));"
+ },
+ {
+  "ad": "sesle takip kaybolunca geniş aramaya geç geçiyor (takılma hissi)",
+  "test": "18-sesle-takip.js",
+  "kaynak": "telefon",
+  "bul": "kayipSure>1200",
+  "koy": "kayipSure>3000"
+ },
+ {
+  "ad": "yanlış kelime eşleşmesi gevşetildi (sufle YANLIŞ yere atlar)",
+  "test": "18-sesle-takip.js",
+  "kaynak": "telefon",
+  "bul": "  else if(ok>=4 && ok>=kisa*0.7) return true;",
+  "koy": "  else if(ok>=4 && ok>=kisa*0.55) return true;"
+ },
+ {
+  "ad": "kopan kamera izi yeniden bağlanmıyor (çekim donuk sürer)",
+  "test": "37-kamera-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "  if(v && v.readyState==='ended'){ logErr('cam','track ended'); if(await openCam()) toast(m('camBack')); }",
+  "koy": "  if(v && v.readyState==='ended'){ logErr('cam','track ended'); }"
+ },
+ {
+  "ad": "Macte kayıt sürerken diyalog engeli kalktı (kayıt donar)",
+  "test": "26-kayitta-diyalog.js",
+  "kaynak": "mac",
+  "bul": "  function diyalogKapisi(){\n    if(!kayitSuruyor()) return false;",
+  "koy": "  function diyalogKapisi(){\n    if(true) return false;\n    if(!kayitSuruyor()) return false;"
+ },
+ {
+  "ad": "tema adı çeviriden koparıldı (telefon)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    case 'sade':     return t('ctSade');",
+  "koy": "    case 'sade':     return 'Sade';"
+ },
+ {
+  "ad": "tema adı çeviriden koparıldı (mac)",
+  "test": "152-onizleme-kartlari.js",
+  "kaynak": "mac",
+  "bul": "    case 'sade':     return t('ctSade');",
+  "koy": "    case 'sade':     return 'Sade';"
+ },
+ {
+  "ad": "klip sebebi çeviriden koparıldı (telefon)",
+  "test": "155-klip-onerileri.js",
+  "kaynak": "telefon",
+  "bul": "  if(k.sebep==='bolum') return m('klipBolum');",
+  "koy": "  if(k.sebep==='bolum') return 'bolum';"
  }
 ]

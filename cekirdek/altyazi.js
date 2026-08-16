@@ -115,3 +115,19 @@ function kkParcala(measure, ln, yon){
   const vurguIdx = yon==='rtl' ? 0 : parts.length-1;
   return {parts, xs, gen, toplam, vurguIdx};
 }
+
+/* Tema adının kullanıcıya görünen karşılığı. İKİ KABUKTA BİREBİR AYNI
+   kopyaydı (2026-08-16 tekrar ölçümü): tema listesi burada, adı orada
+   durursa yeni bir tema eklenince biri güncellenir diğeri unutulur — ve
+   kullanıcı iki platformda iki farklı ad görür. `t()` kabuktan geliyor. */
+function temaEtiketMetni(ad){
+  switch(ad){
+    case 'sade':     return t('ctSade');
+    case 'kutu':     return t('ctKutu');
+    case 'hap':      return t('ctHap');
+    case 'seritsiz': return t('ctSeritsiz');
+    case 'vurguHap': return t('ctVurguHap');
+    case 'golge':    return t('ctGolge');
+  }
+  return ad;
+}
