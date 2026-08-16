@@ -232,7 +232,33 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 - **Ne:** senaryolara "çekilecek/çekildi/yayınlandı" durumu + tarih; **hesapsız, cihazda**.
 - **Kabul:** localStorage tavanı (4,94 MB) ölçülmüş sınırın içinde kalsın.
 
-### G.9 — Göz teması düzeltme · **ÖLÇÜLECEK, sonra karar**
+### G.9 — Göz teması düzeltme · ✅ **ÖLÇÜLDÜ (16 Ağustos) → ALINMADI**
+
+**Ölçüm (gerçek tarayıcı, Chrome 151, güvenli bağlam, macOS):**
+
+| ölçülen | sonuç |
+|---|---|
+| Shape Detection API | yalnız **BarcodeDetector** — `FaceDetector` **yok** |
+| bakış/yüz ile ilgili medya kısıtı | **0** |
+| iz yeteneklerinde bakış/yüz alanı | **0** |
+| WebNN (`navigator.ml`) | **yok** |
+| WebGPU · WASM SIMD | **var** · **var** |
+
+**Okunuşu:** model KOŞAR (WebGPU + SIMD var) ama modeli **indirmek** gerekir —
+platformun hazır yüz/bakış desteği yok. Yani G.15 ile birebir aynı denklem:
+tek dosya ve sıfır bağımlılık sözü kırılır. Üstelik bu özellikte **yanlış
+düzeltmenin bedeli** de var: bakışı kaydıran bir model, kişiyi tuhaf gösterir ve
+kullanıcı bunu ancak yayından sonra fark eder.
+
+**Alınmadı.** Bunun yerine zaten yapılan şey ölçülü: okuma çizgisini kameranın
+altına alma, göz şeridi ve mesafe uyarısı — rekabet rubriğinde 6. kategori
+(göz teması araçları) bu yüzden **5/5**. Yani sorunu AI olmadan çözüyoruz;
+BIGVU'nun 19. kategoride aldığı 5 puan bizde 0 ve **bilerek** 0.
+`tests/161` kararı kilitliyor (yüz ağı modeli belirirse kapı kırılır, kasıtlı
+bozmayla kanıtlandı).
+
+<!-- ölçümden önceki plan notu -->
+#### Önceki plan
 - **Ne:** ML gaze-correction. Model gerektiriyor → "sıfır bağımlılık" sözünü **kırar**.
 - **Karar ölçütü:** model boyutu, cihazda kare hızı ve **yanlış düzeltmenin bedeli** ölçülmeden
   yazılmaz. `ffmpeg.wasm` ve OpenDyslexic'te verilen aynı karar süreci.

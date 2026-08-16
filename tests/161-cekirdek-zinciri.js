@@ -223,9 +223,15 @@ for(const ad of PLAN){
      ffmpeg.wasm, mammoth.js ve OpenDyslexic ile aynı karar.
      Bu blok o kararı kilitliyor: bir gün model eklenirse kapı önce kırılır. */
   const tel=oku(telefonYolu()), mac=oku(macYolu());
-  const MODEL=/mediapipe|selfie_segmentation|tensorflow|tfjs|\.tflite|\.onnx|onnxruntime|bodypix/i;
+  /* G.9 ÖLÇÜMÜ (2026-08-16, aynı tarayıcı): göz teması düzeltmesi için de
+     platform desteği YOK. Shape Detection API'de yalnız `BarcodeDetector`
+     var, `FaceDetector` yok; kısıt ve iz yeteneklerinde bakış/yüz ile ilgili
+     tek alan yok; WebNN yok (WebGPU ve WASM SIMD var, yani model KOŞAR ama
+     model İNDİRMEK gerekir). Karar G.15 ile aynı: alınmadı. Desen listesi
+     yüz/bakış modellerini de kapsıyor. */
+  const MODEL=/mediapipe|selfie_segmentation|tensorflow|tfjs|\.tflite|\.onnx|onnxruntime|bodypix|facemesh|face_landmark|face_mesh|gaze_/i;
   for(const [ad,kod] of [['telefon',tel],['masaüstü',mac]]){
-    ok(ad+': segmentasyon modeli yüklenmiyor', !MODEL.test(kod));
+    ok(ad+': segmentasyon ya da yüz modeli yüklenmiyor', !MODEL.test(kod));
     /* Model olmadan bulanıklık YEŞİL EKRANLA yapılıyor; o yol duruyor mu. */
     ok(ad+': yeşil ekran yolu duruyor', /chroma|yesil|greenScreen|gl\b/i.test(kod));
   }

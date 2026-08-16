@@ -2035,5 +2035,75 @@
   "kaynak": "telefon",
   "bul": "  if(k.sebep==='bolum') return m('klipBolum');",
   "koy": "  if(k.sebep==='bolum') return 'bolum';"
+ },
+ {
+  "ad": "sesle takip sağlık ölçütü üretime bakmıyor (iPhone duraklaması arıza sayılır)",
+  "test": "36-sesle-takip-yeniden-baslatma.js",
+  "kaynak": "telefon",
+  "bul": "    const saglikli = srSonuc || (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);",
+  "koy": "    const saglikli = (srBasladi && performance.now()-srBasladi >= SR_SAGLIKLI_MS);"
+ },
+ {
+  "ad": "WebGL bağlamı kayıt sırasında koparsa kayıt sürüyor (donmuş kare kaydeder)",
+  "test": "38-kompozit-baglam-kaybi.js",
+  "kaynak": "telefon",
+  "bul": "      if(kayitta){ logErr('gl','kayıt sırasında koptu @'+recElapsed().toFixed(1)+'s');\n                   toast(m('glLostRec')); buzz([60,40,60,40,60]); stopRec(); }\n      else toast(m('glLost'));",
+  "koy": "      toast(m('glLost'));"
+ },
+ {
+  "ad": "kayıt sürerken kamera değiştirme engeli kalktı (çekimin sesi ölür)",
+  "test": "53-ayar-uygulanmadi.js",
+  "kaynak": "telefon",
+  "bul": "function kameraDegisebilir(){\n  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }",
+  "koy": "function kameraDegisebilir(){"
+ },
+ {
+  "ad": "ışık ölçüm ızgarası değişti (bölen sıfır olabilir)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "telefon",
+  "bul": "  for(let y=0;y<48;y++) for(let x=0;x<32;x++){",
+  "koy": "  for(let y=0;y<0;y++) for(let x=0;x<32;x++){"
+ },
+ {
+  "ad": "kayıt sürerken openCam boğaz noktası açıldı (çekimin sesi ölür)",
+  "test": "39-kayitta-kamera-degistirme.js",
+  "kaynak": "telefon",
+  "bul": "  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }\n  try{\n    if(stream) stream.getTracks().forEach(x=>x.stop());",
+  "koy": "  try{\n    if(stream) stream.getTracks().forEach(x=>x.stop());"
+ },
+ {
+  "ad": "yumuşak tire temizlenmiyor (kelime sesle takipte eşleşmez)",
+  "test": "59-gorunmez-karakterler.js",
+  "kaynak": "telefon",
+  "bul": "    .replace(/\\u00AD/g,'')                             // yumuşak tire (Word)",
+  "koy": "                                                       // yumuşak tire (Word)"
+ },
+ {
+  "ad": "yeşil ekran yumuşaklığı sıfıra düşebiliyor (ölü ayar)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "    gl.uniform1f(gl.getUniformLocation(comp.pr,'smo'),Math.max(0.01,(st.keySmooth||10)/100));",
+  "koy": "    gl.uniform1f(gl.getUniformLocation(comp.pr,'smo'),(st.keySmooth||10)/100);"
+ },
+ {
+  "ad": "toplu silme yıldızlı çekimleri de siliyor (geri alınamaz kayıp)",
+  "test": "85-toplu-silme-koruma.js",
+  "kaynak": "telefon",
+  "bul": "$('#takesWipe').onclick=async()=>{\n  const all=await dbListe(), kill=all.filter(x=>!x.fav);",
+  "koy": "$('#takesWipe').onclick=async()=>{\n  const all=await dbListe(), kill=all;"
+ },
+ {
+  "ad": "paylaşım iptali hata sanılıyor (kullanıcı dosyayı kaybettiğini sanır)",
+  "test": "90-paylasim-iptali.js",
+  "kaynak": "telefon",
+  "bul": "      if(e.name==='AbortError'){ shareCancelled(); return; }",
+  "koy": "      if(false){ shareCancelled(); return; }"
+ },
+ {
+  "ad": "G.9 sıfır bağımlılık sözü kırıldı (yüz ağı modeli eklendi)",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "mac",
+  "bul": "<script>",
+  "koy": "<script>\n/* facemesh */"
  }
 ]

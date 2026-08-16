@@ -845,8 +845,8 @@ daha doğru** yapabiliyoruz. Tur 56'nın ölçümü de aynı yönü gösteriyord
 tavan **81,9**, o gün **63,0** — BIGVU **65,3**.
 
 **TUR KAPANDI (16 Ağustos, v9.14).** On bir madde bitti (G.1–G.6, G.10–G.14 ve G.17),
-biri gerekçeli **alınmadı** (G.16 · PDF), üçü **açık kaldı** ve üçünün de sebebi
-ölçülmemiş olması (G.7, G.8, G.9); G.15 **ölçüldü ve gerekçeyle elendi** — açık maddeyi kapalı göstermek bu deponun
+biri gerekçeli **alınmadı** (G.16 · PDF), ikisi **açık kaldı** ve ikisinin de sebebi
+ölçülmemiş olması (G.7, G.8); **G.9 ve G.15 ölçüldü ve gerekçeyle elendi** — açık maddeyi kapalı göstermek bu deponun
 en pahalı hata sınıfı. Rekabet skoru yeniden ölçüldü: **63,0 → 64,3** (hâlâ 4.,
 BIGVU'nun **1,0 puan** altında). Puan yalnız iki kategoride oynadı (15 · video
 düzenleme 3→4, 28 · çok dil ve RTL 1→3) ve diğer sekiz özelliğin **neden puan
@@ -863,7 +863,7 @@ saymak puan kazandırmıyor, kategorinin ölçtüğü şeyi yapmak kazandırıyo
 | **G.6** | klip üreteci (Auto-Shorts karşılığı, AI'sız) | ✅ klip önerileri — `cekirdek/klip.js`, `tests/155`; kesim kaynağı koruyor `tests/160` |
 | **G.7** | intro/outro + alt bant animasyonu | ⏳ **açık (P2)** — alt bant tarafı G.4 ile geldi; intro/outro video birleştirme gerektiriyor ve tarayıcıda maliyeti **ölçülmedi** |
 | **G.8** | içerik planlayıcı (cihazda, hesapsız) | ⏳ **açık (P2)** — karar verilmedi; localStorage tavanı (4,94 MB) ölçülü, iş kendisi yapılmadı |
-| **G.9** | göz teması düzeltme (ML) | ⏸ **karar ölçüme bağlı** — model boyutu ve kare hızı ölçülmedi, o yüzden ne alındı ne elendi |
+| **G.9** | göz teması düzeltme (ML) | ✅ **ölçüldü → alınmadı**: `FaceDetector` yok, bakış kısıtı yok, WebNN yok; model indirmek gerekir (`tests/161`) |
 | **G.10** | vitrin + mağaza metnine ölçülmüş üstünlükler | ✅ vitrin + mağaza metni — `tests/132`, `tests/133` (her cümle koda bağlı) |
 | **G.11** | süreye sığdır (sabit süreli kaydırma) | ✅ süreye sığdır — `cekirdek/tempo.js`, `tests/153` (adım yukarı yuvarlanıyor) |
 | **G.12** | sağdan sola diller (Arapça/İbranice) | ✅ sağdan sola — `cekirdek/yon.js`, `tests/157` (3 dil × 3 genişlik ölçüldü) |

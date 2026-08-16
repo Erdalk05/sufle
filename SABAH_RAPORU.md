@@ -302,6 +302,34 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🧾 KANITSIZ TESTLER 85 → 94 · G.9 DA ÖLÇÜLDÜ VE ELENDİ
+
+Dokuz eski test dosyası daha kasıtlı bozmayla kanıtlandı (36 · 38 · 39 · 51 · 53 ·
+59 · 72 · 85 · 90): sesle takip sağlık ölçütü, WebGL bağlamı kayıt sırasında
+koparsa kaydın bitirilmesi, kayıt sürerken kamera boğaz noktası (iki ayrı yol),
+ışık ölçüm ızgarası, yumuşak tire temizliği, yeşil ekran yumuşaklığının sıfıra
+düşmesi, **toplu silmede yıldızlı çekimlerin korunması** ve paylaşım iptalinin
+hata sanılmaması. **Kanıtlı dosya 85 → 94, bozma 291 → 300.**
+
+**Ölçüm tezgâhının kendi tuzağı yine çıktı:** ilk yazdığım bozma "deneme sınırını
+5ten 60a çıkar" idi ve testi KIRMADI, **askıda bıraktı** — yeniden başlatma
+gecikmesi `250*srFails` ile büyüdüğü için gerçek zamanlayıcılar dakikalarca
+bekliyordu. Kapı bunu 60 sn tavanıyla kırmızı yapardı ama bozma turu doğrudan
+koşturuyor. Bozmayı davranışın kendisine (sağlık ölçütü) taşıdım; askıda kalan
+bozma yazmak, ölçmeyen bozma yazmakla aynı sınıf.
+
+**G.9 (göz teması düzeltme) ölçüldü:** Chrome 151'de Shape Detection API'de yalnız
+`BarcodeDetector` var — **`FaceDetector` yok**; bakış/yüz ile ilgili tek medya
+kısıtı ya da iz yeteneği yok; **WebNN yok** (WebGPU ve WASM SIMD var, yani model
+koşar ama **indirmek** gerekir). G.15 ile birebir aynı denklem → **alınmadı**, ve
+bu özellikte ayrıca **yanlış düzeltmenin bedeli** var (bakışı kaydıran model kişiyi
+tuhaf gösterir, kullanıcı ancak yayından sonra fark eder). Zaten yaptığımız iş
+ölçülü: okuma çizgisini kameranın altına alma + göz şeridi + mesafe uyarısı, ve
+rekabet rubriğinde 6. kategori bu yüzden **5/5**. `tests/161` kararı kilitledi
+(yüz ağı modeli belirirse kapı kırılır — kasıtlı bozmayla kanıtlandı).
+
+---
+
 ### 🧾 KANITSIZ TESTLERİ AZALTMA TURU — 73 → 85 dosya
 
 Kapının en sert ölçütü "test ayırt ediyor mu" ve o ölçüt yalnız **kasıtlı bozma**
@@ -891,13 +919,13 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  **15 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
+  **20 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6176 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6175 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **291 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **300 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
