@@ -379,7 +379,33 @@ Doğru yöntem: `cekirdek/sozluk.js`'te **kullanıcının gördüğü metni** ar
   göstergesinden okunuyor ve gösterge değişince liste tazeleniyor.
 - **Kapı:** `tests/159` **67 iddia** + **8 kasıtlı bozma** (toplam 246).
 
-### G.15 — Arka planı bulanıklaştırma (yeşil ekransız) · **ÖNCE ÖLÇÜM**
+### G.15 — Arka planı bulanıklaştırma (yeşil ekransız) · ✅ **ÖLÇÜLDÜ (16 Ağustos)**
+
+**Ölçüm (gerçek tarayıcı, Chrome 151, güvenli bağlam, macOS):**
+
+| ölçülen | sonuç |
+|---|---|
+| `getSupportedConstraints()` toplam kısıt | **36** |
+| bulanıklık/arka planla ilgili kısıt | **0** (`backgroundBlur` **yok**) |
+| kamera izinin yetenek listesi | aspectRatio · deviceId · exposureMode · exposureTime · facingMode · focusDistance · focusMode · frameRate · groupId · height · resizeMode · width — **bulanıklık yok** |
+| CSS `filter: blur()` | var (ama **tüm kareye** uygulanır, kişiyi ayıramaz) |
+
+**Çıkan karar:** platformun kendi bulanıklaştırması W3C taslağında (`backgroundBlur`)
+var ama bu makinede **yok**; Chrome bu yeteneği yalnız işletim sistemi verirse
+gösteriyor (Windows Studio Effects). Yani yeşil ekransız bulanıklık için
+**segmentasyon modeli** gerekir ve o da **sıfır bağımlılık sözünü kırar** —
+`ffmpeg.wasm`, `mammoth.js` ve OpenDyslexic ile **aynı karar**: alınmadı.
+`tests/161` bu kararı kilitliyor (kodda model yükleyici belirirse kapı kırılır) ve
+bir kasıtlı bozmayla kanıtlandı.
+
+**AÇIK KALAN TEK YOL (Erdal kararı):** yetenek VARSA kullan — kısıt desteklenen bir
+cihazda (bugün: Windows Studio Effects) anahtarı göster, desteklemeyende sebebini yaz.
+Maliyeti düşük ama **doğrulanamıyor**: elimizdeki hiçbir platform bu yeteneği
+vermiyor, yani yazılsa "açık ama hiçbir şey olmuyor" sınıfına girme riski var ve
+kanıtsız yayınlamak bu depoda yasak. Ölçüm cihazı çıkınca 30 dakikalık iş.
+
+<!-- eski plan notu -->
+#### Önceki plan (ölçümden önce yazılmıştı)
 - **Sıra:** ① platformun kendi API'si var mı ölç (`getUserMedia` kısıtları / işletim sistemi
   video efektleri) ② yoksa segmentasyon modeli gerekir ve bu **"sıfır bağımlılık" sözünü kırar**
   → `ffmpeg.wasm`, `mammoth.js`, OpenDyslexic ile aynı karar süreci, ölçmeden yazılmaz.

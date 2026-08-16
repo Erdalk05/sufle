@@ -302,6 +302,25 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🔬 G.15 ÖLÇÜM TURU — arka plan bulanıklığı: platform vermiyorsa MODEL gerekir
+
+Plan "önce ölç" diyordu; ölçtüm (gerçek Chrome 151, güvenli bağlam):
+`getSupportedConstraints()` **36 kısıt** döndürüyor ve **hiçbiri** bulanıklıkla ilgili
+değil; kamera izinin yetenek listesi de değil (odak, pozlama, kare hızı, çözünürlük —
+bulanıklık yok). W3C taslağındaki `backgroundBlur` yalnız işletim sistemi verirse
+görünüyor (bugün: Windows Studio Effects).
+
+**Karar: ALINMADI** — yeşil ekransız bulanıklık segmentasyon modeli ister, o da
+"sıfır bağımlılık" sözünü kırar. `ffmpeg.wasm`, `mammoth.js` ve OpenDyslexic ile aynı
+karar süreci. `tests/161` kararı kilitledi: kodda bir model yükleyici belirirse kapı
+önce kırılır (bir kasıtlı bozmayla kanıtlandı).
+
+**Erdal kararına bırakılan tek yol:** yetenek varsa kullan (destekleyen cihazda anahtar,
+desteklemeyende sebep). Ucuz ama **elimizdeki hiçbir platform bu yeteneği vermediği için
+doğrulanamıyor** — kanıtsız yayınlamamak adına yazmadım.
+
+---
+
 ### 🧩 ÇEKİRDEK ZİNCİRİ TURU — üç bulgu, üçü de ÖLÇÜM ARACININ kör noktası
 
 Gecede altı yeni çekirdek modülü eklendi (yon · altyazi · tempo · marka · klip · muzik)
@@ -805,9 +824,9 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6159 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6163 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **264 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **265 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

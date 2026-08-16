@@ -1846,5 +1846,12 @@
   "kaynak": "tekrar_taban",
   "bul": "\"birebir\": [",
   "koy": "\"birebir\": [\n  \"kkParcala\","
+ },
+ {
+  "ad": "G.15 sıfır bağımlılık sözü kırıldı (segmentasyon modeli eklendi)",
+  "test": "161-cekirdek-zinciri.js",
+  "kaynak": "telefon",
+  "bul": "<script>",
+  "koy": "<script>\n/* selfie_segmentation */"
  }
 ]

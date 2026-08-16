@@ -845,8 +845,8 @@ daha doğru** yapabiliyoruz. Tur 56'nın ölçümü de aynı yönü gösteriyord
 tavan **81,9**, o gün **63,0** — BIGVU **65,3**.
 
 **TUR KAPANDI (16 Ağustos, v9.14).** On bir madde bitti (G.1–G.6, G.10–G.14 ve G.17),
-biri gerekçeli **alınmadı** (G.16 · PDF), dördü **açık kaldı** ve dördünün de sebebi
-ölçülmemiş olması (G.7, G.8, G.9, G.15) — açık maddeyi kapalı göstermek bu deponun
+biri gerekçeli **alınmadı** (G.16 · PDF), üçü **açık kaldı** ve üçünün de sebebi
+ölçülmemiş olması (G.7, G.8, G.9); G.15 **ölçüldü ve gerekçeyle elendi** — açık maddeyi kapalı göstermek bu deponun
 en pahalı hata sınıfı. Rekabet skoru yeniden ölçüldü: **63,0 → 64,3** (hâlâ 4.,
 BIGVU'nun **1,0 puan** altında). Puan yalnız iki kategoride oynadı (15 · video
 düzenleme 3→4, 28 · çok dil ve RTL 1→3) ve diğer sekiz özelliğin **neden puan
@@ -869,7 +869,7 @@ saymak puan kazandırmıyor, kategorinin ölçtüğü şeyi yapmak kazandırıyo
 | **G.12** | sağdan sola diller (Arapça/İbranice) | ✅ sağdan sola — `cekirdek/yon.js`, `tests/157` (3 dil × 3 genişlik ölçüldü) |
 | **G.13** | erişilebilir yazı tipi seçimi (dış font YOK) | ✅ 5 yazı tipi ailesi + kalınlık/aralık paritesi — `tests/158`; dış font indirilmiyor |
 | **G.14** | kumanda bağlantı zinciri — sebebi yazsın | ✅ kumanda yolları + sebep — `tests/159` |
-| **G.15** | yeşil ekransız arka plan bulanıklığı | ⏸ önce ölçüm — açık |
+| **G.15** | yeşil ekransız arka plan bulanıklığı | ✅ **ölçüldü → alınmadı**: platformda `backgroundBlur` yok (36 kısıt, 0 eşleşme), model "sıfır bağımlılık" sözünü kırar (`tests/161`) |
 | **G.16** | PDF içe aktarma | ⛔ **ALINMADI** (gerekçe yazılı) |
 
 **Teleprompter.com turu (aynı gün):** asıl işi sufle olan rakip ölçüldü. Onlarda **Pro'ya

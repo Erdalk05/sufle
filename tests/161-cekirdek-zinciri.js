@@ -202,3 +202,24 @@ for(const ad of PLAN){
   ok('taban güncel (ölçülen '+tekrar.length+' · taban '+taban.birebir.length+')',
      tekrar.length===taban.birebir.length);
 }
+
+/* ---------- 6) DIŞ MODEL BAĞIMLILIĞI YOK (G.15 kararının kilidi) ---------- */
+{
+  /* G.15 ÖLÇÜLDÜ (2026-08-16, Chrome 151, güvenli bağlamda gerçek tarayıcı):
+     platformun kendi arka plan bulanıklaştırması `backgroundBlur` kısıtı
+     olarak W3C taslağında VAR ama bu makinede YOK — 36 kısıtın hiçbiri
+     bulanıklıkla ilgili değil ve kamera izinin yetenek listesi de
+     (aspectRatio · deviceId · exposureMode · exposureTime · facingMode ·
+     focusDistance · focusMode · frameRate · groupId · height · resizeMode ·
+     width) bulanıklık taşımıyor. Yani yeşil ekransız bulanıklık için
+     SEGMENTASYON MODELİ gerekirdi ve o da "sıfır bağımlılık" sözünü kırar —
+     ffmpeg.wasm, mammoth.js ve OpenDyslexic ile aynı karar.
+     Bu blok o kararı kilitliyor: bir gün model eklenirse kapı önce kırılır. */
+  const tel=oku(telefonYolu()), mac=oku(macYolu());
+  const MODEL=/mediapipe|selfie_segmentation|tensorflow|tfjs|\.tflite|\.onnx|onnxruntime|bodypix/i;
+  for(const [ad,kod] of [['telefon',tel],['masaüstü',mac]]){
+    ok(ad+': segmentasyon modeli yüklenmiyor', !MODEL.test(kod));
+    /* Model olmadan bulanıklık YEŞİL EKRANLA yapılıyor; o yol duruyor mu. */
+    ok(ad+': yeşil ekran yolu duruyor', /chroma|yesil|greenScreen|gl\b/i.test(kod));
+  }
+}
