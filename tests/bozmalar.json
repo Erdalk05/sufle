@@ -2159,8 +2159,8 @@
   "ad": "kayıt gözcüsü duraklatmayı arıza sanıyor (yanlış alarm)",
   "test": "88-kayit-gozcusu.js",
   "kaynak": "telefon",
-  "bul": "    if(recPaused || (rec && rec.state==='paused')) return;",
-  "koy": "    if(false) return;"
+  "bul": "    if(recPaused || (rec && rec.state==='paused')) return;\n    if(!rec || rec.state!=='recording'){ toast(m('recNoStart')); return; }",
+  "koy": "    if(false) return;\n    if(!rec || rec.state!=='recording'){ toast(m('recNoStart')); return; }"
  },
  {
   "ad": "bildirim canlı bölge değil (ekran okuyucu hiçbir uyarıyı duymaz)",
@@ -2833,5 +2833,26 @@
   "kaynak": "telefon",
   "bul": "  <div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div>",
   "koy": "  <details class=\"grup\"><summary><span data-i18n=\"gNasil\"></span><span class=\"ozet\"></span></summary><div class=\"icerik\"><div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div></div></details>"
+ },
+ {
+  "ad": "kayıt gözcüsü ikinci bakışı atlıyor (iyi çekim için yanlış alarm)",
+  "test": "88-kayit-gozcusu.js",
+  "kaynak": "telefon",
+  "bul": "    if(IS_WK || chunks.length) return;",
+  "koy": "    if(IS_WK) return; if(!chunks.length) toast(m('recNoData')); return;"
+ },
+ {
+  "ad": "ikinci bakış durdurulmuş kaydı da uyarıyor",
+  "test": "88-kayit-gozcusu.js",
+  "kaynak": "telefon",
+  "bul": "      if(!body.classList.contains('rec')) return;                 // kullanıcı durdurmuş\n      if(recPaused || (rec && rec.state==='paused')) return;       // duraklatılmış",
+  "koy": "      if(recPaused || (rec && rec.state==='paused')) return;       // duraklatılmış"
+ },
+ {
+  "ad": "ikinci bakış geç gelen parçayı görmüyor (uyarı yine yanlış çıkar)",
+  "test": "88-kayit-gozcusu.js",
+  "kaynak": "telefon",
+  "bul": "      if(rec && rec.state==='recording' && !chunks.length) toast(m('recNoData'));",
+  "koy": "      if(rec && rec.state==='recording') toast(m('recNoData'));"
  }
 ]

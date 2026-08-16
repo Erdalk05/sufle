@@ -148,7 +148,13 @@ ok('kota okunamıyorsa hiç konuşulmuyor', /if\(kdk!=null\)\{/.test(kod));
 /* ---------- KAYIT ORTADA ÖLÜRSE ---------- */
 ok('kaydedici hatası yakalanıyor (depo dolması en sık sebep)', /rec\.onerror=ev=>\{/.test(kod));
 ok('hata sonrası çekim düzgün bitiriliyor', /if\(body\.classList\.contains\('rec'\)\) stopRec\(\);/.test(kod));
-ok('hiç veri gelmediyse söyleniyor', /if\(!IS_WK && !chunks\.length\) toast\(m\('recNoData'\)\);/.test(kod));
+/* Gözcü 2026-08-17'de İKİ BAKIŞLI oldu: ölçüldü ki ilk parça gerçek
+   tarayıcıda 4,6 sn'de gelebiliyor ve çekim sağlam oluyordu — tek bakış
+   iyi çekimi durdurtan yanlış alarmdı. Burada sınanan şey hâlâ aynı:
+   hiç veri gelmeyen kayıt SÖYLENİYOR mu. */
+ok('hiç veri gelmediyse (ikinci bakışta) söyleniyor',
+   /state==='recording' && !chunks\.length\) toast\(m\('recNoData'\)\);/.test(kod));
+ok('ilk bakışta hemen bağırılmıyor', /if\(IS_WK \|\| chunks\.length\) return;/.test(kod));
 /* iPhonede parçalar yalnız durunca geliyor: orada boş dizi normaldir,
    uyarı vermek YANLIŞ teşhis olurdu. */
 ok('iPhonede parça dilimi istenmiyor', /if\(IS_WK\) rec\.start\(\); else rec\.start\(1000\);/.test(kod));

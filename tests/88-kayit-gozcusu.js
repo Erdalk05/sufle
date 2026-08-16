@@ -28,19 +28,35 @@ ok('gözcü çıkarılabildi', !!m);
 if(!m) return;
 const src=m[0];
 
-function kos({durum, kayitta=true, parca=false, wk=false, bayrak=false}){
+/* İKİ BAKIŞLI GÖZCÜ (2026-08-17). Parça kontrolü artık tek seferlik değil:
+   2,5 sn'de parça yoksa hemen bağırmıyor, 3,5 sn daha bekleyip TEKRAR bakıyor.
+   Tezgâh bu yüzden iki adımı ayrı ayrı koşturabiliyor: `ikinci` verilmezse
+   yalnız ilk bakış koşar (kullanıcının 2,5. saniyede gördüğü hâl), verilirse
+   ikinci bakış da koşar ve o sırada durum DEĞİŞMİŞ olabilir. */
+function kos({durum, kayitta=true, parca=false, wk=false, bayrak=false,
+              ikinci=false, sonra={}}){
   const iz=[];
-  new Function('__iz','__s','__k','__p','__wk','__b', `
-    const body={classList:{contains:(c)=>c==='rec'?__k:false}};
-    const rec=__s?{state:__s}:null;
-    const chunks=__p?[1]:[];
+  new Function('__iz','__s','__k','__p','__wk','__b','__2','__son', `
+    let S=__s, K=__k, P=__p, B=__b;
+    const body={classList:{contains:(c)=>c==='rec'?K:false}};
+    let rec=S?{state:S}:null;
+    let chunks=P?[1]:[];
     const IS_WK=__wk;
-    const recPaused=__b;
+    let recPaused=B;
     const m=k=>k; const toast=x=>__iz.push(x);
     let f=null; const setTimeout=(fn)=>{ f=fn; };
     ${src}
-    f();
-  `)(iz,durum,kayitta,parca,wk,bayrak);
+    const ilk=f; f=null; ilk();
+    if(__2 && f){
+      // İkinci bakıştan ÖNCE dünya değişebilir: parça gelmiş, kullanıcı
+      // durdurmuş ya da duraklatmış olabilir.
+      if('parca' in __son) chunks=__son.parca?[1]:[];
+      if('kayitta' in __son) K=__son.kayitta;
+      if('durum' in __son) rec=__son.durum?{state:__son.durum}:null;
+      if('bayrak' in __son) recPaused=__son.bayrak;
+      f();
+    }
+  `)(iz,durum,kayitta,parca,wk,bayrak,ikinci,sonra);
   return iz;
 }
 
@@ -62,10 +78,34 @@ function kos({durum, kayitta=true, parca=false, wk=false, bayrak=false}){
   ok('kaydedici yoksa söyleniyor',
      kos({durum:null}).includes('recNoStart'));
   /* Bu en sinsi durum: durum "recording" ama tek parça bile gelmiyor —
-     kayıt sürüyor görünüp boş dosya üretiyor. */
-  ok('parça hiç gelmiyorsa söyleniyor',
-     kos({durum:'recording', parca:false}).includes('recNoData'));
-  ok('normal kayıtta sessiz', kos({durum:'recording', parca:true}).length===0);
+     kayıt sürüyor görünüp boş dosya üretiyor. Artık İKİ BAKIŞ sonunda
+     söyleniyor; tek bakışta bağırmak yanlış alarmdı (aşağıda ölçüsü var). */
+  ok('parça hiç gelmiyorsa (iki bakış sonunda) söyleniyor',
+     kos({durum:'recording', parca:false, ikinci:true}).includes('recNoData'));
+  ok('normal kayıtta sessiz',
+     kos({durum:'recording', parca:true, ikinci:true}).length===0);
+}
+
+/* ---------- YANLIŞ ALARM: GEÇ GELEN İLK PARÇA ----------
+   ÖLÇÜLDÜ (2026-08-17, gerçek Chrome + sahte kamera): `rec.start(1000)`
+   verilmiş olmasına rağmen ilk `dataavailable` 4621 ms'de geldi ve çekim
+   tümüyle sağlamdı — sonuç ekranı açıldı, arşive yazıldı, beş altyazı satırı
+   üretildi. Eski gözcü 2,5 saniyede "veri gelmiyor, durdurup tekrar başlat"
+   diyordu; yani İYİ BİR ÇEKİMİ kullanıcıya durdurtuyordu. */
+{
+  ok('ilk bakışta parça yoksa HEMEN bağırmıyor',
+     kos({durum:'recording', parca:false}).length===0);
+  ok('geç gelen parça yanlış alarm ÜRETMİYOR',
+     kos({durum:'recording', parca:false, ikinci:true, sonra:{parca:true}}).length===0);
+  ok('ikinci bakışta kullanıcı durdurmuşsa susuyor',
+     kos({durum:'recording', parca:false, ikinci:true, sonra:{kayitta:false}}).length===0);
+  ok('ikinci bakışta duraklatılmışsa susuyor',
+     kos({durum:'recording', parca:false, ikinci:true, sonra:{durum:'paused'}}).length===0);
+  ok('ikinci bakışta duraklatma bayrağı da yeterli',
+     kos({durum:'recording', parca:false, ikinci:true, sonra:{bayrak:true}}).length===0);
+  /* Uyarı yalnız ERTELENDİ, kaldırılmadı: gerçek arıza hâlâ bildiriliyor. */
+  ok('gerçek arıza (6 sn boyunca üretim yok) yine bildiriliyor',
+     kos({durum:'recording', parca:false, ikinci:true}).filter(x=>x==='recNoData').length===1);
 }
 {
   /* iOS tek parça yazdığı için 2,5 saniyede parça beklenmez; orada bu

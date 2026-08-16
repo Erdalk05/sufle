@@ -359,10 +359,30 @@ def kare_uret(t, k):
                                % (k['no'], k['bekle2'][:60], son2))
         time.sleep(1.0)
 
-    tasan = t.js("""(()=>{const de=document.documentElement;
-      return [...document.querySelectorAll('*')].filter(e=>{
+    # YATAY KAYAN KAPSAYICI TAŞMA DEĞİLDİR (2026-08-17'de ölçülerek bulundu).
+    # Eski kural "sağ kenarı viewport'u geçen her öge" diyordu ve altyazı
+    # önizleme şeridini (`.kartlar`, overflow-x:auto) 12 ihlal olarak sayıyordu:
+    # şerit TASARIM GEREĞİ yana kayıyor, sayfa kaymıyor. Ölçüldü: sayfanın
+    # scrollWidth'i 390, clientWidth'i 390 — yani kullanıcı için hiçbir şey
+    # taşmıyordu. Aracın yalancı alarmı, bu depoda kovalanan sahte kusurların
+    # bilinen kaynağı; ölçüt artık İKİ parçalı: (1) sayfanın kendisi yatay
+    # kayıyor mu, (2) taşan öge yatay kayan bir kapsayıcının İÇİNDE değil mi.
+    tasan = t.js("""(()=>{
+      const de=document.documentElement;
+      const kayanIcinde=e=>{
+        for(let p=e.parentElement;p;p=p.parentElement){
+          const s=getComputedStyle(p);
+          if(s.overflowX==='auto'||s.overflowX==='scroll'||s.overflowX==='hidden') return true;
+        }
+        return false;
+      };
+      const n=[...document.querySelectorAll('*')].filter(e=>{
         const b=e.getBoundingClientRect();
-        return b.width>0 && b.right>de.clientWidth+0.5;}).length;})()""")
+        return b.width>0 && b.right>de.clientWidth+0.5 && !kayanIcinde(e);
+      }).length;
+      // Sayfanın kendisi yatay kayıyorsa bu her hâlükârda kusurdur.
+      return n + (de.scrollWidth>de.clientWidth+0.5 ? 1 : 0);
+    })()""")
 
     # ÇAKIŞAN KUMANDA SAYACI (T53). Erdal ekran görüntüsüyle bildirdi: hız hapı,
     # durum satırı ve kumanda çubuğu birbirinin üstüne biniyordu — üstelik AYNI

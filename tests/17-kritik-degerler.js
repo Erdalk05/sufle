@@ -38,8 +38,15 @@ ok('kaydırıcı da aynı sınırlarda',
 
 // ---------- KAYIT GÖZCÜSÜ ----------
 // 2,5 sn yerine 300 sn yazılsa gözcü hiç ateşlenmez ama "var" görünür.
-const gozcu = sayi(/if\(!IS_WK && !chunks\.length\) toast\(m\('recNoData'\)\);\s*\n\s*\},(\d+)\)/, 'kayıt gözcüsü');
-ok('kayıt gözcüsü 1-10 sn arasında', gozcu>=1000 && gozcu<=10000);
+// GÖZCÜ ARTIK İKİ BAKIŞLI (2026-08-17): ilk bakışta parça yoksa bağırmıyor,
+// ikinci bakışta hâlâ yoksa söylüyor. Ölçülen değer TOPLAM bekleme; asıl
+// risk ikisinden birinin sessizce büyütülüp uyarının ölmesi.
+const ilkBakis = sayi(/if\(IS_WK \|\| chunks\.length\) return;[\s\S]{0,900}?\},(\d+)\);/, 'ilk bakış');
+const ikinciBakis = sayi(/state==='recording' && !chunks\.length\) toast\(m\('recNoData'\)\);\s*\n\s*\},(\d+)\)/, 'ikinci bakış');
+ok('ilk bakış 1-5 sn arasında', ilkBakis>=1000 && ilkBakis<=5000);
+ok('ikinci bakış 1-10 sn arasında', ikinciBakis>=1000 && ikinciBakis<=10000);
+ok('toplam bekleme 4-15 sn (geç gelen ilk parçayı yanlış alarma çevirmeyecek kadar uzun)',
+   ilkBakis+ikinciBakis>=4000 && ilkBakis+ikinciBakis<=15000);
 
 // ---------- SES İŞLEME EŞİKLERİ ----------
 // Kesin çapa: gateWant'in SON dönüşü taban değeridir. Genel `return 0.x`
