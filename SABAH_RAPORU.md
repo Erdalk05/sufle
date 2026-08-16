@@ -971,6 +971,34 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🏪 MAĞAZA KABUĞU DERLENDİ VE KOŞTU — Apple hesabı beklemeden
+
+Erdal "mağazaya evet" dedi, hesap henüz yok. Hesabı bekletmeden **kabuğun ayakta
+olduğu ölçüldü**: `./ios-kabuk/kabuk-derle.sh` → sürüm denetimi ✓ · derleme ✓
+(132 KB) · paketleme ✓ (744 KB) · **simülatöre kurulum ve açılış ✓**.
+Ekran görüntüsüyle doğrulandı: simülatörde **gerçek Sufle 9.15** açıldı, giriş
+ekranı ve karşılama panosu doğru çizildi.
+
+**İlk ölçümde kusur çıktı:** kabuk plist'i **9.11'de takılı kalmıştı** —
+uygulama 9.15 iken. Yani mağazaya yanlış sürüm numarasıyla çıkılabilirdi ve
+kimse bakmıyordu. Onarıldı; hem betik hem `tests/164` artık sapmada duruyor.
+
+`tests/164` (40 iddia · 5 kasıtlı bozma) kabuğu şu sözlere bağladı: izin
+metinleri **sebep** söylemeli ve jargonsuz olmalı, istenmeyen izin (konum,
+kişiler, takvim, fotoğraf kitaplığı) bulunmamalı, video **satır içinde**
+oynamalı (yoksa iOS tam ekran oynatıcıyı açar ve sufle metni görünmez olur),
+kalıcı depolama açık kalmalı (yoksa uygulama her açılışta boş gelir).
+Betik ayrıca **ne yapmadığını** da söylüyor: imzalamıyor, cihaza kurmuyor,
+mağazaya hiçbir şey göndermiyor — ve testte bu da kilitli.
+
+**Android için dürüst durum:** bugün kabuğa **gerek yok** — Chrome PWA'yı gerçek
+uygulama olarak kuruyor (WebAPK) ve ölçülen yeteneklerin tamamı orada çalışıyor.
+Play Store istenirse yol TWA; gereken üç şeyin üçü de **hesap tarafında** (Play
+Console, imzalama anahtarı, o anahtarın parmak iziyle `assetlinks.json`).
+Parmak izi anahtar üretilmeden bilinemeyeceği için sahte dosya koymadım.
+
+---
+
 ### 📱 ELDEN DENEME HAZIR — dört platform, tek doğru yol (Erdal kararı: mağazaya EVET)
 
 Erdal mağazaya çıkmadan önce kendinde ve yakınlarında denemek istedi: iPhone,
@@ -1015,7 +1043,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **383 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **388 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1188,9 +1216,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6326 test** (gece başında 732) · yeni test dosyası: 39–163
+- **6364 test** (gece başında 732) · yeni test dosyası: 39–164
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **383 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **388 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

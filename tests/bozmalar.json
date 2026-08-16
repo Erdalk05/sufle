@@ -2679,5 +2679,40 @@
   "kaynak": "manifest",
   "bul": "\"display\": \"standalone\"",
   "koy": "\"display\": \"browser\""
+ },
+ {
+  "ad": "mağaza kabuğu sürümü uygulamadan ayrıştı (yanlış sürüm mağazaya çıkar)",
+  "test": "164-magaza-kabugu.js",
+  "kaynak": "kabuk_plist",
+  "bul": "<key>CFBundleShortVersionString</key><string>9.15</string>",
+  "koy": "<key>CFBundleShortVersionString</key><string>9.11</string>"
+ },
+ {
+  "ad": "izin metni sebep söylemiyor (Apple reddi + kullanıcı güveni)",
+  "test": "164-magaza-kabugu.js",
+  "kaynak": "kabuk_plist",
+  "bul": "<string>Kendini çekerken sufle metnini kameranın hemen yanında okuyabilmen için.</string>",
+  "koy": "<string>Kamera erisimi gerekiyor</string>"
+ },
+ {
+  "ad": "kabuk videoyu tam ekran oynatıcıya veriyor (sufle metni görünmez olur)",
+  "test": "164-magaza-kabugu.js",
+  "kaynak": "kabuk_swift",
+  "bul": "    c.allowsInlineMediaPlayback = true",
+  "koy": "    c.allowsInlineMediaPlayback = false"
+ },
+ {
+  "ad": "kabuk kalıcı depoyu kapatıyor (uygulama her açılışta boş gelir)",
+  "test": "164-magaza-kabugu.js",
+  "kaynak": "kabuk_swift",
+  "bul": "    c.websiteDataStore = WKWebsiteDataStore.default()",
+  "koy": "    c.websiteDataStore = WKWebsiteDataStore.nonPersistent()"
+ },
+ {
+  "ad": "derleme betiği sürüm sapmasını yutuyor",
+  "test": "164-magaza-kabugu.js",
+  "kaynak": "kabuk_betik",
+  "bul": "  echo \"  ✗ sürüm sapması: uygulama $VER, kabuk plist $PVER\"",
+  "koy": "  echo \"  - surum farki (onemsiz)\""
  }
 ]

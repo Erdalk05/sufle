@@ -80,6 +80,11 @@ KAYNAK = {
     'deneme': (os.path.join(REPO, 'DENEME.md'), 'SUFLE_DENEME'),
     'canli': (os.path.join(REPO, 'canli.py'), 'SUFLE_CANLI'),
     'manifest': (os.path.join(REPO, 'manifest.json'), 'SUFLE_MANIFEST'),
+    # Mağaza kabuğu: Apple hesabı gelene kadar tek koruma bu üç dosya.
+    'kabuk_plist': (os.path.join(REPO, 'ios-kabuk', 'Kabuk-Info.plist'), 'SUFLE_KABUK_PLIST'),
+    'kabuk_swift': (os.path.join(REPO, 'ios-kabuk', 'kabuk.swift'), 'SUFLE_KABUK_SWIFT'),
+    'kabuk_betik': (os.path.join(REPO, 'ios-kabuk', 'kabuk-derle.sh'), 'SUFLE_KABUK_BETIK'),
+    'kabuk_olcum': (os.path.join(REPO, 'ios-kabuk', 'olcum-kabuk.html'), 'SUFLE_KABUK_OLCUM'),
     'sw': (os.path.join(REPO, 'sw.js'), 'SUFLE_SW'),
     # Mac yerel sunucusu: kumanda ve uzak önizleme yolunun tamamı burada.
     'sunucu': (os.path.join(REPO, 'mac', 'teleprompter_server.py'), 'SUFLE_SUNUCU'),

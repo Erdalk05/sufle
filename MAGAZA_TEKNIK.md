@@ -130,3 +130,41 @@ kimliği ve mağaza kayıtları. Bunlar Erdal'ın kararı ve hesabı.
 
 Kabuk kurulduğunda ilk sınanacak şey ölçümün dürüstlük sınırı: **gerçek cihazda
 uçtan uca sesle takip** (API varlığı ≠ çalışan tanıma).
+
+---
+
+## ✅ KABUK DERLENDİ VE KOŞTU (2026-08-16, v9.15)
+
+Erdal "mağazaya evet" dedi. Apple hesabı henüz yok; o yüzden hesabı BEKLETMEDEN
+kabuğun ayakta olduğu ölçüldü:
+
+`./ios-kabuk/kabuk-derle.sh` → **sürüm denetimi ✓ · derleme ✓ (132 KB ikili) ·
+paketleme ✓ (744 KB uygulama) · simülatöre kurulum ve açılış ✓**.
+Ekran görüntüsüyle doğrulandı: simülatörde **gerçek Sufle 9.15** açıldı, giriş
+ekranı ("Kamerayı Aç & Başla") ve karşılama panosu doğru çizildi.
+
+**Betiğin YAPMADIĞI, kendi içinde yazılı:** imzalamıyor, cihaza kurmuyor,
+App Store'a hiçbir şey göndermiyor. Mağaza gönderimi Erdal kararına ve
+Apple Developer hesabına bağlı; **kod tarafında bekleyen iş yok.**
+
+`tests/164` bu mesafeyi koruyor (40 iddia, 5 kasıtlı bozma): kabuk sürümü
+uygulamayla aynı olmak zorunda (ölçüldüğünde **9.11'de takılı kalmıştı**),
+izin metinleri sebep söylemeli ve jargonsuz olmalı, istenmeyen izin (konum,
+kişiler, takvim, fotoğraf kitaplığı) bulunmamalı, video satır içinde oynamalı
+(yoksa iOS tam ekran oynatıcıyı açar ve **sufle metni görünmez olur**), kalıcı
+depolama açık kalmalı (yoksa uygulama her açılışta boş gelir).
+
+### Android — bugünkü dürüst durum
+
+**Bugün Android'de kabuğa GEREK YOK ve bu bir eksik değil:** Chrome, PWA'yı
+gerçek bir uygulama olarak kuruyor (WebAPK) ve ölçülen yeteneklerin tamamı
+orada çalışıyor — 4K kayıt, MP4, ses stüdyosu, yeşil ekran, uygulama içi kesme.
+iPhone'da kabuk gerekmesinin sebebi Apple'ın PWA'lara koyduğu sınırlar; Android'de
+o sınırlar yok.
+
+**Play Store'a çıkmak istendiğinde yol belli:** TWA (Trusted Web Activity) —
+yani aynı canlı adresi saran ince bir kabuk. Gereken üç şey **hesap tarafında**:
+① Play Console hesabı, ② imzalama anahtarı, ③ o anahtarın SHA-256 parmak izini
+içeren `.well-known/assetlinks.json` dosyasının siteye konması. Parmak izi
+anahtar üretilmeden **bilinemez**; o yüzden şimdiden sahte bir dosya koymuyorum —
+bu deponun kuralı: ölçülmemiş şeyi varmış gibi yazma.
