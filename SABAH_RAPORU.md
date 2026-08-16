@@ -1002,8 +1002,11 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
 
 ---
 
-- 🚀 **v9.15 HAZIR** (senaryo listesinde türetilmiş bilgi): sürüm ve `sw` önbelleği
-  artırıldı (`sufle-v87`), aynalar eşitlendi, kapı 9/9 yeşil. **Yayın onayı bekliyor.**
+- 🚀 **v9.15 CANLIDA ve doğrulandı** (2026-08-16, Erdal onayıyla): `sufle-v87`,
+  `index.html` md5 birebir (`b9d27294…`), `sw.js` md5 birebir (`4896eaad…`),
+  yeni özelliğin izi canlıdan sayıldı (senaryoBilgi 2 · cekimSayilari 4 ·
+  scCekim 3 · scSonDeg 3 · cekimSayilariniTazele 2). `.son-yayin` doğrulamadan
+  SONRA yazıldı. Pages yine ~1 dakika gecikmeyle güncellendi (2 deneme 9.14, 3. 9.15).
 - 🚀 **v9.14 CANLIDA ve doğrulandı** (2026-08-16 sabahı, Erdal onayıyla): `sufle-v86`,
   `index.html` **md5 birebir** (`bb220098…`), `sw.js` **md5 birebir** (`59463bd5…`),
   gecenin on özelliğinin izi canlıdan sayıldı (kkParcala 2 · altyaziTema 3 ·
