@@ -221,15 +221,22 @@ function kos(args, kayitIcerik){
                /* FAZ G'nin amiral özelliği: altyazının videoya GERÇEKTEN
                   gömüldüğü, çıktı tuvalinden ölçülüyor (A/B). */
                ['altyazı gömme', /altyazı videoya GÖMÜLMEDİ/],
-               ['gömme kapalıyken ölü tampon', /çıktı tuvali kompozit boyutuna ayrılmış/]];
+               ['gömme kapalıyken ölü tampon', /çıktı tuvali kompozit boyutuna ayrılmış/],
+               /* G.4 marka kiti: alt bandın gerçekten çizildiği de ölçülüyor. */
+               ['marka alt bandı', /alt bant videoya ÇİZİLMEDİ/],
+               ['marka kapalıyken tampon', /marka kapalıyken çıktı tuvali ayrılmış/]];
   for(const [ad,re] of HALKA) ok('çekim ölçümü '+ad+' halkasını kontrol ediyor', re.test(ky));
   /* Kırık halkada kırmızı vermeli: yalnız yazdırıp geçmek en sessiz kusur. */
   ok('kırık halkada sıfırdan farklı çıkış', /return 1 if kirik else 0/.test(ky));
-  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=7);
+  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=9);
   /* Kompozit ölçümü A/B koşuyor: yalnız açık hâli ölçmek, kapalıyken de
      çizen bir kusuru göremezdi. */
   ok('gömme ölçümü A/B koşuyor', /for gomme in \(True, False\)/.test(ky));
   ok('gömme ölçümü alt şeridi de kontrol ediyor', /altta/.test(ky));
+  /* Ölçümün kendi dersi de saklanıyor: durum enjekte etmek yerine arayüzü
+     kullanmak — kapanış kaydı yazdığımızın üstüne yazıyordu. */
+  ok('marka ölçümü arayüzü kullanıyor', /#markaAd/.test(ky) && /#markaBantSw/.test(ky));
+  ok('hata günlüğü doluysa İÇERİĞİ yazdırılıyor', /hata içeriği/.test(ky));
 }
 
 /* ---------- KANITLI TEST SAYISI DÜŞMESİN ---------- */

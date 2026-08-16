@@ -131,3 +131,26 @@ ok('telefonda uyumluluk panelinde okunuyor', /if\(ERRLOG\.length\)\{/.test(telKo
 ok('Macte durum çubuğunda gösteriliyor', /el\.textContent='⚠️ '\+ERRLOG\.length\+' hata'/.test(macKod));
 ok('Macte hazırlık kontrolünde de anılıyor', /ERRLOG\.length\+' hata kaydedildi'/.test(macKod));
 ok('telefonda kullanıcı bir kez uyarılıyor (boğulmasın)', /if\(n-errShown>8000\)\{ errShown=n;/.test(telKod));
+
+/* ---------- YAKALANMAYAN SÖZ REDDİ: KORKUTUCU AMA ANLAMSIZ SATIR ----------
+   ÖLÇÜLDÜ (2026-08-16, kapının 10. adımı — çekim akışı uçtan uca): normal bir
+   çekimden sonra hata günlüğünde 'Unable to decode audio data' satırı çıkıyordu.
+   Kod durumu ZATEN ele alıyordu (geri çağrıyla), ama `decodeAudioData` Chrome'da
+   HEM geri çağrı HEM söz döndürüyor; dönen söz yakalanmayınca genel
+   `unhandledrejection` işleyicisine düşüyor ve kullanıcının "Son hatalar"
+   listesine yazılıyordu. Kullanıcı için anlamı: her çekimde bir hata görmek. */
+{
+  const {telefonYolu,oku,blokKes}=require('./kaynak');
+  const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+  const govde=blokKes(kod,'async function sesKanali(') || kod;
+  ok('ses çözümlemesi kaynakta bulundu', /decodeAudioData/.test(govde));
+  /* İDDİA: dönen söz de yakalanıyor. Yalnız geri çağrı bağlamak yetmiyor. */
+  /* Desen SATIR SONUNA takılmasın: çağrı iki satıra bölünmüş durumda.
+     İddia "söz bir değişkene alınıp yakalanıyor mu", biçim değil. */
+  ok('decodeAudioData sözü de yakalanıyor',
+     /const soz=ctx\.decodeAudioData\(/.test(govde) && /soz && soz\.catch/.test(govde));
+  ok('yakalanan söz aynı düşüşe gidiyor', /soz\.catch\(\(\)=>no\(0\)\)/.test(govde));
+  /* Geri çağrı yolu da DURMALI: birini diğerinin yerine koymak, eski
+     tarayıcılarda (söz döndürmeyen) çözümlemeyi sessizce askıda bırakırdı. */
+  ok('geri çağrı yolu korunuyor', /ctx\.decodeAudioData\(buf\.slice\(0\),ok,\(\)=>no\(0\)\)/.test(govde));
+}

@@ -971,6 +971,25 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🐞 YENİ KAPI ADIMI İLK KUSURUNU BULDU — her çekimde korkutucu bir hata satırı
+
+Marka kitini de uçtan uca ölçerken (alt bant: **445 marka rengi piksel, %100'ü
+alt yarıda**; marka kapalıyken tuval hiç ayrılmıyor) normal bir çekimde hata
+günlüğünün **boş olmadığı** görüldü: `promise: Unable to decode audio data`.
+
+Sebep ölçüldü: `decodeAudioData` Chrome'da **hem geri çağrı hem söz** döndürüyor.
+Kod geri çağrıyı bağlamıştı — yani durum ZATEN ele alınmıştı — ama **dönen söz
+yakalanmadığı için** genel `unhandledrejection` işleyicisine düşüyor ve
+kullanıcının **"Son hatalar"** listesine yazılıyordu. Kullanıcı için anlamı: her
+çekimden sonra anlamsız ama korkutucu bir hata satırı görmek.
+
+Onarıldı (söz de yakalanıyor, geri çağrı yolu korunuyor — eski tarayıcılar için)
+ve `tests/110` ile kilitlendi. **Bu, kapının yeni 10. adımının bulduğu ilk gerçek
+kusur ve tam da o adımın var oluş sebebi:** diğer dokuz adım kaynağı ölçüyor,
+bu adım ürünü ÇALIŞTIRIYOR.
+
+---
+
 ### 🔥 AMİRAL ÖZELLİK NİHAYET UÇTAN UCA KANITLANDI: altyazı videoya GERÇEKTEN gömülüyor
 
 FAZ G'nin amiral özelliği bugüne kadar yalnız **parçalarıyla** ölçülüyordu (tema
@@ -1121,7 +1140,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **395 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **393 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1274,6 +1293,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
 
 ---
 
+- 🚀 **v9.16 HAZIR** (anlamsız hata satırı onarımı) — yayın doğrulaması sürüyor
 - 🚀 **v9.15 CANLIDA ve doğrulandı** (2026-08-16, Erdal onayıyla): `sufle-v87`,
   `index.html` md5 birebir (`b9d27294…`), `sw.js` md5 birebir (`4896eaad…`),
   yeni özelliğin izi canlıdan sayıldı (senaryoBilgi 2 · cekimSayilari 4 ·
@@ -1294,9 +1314,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6393 test** (gece başında 732) · yeni test dosyası: 39–165
+- **6401 test** (gece başında 732) · yeni test dosyası: 39–165
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **395 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **393 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

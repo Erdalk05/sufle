@@ -2236,8 +2236,8 @@
   "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
   "test": "116-sabah-raporu.js",
   "kaynak": "telefon",
-  "bul": "VER='9.15'",
-  "koy": "VER='9.16'"
+  "bul": "VER='9.16'",
+  "koy": "VER='9.17'"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2663,7 +2663,7 @@
   "ad": "kılavuz sürümü koddan ayrıştı (yanlış sürüm dağıtılır)",
   "test": "163-deneme-kilavuzu.js",
   "kaynak": "deneme",
-  "bul": "**Sürüm 9.15",
+  "bul": "**Sürüm 9.16",
   "koy": "**Sürüm 9.11"
  },
  {
@@ -2684,7 +2684,7 @@
   "ad": "mağaza kabuğu sürümü uygulamadan ayrıştı (yanlış sürüm mağazaya çıkar)",
   "test": "164-magaza-kabugu.js",
   "kaynak": "kabuk_plist",
-  "bul": "<key>CFBundleShortVersionString</key><string>9.15</string>",
+  "bul": "<key>CFBundleShortVersionString</key><string>9.16</string>",
   "koy": "<key>CFBundleShortVersionString</key><string>9.11</string>"
  },
  {
@@ -2742,5 +2742,12 @@
   "kaynak": "kayit_olcum",
   "bul": "    for gomme in (True, False):",
   "koy": "    for gomme in (True,):"
+ },
+ {
+  "ad": "ses çözümleme sözü yakalanmıyor (her çekimde korkutucu hata satırı)",
+  "test": "110-hata-gunlugu-kalicilik.js",
+  "kaynak": "telefon",
+  "bul": "           if(soz && soz.catch) soz.catch(()=>no(0)); }",
+  "koy": "           }"
  }
 ]
