@@ -971,6 +971,23 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🧱 KANITLI TEST 136 → 148 · en kritik on iki kural daha kilitlendi
+
+Bu turda kapatılanlar arasında ürünün güvenlik ve doğruluk çekirdeği var:
+**komut ucunun köken denetimi** (`_origin_tamam` — açık bir sekmedeki kötü
+niyetli sayfanın çekimi başlatıp durdurabildiği kusurun kapağı), **gürültü
+kapısının sınır bölgesi** (cümle başını kesmemesi), **Türkçe ünsüz yumuşaması**
+(kitabı ↔ kitap), **ses rozeti eşikleri**, **manifest bağlantısı**, Mac sufle
+satırının 8 kelime sınırı, kayıt sürerken kompozitin değiştirilememesi, ölçümün
+kelime konumlarını yenilemesi, komut belirtecinin metinden çıkarılması, vurgu
+işaretinin yayın paketine sızmaması ve duraklama işaretlerinin 10 sn sınırı.
+
+**Kanıtlı test dosyası 136 → 148 · bozma 355 → 368. Kanıtsız 14 dosya kaldı**
+ve bunların dördü kapının kendi denetimleri (114, 115, 77, 118) — onları kasıtlı
+bozmayla kanıtlamak mümkün değil, sentetik örneklerle sınanıyorlar.
+
+---
+
 ### 🔌 BEŞİNCİ KÖR NOKTA: yerel sunucunun TAMAMI bozma turunun dışındaymış
 
 Kanıtsız dosyaları kapatırken çıktı: `mac/teleprompter_server.py` **KAYNAK
@@ -1125,7 +1142,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6279 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **355 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **368 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

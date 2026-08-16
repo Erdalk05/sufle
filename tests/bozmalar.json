@@ -2483,5 +2483,96 @@
   "kaynak": "sunucu",
   "bul": "   .catch(()=>durum('\\u26a0\\ufe0f Komut gecmedi \\u2014 baglantiyi kontrol et'));}",
   "koy": "   .catch(()=>{});}"
+ },
+ {
+  "ad": "gürültü kapısı sınır bölgesinde cümle başını kesiyor",
+  "test": "11-ses-studyosu-ve-filtre.js",
+  "kaynak": "telefon",
+  "bul": "  if(rms>=th)     return 0.55;         // sınırda: yarı kıs, cümle başını kesme",
+  "koy": "  if(rms>=th)     return 0.12;"
+ },
+ {
+  "ad": "ünsüz yumuşaması sökülmüş (kitabı ile kitap eşleşmiyor)",
+  "test": "19-turkce-telaffuz.js",
+  "kaynak": "telefon",
+  "bul": "function yumusat(x){ return x.replace(/b/g,'p').replace(/d/g,'t').replace(/g/g,'k'); }",
+  "koy": "function yumusat(x){ return x; }"
+ },
+ {
+  "ad": "Mac hazırlık kontrolü kamera kapalıyken engel bildirmiyor",
+  "test": "05-mac-hazirlik-kontrolu.js",
+  "kaynak": "mac",
+  "bul": "    if(!stream) out.push(['bad','Kamera kapalı','Üstteki 🎥 Kamera düğmesine bas']);",
+  "koy": "    if(false) out.push(['bad','Kamera kapalı','Üstteki 🎥 Kamera düğmesine bas']);"
+ },
+ {
+  "ad": "ses rozeti kısıklık eşiği kayıyor (ürün kullanılmaz olur)",
+  "test": "21-ses-rozeti.js",
+  "kaynak": "telefon",
+  "bul": "          if(tepe<0.02) setAudBadge('ok');            // henüz ses yok — yargılama",
+  "koy": "          if(tepe<0.5) setAudBadge('ok');"
+ },
+ {
+  "ad": "manifest bağlantısı kalktı (Ana Ekrana Ekle bozulur)",
+  "test": "30-manifest-baglari.js",
+  "kaynak": "telefon",
+  "bul": "<link rel=\"manifest\" href=\"manifest.json\">",
+  "koy": "<!-- manifest baglantisi yok -->"
+ },
+ {
+  "ad": "Mac sufle satırı 8 kelime sınırını aşıyor (okuma çizgisi kayar)",
+  "test": "07-mac-altyazi-ve-kapi.js",
+  "kaynak": "mac",
+  "bul": "    for(let n=0;n<7&&start>0;n++){",
+  "koy": "    for(let n=0;n<70&&start>0;n++){"
+ },
+ {
+  "ad": "komut belirteci metinden çıkarılmıyor (komut suflede görünür)",
+  "test": "09-sesli-komut.js",
+  "kaynak": "telefon",
+  "bul": "      if(c){ runVoiceCmd(c);",
+  "koy": "      if(c){ runVoiceCmd(c); out.push(toks[i]);"
+ },
+ {
+  "ad": "vurgu işareti yayın paketine sızıyor (okunan ile yayımlanan ayrışır)",
+  "test": "47-markup-paket-sapmasi.js",
+  "kaynak": "telefon",
+  "bul": "    let clean=em?govde.replace(/^\\*{1,2}|\\*{1,2}$/g,''):govde;",
+  "koy": "    let clean=govde;"
+ },
+ {
+  "ad": "kayıt sürerken kompozit değiştirilebiliyor (çekimin görüntüsü kesilir)",
+  "test": "54-kayitta-kompozit.js",
+  "kaynak": "telefon",
+  "bul": "  if(k==='comp' && rec && rec.state==='recording'){ toast(m('compBusyRec')); return; }",
+  "koy": "  if(false){ toast(m('compBusyRec')); return; }"
+ },
+ {
+  "ad": "ölçüm kelime konumlarını yenilemiyor (konum eski düzene göre kalır)",
+  "test": "62-duzen-ayarlarinda-konum.js",
+  "kaynak": "telefon",
+  "bul": "  wordTops=words.map(w=>w.offsetTop+w.offsetHeight/2);",
+  "koy": "  wordTops=wordTops||[];"
+ },
+ {
+  "ad": "komut ucu farklı kökenli isteği kabul ediyor (her sayfa sufleyi sürebilir)",
+  "test": "117-cmd-origin.js",
+  "kaynak": "sunucu",
+  "bul": "        return o.netloc == (self.headers.get(\"Host\") or \"\")",
+  "koy": "        return True"
+ },
+ {
+  "ad": "aşırı uzun bekleme sınırı kalktı (tahmini süre patlar)",
+  "test": "60-tahmini-sure-duraklamalar.js",
+  "kaynak": "tempo",
+  "bul": "      if(m) ms+=Math.min(10000, Math.round(parseFloat(m[1].replace(',','.'))*1000));",
+  "koy": "      if(m) ms+=Math.round(parseFloat(m[1].replace(',','.'))*1000);"
+ },
+ {
+  "ad": "virgüllü ondalık bekleme okunmuyor (1,5 sn yok sayılır)",
+  "test": "60-tahmini-sure-duraklamalar.js",
+  "kaynak": "tempo",
+  "bul": "      const m=x.match(/^\\((\\d+(?:[.,]\\d+)?)s?\\)$/);",
+  "koy": "      const m=x.match(/^\\((\\d+)s?\\)$/);"
  }
 ]
