@@ -1293,7 +1293,10 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
 
 ---
 
-- 🚀 **v9.16 HAZIR** (anlamsız hata satırı onarımı) — yayın doğrulaması sürüyor
+- 🚀 **v9.16 CANLIDA ve doğrulandı**: `sufle-v88`, `index.html` md5 birebir
+  (`47758df1…`), `sw.js` md5 birebir (`be356fbd…`), onarımın izi canlıda sayıldı
+  (`soz && soz.catch` → 1). **`canli.py` üç genişlikte temiz.** `.son-yayin`
+  doğrulamadan SONRA yazıldı.
 - 🚀 **v9.15 CANLIDA ve doğrulandı** (2026-08-16, Erdal onayıyla): `sufle-v87`,
   `index.html` md5 birebir (`b9d27294…`), `sw.js` md5 birebir (`4896eaad…`),
   yeni özelliğin izi canlıdan sayıldı (senaryoBilgi 2 · cekimSayilari 4 ·
