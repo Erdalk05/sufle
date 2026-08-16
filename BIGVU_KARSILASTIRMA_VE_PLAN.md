@@ -225,7 +225,30 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
   `tests/160` **41 iddia** + **5 kasıtlı bozma**. Bu kusur, "özelliği yaptım" ile
   "özellik işe yarıyor" arasındaki farkın bu turdaki örneğidir.
 
-### G.7 — Intro/outro + alt bant animasyonu · **P2**
+### G.7 — Intro/outro + alt bant animasyonu · ✅ **ÖLÇÜLDÜ (16 Ağustos) → ERTELENDİ**
+
+Alt bant tarafı zaten G.4 ile geldi. Kalan iş **video birleştirme** ve maliyeti
+gerçek tarayıcıda ölçüldü (Chrome 151):
+
+| yol | ölçüm | sonuç |
+|---|---|---|
+| **WebCodecs** (`VideoEncoder`/`VideoDecoder`/`AudioEncoder`) | üçü de **var** | ama **kapsayıcı yazıcı (muxer) YOK** — WebCodecs çıplak kodlanmış kare üretir; MP4 kutusunu yazmak için dış kitaplık (mp4box.js / mp4-muxer) gerekir → **sıfır bağımlılık kırılır** |
+| WebCodecs H.264 kodlayıcı | `isConfigSupported` → **false** (VP9 → true) | yani bu yolla üretilen dosya **VP9/WebM** olurdu; deponun ölçülmüş kararı ise MP4 (galeri ve iOS webm kabul etmiyor) |
+| **Tuvale yeniden çizip kaydetme** (`captureStream` + `MediaRecorder`, MP4 destekli) | ikisi de **var** | dış bağımlılık YOK — budamada zaten kullanılan ve sınanmış yol |
+
+**Karar: yapılabilir ama ERTELENDİ, sebebi ölçülü.** Yeniden-kaydetme yolu üç
+bedel taşıyor: ① **gerçek zamanlı** — 60 saniyelik videoya intro eklemek 60 saniye
+sürer; ② **yeniden kodlama** — kalite kaybı, oysa bugün çekim ham hâliyle
+paylaşılıyor; ③ ve asıl belirleyici: `canTrim()` **iOS Safaride false**
+(`video.captureStream` yok), yani özellik **asıl üründe (iPhone) hiç çalışmaz**.
+Müzik yatağında olduğu gibi masaüstüne özel bir özellik olurdu ve rekabet
+ölçümünde de puan getirmez (15. kategori zaten 4).
+
+Yani G.7 bir "yapılır mı" sorusu değil, **öncelik** sorusu: aynı emek 15. kategoriyi
+5e çıkarmaz, 20. kategoriyi (platform kapsamı, ×4) mağaza kabuğu çıkarır.
+
+<!-- ölçümden önceki plan notu -->
+#### Önceki plan
 - **Kabul:** kayıt boru hattını yavaşlatmayacak; yalnız çekim sonrası uygulanacak.
 
 ### G.8 — İçerik planlayıcı (cihazda) · **P2**

@@ -2105,5 +2105,54 @@
   "kaynak": "mac",
   "bul": "<script>",
   "koy": "<script>\n/* facemesh */"
+ },
+ {
+  "ad": "CRC32 tablosu bozuldu (yayın paketi zip açılmaz)",
+  "test": "31-yayin-paketi.js",
+  "kaynak": "telefon",
+  "bul": "    for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);",
+  "koy": "    for(let k=0;k<8;k++) c=(c&1)?(0xEDB88321^(c>>>1)):(c>>>1);"
+ },
+ {
+  "ad": "sürüm değişiminde eski metin taşınmıyor (senaryo kaybolur)",
+  "test": "33-iki-surumlu-senaryo.js",
+  "kaynak": "telefon",
+  "bul": "  s.text2=t;          s.pos2=p||0;    s.shot2=sh||{};      s.diff2=df||{};    s.mark2=mk;      s.dil2=dl||'';",
+  "koy": "  s.pos2=p||0;    s.shot2=sh||{};      s.diff2=df||{};    s.mark2=mk;      s.dil2=dl||'';"
+ },
+ {
+  "ad": "9 haneden büyük sayı sessizce yanlış okunuyor",
+  "test": "44-sayi-okunusu.js",
+  "kaynak": "telefon",
+  "bul": "  if(tam.length>9) return null;",
+  "koy": "  if(tam.length>99) return null;"
+ },
+ {
+  "ad": "damga yalnız aktif kelimeye vuruluyor (atlanan kelimeler altyazıda delik açar)",
+  "test": "92-damga-boslugu.js",
+  "kaynak": "telefon",
+  "bul": "      for(let i=Math.max(0,activeIdx<0?0:activeIdx);i<=idx;i++) if(capTimes[i]==null) capTimes[i]=t;",
+  "koy": "      if(capTimes[idx]==null) capTimes[idx]=t;"
+ },
+ {
+  "ad": "depo dolu uyarısı yanlış yeri işaret ediyor (kullanıcı çekimlerini siler)",
+  "test": "67-depo-dolunca-senaryo.js",
+  "kaynak": "telefon",
+  "bul": "lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Arka plan görselini kaldır ya da kullanmadığın senaryoları sil.'",
+  "koy": "lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Cekimlerini sil.'"
+ },
+ {
+  "ad": "altyazı satır uzunluğu sınırı kalktı (ekrana sığmayan kuyruk)",
+  "test": "34-altyazi-kuyruklari.js",
+  "kaynak": "telefon",
+  "bul": "const CAP_MAXCH=42, CAP_MAXSEC=3.6, CAP_GAP=0.08;",
+  "koy": "const CAP_MAXCH=420, CAP_MAXSEC=3.6, CAP_GAP=0.08;"
+ },
+ {
+  "ad": "sesle takip nöbetçi mesajı çeviriden koparıldı",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "mesajlar",
+  "bul": "voiceSilentCam:'🎤 Tanıma açıldı",
+  "koy": "voiceSilentCamX:'🎤 Tanıma açıldı"
  }
 ]

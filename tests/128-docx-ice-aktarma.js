@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, macYolu, oku, cikar, REPO}=require('./kaynak.js');
+const {telefonYolu, macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
 
 /* D.1 — .docx İÇE AKTARMA, SIFIR BAĞIMLILIKLA.
 
@@ -98,5 +98,5 @@ const cek = fs.readFileSync(cekYolu,'utf8');
   /* İçe aktarma mesajı EYLEMİ anlatmalı. Eskiden 'Geri yüklendi' diyordu:
      kullanıcı dosya aldı, hiçbir şey geri yüklemedi — iki dilde de yanlıştı. */
   ok('içe aktarma mesajı doğru eylemi söylüyor',
-     /imported:'📄 Dosyadan alındı'/.test(fs.readFileSync(path.join(REPO,'cekirdek','mesajlar.js'),'utf8')));
+     /imported:'📄 Dosyadan alındı'/.test(repoOku('cekirdek/mesajlar.js','SUFLE_MESAJ')));
 }

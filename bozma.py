@@ -28,6 +28,13 @@ KAYNAK = {
     # bir jeton hatası iki platformu birden vurur, yani en pahalı sınıf.
     'jeton': (os.path.join(REPO, 'cekirdek', 'jetonlar.css'), 'SUFLE_JETON'),
     'sozluk': (os.path.join(REPO, 'cekirdek', 'sozluk.js'), 'SUFLE_SOZLUK'),
+    # ÖLÇÜLDÜ (2026-08-16): mesaj sözlükleri ve ikon seti KAYNAK tablosunda HİÇ
+    # yoktu, yani kullanıcıya gösterilen bütün uyarı metinleri bozma turunun
+    # dışındaydı — bir testin o metinleri gerçekten ölçüp ölçmediği hiç
+    # kanıtlanamıyordu. `tests/115` artık çekirdeğin her dosyasını burada arıyor.
+    'mesajlar': (os.path.join(REPO, 'cekirdek', 'mesajlar.js'), 'SUFLE_MESAJ'),
+    'mac_mesajlar': (os.path.join(REPO, 'cekirdek', 'mac-mesajlar.js'), 'SUFLE_MACMESAJ'),
+    'ikonlar': (os.path.join(REPO, 'cekirdek', 'ikonlar.html'), 'SUFLE_IKON'),
     'docx': (os.path.join(REPO, 'cekirdek', 'docx.js'), 'SUFLE_DOCX'),
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.

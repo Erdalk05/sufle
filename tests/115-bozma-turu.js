@@ -129,6 +129,26 @@ function kos(args, kayitIcerik){
   const KAYNAKLAR2=[...kaynakGovde.matchAll(/'([a-z_]+)':\s*\(os\.path\.join\(REPO,\s*([^)]*)\),\s*'([A-Z_]+)'\)/g)]
     .map(m=>({ad:m[1], dosya:m[2].replace(/['\s]/g,'').split(',').pop(), env:m[3]}));
   ok('KAYNAK tablosu ayrıştırıldı ('+KAYNAKLAR2.length+')', KAYNAKLAR2.length>=15);
+
+  /* ÖLÇÜLDÜ (2026-08-16): `cekirdek/mesajlar.js`, `mac-mesajlar.js` ve
+     `ikonlar.html` KAYNAK tablosunda HİÇ yoktu. Yani kullanıcıya gösterilen
+     bütün uyarı metinleri bozma turunun DIŞINDAYDI: bir testin o metinleri
+     gerçekten ölçüp ölçmediği kanıtlanamıyordu ve "kaynak adı uydurma" hatası
+     bunu ancak biri o kaynağı yazmaya kalkışınca söylüyordu.
+     Çekirdek TAMAMEN bozulabilir olmalı — orası iki kabuğun ortak beyni. */
+  const cekDizin=path.join(REPO,'cekirdek');
+  const tabloDosyalari=new Set(KAYNAKLAR2.map(k=>k.dosya));
+  const eksikler=(dosyalar, tablo)=>dosyalar.filter(f=>!tablo.has(f));
+  /* Denetimin kendisi de sınanıyor: bu iddiayı kasıtlı bozmayla kanıtlamak
+     mümkün değil (tests/115 KAYNAK tablosunda yok, yani kendi kendini
+     bozduramaz), o yüzden sentetik örnekle ölçülüyor. */
+  ok('eksik dosya denetimi çalışıyor',
+     eksikler(['var.js','yok.js'], new Set(['var.js'])).join()==='yok.js');
+  ok('tam tabloda eksik bildirmiyor',
+     eksikler(['var.js'], new Set(['var.js'])).length===0);
+  const eksik=eksikler(fs.readdirSync(cekDizin), tabloDosyalari);
+  ok('çekirdeğin her dosyası bozulabilir'+(eksik.length?' — eksik: '+eksik.join(', '):''),
+     eksik.length===0);
   const testDizin=path.join(REPO,'tests');
   const tara=(dosyalar)=>{
     const bulunan=[];

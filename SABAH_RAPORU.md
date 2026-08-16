@@ -302,6 +302,38 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🧾 KANITSIZ TESTLER 94 → 100 · KAPININ İKİNCİ KÖR NOKTASI · G.7 ÖLÇÜLDÜ
+
+Altı eski dosya daha kanıtlandı (31 · 33 · 34 · 44 · 67 · 92): yayın paketinin
+CRC32 tablosu, iki sürümlü senaryoda eski metnin taşınması, altyazı satır
+uzunluğu sınırı, 9 haneden büyük sayının sessizce yanlış okunmaması, depo dolu
+uyarısının **doğru yeri** göstermesi ve damganın atlanan kelimelere de vurulması.
+**Kanıtlı dosya 94 → 100, bozma 300 → 308.**
+
+**🕳 Kapının ikinci kör noktası bulundu.** Bir bozma yazmaya kalkınca çıktı:
+`cekirdek/mesajlar.js`, `mac-mesajlar.js` ve `ikonlar.html` **KAYNAK tablosunda
+hiç yoktu**. Yani kullanıcıya gösterilen **bütün uyarı metinleri** bozma turunun
+dışındaydı — bir testin o metinleri gerçekten ölçüp ölçmediği kanıtlanamıyordu.
+Üçü de tabloya eklendi, `tests/115` artık **çekirdeğin her dosyasının** tabloda
+olmasını şart koşuyor (denetimin kendisi sentetik örnekle sınanıyor, çünkü
+`tests/115` kendini bozduramaz). Ayrıca iki testte env adı **yanlış yazılmıştı**
+(`SUFLE_MESAJLAR` vs `SUFLE_MESAJ`) — sessizce gerçek dosyayı okuyorlardı.
+
+**G.7 (intro/outro) ölçüldü → ERTELENDİ.** Chrome 151'de WebCodecs'in üç parçası
+da var ama **kapsayıcı yazıcı (muxer) yok**: WebCodecs çıplak kare üretir, MP4
+kutusunu yazmak dış kitaplık ister → sıfır bağımlılık kırılır. Üstelik H.264
+kodlayıcı desteklenmiyor (VP9 var), yani o yolla üretilen dosya WebM olurdu —
+deponun ölçülmüş kararı ise MP4. Bağımlılıksız yol var (tuvale yeniden çizip
+kaydetmek, budamadaki sınanmış teknik) ama üç bedeli ölçülü: **gerçek zamanlı**
+(60 sn videoya intro eklemek 60 sn sürer), **yeniden kodlama** (kalite kaybı) ve
+asıl belirleyici — `canTrim()` **iOS Safaride false**, yani özellik **asıl üründe
+hiç çalışmaz**. Aynı emek 20. kategoriyi (platform kapsamı, ×4) mağaza kabuğuyla
+açar; G.7 puan getirmez.
+
+**FAZ G'de artık yalnız G.8 (içerik planlayıcı) ölçülmemiş durumda.**
+
+---
+
 ### 🧾 KANITSIZ TESTLER 85 → 94 · G.9 DA ÖLÇÜLDÜ VE ELENDİ
 
 Dokuz eski test dosyası daha kasıtlı bozmayla kanıtlandı (36 · 38 · 39 · 51 · 53 ·
@@ -919,13 +951,13 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  **20 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
+  **21 commit yayınlanmamış** (`main` dalında). 16 Ağustos sabahına kadar bunların
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6175 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6179 test** (gece başında 732) · yeni test dosyası: 39–161
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **300 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **308 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

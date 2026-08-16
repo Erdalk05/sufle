@@ -143,8 +143,8 @@ for(const [ad,ham,kod,dev] of [['telefon',telHam,tel,'st'],['masaüstü',macHam,
 {
   /* Mesajlar İKİ DİLDE de olmalı: Mac uyarıları bir turda 67 kez Türkçe
      sabit çıkmıştı. */
-  const telMsg=cekirdekOku('mesajlar.js','SUFLE_MESAJLAR');
-  const macMsg=cekirdekOku('mac-mesajlar.js','SUFLE_MAC_MESAJLAR');
+  const telMsg=cekirdekOku('mesajlar.js','SUFLE_MESAJ');
+  const macMsg=cekirdekOku('mac-mesajlar.js','SUFLE_MACMESAJ');
   for(const [ad,kaynak] of [['telefon',telMsg],['masaüstü',macMsg]]){
     for(const k of ['fitNoTarget','fitOk','fitPause','fitTooFast','fitTooSlow']){
       const bul=[...kaynak.matchAll(new RegExp(k+":'([^']*)'",'g'))].map(m=>m[1]);

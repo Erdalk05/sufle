@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, oku, cikar}=require('./kaynak.js');
+const {telefonYolu, oku, cikar, repoOku}=require('./kaynak.js');
 
 /* 🔴 SESLE TAKİP SESSİZ ÖLÜYORDU — Erdal bildirdi (T54).
 
@@ -65,7 +65,7 @@ const startVoice = cikar(src, /function startVoice\(\)\{[\s\S]*?\n\}/, 'startVoi
      demek hiçbir işe yaramaz. */
   const {REPO} = require('./kaynak.js');
   const fs = require('fs'), path = require('path');
-  const msg = fs.readFileSync(path.join(REPO, 'cekirdek', 'mesajlar.js'), 'utf8');
+  const msg = repoOku('cekirdek/mesajlar.js','SUFLE_MESAJ');
   for (const k of ['voiceSilentCam', 'voiceSilent']) {
     ok('mesaj tanımlı: ' + k, new RegExp(k + ":'").test(msg));
     const kacKez = (msg.match(new RegExp(k + ":'", 'g')) || []).length;
