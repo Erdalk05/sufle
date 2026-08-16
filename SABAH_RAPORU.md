@@ -971,6 +971,34 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🔥 AMİRAL ÖZELLİK NİHAYET UÇTAN UCA KANITLANDI: altyazı videoya GERÇEKTEN gömülüyor
+
+FAZ G'nin amiral özelliği bugüne kadar yalnız **parçalarıyla** ölçülüyordu (tema
+tablosu, karaoke hesabı, çizim yardımcıları). "Kayıt sırasında altyazı videoya
+yazılıyor" cümlesi hiç uçtan uca kanıtlanmamıştı — çünkü başsız tarayıcıda
+**WebGL yoktu** ve kompozit hiç kurulamıyordu.
+
+**Engel kaldırıldı:** `ekran.py` artık SwiftShader ile WebGL açıyor
+(`WebGL 2.0 (OpenGL ES 3.0 Chromium)` ölçüldü). Ardından A/B ölçüm:
+
+| ölçüm | gömme AÇIK | gömme KAPALI |
+|---|---|---|
+| kompozit çıktı tuvali | 640×480 (ayrılmış) | 300×150 (dokunulmamış) |
+| parlak (yazı) piksel | **819** | 0 |
+| bu piksellerin alt şeritte oranı | **%100** | — |
+
+Yani altyazı gerçekten çiziliyor, doğru yerde (alt şerit) çiziliyor ve
+**kapalıyken hiç tampon ayrılmıyor** — bu depoda bir kez 15,8 MB'lık ölü tampon
+olarak ölçülmüş bir kusur sınıfı.
+
+**Ölçüm sırası üç kez beni yanılttı, üçü de rapora yazıldı:** kamera 2,5 saniyede
+açılmıyor (ilk denemede "akış yok" sandım); altyazı ancak sufle akarken üretiliyor
+(akışı başlatmadan ölçünce ürün DOĞRU davranıp "sufle akmamış" diyordu); ve akışı
+**kayıttan sonra** başlatmak kaydı düşürüyor — doğru sıra: önce akış, sonra kayıt.
+Üçünde de kusur üründe değil ölçümdeydi.
+
+---
+
 ### 🎬 KAPIYA 10. ADIM: ÇEKİM AKIŞI UÇTAN UCA
 
 Kapının dokuz adımı da **kaynağı** ölçüyordu. Kullanıcının yaptığı şey ise tek
@@ -1093,7 +1121,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **393 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **395 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1266,9 +1294,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6389 test** (gece başında 732) · yeni test dosyası: 39–165
+- **6393 test** (gece başında 732) · yeni test dosyası: 39–165
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **393 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **395 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

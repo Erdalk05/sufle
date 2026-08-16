@@ -67,6 +67,13 @@ def main(argv):
             print('  ✓ kamera açıldı, giriş ekranı kapandı, kumanda çubuğu geldi')
 
         # 2) KAYIT BAŞLIYOR
+        # SIRA ÖNEMLİ (ölçüldü): önce sufle akışı, sonra kayıt. Altyazı ancak
+        # kelimeler okuma çizgisinden geçtikçe üretiliyor; akış başlatılmazsa
+        # uygulama DOĞRU davranıp "altyazı yok, sufle akmamış" diyor. Kayıt
+        # başladıktan SONRA akışı başlatmak ise kaydı düşürüyordu — ilk iki
+        # denememde ürün kusuru sandığım şey ölçüm sırasının kendisiydi.
+        t.js("(()=>{ const b=document.querySelector('#playBtn'); if(b) b.click(); })()")
+        time.sleep(1.2)
         t.js("document.querySelector('#recBtn').click()")
         time.sleep(3.5)
         rec = js(t, """JSON.stringify({
@@ -118,10 +125,91 @@ def main(argv):
     finally:
         t.kapat()
 
+    kirik += kompozit(adres)
+
     print()
     print('✅ çekim akışı uçtan uca çalışıyor' if not kirik
           else '⛔ ÇEKİM AKIŞI KIRIK — %d halka' % kirik)
     return 1 if kirik else 0
+
+
+def kompozit(adres):
+    """ALTYAZI GERÇEKTEN VİDEOYA GÖMÜLÜYOR MU — çıktı tuvalinden ölçülüyor.
+
+       FAZ G'nin amiral özelliği bu ve bugüne kadar yalnız PARÇALARI ölçülüyordu
+       (tema tablosu, karaoke hesabı, çizim yardımcıları). "Kayıt sırasında
+       altyazı videoya yazılıyor" cümlesi hiç uçtan uca kanıtlanmamıştı.
+
+       Ölçüm A/B: gömme AÇIKken kompozit çıktı tuvalinde parlak (beyaz) piksel
+       olmalı ve bunlar karenin ALT BEŞTE BİRİNDE yoğunlaşmalı; gömme KAPALIyken
+       o tuval hiç boyutlandırılmamalı (kapalı özellik bellek de tüketmemeli —
+       bu depoda bir kez 15,8 MB'lık ölü tampon olarak ölçüldü).
+
+       Başsız tarayıcıda WebGL, SwiftShader ile açıldı; onsuz kompozit hiç
+       kurulamıyordu ve bu yüzden yıllardır ölçüm dışıydı."""
+    kirik = 0
+    for gomme in (True, False):
+        t = Tarayici()
+        try:
+            t.cagir('Page.enable')
+            t.cagir('Emulation.setDeviceMetricsOverride', width=430, height=932,
+                    deviceScaleFactor=2, mobile=True)
+            t.cagir('Page.navigate', url=adres)
+            time.sleep(2.5)
+            try:
+                t.js(KAPAT_ONB)
+            except Exception:
+                pass
+            time.sleep(0.4)
+            t.js("document.querySelector('#startCam').click()")
+            time.sleep(4.5)
+            t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='comp').click()")
+            time.sleep(2.5)
+            if gomme:
+                t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='burnCaps').click()")
+                time.sleep(1.2)
+            t.js("document.querySelector('#recBtn').click()")
+            time.sleep(5)
+            r = js(t, """(() => {
+              const oc=document.querySelector('#compOut');
+              if(!oc) return JSON.stringify({tuval:false});
+              const x=oc.getContext('2d');
+              if(oc.width<10) return JSON.stringify({tuval:true, en:oc.width, beyaz:0, altta:0});
+              const d=x.getImageData(0,0,oc.width,oc.height).data;
+              let beyaz=0, altta=0;
+              for(let i=0;i<d.length;i+=4){
+                if(d[i]+d[i+1]+d[i+2] > 690){
+                  beyaz++;
+                  if(Math.floor((i/4)/oc.width) > oc.height*0.6) altta++;
+                }
+              }
+              return JSON.stringify({tuval:true, en:oc.width, boy:oc.height, beyaz:beyaz, altta:altta});
+            })()""", 'kompozit çıktı')
+            t.js("document.querySelector('#recBtn').click()")
+            time.sleep(1)
+            if gomme:
+                if not r or r.get('beyaz', 0) < 100:
+                    print('  ✗ altyazı videoya GÖMÜLMEDİ (parlak piksel %s)' %
+                          (r.get('beyaz') if r else '?')); kirik += 1
+                elif r['altta'] < r['beyaz'] * 0.6:
+                    print('  ✗ gömülen altyazı alt şeritte değil (%d/%d)' %
+                          (r['altta'], r['beyaz'])); kirik += 1
+                else:
+                    print('  ✓ altyazı videoya gömülüyor (%d parlak piksel, %d%% alt şeritte)' %
+                          (r['beyaz'], round(100 * r['altta'] / r['beyaz'])))
+            else:
+                # 300x150 tuvalin DOKUNULMAMIŞ varsayılan boyutudur; ölçüt
+                # "kompozit boyutuna ayrılmış mı" (640x480 gibi). İlk yazımda
+                # eşiği 10 koymuştum ve dokunulmamış tuvali kusur sanmıştım.
+                if r and r.get('en', 0) >= 640:
+                    print('  ✗ gömme kapalıyken çıktı tuvali kompozit boyutuna ayrılmış (%sx%s)' %
+                          (r.get('en'), r.get('boy'))); kirik += 1
+                else:
+                    print('  ✓ gömme kapalıyken çıktı tuvali ayrılmıyor (%sx%s, ölü tampon yok)' %
+                          (r.get('en') if r else '?', r.get('boy') if r else '?'))
+        finally:
+            t.kapat()
+    return kirik
 
 
 if __name__ == '__main__':

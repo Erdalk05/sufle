@@ -2735,5 +2735,12 @@
   "kaynak": "kayit_olcum",
   "bul": "            print('  ✗ çekim arşive yazılmadı:', ars); kirik += 1",
   "koy": "            pass"
+ },
+ {
+  "ad": "altyazı gömme ölçümü A/B yerine tek yönlü koşuyor",
+  "test": "115-bozma-turu.js",
+  "kaynak": "kayit_olcum",
+  "bul": "    for gomme in (True, False):",
+  "koy": "    for gomme in (True,):"
  }
 ]

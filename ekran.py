@@ -228,7 +228,12 @@ class Tarayici:
         self.profil = tempfile.mkdtemp(prefix='sufle-ekran-')
         self.port = self._bos_port()
         bayraklar = [
-            CHROME, '--headless=new', '--disable-gpu', '--no-first-run',
+            CHROME, '--headless=new', '--no-first-run',
+            # WEBGL YAZILIMLA ÇİZİLİYOR: `--disable-gpu` tek başınayken WebGL
+            # bağlamı hiç kurulamıyordu ve kompozit (yakılmış altyazı, marka,
+            # yeşil ekran) başsız tarayıcıda ÖLÇÜLEMİYORDU — bu deponun en yeni
+            # özellikleri tam da orada yaşıyor. SwiftShader ile bağlam kuruluyor.
+            '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
             '--no-default-browser-check', '--hide-scrollbars',
             '--allow-file-access-from-files',
             '--use-fake-ui-for-media-stream',

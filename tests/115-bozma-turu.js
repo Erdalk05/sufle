@@ -217,11 +217,19 @@ function kos(args, kayitIcerik){
      kalır ve "uçtan uca ölçtük" cümlesi yalan olur. */
   const HALKA=[['kamera', /kamera açılmadı/], ['kayıt', /kayıt başlamadı/],
                ['sonuç ekranı', /sonuç ekranı gelmedi/], ['altyazı', /altyazı üretilmedi/],
-               ['arşiv', /çekim arşive yazılmadı/], ['hata günlüğü', /hata günlüğü boş değil/]];
+               ['arşiv', /çekim arşive yazılmadı/], ['hata günlüğü', /hata günlüğü boş değil/],
+               /* FAZ G'nin amiral özelliği: altyazının videoya GERÇEKTEN
+                  gömüldüğü, çıktı tuvalinden ölçülüyor (A/B). */
+               ['altyazı gömme', /altyazı videoya GÖMÜLMEDİ/],
+               ['gömme kapalıyken ölü tampon', /çıktı tuvali kompozit boyutuna ayrılmış/]];
   for(const [ad,re] of HALKA) ok('çekim ölçümü '+ad+' halkasını kontrol ediyor', re.test(ky));
   /* Kırık halkada kırmızı vermeli: yalnız yazdırıp geçmek en sessiz kusur. */
   ok('kırık halkada sıfırdan farklı çıkış', /return 1 if kirik else 0/.test(ky));
-  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=5);
+  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=7);
+  /* Kompozit ölçümü A/B koşuyor: yalnız açık hâli ölçmek, kapalıyken de
+     çizen bir kusuru göremezdi. */
+  ok('gömme ölçümü A/B koşuyor', /for gomme in \(True, False\)/.test(ky));
+  ok('gömme ölçümü alt şeridi de kontrol ediyor', /altta/.test(ky));
 }
 
 /* ---------- KANITLI TEST SAYISI DÜŞMESİN ---------- */
