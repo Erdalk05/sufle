@@ -285,6 +285,23 @@ değişince liste tazeleniyor — ayrı bir bayrak tutmak iki kaynağın ayrış
 olduğunu gösterdi: "connDot geçiyor mu" diye bakmak, `const ayakta=true` yazan bozmayı
 geçiriyordu (yorumda da geçtiği için) — iddia değişkenin türetilmesine bağlandı.
 
+### ✅ G.10 + G.17 — Vitrin ve mağaza metni: her cümle koda bağlı · v9.14
+
+Gecenin on maddesi vitrine (`tanitim.html`), mağaza metnine (`MAGAZA.md`) ve JSON-LD
+`featureList`e girdi — **altı yeni vitrin kartı**, iki dilde. Rakiplerin ücretlendirdiği ve
+bizde ücretsiz olan şeyler ayrı bir paragraf oldu: aynalama (cam rig), gürültü kapısıyla temiz
+ses, altyazı üretimi, filigransız 4K, sesle takip, ikinci cihazda önizleme, sayısal WPM.
+
+**Abartma engeli genişletildi:** `tests/132` ve `tests/133` artık gecenin her sözünü koddaki
+karşılığına bağlıyor (karaoke → `kkParcala`, marka kiti → `drawMarka`, süreye sığdır →
+`gerekenWpm`, klip → `klipOnerileri`, müzik → `muzikKisilmaKazanci`, RTL → `metinYonu`).
+Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
+
+**Yeni bir kural eklendi: SINIR SAKLAMAK DA ABARTMADIR.** Bir özelliği anlatıp hangi cihazda
+çalışmadığını yazmamak mağaza incelemesinde yanlış beyandır ve kullanıcı ancak çekim sessiz
+çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
+zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -674,10 +691,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **12 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **13 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **5985 test** (gece başında 732) · yeni test dosyası: 39–159
+- **6004 test** (gece başında 732) · yeni test dosyası: 39–159
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

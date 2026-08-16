@@ -71,6 +71,36 @@ OBS ve vMix kullananlar için şeffaf zeminli yayın kipi var.
 
 Arayüz Türkçe ve İngilizce.
 
+**Altyazıda okuduğun kelime vurgulanır.** Altyazı senaryodan üretildiği için
+kelime yazımı her zaman doğru; vurgu da tahmin değil, senin okuma anına
+dayanıyor. Altı hazır görünüm (şerit, kutu, hap, şeritsiz, vurgu hapı, gölge),
+üç vurgu animasyonu ve üç konum var. Görünümü **kendi kamera görüntünün
+üstünde** küçük kartlara bakarak seçersin.
+
+**Marka kitin çekime işlenir.** Logo (dört köşeden biri, boyutu ayarlanır),
+marka rengi ve ad-unvan alt bandı. Alt bant kayıt başladıktan sonra birkaç
+saniye görünüp kaybolur. Marka rengin koyuysa yazı okunur bir renge düşer,
+şerit yine senin rengin kalır.
+
+**Süreye sığdır.** Hedef süreyi ver, hız metni tam o sürede bitirecek şekilde
+ayarlansın; duraklama işaretleri hesaba katılır. Sığmıyorsa sebebini söyler.
+
+**Çekimden sonra klip önerileri.** Bölüm başlıkları, vurgu işaretleri ve okuma
+zamanlarından kısa klipler önerilir; her öneri hangi ölçüme dayandığını yazar
+ve başlıklar senaryodan birebir alınır — uydurma başlık yok.
+
+**Müzik yatağı.** Cihazından seçtiğin müzik çekime karışır ve konuşurken
+kendiliğinden kısılır. iPhone ve iPad'de bu özellik kapalı tutulur ve sebebi
+uygulamada yazar: orada kayıt sırasında ses işleme çekimi sessiz bırakıyor.
+
+**Sağdan sola diller.** Arapça, İbranice ve Farsça senaryolar doğru yönde akar;
+yön satır satır belirlendiği için iki dilli senaryo bozulmaz.
+
+**Rakiplerin ücretlendirdiği şeyler burada ücretsiz:** aynalama (cam rig),
+gürültü kapısı ve uğultu kesmeyle temiz ses, altyazı üretimi, filigransız 4K,
+sesle takip, ikinci cihazda önizleme ve sayısal WPM. Abonelik, hesap ve
+filigran yok.
+
 ## Uzun açıklama — EN
 
 **Read your script while looking at the lens.**
@@ -110,6 +140,37 @@ preview on that remote so you can check your framing when shooting alone.
 For OBS and vMix there is a transparent streaming mode.
 
 Interface in Turkish and English.
+
+**The word you read is highlighted in the caption.** Captions are generated
+from your script, so the spelling is always right, and the highlight is not a
+guess: it follows the moment you read the word. Six looks (band, box, pill, no
+band, highlight pill, shadow), three highlight animations and three positions.
+You pick the look from small cards drawn **over your own camera image**.
+
+**Your brand kit is burned into the take.** A logo in any of the four corners
+with adjustable size, a brand colour, and a lower third with your name and
+title that appears for a few seconds after recording starts. If your brand
+colour is dark the text falls back to a readable colour while the accent stripe
+keeps your colour.
+
+**Fit to duration.** Set a target length and the pace is set so the script ends
+exactly then, pause marks included. If it does not fit, it says why.
+
+**Clip suggestions after a take.** Short clips are proposed from section
+headings, emphasis marks and reading times; every suggestion states which
+measurement it rests on and titles are taken from your script word for word.
+
+**Music bed.** Music from your device is mixed into the take and ducks by
+itself while you speak. On iPhone and iPad it stays off and the app says why:
+audio processing during a recording leaves the take silent there.
+
+**Right to left languages.** Arabic, Hebrew and Persian scripts flow in the
+correct direction, decided line by line, so a bilingual script does not break.
+
+**What competitors charge for is free here:** mirroring for a glass rig, clean
+audio with a noise gate and rumble cut, caption generation, 4K without a
+watermark, voice follow, preview on a second device and a numeric WPM setting.
+No subscription, no account, no watermark.
 
 ## Anahtar kelimeler
 

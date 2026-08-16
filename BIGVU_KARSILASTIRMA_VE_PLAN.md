@@ -222,10 +222,15 @@ Sıra bilerek "en çok kullanıcıya değen ve sunucusuz olan" ile başlıyor.
 - **Karar ölçütü:** model boyutu, cihazda kare hızı ve **yanlış düzeltmenin bedeli** ölçülmeden
   yazılmaz. `ffmpeg.wasm` ve OpenDyslexic'te verilen aynı karar süreci.
 
-### G.10 — Vitrin ve mağaza metnini üstünlüklerle güncelle · **P1**
+### G.10 + G.17 — Vitrin ve mağaza metni · **P1** · ✅ **BİTTİ (v9.14)**
 - **Ne:** "sayısal WPM", "internetsiz çalışır", "altyazı ASR'siz ve %100 kelime doğru",
   "filigran yok, hepsi ücretsiz" — hepsi **ölçülmüş** ifadeler.
-- **Kapı:** tests/132 + tests/135 abartma engeli; her cümle koddaki karşılığına bağlı.
+- **Yapıldı:** gecenin on maddesi vitrine (6 yeni kart, iki dilde), mağaza metnine ve JSON-LD
+  `featureList`e girdi; rakiplerde ücretli olup bizde ücretsiz olanlar ayrı paragraf oldu.
+- **Abartma engeli genişletildi:** `tests/132` ve `tests/133` her yeni sözü koddaki karşılığına
+  bağlıyor; kod kaldırılırsa kapı önce kırılır.
+- **Yeni kural: sınır saklamak da abartmadır.** Müzik yatağının iOS sınırı **iki dilde de**
+  metinde yazılı olmak zorunda (bozma turu tek dilde silmenin geçtiğini gösterdi).
 
 ### 🔴 Erdal kararına bağlı olanlar (sunucu/hesap ister — kendiliğinden başlatılmaz)
 - AI senaryo yazarı · AI avatar/ses · B-roll kütüphanesi · analitik

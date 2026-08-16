@@ -67,6 +67,14 @@ const al = (re) => (tel.match(re) || [])[1] || '';
       'Kamerayla kayıt': /MediaRecorder/, 'Göz teması araçları': /eyeLine|eyePos/,
       'Reels ve Shorts oranları': /reels|shorts/i, 'Altyazı (.srt) üretimi': /srt/i,
       'Word dosyası içe aktarma': /docxMetni/, 'Çevrimdışı çalışma': /serviceWorker/,
+      /* G.10/G.17 — gecenin özellikleri de aynı disipline tabi: her madde
+         koddaki BİR ÖZELLİĞE karşılık gelmeli, yoksa vitrin abartmış olur. */
+      'Karaoke altyazı vurgusu': /function kkParcala\(/,
+      'Marka kiti (logo, renk, alt bant)': /function drawMarka\(/,
+      'Süreye sığdırma': /gerekenWpm\(/,
+      'Klip önerileri': /klipOnerileri\(/,
+      'Müzik yatağı': /muzikKisilmaKazanci\(/,
+      'Sağdan sola diller': /metinYonu\(/,
     };
     for (const f of j.featureList)
       ok('JSON-LD özelliği kodda karşılanıyor: ' + f, !!KANIT[f] && KANIT[f].test(tel));

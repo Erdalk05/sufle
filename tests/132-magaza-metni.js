@@ -58,6 +58,19 @@ const tek = fs.readFileSync(tekYol,'utf8').replace(/\s+/g,' ');
     ['kumandada önizleme',     mac, /onizlemeBaslat/],
     ['yayın (OBS) kipi',       mac, /body\.obs\{/],
     ['iki dilli arayüz',       mac, /id="langSwitch"/],
+    /* G.10/G.17 — gecenin özellikleri. Her söz koddaki karşılığına bağlı;
+       biri metne yazılıp kod kaldırılırsa kapı ÖNCE kırılır. */
+    ['karaoke altyazı vurgusu', tel, /function kkParcala\(/],
+    ['altı altyazı görünümü',   tel, /ALTYAZI_TEMA_SIRA/],
+    ['önizleme kartları',       tel, /function temaKartlariCiz\(/],
+    ['marka kiti alt bandı',    tel, /function drawMarka\(/],
+    ['süreye sığdırma',         tel, /gerekenWpm\(/],
+    ['klip önerileri',          tel, /klipOnerileri\(/],
+    ['müzik yatağı',            tel, /muzikKisilmaKazanci\(/],
+    ['sağdan sola diller',      tel, /metinYonu\(/],
+    ['aynalama (cam rig)',      tel, /mirrorText/],
+    ['gürültü kapısı',          tel, /fxGate|gateWant/],
+    ['ikinci cihazda önizleme', mac, /onizlemeBaslat/],
   ];
   for (const [soz, kaynak, kanit] of IDDIA)
     ok('metindeki söz kodda karşılanıyor: ' + soz, kanit.test(kaynak));
@@ -67,6 +80,19 @@ const tek = fs.readFileSync(tekYol,'utf8').replace(/\s+/g,' ');
 {
   /* Ölçülüp ELENEN şeyler metne sızmamalı. Sanal kamera yazılamaz, PDF
      desteklenmiyor, bulut yok — biri bunları metne koyarsa kapı kırılsın. */
+  /* SINIR SAKLAMAK DA ABARTMANIN BİR BİÇİMİDİR. Bir özelliği anlatıp
+     hangi cihazda çalışmadığını yazmamak, mağaza incelemesinde yanlış
+     beyandır ve kullanıcı ancak çekim sessiz çıkınca öğrenir. Müzik
+     yatağı iOSta KAPALI ve bu metinde de yazılı olmak zorunda. */
+  /* İKİ DİLDE DE yazılı olmalı: mağazaya iki metin de gidiyor ve yalnız
+     birinde sınırı anlatmak, diğer dildeki kullanıcıya yanlış beyandır.
+     (Bozma turu bunu gösterdi: TR metninden sınırı silmek yetmiyordu,
+     iddia EN metnindeki cümleye takılıp geçiyordu.) */
+  {
+    const sinir=(mag.match(/(iPhone|iPad)[^.]{0,90}(kapalı|kapatıl|stays off|off on)/gi)||[]);
+    ok('müzik yatağının iOS sınırı iki dilde de yazılı ('+sinir.length+')', sinir.length>=2);
+  }
+  ok('sınırın sebebi de yazılı', /sessiz|silent/i.test(mag));
   ok('sanal kamera vaat edilmiyor', !/sanal kamera|virtual camera/i.test(mag));
   ok('PDF içe aktarma vaat edilmiyor', !/PDF (dosyas|import|file)/i.test(mag));
   ok('bulut senkron vaat edilmiyor', !/bulut senkron|cloud sync/i.test(mag));

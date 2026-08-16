@@ -1720,5 +1720,33 @@
   "kaynak": "telefon",
   "bul": "  if(sebep==='sunucuYok') return t('yolSunucuYok');",
   "koy": "  if(sebep==='sunucuYok') return 'yok';"
+ },
+ {
+  "ad": "G.17 mağaza metnine olmayan özellik yazıldı (bulut senkron)",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza",
+  "bul": "**Müzik yatağı.**",
+  "koy": "**Bulut senkron.** Senaryoların buluta yedeklenir.\n\n**Müzik yatağı.**"
+ },
+ {
+  "ad": "G.17 mağaza metni iOS sınırını saklıyor",
+  "test": "132-magaza-metni.js",
+  "kaynak": "magaza",
+  "bul": "iPhone ve iPad'de bu özellik kapalı tutulur ve sebebi\nuygulamada yazar: orada kayıt sırasında ses işleme çekimi sessiz bırakıyor.",
+  "koy": "Her cihazda çalışır."
+ },
+ {
+  "ad": "G.17 vitrine olmayan özellik yazıldı (JSON-LD abartma)",
+  "test": "133-seo-vitrin.js",
+  "kaynak": "telefon",
+  "bul": "\"Sağdan sola diller\",\"Word dosyası içe aktarma\"",
+  "koy": "\"Sağdan sola diller\",\"Bulut yedekleme\",\"Word dosyası içe aktarma\""
+ },
+ {
+  "ad": "G.17 karaoke vitrinde var ama kodda yok",
+  "test": "133-seo-vitrin.js",
+  "kaynak": "telefon",
+  "bul": "function kkParcala(measure, ln, yon){",
+  "koy": "function kkParcalaKaldirildi(measure, ln, yon){"
  }
 ]
