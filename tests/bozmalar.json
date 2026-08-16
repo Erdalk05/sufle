@@ -2238,5 +2238,40 @@
   "kaynak": "telefon",
   "bul": "VER='9.15'",
   "koy": "VER='9.16'"
+ },
+ {
+  "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
+  "test": "49-senaryo-komut-tetikleme.js",
+  "kaynak": "telefon",
+  "bul": "function komutKaliplari(){\n  if(!st.voiceCmd) return [];",
+  "koy": "function komutKaliplari(){"
+ },
+ {
+  "ad": "çekim senaryosu damgalanmıyor (paket başka senaryoyu anlatır)",
+  "test": "61-paket-cekilen-senaryo.js",
+  "kaynak": "telefon",
+  "bul": "    cekimSenaryo=_s ? {title:_s.title||'', text:_s.text||'', surum2:!!_s.surum2,",
+  "koy": "    cekimSenaryo=_s ? {title:'', text:'', surum2:!!_s.surum2,"
+ },
+ {
+  "ad": "duraklatılan süre kayıt süresinden düşülmüyor (çekim süresi şişer)",
+  "test": "78-kayit-suresi-ve-cift-dongu.js",
+  "kaynak": "telefon",
+  "bul": "  const extra = recPaused ? (performance.now()-pauseStart) : 0;\n  return (performance.now()-recT-recPausedMs-extra)/1000; }",
+  "koy": "  return (performance.now()-recT)/1000; }"
+ },
+ {
+  "ad": "soluk metin rengi kontrast eşiğinin altına düştü (okunmaz)",
+  "test": "83-kontrast-olcumu.js",
+  "kaynak": "jeton",
+  "bul": "  --t-low:#868E9E;",
+  "koy": "  --t-low:#6B7280;"
+ },
+ {
+  "ad": "sesle takip dili değişince tanıma yeniden başlatılmıyor (eski dil sürer)",
+  "test": "68-sesle-takip-dili.js",
+  "kaynak": "telefon",
+  "bul": "  if(voiceOn){ stopVoice(); startVoice(); }   // sr.lang ancak yeni oturumda okunur",
+  "koy": "  // sr.lang ancak yeni oturumda okunur"
  }
 ]

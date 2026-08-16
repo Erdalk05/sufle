@@ -971,6 +971,23 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🧾 KANITSIZ TESTLER 107 → 112 · KAPININ DÖRDÜNCÜ KÖR NOKTASI
+
+Beş dosya daha kanıtlandı (49 · 61 · 68 · 78 · 83): senaryodaki komut kalıbı
+uyarısının sesli komut kapalıyken çıkmaması, çekim senaryosunun damgalanması,
+sesle takip dili değişince tanımanın yeniden başlatılması, duraklatılan sürenin
+kayıt süresinden düşülmesi ve soluk metin renginin AA eşiğini geçmesi.
+
+**Dördüncü kör nokta:** `tests/kaynak.js` içindeki `jetonlar()` renk tablosunu
+**her zaman depodaki** `jetonlar.css`ten okuyordu. Yani `SUFLE_JETON` ile
+bozulmuş bir kopya verilse bile çözülen renk eski kalıyor, renk ölçen testlere
+bozma **hiç ulaşmıyordu**. Env desteği eklendi ve bozma artık iniyor. Bu gece
+aynı sınıf **dört kez** çıktı (env desteksiz okuma · KAYNAK tablosunda olmayan
+dosya · doğrudan yoldan okunan kabuk · ölçüm aracının kendi tablosu) — ortak
+ders: **kapıyı kapı sanmadan önce, kapının ölçtüğü şeyi bozup görmek gerekiyor.**
+
+---
+
 ### 🧩 G.8 UYGULANDI — senaryo listesinde TÜRETİLMİŞ bilgi (v9.15)
 
 Ölçüm turunda çıkan karar uygulandı: yeni durum alanı **tutulmadı**, bilgi
@@ -1024,7 +1041,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6242 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **320 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **325 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

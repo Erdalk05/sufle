@@ -108,8 +108,15 @@ const macMetni = () => macCoz(oku(macYolu()));
    yine ölürdü. Doğrusu: jetonu GERÇEK sözlüğünden çözüp yerine koymak.
    Çözülemeyen jeton olduğu gibi bırakılmaz, görünür bir işaretle değiştirilir
    ki test sessizce geçmesin. */
+/* ÖLÇÜLDÜ (2026-08-16): jeton tablosu HER ZAMAN depodaki dosyadan okunuyordu,
+   yani `SUFLE_JETON` ile bozulmuş bir kopya verilse bile çözülen renk eski
+   kalıyordu — `tests/83` gibi renk ölçen testlere bozma HİÇ ULAŞMIYORDU.
+   Bu, kapının aynı gece üçüncü kez çıkan kör noktası: ölçüm aracının kendisi
+   gerçek dosyayı okuyunca bozma turu sessizce silahsız kalıyor. */
 function jetonlar() {
-  const s = fs.readFileSync(path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
+  const v = process.env.SUFLE_JETON;
+  if (v && !fs.existsSync(v)) throw new Error('Verilen yol yok: ' + v);
+  const s = fs.readFileSync(v || path.join(REPO, 'cekirdek', 'jetonlar.css'), 'utf8');
   const m = {};
   for (const [, ad, deger] of s.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g))
     m[ad] = deger.trim();
