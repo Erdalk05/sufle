@@ -971,6 +971,33 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 📱 ELDEN DENEME HAZIR — dört platform, tek doğru yol (Erdal kararı: mağazaya EVET)
+
+Erdal mağazaya çıkmadan önce kendinde ve yakınlarında denemek istedi: iPhone,
+Android, Mac, Windows. Bunun için üç iş yapıldı ve **her biri ölçüldü**:
+
+**① Canlı duman testi (`canli.py`).** Kapı depodaki dosyayı ölçüyordu, kullanıcı
+ise canlı adresi açıyor. Artık yayınlanan sürüm gerçek tarayıcıda üç genişlikte
+(430 · 360 · 1440 px) açılıyor, ana panolar **tıklanarak** sınanıyor. Ölçüm:
+**sürüm 9.15 · sufle var · metin var · taşma yok · üç panonun üçü de açıldı.**
+
+**② 🔴 Windows sunucusu 134 SATIR GERİDEYMİŞ.** Masaüstü kopyasında komut
+ucunun **köken denetimi yoktu** (bu gece kanıtladığım güvenlik kuralı), ölü
+adres kuralı yoktu, yedek port düzeltmesi ve uzak önizleme yoktu. Kapı yalnız
+HTML aynalarını karşılaştırdığı için bunu **hiç görmemişti**. Eşitlendi ve
+kapının 6. adımına **iki sunucu aynası** eklendi — bir daha sessizce bayatlayamaz.
+
+**③ `DENEME.md`.** Her platform için tek doğru yol, sebepleriyle: iPhone'da
+**yalnız Safari** (Chrome/Firefox ses kaydedemiyor), Android'de Chrome, Mac'te
+ya canlı adres ya `Teleprompter Sunucu.command` (HTML'e çift tıklamak kumandayı
+öldürüyor), Windows'ta `Teleprompter Baslat.bat`. Kılavuzun **her iddiası**
+`tests/163` ile koda bağlı (48 iddia, 4 kasıtlı bozma): sürüm, adres, manifest,
+iOS'ta müziğin kapalı olması, Fotoğraflar'da kırpma yolu, ilk beş dakikada
+denenecek dokuz yüzeyin hepsi ve **verilmeyen sözler** (hesap, bulut, AI, ödeme
+entegrasyonu — dördü de kodda aranıyor).
+
+---
+
 ### ✅ KANIT TURU KAPANDI — 162 test dosyasının 159'u kasıtlı bozmayla kanıtlı
 
 Gecenin başında **66/161** dosya kanıtlıydı; şimdi **159/162**. Kalan üç dosya
@@ -988,7 +1015,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **379 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **383 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1161,9 +1188,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6279 test** (gece başında 732) · yeni test dosyası: 39–162
+- **6326 test** (gece başında 732) · yeni test dosyası: 39–163
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **379 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **383 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

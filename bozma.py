@@ -76,6 +76,10 @@ KAYNAK = {
     # service worker ise çevrimdışı çalışmayı sağlayan tek ağ katmanı:
     # ikisi de sessizce gevşetilebilir ve ikisi de vaadi doğrudan bozar.
     'gizlilik': (os.path.join(REPO, 'GIZLILIK.md'), 'SUFLE_GIZLILIK'),
+    # Deneme kılavuzu ve canlı duman betiği: elden dağıtımın iki dayanağı.
+    'deneme': (os.path.join(REPO, 'DENEME.md'), 'SUFLE_DENEME'),
+    'canli': (os.path.join(REPO, 'canli.py'), 'SUFLE_CANLI'),
+    'manifest': (os.path.join(REPO, 'manifest.json'), 'SUFLE_MANIFEST'),
     'sw': (os.path.join(REPO, 'sw.js'), 'SUFLE_SW'),
     # Mac yerel sunucusu: kumanda ve uzak önizleme yolunun tamamı burada.
     'sunucu': (os.path.join(REPO, 'mac', 'teleprompter_server.py'), 'SUFLE_SUNUCU'),

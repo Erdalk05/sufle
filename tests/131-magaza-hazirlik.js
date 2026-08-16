@@ -19,7 +19,7 @@ const {telefonYolu, oku, REPO, repoOku}=require('./kaynak.js');
    kusuru olurdu — bu yüzden metinde ve testte AÇIKÇA aranıyor. */
 
 const tel = oku(telefonYolu());
-const man = JSON.parse(fs.readFileSync(path.join(REPO,'manifest.json'),'utf8'));
+const man = JSON.parse(repoOku('manifest.json','SUFLE_MANIFEST'));
 const gizHam = repoOku('GIZLILIK.md','SUFLE_GIZLILIK');
 /* Belge sarmalı düz yazı: "ses tanıma\nservisine" gibi satır sonunda bölünen
    ifadeler desenle bulunamıyordu. Boşlukları tekleştirip arıyoruz — aranan

@@ -3,7 +3,7 @@ const fs=require('fs'), path=require('path');
 const {telefonYolu,oku,cikar,REPO, repoOku}=require('./kaynak');
 const tel=oku(telefonYolu());
 const sw=repoOku('sw.js','SUFLE_SW');
-const manifestHam=fs.readFileSync(path.join(REPO,'manifest.json'),'utf8');
+const manifestHam=repoOku('manifest.json','SUFLE_MANIFEST');
 
 /* MANİFEST BAĞLARI
    manifest.json tek başına hiçbir şey yapmaz; üç ayrı dosyayla SÖZLEŞMESİ var:

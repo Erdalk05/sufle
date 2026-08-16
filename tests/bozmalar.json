@@ -2651,5 +2651,33 @@
   "kaynak": "sunucu",
   "bul": "            PORT = p          # ← /info ve QR artık GERÇEK portu bildiriyor",
   "koy": "            pass"
+ },
+ {
+  "ad": "kılavuz iOSta müzik çalışıyor gibi anlatıyor (sessiz çekim sürprizi)",
+  "test": "163-deneme-kilavuzu.js",
+  "kaynak": "deneme",
+  "bul": "- **Ses Stüdyosu ve müzik yatağı** — iOS'ta kayıt sırasında ses işlemek\n  çekimi SESSİZ bırakıyor (ölçüldü). Bu yüzden orada kapalı.",
+  "koy": "- Ses Studyosu her platformda acik."
+ },
+ {
+  "ad": "kılavuz sürümü koddan ayrıştı (yanlış sürüm dağıtılır)",
+  "test": "163-deneme-kilavuzu.js",
+  "kaynak": "deneme",
+  "bul": "**Sürüm 9.15",
+  "koy": "**Sürüm 9.11"
+ },
+ {
+  "ad": "canlı duman betiği panoları tıklamadan geçiyor",
+  "test": "163-deneme-kilavuzu.js",
+  "kaynak": "canli",
+  "bul": "                  b.click();",
+  "koy": "                  /* tiklamiyoruz */"
+ },
+ {
+  "ad": "manifest bağımsız pencereden çıktı (Ana Ekrana Ekle anlamsızlaşır)",
+  "test": "163-deneme-kilavuzu.js",
+  "kaynak": "manifest",
+  "bul": "\"display\": \"standalone\"",
+  "koy": "\"display\": \"browser\""
  }
 ]

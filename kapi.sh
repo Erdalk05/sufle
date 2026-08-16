@@ -102,6 +102,13 @@ AYNALAR = [
     ("denetim.py",     "denetim.py", "~/Desktop/iPhone Teleprompter/denetim.py"),
     ("Mac masaüstü",   mac,          "~/Desktop/Teleprompter/Teleprompter Pro.html"),
     ("Windows kopyası", mac,         "~/Desktop/Teleprompter-Windows/Teleprompter Pro.html"),
+    # SUNUCU AYNALARI (2026-08-16de ölçüldü): Windows kopyası 134 SATIR
+    # GERİDEYDİ — komut ucunun köken denetimi, ölü adres kuralı, yedek port
+    # düzeltmesi ve uzak önizleme orada hiç yoktu. Kapı yalnız HTMLleri
+    # karşılaştırdığı için bunu hiç görmedi. Kullanıcının çift tıkladığı
+    # dosya masaüstündeki kopyadır; bayat sunucu = bayat güvenlik.
+    ("Mac sunucusu",    "mac/teleprompter_server.py", "~/Desktop/Teleprompter/teleprompter_server.py"),
+    ("Windows sunucusu","mac/teleprompter_server.py", "~/Desktop/Teleprompter-Windows/teleprompter_server.py"),
 ]
 for ad, kanon, ayna in AYNALAR:
     ayna = os.path.expanduser(ayna)
