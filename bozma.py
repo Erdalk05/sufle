@@ -72,6 +72,9 @@ KAYNAK = {
     # ölçülen durumları silmek) kapı sessizce silahsızlanır — bu deponun
     # `tests/113` ile bir kez yakaladığı sınıf.
     'kontrast': (os.path.join(REPO, 'kontrast.py'), 'SUFLE_KONTRAST'),
+    # Çekim akışı ölçümü de kapının bir aracı: gevşetilirse zincir sessizce
+    # ölçülmez olur (kontrast.py ile aynı sınıf).
+    'kayit_olcum': (os.path.join(REPO, 'kayit.py'), 'SUFLE_KAYIT_OLCUM'),
     # VAAT KİLİDİNİN İKİ AYAĞI. Gizlilik belgesi kullanıcıya verilen SÖZ,
     # service worker ise çevrimdışı çalışmayı sağlayan tek ağ katmanı:
     # ikisi de sessizce gevşetilebilir ve ikisi de vaadi doğrudan bozar.

@@ -971,6 +971,35 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🎬 KAPIYA 10. ADIM: ÇEKİM AKIŞI UÇTAN UCA
+
+Kapının dokuz adımı da **kaynağı** ölçüyordu. Kullanıcının yaptığı şey ise tek
+bir zincir: **kamerayı aç → kaydet → durdur → sonucu gör → altyazıyı al →
+arşivde bul.** Bu zincirin bir halkası koptuğunda diğer testler yeşil kalabilir,
+çünkü her biri kendi parçasını ölçüyor. Artık zincir gerçek Chrome'da, sahte
+kamera ve mikrofonla koşuyor (`kayit.py`, kapının 10. adımı):
+
+```
+✓ kamera açıldı, giriş ekranı kapandı, kumanda çubuğu geldi
+✓ kayıt başladı (KAYITTA)
+✓ sonuç ekranı açıldı ve videonun kaynağı var
+✓ 2 altyazı satırı hazır — senaryodan üretildi, yazım hatasız
+✓ hata günlüğü boş (sessiz istisna yok)
+✓ çekim arşive yazıldı (1 kayıt)
+```
+
+**Ölçüm aracı kendi kusurunu da gösterdi:** ilk denememde kamera "açılmadı"
+göründü — kusur üründe değil ölçümdeydi, 2,5 saniye yetmiyordu. Bekleme süresi
+ölçülerek ayarlandı ve bu deneyim betiğin başına yazıldı.
+
+`tests/115` bu adımı da silahlı tutuyor: altı halkanın altısı da kontrol
+edilmeli, kırık halkada betik sıfırdan farklı çıkış vermeli — arşiv halkasını
+söken bir bozma ile kanıtlandı. Ayrıca yayın protokolüne (`CLAUDE.md`) **canlı
+duman testi** eklendi: yayından sonra sürüm etiketi eşleşse bile uygulama
+açılmıyorsa bunu ancak `canli.py` söyler.
+
+---
+
 ### 🖥 MASAÜSTÜ YOLU UÇTAN UCA ÖLÇÜLDÜ — güvenlik kuralı ÇALIŞIRKEN kanıtlandı
 
 Kılavuz "Sunucu.command'a çift tıkla, tarayıcı localhost'u açar, QR ile telefon
@@ -1064,7 +1093,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **390 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **393 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1237,9 +1266,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6377 test** (gece başında 732) · yeni test dosyası: 39–165
+- **6389 test** (gece başında 732) · yeni test dosyası: 39–165
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **390 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **393 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

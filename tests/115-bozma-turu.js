@@ -199,6 +199,31 @@ function kos(args, kayitIcerik){
      (korumasiz.length?' — '+korumasiz.slice(0,4).join(' · '):''), korumasiz.length===0);
 }
 
+/* ---------- ÇEKİM AKIŞI ÖLÇÜMÜ SİLAHLI MI ---------- */
+{
+  /* Kapının 10. adımı kullanıcının gerçek zincirini koşturuyor: kamera →
+     kayıt → sonuç → altyazı → arşiv. Bu ölçüm gevşetilirse zincir sessizce
+     ölçülmez olur ve diğer dokuz adım yeşil kalmaya devam eder — `kontrast.py`
+     ile aynı sınıf, o da bu yüzden bozulabilir kaynaklara alınmıştı. */
+  const kyol=process.env.SUFLE_KAYIT_OLCUM || path.join(REPO,'kayit.py');
+  if(process.env.SUFLE_KAYIT_OLCUM && !fs.existsSync(process.env.SUFLE_KAYIT_OLCUM))
+    throw new Error('Verilen yol yok: '+process.env.SUFLE_KAYIT_OLCUM);
+  const ky=fs.readFileSync(kyol,'utf8');
+  ok('çekim akışı ölçümü depoda', ky.length>800);
+  const kapiMetni=fs.readFileSync(path.join(REPO,'kapi.sh'),'utf8');
+  ok('kapı bu adımı çağırıyor', /python3 kayit\.py/.test(kapiMetni));
+  ok('Chrome yoksa atlandığı SÖYLENİYOR', /ATLANDI: Chrome yok — çekim akışı/.test(kapiMetni));
+  /* BEŞ HALKANIN BEŞİ DE ÖLÇÜLMELİ: biri düşerse o halka sessizce korumasız
+     kalır ve "uçtan uca ölçtük" cümlesi yalan olur. */
+  const HALKA=[['kamera', /kamera açılmadı/], ['kayıt', /kayıt başlamadı/],
+               ['sonuç ekranı', /sonuç ekranı gelmedi/], ['altyazı', /altyazı üretilmedi/],
+               ['arşiv', /çekim arşive yazılmadı/], ['hata günlüğü', /hata günlüğü boş değil/]];
+  for(const [ad,re] of HALKA) ok('çekim ölçümü '+ad+' halkasını kontrol ediyor', re.test(ky));
+  /* Kırık halkada kırmızı vermeli: yalnız yazdırıp geçmek en sessiz kusur. */
+  ok('kırık halkada sıfırdan farklı çıkış', /return 1 if kirik else 0/.test(ky));
+  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=5);
+}
+
 /* ---------- KANITLI TEST SAYISI DÜŞMESİN ---------- */
 {
   const tb=path.join(REPO,'tests','bozma-taban.json');

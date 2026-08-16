@@ -2728,5 +2728,12 @@
   "kaynak": "sunucu",
   "bul": "            png = make_qr(qs.get(\"d\", [\"\"])[0])",
   "koy": "            png = None"
+ },
+ {
+  "ad": "çekim akışı ölçümü arşiv halkasını atlıyor (kapı silahsızlanır)",
+  "test": "115-bozma-turu.js",
+  "kaynak": "kayit_olcum",
+  "bul": "            print('  ✗ çekim arşive yazılmadı:', ars); kirik += 1",
+  "koy": "            pass"
  }
 ]
