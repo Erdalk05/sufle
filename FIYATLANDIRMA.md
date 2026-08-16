@@ -106,9 +106,9 @@ yazmak, ölçülmemiş bir söz vermek olur.**
 
 | ölçüm | değer |
 |---|---|
-| Bugünkü ağırlıklı skor | **64,3 / 100** (4. sıra; BIGVU 65,3) |
+| Bugünkü ağırlıklı skor | **64,9 / 100** (4. sıra; BIGVU 65,3 — fark **0,4**) |
 | **Sunucu işletmeden ulaşılabilecek tavan** | **81,9** |
-| Sunucusuz kazanılabilecek kalan pay | **17,7 puan** |
+| Sunucusuz kazanılabilecek kalan pay | **17,0 puan** |
 | Sunucu/hesap/pazar gerektiren kategorilerin ağırlığı | 17/94 — yani skorun **%18'i** |
 
 Yani ücretsiz-ve-sunucusuz kalmanın bedeli ölçülü: **tavan 81,9**, bugünkü liderin

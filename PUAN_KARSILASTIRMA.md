@@ -7,9 +7,9 @@ Puanlar benim değerlendirmem; rakiplerin özellikleri araştırmaya dayanıyor,
 > **BU BELGE ESKİ VE DAHA GEVŞEK OLAN RUBRİKTİR (v5.6, 9 Ağustos).**
 > Geçerli ölçüm `belgeler/REKABET_30_OLCULDU.md`: 30 kategori, ağırlıklı,
 > her satır koda bağlı ve `tests/144` her koşuda aritmetiği yeniden yapıyor.
-> **16 Ağustos 2026 (v9.14) ölçümü: 64,3/100 — 4. sıra**, BIGVU 65,3'ün 1,0 puan altında.
+> **16 Ağustos 2026 (v9.15) ölçümü: 64,9/100 — 4. sıra**, BIGVU 65,3'ün 0,4 puan altında.
 >
-> Buradaki 82 ortalama ile oradaki 64,3 ÇELİŞMİYOR, aynı ürünü iki farklı
+> Buradaki 82 ortalama ile oradaki 64,9 ÇELİŞMİYOR, aynı ürünü iki farklı
 > rubrikle ölçüyorlar: bu belge 20 kategoriyi eşit ağırlıkla ve **yapabildiğimiz
 > işler** üzerinden puanlıyor; 30 kategorilik rubrik ise bulut senkron, AI,
 > kurulu taban gibi **hiç girmediğimiz** alanları da ağırlıklandırıyor.

@@ -2273,5 +2273,33 @@
   "kaynak": "telefon",
   "bul": "  if(voiceOn){ stopVoice(); startVoice(); }   // sr.lang ancak yeni oturumda okunur",
   "koy": "  // sr.lang ancak yeni oturumda okunur"
+ },
+ {
+  "ad": "7. kategori dayanağı koddan kalktı (senaryo araması yok)",
+  "test": "144-rekabet-olcumu.js",
+  "kaynak": "telefon",
+  "bul": "$('#scriptFind').oninput=()=>renderScripts();",
+  "koy": "$('#scriptFind').oninput=()=>{};"
+ },
+ {
+  "ad": "döndürmede konum kelimeden değil pikselden korunuyor (metin kayar)",
+  "test": "46-dondurmede-konum.js",
+  "kaynak": "telefon",
+  "bul": "  if(i>=0 && wordTops[i]!=null) setPos(Math.max(0, Math.min(maxPos, wordTops[i]-eyeOff())));\n  else setPos(pos);   // henüz kelime yok (boş senaryo): eski davranış",
+  "koy": "  setPos(pos);"
+ },
+ {
+  "ad": "duraklama süresi altyazı damgalarına da yazılıyor (altyazı kayar)",
+  "test": "89-duraklamada-altyazi-zamani.js",
+  "kaynak": "telefon",
+  "bul": "    recPausedMs+=performance.now()-pauseStart; recPaused=false;",
+  "koy": "    recPaused=false;"
+ },
+ {
+  "ad": "perde koyuluğu ölçümsüz bağlanmıyor (ayar ölü)",
+  "test": "63-olcumsuz-duzen-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "bind('#scrimSl','scrim'); bind('#target','target');",
+  "koy": "bind('#target','target');"
  }
 ]

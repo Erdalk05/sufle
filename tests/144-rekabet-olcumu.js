@@ -51,6 +51,17 @@ const belD = bel.replace(/\s+/g, ' ');
     '15 · kesim kaynağı koruyor': [tel, /kesKaynak=\{blob:lastBlob/],
     '28 · satır yönü':            [tel, /function metinYonu\(/],
     '28 · RTL noktalaması':       [tel, /؟/],
+    /* 16 Ağustos, ikinci tur: 7. kategori (senaryo kütüphanesi) G.8 ile
+       yükseldi — arama, üç sıralama kipi, çoğaltma, geri alınabilir çöp,
+       iki sürümlü senaryo ve artık TÜRETİLMİŞ bilgi (son değişiklik +
+       çekim sayısı). Klasör ve etiket yok, o yüzden 5 değil 4. */
+    /* İDDİA "kutu duruyor" değil "arama ÇALIŞIYOR": kutunun kimliği kodda
+       kalıp da yazınca hiçbir şey olmayan bir arama, bu kategoriyi hak
+       etmezdi. O yüzden yazdıkça listeyi tazeleyen bağ aranıyor. */
+    '7 · senaryo araması':        [tel, /\$\('#scriptFind'\)\.oninput=\(\)=>renderScripts\(\)/],
+    '7 · sıralama kipleri':       [tel, /st\.scSort/],
+    '7 · geri alınabilir çöp':    [tel, /st\.trash/],
+    '7 · türetilmiş bilgi':       [tel, /senaryoBilgi\(s, cekimSayaci\)/],
   };
   for (const ad in KANIT) {
     const [src, d] = KANIT[ad];
@@ -87,14 +98,16 @@ const belD = bel.replace(/\s+/g, ' ');
   /* 16 Ağustos, FAZ G sonrası: 15. kategori 3→4 (klip önerisi + kesim artık
      kaynağı koruyor, tek çekimden çok klip çıkıyor), 28. kategori 1→3
      (satır satır bidi, RTL noktalaması, karaoke vurgusu doğru uçta). */
-  const PUAN    = [4,4,5,4,3,5,3,3,0,5,4,3,4,5,4,5,0,0,0,2,0,3,5,5,4,3,5,3,0,3];
+  /* 16 Ağustos ikinci tur: 7. kategori 3→4 (G.8 türetilmiş bilgi + zaten
+     var olan arama/sıralama/çöp/iki sürüm). Klasör-etiket yok → 5 değil. */
+  const PUAN    = [4,4,5,4,3,5,4,3,0,5,4,3,4,5,4,5,0,0,0,2,0,3,5,5,4,3,5,3,0,3];
   ok('30 kategori var', AGIRLIK.length === 30 && PUAN.length === 30);
 
   const top = AGIRLIK.reduce((a, w, i) => a + w * PUAN[i], 0);
   const mx  = AGIRLIK.reduce((a, w) => a + w * 5, 0);
   const skor = top / mx * 100;
-  ok('ölçülen skor 64,3 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 64.3) < 0.1);
-  ok('belge aynı skoru yazıyor', /\*\*64,3\*\*/.test(bel));
+  ok('ölçülen skor 64,9 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 64.9) < 0.1);
+  ok('belge aynı skoru yazıyor', /\*\*64,9\*\*/.test(bel));
   ok('belge ilk ölçümü de saklıyor (63,0)', /63,0/.test(bel));
 
   /* Sunucusuz tavan: sıfır alan altı kategori hiç kazanılamazsa ulaşılabilecek
@@ -123,7 +136,7 @@ const belD = bel.replace(/\s+/g, ' ');
   ok('sıfır puanlı satırların hepsi ölçülmüş',
      satirlar.every(sm => +sm[4] !== 0 || sm[5] === 'sıfır doğrulandı'));
   const olculen = satirlar.filter(sm => sm[5] !== 'tahmin korundu').length;
-  ok('30 kategorinin 18i ölçülmüş (' + olculen + ')', olculen === 18);
+  ok('30 kategorinin 19u ölçülmüş (' + olculen + ')', olculen === 19);
   /* Ölçülmemiş satırların VARLIĞI da yazılı olmalı: belge kendi boşluğunu
      saklarsa "hepsi ölçüldü" sanılır. */
   ok('ölçülmeyen satırların olduğu belgede yazılı', /tahmin korundu/.test(bel));

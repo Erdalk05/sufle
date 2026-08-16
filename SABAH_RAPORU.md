@@ -971,6 +971,25 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 📈 REKABET PUANI 64,3 → 64,9 · BIGVU ile fark 0,4 puan
+
+G.8 uygulandıktan sonra rubrik yeniden ölçüldü ve **7. kategori (senaryo
+kütüphanesi ve organizasyon, ×3)** bugüne kadar "tahmin korundu" durumundaydı.
+Ölçünce analizin bir kez daha eksik bildiği çıktı: arama, **üç sıralama kipi**,
+çoğaltma, **geri alınabilir çöp**, iki sürümlü senaryo ve içe/dışa aktarma zaten
+yayındaydı; G.8 ile **türetilmiş bilgi** de eklendi. **3 → 4** (klasör ve etiket
+yok, o yüzden 5 değil).
+
+**Skor 64,9/100 — BIGVU (65,3) ile fark 0,4 puana indi.** Ölçülen satır sayısı
+18 → 19. Kanıt "arama kutusu duruyor" değil, **arama çalışıyor**: yazdıkça
+listeyi tazeleyen bağ aranıyor ve kasıtlı bozmayla kanıtlandı.
+
+**Kanıtlı test dosyası 112 → 115** (bozma 325 → 329): döndürmede konumun
+kelimeden korunması, duraklama süresinin altyazı damgalarına yazılmaması, perde
+koyuluğunun ölçümlü bağlanması ve 7. kategorinin kod dayanağı.
+
+---
+
 ### 🧾 KANITSIZ TESTLER 107 → 112 · KAPININ DÖRDÜNCÜ KÖR NOKTASI
 
 Beş dosya daha kanıtlandı (49 · 61 · 68 · 78 · 83): senaryodaki komut kalıbı
@@ -1039,9 +1058,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6242 test** (gece başında 732) · yeni test dosyası: 39–162
+- **6246 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **325 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **329 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

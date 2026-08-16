@@ -21,7 +21,8 @@ rubriği koruyor ama SUFLE sütunundaki her puanı **kodda ölçüyor**.
 |---|---|---|
 | Analizin tahmini | **53,6** | 6. (Speakflow ile Video Teleprompter arasında) |
 | Ölçülen (15 Ağustos, v9.11) | **63,0** | 4. (PromptSmart 56,0'ın üstünde, BIGVU 65,3'ün altında) |
-| **Ölçülen (16 Ağustos, FAZ G sonrası, v9.14)** | **64,3** | **4.** — BIGVU 65,3'ün **1,0 puan** altında |
+| Ölçülen (16 Ağustos, FAZ G sonrası, v9.14) | 64,3 | 4. — BIGVU 65,3'ün 1,0 puan altında |
+| **Ölçülen (16 Ağustos, G.8 uygulandıktan sonra, v9.15)** | **64,9** | **4.** — BIGVU 65,3'ün **0,4 puan** altında |
 
 İlk sıçrama (+9,4) tek satır yeni kod yazılmadan geldi: analiz, yayında olan
 özellikleri bilmiyordu. İkinci sıçrama (+1,3) FAZ G'nin on özelliğinden geldi ve
@@ -108,7 +109,7 @@ Ve altısının altısı da **sunucu, hesap ya da pazar konumu** gerektiriyor:
 | Takım & iş birliği (×2) | sunucu + hesap |
 
 **Bundan çıkan tavan:** sunucu işletmeden ulaşılabilecek en yüksek skor **81,9**.
-Bugün **64,3**'teyiz, yani **istemci tarafında hâlâ 17,7 puan kazanılabilir** —
+Bugün **64,9**'dayız, yani **istemci tarafında hâlâ 17,0 puan kazanılabilir** —
 bu, bugünkü liderin (80,6) hemen altına kadar çıkmak demek.
 
 Bu, `FIYATLANDIRMA.md`'nin bağımsız yoldan vardığı sonucun aynısı:
@@ -136,15 +137,28 @@ onun önündeki teknik engel Tur 51'de ölçülüp yıkıldı.
 
 ---
 
+---
+
+## G.8 sonrası (v9.15): 7. kategori de ölçüldü
+
+| # | kategori | ağ. | önce | şimdi | kanıt |
+|---|---|---|---|---|---|
+| 7 | Senaryo kütüphanesi ve organizasyon | ×3 | 3 (tahmin) | **4** | arama (`#scriptFind`) · üç sıralama kipi (`st.scSort`) · çoğaltma · **geri alınabilir çöp** (`st.trash`) · iki sürümlü senaryo · içe/dışa aktarma · ve G.8 ile **türetilmiş bilgi**: son değişiklik + çekim sayısı (`tests/162`). **Klasör ve etiket yok** → 5 değil |
+
+**64,3 → 64,9.** BIGVU (65,3) ile fark **0,4 puana** indi. Bu satır bugüne kadar
+"tahmin korundu" durumundaydı; ölçülünce analizin bir kez daha **eksik bildiği**
+çıktı — arama, sıralama ve geri alınabilir çöp zaten yayındaydı.
+
+
 ## Rubriğin tamamı — 30 satırın hepsi
 
 Bugüne dek bu belge yalnız **düzelttiği** satırları yazıyordu; kalan on dokuzu
 belgede hiç görünmüyordu, yani okuyan kişi 64,3'ün nereden geldiğini
 denetleyemiyordu. Tablo artık tamamı ve her satır kendi **durumunu** söylüyor:
 
-- **ölçüldü** — puan kodda ölçülüp değiştirildi ya da doğrulandı (12 satır)
+- **ölçüldü** — puan kodda ölçülüp değiştirildi ya da doğrulandı (13 satır)
 - **sıfır doğrulandı** — 0 olduğu ölçüldü; sunucu/hesap/pazar gerektiriyor (6 satır)
-- **tahmin korundu** — analizin verdiği puana DOKUNULMADI, ölçülmedi (12 satır)
+- **tahmin korundu** — analizin verdiği puana DOKUNULMADI, ölçülmedi (11 satır)
 
 | # | kategori | ağ. | Sufle | durum |
 |---|---|---|---|---|
@@ -154,7 +168,7 @@ denetleyemiyordu. Tablo artık tamamı ve her satır kendi **durumunu** söylüy
 | 4 | Uzaktan kumanda genişliği | ×4 | 4 | ölçüldü |
 | 5 | Ayna / prompter donanım desteği | ×3 | 3 | tahmin korundu |
 | 6 | Göz teması araçları | ×3 | 5 | tahmin korundu |
-| 7 | Senaryo kütüphanesi ve organizasyon | ×3 | 3 | tahmin korundu |
+| 7 | Senaryo kütüphanesi ve organizasyon | ×3 | 4 | ölçüldü |
 | 8 | İçe aktarma (docx/pdf/Drive) | ×2 | 3 | ölçüldü |
 | 9 | Bulut senkron ve çok cihaz | ×4 | 0 | sıfır doğrulandı |
 | 10 | Çevrimdışı ve gizlilik | ×3 | 5 | tahmin korundu |
@@ -179,7 +193,7 @@ denetleyemiyordu. Tablo artık tamamı ve her satır kendi **durumunu** söylüy
 | 29 | Takım ve iş birliği | ×2 | 0 | sıfır doğrulandı |
 | 30 | Entegrasyonlar (OBS/NDI/sanal kamera) | ×3 | 3 | ölçüldü |
 
-**Ağırlık toplamı 94 · maksimum 470 · ağırlıklı toplam 302 → 64,3.**
+**Ağırlık toplamı 94 · maksimum 470 · ağırlıklı toplam 305 → 64,9.**
 Aritmetiği `tests/144-rekabet-olcumu.js` her koşuda yeniden yapıyor; tablo ile
 dizi ayrışırsa kapı kırılır.
 
