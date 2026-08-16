@@ -302,6 +302,35 @@ Biri metne yazılıp kod kaldırılırsa **kapı önce kırılır**.
 çıkınca öğrenir. Müzik yatağının iOS sınırı artık **iki dilde de** metinde yazılı olmak
 zorunda — bozma turu, tek dilde silmenin iddiayı geçirdiğini gösterdi.
 
+### 🔍 DENETİM TURU — gecenin işini kendi kapımla ölçtüm
+
+**Üç gerçek bulgu çıktı ve üçü de kapının KENDİ kör noktalarıydı.**
+
+**① Gecenin yüzeylerinin ÇOĞU hiç ölçülmüyormuş.** Yeni ayarların büyük kısmı kompozit
+kutusunun içinde ve o kutu kapalıyken kontrast/çeviri/erişilebilir ad taraması oraya hiç
+bakmıyordu — Kamera sekmesini açmak yetmiyor. Kapıya `telefon-kompozit` durumu eklendi:
+**214 öge ölçüldü → ihlal 0 · çevrilmemiş 0 · adsız 0**. Yani gecenin işi temiz çıktı, ama
+bunu ancak şimdi *biliyoruz*. (Kutu başsız tarayıcıda WebGL olmadığı için anahtarla
+açılamıyor; ölçülen şeyin **etiketler** olduğu, boru hattı olmadığı kodda yazılı.)
+
+**② Ses Stüdyosu kapalıyken müzik yatağı sessizce ölüydü.** `fxOn()` false olduğunda ses
+zinciri hiç kurulmuyor; müzik anahtarı açılıyor, hiçbir şey olmuyor ve **sebebi de
+yazmıyordu** — bu deponun 3 numaralı hata sınıfı. Artık dördüncü bir sebep var
+(`fxKapali`) ve iki kabukta da yazılı. Test artık **her** `muzikDurum` çağrısının fx
+durumunu geçirdiğini ölçüyor (tek çağrıyı bozmak yetmemeli).
+
+**③ 🔴 Kapsam kapısı FİİLEN KAPALIYMIŞ.** Depodaki kapsam tabanı `{"index.html":999}` —
+yani `tests/113`ün bilerek yazdığı **fikstür değeri depoya sızmış**. Taban fonksiyon
+sayısından büyük olduğu için "kapsam düştü" koşulu hiçbir zaman doğru olamıyordu ve Mac
+için taban hiç yoktu. Artık `kapsam.py` **inanılmaz tabanı** (fonksiyon sayısından büyük)
+sessizce kabul etmiyor: ölçülen değere çekiyor ve *"kapı o ana kadar korumasızdı"* diye
+raporluyor. Gerçek taban da yazıldı (telefon 43 · Mac 28).
+
+**Ölçülüp bulgu ÇIKMAYAN mercekler** (bunlar da sonuçtur): yeni yedi ayarın hepsi yeniden
+açılışta **kalıcı** (ölçüldü: tema, animasyon, konum, logo konumu, ad, müzik düzeyi, hedef
+süre) · parite: her yeni özellik iki kabukta da var ve testler ikisini birden ölçüyor ·
+kare başına maliyet: karaoke ve marka önbelleğe alınmış, ölçülen 300 karede 127 measureText.
+
 **Bu turda kendi hatalarım — üçü de kapının yakaladığı, dördü de daha önce yazılmış sınıflar:**
 1. **Şablon dizesi içindeki yoruma ters tırnak** koydum (CLAUDE.md bunu üç kez yazmış, bu dördüncü).
 2. **Yoruma `st` nokta `alan` yazdım** ve `tests/13` onu gerçek bir okuma sandı — hayalet
@@ -691,10 +720,10 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **13 commit yayınlanmamış**
+  Uygulama dosyalarında yayınlanmamış iş **yok**; yalnız **14 commit yayınlanmamış**
   (`main` dalında) ve o commit **belge/plan** — `index.html`, `sw.js` ve Mac dosyasına
   dokunmuyor, yani canlı uygulama deponun kopyasıyla birebir kalmaya devam ediyor.
-- **6004 test** (gece başında 732) · yeni test dosyası: 39–159
+- **6018 test** (gece başında 732) · yeni test dosyası: 39–159
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · 138 kanıtlı bozma
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

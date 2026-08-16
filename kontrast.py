@@ -76,6 +76,14 @@ DURUMLAR = [
     # Kısa bir çekim yapılıp sonuç ekranı açılıyor.
     ('telefon-sonuc',    TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startCam').click();"),
+    # KOMPOZİT KUTUSU — 2026-08-16 gecesine kadar HİÇ ölçülmüyordu ve o gece
+    # eklenen yüzeylerin ÇOĞU orada: altyazı görünüm kartları, vurgu
+    # animasyonu, marka kiti (logo/renk/ad/unvan) ve müzik yatağı. Kutu
+    # `display:none` ile kapalı durduğu için Kamera sekmesini açmak yetmiyor;
+    # kompozit ve altyazı gömme AÇIK olmalı. Kapının kendi kör noktası:
+    # ölçülmeyen yüzey, denetlenmemiş yüzeydir.
+    ('telefon-kompozit', TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startCam').click();"),
 ]
 
 # Sonuç ekranı iki aşamalı: kamera akmadan kayıt başlatmak anlamsız.
@@ -83,6 +91,37 @@ SONRA = {
     'telefon-sonuc': ("const b=document.querySelector('#recBtn'); b.click();"
                       " await new Promise(r=>setTimeout(r,4000)); b.click();"
                       " await new Promise(r=>setTimeout(r,3500));"),
+    # Kompozit kutusu ancak kamera aktıktan sonra açılabiliyor (ensureComp
+    # kamera ister). Sonra ayarlar → Kamera sekmesi → kompozit ve gömme.
+    # NEDEN ANAHTARA BASMIYORUZ: kompozit WebGL istiyor, başsız tarayıcı ise
+    # GPU olmadan koşuyor; anahtar basılsa bile `startComp()` başarısız olup
+    # ayarı geri alıyor (ölçüldü: sınıf 'sw' kalıyor, kutu display:none).
+    # Bu turun sorusu boru hattı DEĞİL, o kutudaki ETİKETLER: çevrilmiş mi,
+    # adı var mı, kontrastı yeterli mi. O yüzden kutu doğrudan görünür
+    # kılınıyor ve sınır bu yorumda yazılı — ölçtüğümüzü olduğundan fazla
+    # göstermemek için.
+    'telefon-kompozit': (
+        "document.querySelector('#settingsBtn').click();"
+        " await new Promise(r=>setTimeout(r,400));"
+        " document.querySelector('[data-tab=cam]').click();"
+        " await new Promise(r=>setTimeout(r,300));"
+        " const ac=el=>{ if(!el) return; el.classList.remove('hidden');"
+        "   el.style.setProperty('display','block','important');"
+        "   el.style.setProperty('opacity','1','important');"
+        "   el.style.setProperty('pointer-events','auto','important'); };"
+        " ac(document.querySelector('#compBox'));"
+        " ac(document.querySelector('#burnDeps'));"
+        " await new Promise(r=>setTimeout(r,600));"),
+}
+
+# Hangi durum hangi hedefe varmalı. Beklemesiz bir kurulum, ölçümü boş
+# ekranda yapma riski demek ("ölçmeyen denetim").
+BEKLE = {
+    'telefon-sonuc': "getComputedStyle(document.querySelector('#result')).display!=='none'",
+    # Kompozit kutusu gerçekten açıldı mı: kutu görünür VE tema kartları
+    # çizilmiş olmalı. Yalnız "kutu var" demek, boş kart şeridini ölçmek olurdu.
+    'telefon-kompozit': ("(()=>{const k=document.querySelector('#capTemaKart');"
+                         "return !!k && !!k.offsetParent && k.querySelectorAll('.kart').length>0;})()"),
 }
 
 # Tarayıcıda koşan ölçüm. Tek parça JS: her tur için ayrı ayrı gönderilir.
@@ -301,15 +340,19 @@ def olc(ad, url, w, h, dsf, kur):
             time.sleep(1.5)
         if ad in SONRA:
             t.js('(async()=>{%s})()' % SONRA[ad])
-            # Kayıt + işleme: sonuç ekranı açılana kadar YOKLA, sabit bekleme
-            # yetersiz kalırsa boş ekran ölçerdik ("ölçmeyen denetim").
-            for _ in range(40):
-                if t.js("getComputedStyle(document.querySelector('#result'))"
-                        ".display!=='none'"):
-                    break
-                time.sleep(0.5)
-            else:
-                raise RuntimeError('%s: sonuç ekranı açılmadı' % ad)
+            # HEDEF DURUM YOKLANIR, VARSAYILMAZ — ama hedef duruma göre.
+            # Eskiden burada TEK bir bekleme vardı (sonuç ekranı) ve
+            # SONRA sözlüğüne ikinci bir durum eklenince o bekleme yanlış
+            # yerde patlıyordu: kurulum doğruydu, denetim yanlış şeyi
+            # bekliyordu. Her durumun kendi hedefi var.
+            hedef = BEKLE.get(ad)
+            if hedef:
+                for _ in range(40):
+                    if t.js(hedef):
+                        break
+                    time.sleep(0.5)
+                else:
+                    raise RuntimeError('%s: hedef duruma varılmadı (%s)' % (ad, hedef[:60]))
             time.sleep(1.0)
         sonuc = json.loads(t.js(OLC))
         # DİL DENETİMİ: aynı yüzeyi TR ve EN çizip karşılaştır. Bu, kaynak

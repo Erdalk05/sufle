@@ -50,9 +50,15 @@ function muzikDosyaKabul(tur, boyut){
 /* Müzik yatağı şu an çalışabilir mi ve çalışmıyorsa NEDEN.
    Sebep dizesi arayüzde gösterilecek mesajın anahtarıdır; "false" dönüp
    susmak bu depoda yasak (kullanıcı ayarı açar, hiçbir şey olmaz). */
-function muzikDurum(iosMu, hamSes, dosyaVar){
+function muzikDurum(iosMu, hamSes, dosyaVar, fxKapali){
   if(iosMu) return {calisir:false, sebep:'ios'};
   if(hamSes) return {calisir:false, sebep:'ham'};
+  /* DENETİM TURUNDA BULUNDU (2026-08-16): Ses Stüdyosu "Kapalı" seçiliyken
+     ses zinciri hiç kurulmuyor (`fxOn()` false), yani müzik anahtarı
+     açılıyor ve HİÇBİR ŞEY olmuyordu — üstelik sebebi de yazmıyordu.
+     Bu deponun 3 numaralı hata sınıfı: ön koşulu olan ayar = ölü ayar.
+     Koşul ya sağlanır ya sebebi söylenir; sessiz kalmak yasak. */
+  if(fxKapali) return {calisir:false, sebep:'fxKapali'};
   if(!dosyaVar) return {calisir:false, sebep:'dosyaYok'};
   return {calisir:true, sebep:null};
 }

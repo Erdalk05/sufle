@@ -1,7 +1,14 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path'), {execFileSync}=require('child_process');
 const REPO=path.join(__dirname,'..');
-const kapsamPy=path.join(REPO,'kapsam.py');
+/* BOZMA TURU GEÇİCİ KOPYAYI ÖLÇMELİ: yol ortam değişkeninden gelmezse
+   tezgâh depo dosyasını koşturur ve bozma HİÇ ÖLÇÜLMEDEN "geçti" görünür.
+   Bu deponun üç kez düştüğü tuzak (docx, prova, kumanda). */
+const kapsamPy=(()=>{
+  const acik=process.env.SUFLE_KAPSAM;
+  if(acik && !fs.existsSync(acik)) throw new Error('Verilen kapsam.py yolu yok: '+acik);
+  return acik || path.join(REPO,'kapsam.py');
+})();
 const kapiSh=path.join(REPO,'kapi.sh');
 
 /* M1 — KAPSAM RAPORU KAPIYA EKLENSİN (fonksiyon kapsamı düşerse uyar).
@@ -104,7 +111,14 @@ function kos(args, tabanIcerik){
     process.on(sig, ()=>{ geri(); process.exit(143); });
 }
 {
+  /* DENETİM TURU BULGUSU (2026-08-16): bu testin FİKSTÜR değeri (999) bir
+     kez depoya sızdı ve telefon kapsam kapısı o commit boyunca FİİLEN
+     KAPALIYDI — taban fonksiyon sayısından büyük olduğu için "kapsam düştü"
+     koşulu hiçbir zaman doğru olamıyordu. Artık böyle bir taban sessizce
+     kabul edilmiyor: ölçülen değere çekiliyor ve DURUM RAPORLANIYOR. */
   const r=kos(['index.html'], JSON.stringify({'index.html':999}));
+  ok('inanılmaz taban raporlanıyor', /taban inanılmaz/.test(r.cikti));
+  ok('inanılmaz tabanın korumasız bıraktığı söyleniyor', /korumasız/.test(r.cikti));
   ok('taban gevşekken geçiyor', r.kod===0);
   ok('sayılar raporlanıyor', /kapsanıyor/.test(r.cikti));
   /* TABAN KENDİLİĞİNDEN SIKIŞMALI: gevşek taban yerinde kalmamalı. */

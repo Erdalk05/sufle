@@ -1515,8 +1515,8 @@
   "ad": "G.5 telefonda iOS bayrağı sabit false geçiliyor (iPhonede sessiz çekim)",
   "test": "156-muzik-yatagi.js",
   "kaynak": "telefon",
-  "bul": "  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl).calisir;",
-  "koy": "  return !!mk.acik && muzikDurum(false, !!st.rawAudio, !!muzikEl).calisir;"
+  "bul": "  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off').calisir;",
+  "koy": "  return !!mk.acik && muzikDurum(false, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off').calisir;"
  },
  {
   "ad": "G.5 zincir durunca müzik hoparlörden çalmaya devam ediyor",
@@ -1748,5 +1748,26 @@
   "kaynak": "telefon",
   "bul": "function kkParcala(measure, ln, yon){",
   "koy": "function kkParcalaKaldirildi(measure, ln, yon){"
+ },
+ {
+  "ad": "DENETİM: Ses Stüdyosu kapalıyken müzik sessizce ölü",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "muzik",
+  "bul": "  if(fxKapali) return {calisir:false, sebep:'fxKapali'};",
+  "koy": "  if(false) return {calisir:false, sebep:'fxKapali'};"
+ },
+ {
+  "ad": "DENETİM: telefonda fx durumu çekirdeğe geçirilmiyor",
+  "test": "156-muzik-yatagi.js",
+  "kaynak": "telefon",
+  "bul": "  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off').calisir;",
+  "koy": "  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, false).calisir;"
+ },
+ {
+  "ad": "DENETİM: inanılmaz kapsam tabanı sessizce kabul ediliyor (kapı kapalı)",
+  "test": "113-kapsam-kapisi.js",
+  "kaynak": "kapsam",
+  "bul": "        if eski is not None and eski > len(fns):",
+  "koy": "        if False:"
  }
 ]

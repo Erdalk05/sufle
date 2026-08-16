@@ -31,6 +31,14 @@ const c=(()=>new Function(CEK+
   ok('iOSta dosya olmasa da sebep iOS', muzikDurum(true, false, false).sebep==='ios');
   const ham=muzikDurum(false, true, true);
   ok('ham ses açıkken çalışmıyor', ham.calisir===false && ham.sebep==='ham');
+  /* DENETİM TURU BULGUSU: Ses Stüdyosu kapalıyken ses zinciri hiç
+     kurulmuyor, yani müzik açılsa da HİÇBİR ŞEY olmuyordu ve sebebi de
+     yazmıyordu — ön koşulu olan ayar = ölü ayar. */
+  const fx=muzikDurum(false, false, true, true);
+  ok('Ses Stüdyosu kapalıyken müzik çalışmıyor', fx.calisir===false);
+  ok('sebep fxKapali', fx.sebep==='fxKapali');
+  ok('dosya olsa da sebep fxKapali', muzikDurum(false,false,true,true).sebep==='fxKapali');
+  ok('fx açıkken bu sebep çıkmıyor', muzikDurum(false,false,true,false).sebep===null);
   const yok=muzikDurum(false, false, false);
   ok('dosya yokken çalışmıyor', yok.calisir===false && yok.sebep==='dosyaYok');
   const tamam=muzikDurum(false, false, true);
@@ -110,6 +118,20 @@ const c=(()=>new Function(CEK+
   ok('telefon ham ses durumunu geçiriyor', /muzikDurum\(IS_WK, !!st\.rawAudio/.test(tel));
   ok('telefon iOS sebebini kullanıcıya yazıyor', /m\('muzikIos'\)/.test(tel));
   ok('telefon ham ses sebebini yazıyor', /m\('muzikHam'\)/.test(tel));
+  /* Yeni sebep de iki kabukta da kullanıcıya yazılmalı. */
+  for(const [ad,kod] of [['telefon',tel],['masaüstü',mac]]){
+    ok(ad+': Ses Stüdyosu sebebi yazılıyor', /m\('muzikFxKapali'\)/.test(kod));
+    ok(ad+': durum satırında kısa sebep var', /muzikFxKisa/.test(kod));
+    /* TEK ÇAĞRI YETMEZ: bir çağrı fx bayrağını geçerken diğerinin sabit
+       false geçmesi, ayarı yine sessizce ölü bırakırdı. Çağrıların HEPSİ
+       ölçülüyor (bozma turu bunu gerektirdi). */
+    {
+      const cagrilar=[...kod.matchAll(/(?<!function )muzikDurum\(([^)]*)\)/g)].map(x=>x[1]);
+      ok(ad+': muzikDurum çağrısı var ('+cagrilar.length+')', cagrilar.length>=3);
+      ok(ad+': HER çağrı fx durumunu geçiriyor',
+         cagrilar.length>0 && cagrilar.every(x=>/audioFx/.test(x)));
+    }
+  }
   /* MAC: iOS kavramı yok, ham ses ayarı da yok — olmayan durumu okumak
      kapının yakaladığı ölü durumdu. */
   ok('Mac olmayan ham ses alanını okumuyor', !/state\.rawAudio/.test(mac));

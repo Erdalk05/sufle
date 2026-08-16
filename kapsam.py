@@ -69,6 +69,20 @@ def main(yollar):
                 if not re.search(r'(?<![\w$])' + re.escape(f) + r'(?![\w$])', metin)]
         n = len(acik)
         eski = taban.get(ad)
+        # İNANILMAZ TABAN = TABANSIZLIK. Taban fonksiyon sayısından büyükse
+        # `n > eski` hiçbir zaman doğru olamaz, yani kapı o dosya için
+        # fiilen KAPALIDIR. Bu teorik değil: tests/113 bilerek 999 yazıp
+        # geri koyuyor ve o değer bir kez DEPOYA SIZDI (2026-08-16 denetim
+        # turunda bulundu) — telefon kapsamı o commit boyunca korumasızdı.
+        # Böyle bir taban sessizce kabul edilmez; ölçülen değere çekilir ve
+        # durum RAPORLANIR.
+        if eski is not None and eski > len(fns):
+            print('  ⚠ %s: taban inanılmaz (%d > %d fonksiyon) — ölçülen değere '
+                  'çekiliyor, kapı o ana kadar korumasızdı' % (ad, eski, len(fns)))
+            # Fonksiyon sayısına çekiliyor, None'a DEĞİL: None "ilk kez
+            # yazılıyor" demek ve sıkışmayı raporlamayı susturur; oysa burada
+            # gerçekten bir sıkışma oluyor ve görünmesi gerekiyor.
+            eski = len(fns)
         yuzde = round((len(fns) - n) / len(fns) * 100)
         durum = '%s: %d/%d kapsanıyor (%%%d) · kapsanmayan %d' % (ad, len(fns) - n, len(fns), yuzde, n)
         if eski is None:

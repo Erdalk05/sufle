@@ -382,6 +382,21 @@ ikinci cihazda önizleme · sayısal WPM. **Her cümle koddaki karşılığına 
 
 ---
 
+## 🔍 Denetim turu (2026-08-16 gecesi) — gecenin işi kendi kapısıyla ölçüldü
+
+FAZ G'nin on bir maddesi kapandıktan sonra gece kendi işini denetledi. **Üç bulgu çıktı ve
+üçü de kapının kendi kör noktalarıydı:**
+
+| # | Bulgu | Sonuç |
+|---|---|---|
+| ① | Gecenin yüzeylerinin çoğu **hiç ölçülmüyordu** — kompozit kutusu kapalıyken kontrast/çeviri/ad taraması oraya bakmıyor | Kapıya `telefon-kompozit` durumu eklendi: **214 öge · ihlal 0 · çevrilmemiş 0 · adsız 0** |
+| ② | **Ses Stüdyosu kapalıyken müzik yatağı sessizce ölüydü** (zincir hiç kurulmuyor, sebep yazmıyor) | Dördüncü sebep (`fxKapali`) eklendi, iki kabukta da yazılı; test **her** çağrıyı ölçüyor |
+| ③ | 🔴 **Kapsam kapısı fiilen kapalıymış**: depodaki taban `{"index.html":999}` — `tests/113`ün fikstür değeri depoya sızmış, Mac tabanı hiç yok | `kapsam.py` inanılmaz tabanı reddediyor ve *"kapı o ana kadar korumasızdı"* diye raporluyor; gerçek taban yazıldı (43 · 28) |
+
+**Bulgu çıkmayan mercekler de sonuçtur:** yedi yeni ayarın hepsi yeniden açılışta kalıcı
+(ölçüldü) · parite tam (her özellik iki kabukta, testler ikisini birden ölçüyor) · kare
+başına maliyet önbelleğe alınmış (300 karede 127 measureText).
+
 ## 8 · Sıradaki tur
 
 `G.1 → G.2 → G.3` tek bir yayına (v9.14) sığar ve BIGVU'nun vitrin özelliğini

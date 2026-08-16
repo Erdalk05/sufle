@@ -1501,7 +1501,7 @@ const I18N={
   capTema:'Altyazı görünümü',kartOrnek:'Okurken kaydediyorsun',
   muzikTitle:'Müzik yatağı',muzikPick:'Müzik seç',muzikClear:'Müziği kaldır',tgMuzik:'Müziği çekime karıştır',
   muzikSes:'Müzik düzeyi',muzikKis:'Konuşurken kıs',muzikIosKisa:'iPhone/iPad destekleyemiyor',
-  muzikHamKisa:'ham ses açık',muzikYokKisa:'dosya seçilmedi',
+  muzikHamKisa:'ham ses açık',muzikFxKisa:'Ses Stüdyosu kapalı',muzikYokKisa:'dosya seçilmedi',
   muzikHint:'Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.',
   yolTitle:'Bağlantı yolları',yolBt:'Bluetooth kumanda ya da klavye',yolLan:'İkinci cihaz (yerel ağ)',
   yolInternet:'İnternet üzerinden',yolVar:'kullanılabilir',yolYok:'yok',yolKapali:'kapalı',
@@ -1641,7 +1641,7 @@ const I18N={
   capTema:'Caption look',kartOrnek:'You record as you read',
   muzikTitle:'Music bed',muzikPick:'Pick music',muzikClear:'Remove the music',tgMuzik:'Mix music into the take',
   muzikSes:'Music level',muzikKis:'Duck while speaking',muzikIosKisa:'not possible on iPhone or iPad',
-  muzikHamKisa:'raw audio is on',muzikYokKisa:'no file picked',
+  muzikHamKisa:'raw audio is on',muzikFxKisa:'Audio Studio is off',muzikYokKisa:'no file picked',
   muzikHint:'The music is mixed into the recording and ducks by itself while you speak. The file never leaves your device and is not stored — pick it again each session.',
   yolTitle:'Connection paths',yolBt:'Bluetooth remote or keyboard',yolLan:'Second device (local network)',
   yolInternet:'Over the internet',yolVar:'available',yolYok:'not available',yolKapali:'off',
@@ -1727,7 +1727,7 @@ const I18N={
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
+ tr:{muzikFxKapali:'Ses Stüdyosu kapalıyken müzik karıştırılamaz — ses zinciri hiç kurulmuyor. Ses Stüdyosundan bir hazır ayar seç.',muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
   muzikBuyuk:'Müzik dosyası çok büyük — 20 MB altında bir dosya seç',
   muzikSet:'Müzik eklendi: {a}',muzikCleared:'Müzik kaldırıldı',
   muzikIos:'iPhone ve iPadde müzik karıştırılamıyor: kayıt sırasında ses işleme MediaRecorderın sesini kesiyor ve çekim SESSİZ çıkıyor. Bu yüzden kapalı tutuluyor.',
@@ -1807,7 +1807,7 @@ const MSG={
   lockNo:'Bu kamera kilitlemeye izin vermiyor',
   /* .docx içe aktarma (D.1) */
   docxBad:'Word dosyası okunamadı — gerçekten .docx mi?'},
- en:{muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
+ en:{muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
   muzikBuyuk:'The music file is too large — pick one under 20 MB',
   muzikSet:'Music added: {a}',muzikCleared:'Music removed',
   muzikIos:'Mixing music is not possible on iPhone or iPad: audio processing during a recording stops MediaRecorder from writing sound, so the take comes out SILENT. That is why it stays off.',
@@ -4055,7 +4055,7 @@ let muzikEl=null, muzikAdres='';
 function muzikOgesi(){ return muzikEl; }
 function muzikCalisir(){
   const mk=st.muzik||{};
-  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl).calisir;
+  return !!mk.acik && muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off').calisir;
 }
 function muzikDurdur(){
   if(muzikEl){ try{ muzikEl.pause(); }catch(e){ logErr('muzikDur',e); } }
@@ -6966,9 +6966,15 @@ function muzikDosyaKabul(tur, boyut){
 /* Müzik yatağı şu an çalışabilir mi ve çalışmıyorsa NEDEN.
    Sebep dizesi arayüzde gösterilecek mesajın anahtarıdır; "false" dönüp
    susmak bu depoda yasak (kullanıcı ayarı açar, hiçbir şey olmaz). */
-function muzikDurum(iosMu, hamSes, dosyaVar){
+function muzikDurum(iosMu, hamSes, dosyaVar, fxKapali){
   if(iosMu) return {calisir:false, sebep:'ios'};
   if(hamSes) return {calisir:false, sebep:'ham'};
+  /* DENETİM TURUNDA BULUNDU (2026-08-16): Ses Stüdyosu "Kapalı" seçiliyken
+     ses zinciri hiç kurulmuyor (`fxOn()` false), yani müzik anahtarı
+     açılıyor ve HİÇBİR ŞEY olmuyordu — üstelik sebebi de yazmıyordu.
+     Bu deponun 3 numaralı hata sınıfı: ön koşulu olan ayar = ölü ayar.
+     Koşul ya sağlanır ya sebebi söylenir; sessiz kalmak yasak. */
+  if(fxKapali) return {calisir:false, sebep:'fxKapali'};
   if(!dosyaVar) return {calisir:false, sebep:'dosyaYok'};
   return {calisir:true, sebep:null};
 }
@@ -8353,7 +8359,7 @@ function fxYenidenKur(){
 function muzikAnahtari(){
   const sw=$('#muzikSw'); if(!sw) return;
   const mk=st.muzik||{};
-  const d=muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl);
+  const d=muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off');
   const acik=!!mk.acik && d.calisir;
   sw.classList.toggle('on', acik);
   sw.setAttribute('aria-checked', acik?'true':'false');
@@ -8361,10 +8367,11 @@ function muzikAnahtari(){
     const yeni=!(st.muzik&&st.muzik.acik);
     /* SEBEBİ SÖYLE: sessizce kapalı kalmak yasak. */
     if(yeni){
-      const dd=muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl);
+      const dd=muzikDurum(IS_WK, !!st.rawAudio, !!muzikEl, (st.audioFx||'voice')==='off');
       if(!dd.calisir){
         toast(dd.sebep==='ios' ? m('muzikIos')
-            : dd.sebep==='ham' ? m('muzikHam') : m('muzikDosyaYok'));
+            : dd.sebep==='ham' ? m('muzikHam')
+            : dd.sebep==='fxKapali' ? m('muzikFxKapali') : m('muzikDosyaYok'));
         if(dd.sebep!=='dosyaYok') return;
       }
     }
@@ -8375,6 +8382,7 @@ function muzikAnahtari(){
   const txt=$('#muzikDurumTxt');
   if(txt) txt.textContent = acik ? (mk.ad||t('muzikSes'))
     : (d.sebep==='ios' ? t('muzikIosKisa') : d.sebep==='ham' ? t('muzikHamKisa')
+      : d.sebep==='fxKapali' ? t('muzikFxKisa')
       : d.sebep==='dosyaYok' ? t('muzikYokKisa') : (L==='tr'?'kapalı':'off'));
 }
 $('#logoPick').onclick=()=>$('#logoFile').click();
