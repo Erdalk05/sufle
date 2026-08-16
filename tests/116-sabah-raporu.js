@@ -65,6 +65,13 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
        kayma kararı değiştirmez, on kat sapma değiştirir. */
     ok('rapordaki commit sayısı gerçekçi ('+yazan+' vs '+gercek+', pay ±3)',
        Math.abs(yazan-gercek)<=3);
+  } else {
+    /* İDDİA SAYISI YAYIN DURUMUNA GÖRE DEĞİŞMEMELİ — bu, aynı dosyada bir kez
+       daha yaşandı (2026-08-16 sabahı, yayından hemen sonra): yayınlanmamış
+       commit sıfıra inince bu iddia hiç koşmadı, sayı 27den 26ya düştü ve kapı
+       DAVRANIŞ hiç bozulmadan kırmızı verdi. Sıfır durumunun da ölçülecek bir
+       karşılığı var: yayınlanmamış iş yoksa rapor canlı sürümü söylemeli. */
+    ok('yayınlanmamış iş yokken rapor canlı sürümü bildiriyor', /canlıda/i.test(r));
   }
   /* Dal adı da doğru olmalı — yanlış dal yanlış komut demek. */
   let dal=null;
@@ -72,8 +79,11 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
         {cwd:REPO,encoding:'utf8'}).trim(); }catch(_){}
   /* Dal adı yalnız "yayınlanmamış commit" satırı varken anlamlı; yayından
      sonra rapor sayı değil DURUM yazıyor ve dal adı orada gereksiz. */
-  if(dal && yazan!==null)
-    ok('raporda doğru dal adı yazıyor ('+dal+')', r.includes('`'+dal+'` dalında'));
+  /* Aynı kural burada da: dal adı yalnız bir durumda iddia edilirse sayı
+     oynar. Her durumda tek iddia — ya dal adı yazılı ya canlı sürüm. */
+  if(dal)
+    ok('raporda dal adı ya da yayın durumu yazılı ('+dal+')',
+       r.includes('`'+dal+'` dalında') || /canlıda/i.test(r));
 }
 {
   /* Kapı adım sayısı. */
@@ -106,7 +116,9 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
      savunur hâle geldi. Doğru iddia: rapor, gerçekte ne olduysa ONU söylesin.
      Ölçüt `.son-yayin` ile şu anki sürümün karşılaştırması. */
   const sy=path.join(REPO,'.son-yayin');
-  const ver=(fs.readFileSync(path.join(REPO,'index.html'),'utf8').match(/VER='([\d.]+)'/)||[])[1];
+  /* Sürüm ORTAM DEĞİŞKENİNE saygılı okunuyor: doğrudan depodan okurken
+     bozma turu bu iddiaya hiç ulaşamıyordu (2026-08-16 sabahı ölçüldü). */
+  const ver=(require('./kaynak.js').oku(require('./kaynak.js').telefonYolu()).match(/VER='([\d.]+)'/)||[])[1];
   const icerik=fs.existsSync(sy)?fs.readFileSync(sy,'utf8').trim():'';
   const yayinlandi=!!ver && icerik.startsWith(ver+' ');
   console.log('   .son-yayin: "'+icerik+'" · şu anki sürüm: '+ver+

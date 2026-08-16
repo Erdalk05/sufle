@@ -2189,5 +2189,54 @@
   "kaynak": "telefon",
   "bul": "  for(let n=1;n<cues.length;n++){\n    const onceki=cues[n-1];\n    if(cues[n].start < onceki.end){",
   "koy": "  for(let n=1;n<cues.length;n++){\n    const onceki=cues[n-1];\n    if(false){"
+ },
+ {
+  "ad": "G.8 okunamayan arşiv 'hiç çekmedin' diye gösteriliyor",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "senaryo",
+  "bul": "  let cekim=null;\n  if(sayilar && typeof sayilar.get==='function'){",
+  "koy": "  let cekim=0;\n  if(sayilar && typeof sayilar.get==='function'){"
+ },
+ {
+  "ad": "G.8 eski kayıtta olmayan tarih 1970 olarak yazılıyor",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "senaryo",
+  "bul": "  const ts=(typeof up==='number' && isFinite(up) && up>0) ? up : null;",
+  "koy": "  const ts=(+up)||0;"
+ },
+ {
+  "ad": "G.8 arşiv okunamadı ile sıfır çekim aynı sayılıyor",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "senaryo",
+  "bul": "  if(!Array.isArray(liste)) return null;",
+  "koy": "  if(!Array.isArray(liste)) return new Map();"
+ },
+ {
+  "ad": "G.8 başlıksız çekim ilk senaryoya bağlanıyor",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "senaryo",
+  "bul": "    if(!ad) continue;                       // başlıksız çekim kimseye bağlanmaz",
+  "koy": "    // basliksiz cekim de sayiliyor"
+ },
+ {
+  "ad": "G.8 liste her çizimde depoya gidiyor (yazarken donma)",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "telefon",
+  "bul": "    const bg=senaryoBilgi(s, cekimSayaci);",
+  "koy": "    const bg=senaryoBilgi(s, cekimSayilari(dbListe()));"
+ },
+ {
+  "ad": "G.8 okuma hatasında bayat sayım ekranda kalıyor",
+  "test": "162-senaryo-turetilmis-bilgi.js",
+  "kaynak": "mac",
+  "bul": "    catch(e){ logErr('cekimSay',e); cekimSayaci=null; }",
+  "koy": "    catch(e){ logErr('cekimSay',e); }"
+ },
+ {
+  "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
+  "test": "116-sabah-raporu.js",
+  "kaynak": "telefon",
+  "bul": "VER='9.15'",
+  "koy": "VER='9.16'"
  }
 ]

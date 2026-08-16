@@ -87,6 +87,10 @@ PLAN = [
     ('klip.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # G.5 — müzik yatağı kısılma hesabı ve kullanılabilirlik kuralı.
     ('muzik.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # G.8 — senaryo listesindeki TÜRETİLMİŞ bilgi (son değişiklik + çekim
+    # sayısı). Kural iki kabukta aynı olmalı: biri "3 çekim" derken diğeri
+    # başka sayı gösterirse kullanıcı hangisine güveneceğini bilemez.
+    ('senaryo.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

@@ -971,6 +971,39 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🧩 G.8 UYGULANDI — senaryo listesinde TÜRETİLMİŞ bilgi (v9.15)
+
+Ölçüm turunda çıkan karar uygulandı: yeni durum alanı **tutulmadı**, bilgi
+**türetildi**. Senaryo listesinde artık *"40 kelime · ~00:17 · son değişiklik
+16.08.2026 · 2 çekim"* yazıyor ve iki kabukta da aynı kural koşuyor
+(`cekirdek/senaryo.js`).
+
+**Gerçek tarayıcıda ölçüldü:** arşive iki çekim (aynı başlık) ve bir çekim
+(başka başlık) tohumlandı → listede **"2 çekim"** çıktı, üçüncüsü sayılmadı,
+satır taşması **0**. Kontrast kapısı da yeniden koştu: 10 yüzey, **0 ihlal**.
+
+Dört kabul ölçütünün dördü de testte kilitli (`tests/162`, 6 kasıtlı bozma):
+① `s.up` yoksa tarih **hiç** yazılmıyor (eski kayıtta 01.01.1970 yazmak veri
+uydurmaktır), ② sayım arşivden **bir kez** okunuyor — liste her çizimde
+IndexedDBye gitmiyor, ③ arşiv okunamazsa sayı **hiç** gösterilmiyor ("0 çekim"
+demek *hiç çekmedin* iddiasıdır ve yanlış olur), ④ sıfır çekim de yazılmıyor.
+**Bilinen sınır kasıtlı ve yazılı:** bağ başlık üzerinden kuruluyor, senaryonun
+adı değişirse eski çekimlerle bağ kopar — yanlış sayı göstermektense bağın
+kopması yeğ.
+
+**Kapının üçüncü kör noktası da bu turda çıktı:** `tests/116` sürümü
+`path.join(REPO,'index.html')` ile **doğrudan** okuyordu, yani o dosyaya inen
+hiçbir bozma bu teste ulaşamıyordu. Env destekli okumaya taşındı ve `tests/115`
+artık telefon/Mac için de doğrudan okumayı ihlal sayıyor. Aynı testte **iddia
+sayısı yayın durumuna göre oynuyordu** (yayından sonra 27 → 26) — davranış hiç
+bozulmadan kapı kırmızı verdi; iki dal da artık aynı sayıda iddia koşuyor.
+Üçüncü tuzak da tanıdık: tarayıcının sentetik örnekleri **kendi dosyasını**
+ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
+
+---
+
+- 🚀 **v9.15 HAZIR** (senaryo listesinde türetilmiş bilgi): sürüm ve `sw` önbelleği
+  artırıldı (`sufle-v87`), aynalar eşitlendi, kapı 9/9 yeşil. **Yayın onayı bekliyor.**
 - 🚀 **v9.14 CANLIDA ve doğrulandı** (2026-08-16 sabahı, Erdal onayıyla): `sufle-v86`,
   `index.html` **md5 birebir** (`bb220098…`), `sw.js` **md5 birebir** (`59463bd5…`),
   gecenin on özelliğinin izi canlıdan sayıldı (kkParcala 2 · altyaziTema 3 ·
@@ -986,9 +1019,9 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6179 test** (gece başında 732) · yeni test dosyası: 39–161
+- **6242 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **313 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **320 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

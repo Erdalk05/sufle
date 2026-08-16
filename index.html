@@ -1416,7 +1416,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.14';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.15';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -1493,7 +1493,7 @@ const I18N={
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
   takeReady:'Çekim hazır',deleteRedo:'Sil',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
   editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
-  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',
+  trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',scCekim:'{n} çekim',scSonDeg:'son değişiklik {t}',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
   remote:'Uzaktan kumanda',
   remoteHint:'Bluetooth sunum kumandası, sayfa çevirici pedal veya klavye — telefonla eşleştir, aşağıdaki tuşa bas, ne yapacağını seç.',
@@ -1633,7 +1633,7 @@ const I18N={
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
   takeReady:'Take ready',deleteRedo:'Delete',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
   editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
-  trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',
+  trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',scCekim:'{n} takes',scSonDeg:'edited {t}',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
   remote:'Remote control',
   remoteHint:'Bluetooth presenter clicker, page-turner pedal or keyboard — pair it with the phone, press a button, pick what it should do.',
@@ -5293,6 +5293,7 @@ async function autoSaveTake(){
   const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
     created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu()});
   arsivHatasi=!ok;
+  if(ok) cekimSayaci=null;      // yeni çekim geldi: sayım bayat, pano açılınca yenilenir
   if(!ok){ curTakeId=null; toast(m('archFail')); }   // depo dolu/kapalı — çekim ELDE, yalnız arşivlenemedi
   return ok;
 }
@@ -5305,6 +5306,16 @@ function arsivKutusu(){
   const w=$('#archWarn'); if(w) w.textContent=m('archWarnTxt');
   const b=$('#archWipe'); if(b){ b.textContent=m('archWipeBtn'); b.disabled=false; }
   arsivSilArm=0;
+}
+/* G.8 — TÜRETİLMİŞ SENARYO BİLGİSİ. Arşiv BİR KEZ okunuyor (senaryo
+   panosu açılırken ve yeni çekim arşivlenince); liste her çizimde IndexedDBye
+   gitseydi kaydırma sırasında donma olurdu. `null` = "okunamadı", ve o durumda
+   sayı HİÇ gösterilmiyor — 0 yazmak "hiç çekmedin" demek olurdu. */
+let cekimSayaci=null;
+async function cekimSayilariniTazele(){
+  try{ cekimSayaci=cekimSayilari(await dbListe()); }
+  catch(e){ logErr('cekimSay',e); cekimSayaci=null; }
+  renderScripts();
 }
 let takeSort='new';
 function sortTakes(list){
@@ -5909,8 +5920,15 @@ function renderScripts(){
   if(!list.length){ box.innerHTML='<div class="empty">'+m('noMatch')+'</div>'; return; }
   list.forEach(s=>{
     const d=document.createElement('div'); d.className='listitem'+(s.id===st.activeId?' on':'');
+    /* Türetilmiş bilgi: yalnız GERÇEKTEN bilinen parçalar yazılır. */
+    const bg=senaryoBilgi(s, cekimSayaci);
+    const ek=[];
+    if(bg.ts!=null) ek.push(t('scSonDeg').replace('{t}',
+      new Date(bg.ts).toLocaleDateString(L==='tr'?'tr-TR':'en-US')));
+    if(bg.cekim!=null) ek.push(t('scCekim').replace('{n}', bg.cekim));
     d.innerHTML='<div class="meta"><div class="t">'+esc(s.title||'—')+'</div><div class="s">'+
-      statLine(countWords(s.text))+'</div></div><button class="iconbtn" data-a="dup" aria-label="'+m('scDup')+'">⧉</button>';
+      statLine(countWords(s.text))+(ek.length?' · '+esc(ek.join(' · ')):'')+
+      '</div></div><button class="iconbtn" data-a="dup" aria-label="'+m('scDup')+'">⧉</button>';
     d.querySelector('.meta').onclick=()=>{ selectScript(s.id); };
     /* ALAN ALAN KOPYALAMA VERİ KAYBEDİYORDU: yalnız text taşınıyor, ikinci sürüm
        (text2/pos2/shot2/diff2/mark2/surum2) sessizce düşüyordu. İki sürümlü bir
@@ -6970,6 +6988,67 @@ function muzikDurum(iosMu, hamSes, dosyaVar, fxKapali){
   return {calisir:true, sebep:null};
 }
 /* ==/CEKIRDEK:muzik.js== */
+/* ==CEKIRDEK:senaryo.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/senaryo.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SENARYO LİSTESİ BİLGİSİ — TÜRETİLİR, TUTULMAZ (G.8 kararı).
+
+   BIGVU'nun "içerik planlayıcı" modülü senaryolara durum (çekilecek/çekildi/
+   yayınlandı) ve tarih tutuyor. Ölçüm (2026-08-16) o modülün büyük kısmının
+   bizde ZATEN VAR olduğunu gösterdi:
+     · `s.up` — son değişiklik zamanı her senaryoda tutuluyor ama LİSTEDE
+       gösterilmiyordu;
+     · çekim arşivi her çekime senaryonun BAŞLIĞINI yazıyor, yani "bu
+       senaryoyu kaç kez çektim" arşivden ÖLÇÜLEBİLİYOR.
+
+   KARAR: yeni bir durum alanı tutulmadı. Tutulan durum BAKIM ister ve
+   kullanıcı güncellemezse yalan söyler; türetilen bilgi yalan söyleyemez.
+   Bu deponun kuralı: ölçülebilen şeyi tutma, türet.
+
+   KABUL ÖLÇÜTLERİ (hepsi burada, testi tests/162):
+     ① `s.up` yoksa tarih HİÇ yazılmaz — eski kayıtlarda o alan yok ve
+        "01.01.1970" göstermek veri uydurmaktır.
+     ② Sayım arşivden BİR KEZ okunur; liste her çizimde depoya gitmez.
+        (Okuma kabuğun işi; burası hazır listeyi sayıyor.)
+     ③ Arşiv okunamadıysa sayı HİÇ gösterilmez — 0 yazmak "hiç çekmedin"
+        demektir ve bu YANLIŞ bir iddia olur.
+     ④ Sıfır çekim de gösterilmez: her satıra "0 çekim" yazmak gürültüdür.
+
+   BİLİNEN SINIR (kasıtlı): bağ BAŞLIK üzerinden kuruluyor. Senaryonun adı
+   değişirse eski çekimlerle bağ kopar ve sayı düşer. Alternatif, çekime
+   senaryo kimliği yazmaktı; ama eski çekimlerde o alan YOK ve olmayan alanı
+   varmış gibi okumak bu deponun 6 numaralı hata sınıfı. Yanlış sayı
+   göstermektense bağın kopması yeğ. */
+
+/* Arşiv üstverisinden başlık → çekim sayısı tablosu.
+   Liste verilmezse (okuma başarısız) null döner — "bilmiyorum" ile
+   "sıfır" farklı şeylerdir ve arayüz bu farkı göstermek zorundadır. */
+function cekimSayilari(liste){
+  if(!Array.isArray(liste)) return null;
+  const tablo=new Map();
+  for(const c of liste){
+    const ad=String((c && c.title) || '').trim();
+    if(!ad) continue;                       // başlıksız çekim kimseye bağlanmaz
+    tablo.set(ad, (tablo.get(ad)||0)+1);
+  }
+  return tablo;
+}
+
+/* Bir senaryo satırında gösterilecek TÜRETİLMİŞ bilgi.
+   Dönüş: {ts, cekim} — ikisi de null olabilir ve null "yazma" demektir. */
+function senaryoBilgi(s, sayilar){
+  const up=s && s.up;
+  const ts=(typeof up==='number' && isFinite(up) && up>0) ? up : null;
+  let cekim=null;
+  if(sayilar && typeof sayilar.get==='function'){
+    const ad=String((s && s.title) || '').trim();
+    const n=ad ? (sayilar.get(ad)||0) : 0;
+    cekim = n>0 ? n : null;
+  }
+  return {ts, cekim};
+}
+/* ==/CEKIRDEK:senaryo.js== */
 /* ==CEKIRDEK:klip.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -7781,6 +7860,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.15':{tr:'<b>Senaryo listesi artık ne zaman değiştirdiğini ve kaç kez çektiğini söylüyor.</b> Her senaryonun altında son değişiklik tarihi ve o senaryodan kaç çekim yaptığın yazıyor. Bu bilgi TUTULMUYOR, ölçülüyor: çekim arşivindeki kayıtlardan sayılıyor. Yani elle güncellemen gereken bir liste değil ve bayatlayamaz.<br><b>Bilinmeyen şey yazılmıyor:</b> eski senaryolarda tarih alanı yoksa tarih hiç gösterilmiyor, arşiv okunamazsa sayı hiç gösterilmiyor. Sıfır çekim de yazılmıyor.<br><b>Sınır:</b> bağ senaryonun adı üzerinden kuruluyor; adı değiştirirsen eski çekimlerle bağ kopar.',
+       en:'<b>The script list now shows when you last edited it and how many takes you made.</b> Under every script you see the last edit date and the number of takes recorded from it. This is not stored, it is measured: the count comes from the take archive. So there is no list to maintain by hand and it cannot go stale.<br><b>Nothing unknown is printed:</b> if an older script has no date field, no date is shown; if the archive cannot be read, no count is shown. Zero takes are not printed either.<br><b>Limit:</b> the link is made through the script name, so renaming a script breaks the link to older takes.'},
  '9.14':{tr:'<b>Konuşulan kelime altyazıda vurgulanıyor.</b> Videoya gömülen altyazıda okuduğun kelime renkli görünüyor, gerisi beyaz kalıyor. Rakiplerin bunu buluttaki yapay zekâ ile TAHMİN ederek yaptığı yerde Sufle tahmin etmiyor: metni zaten sen okuyorsun, yani vurgulanan kelime her zaman doğru kelime. İnternet gerekmiyor, ek ücret yok.<br><b>Söylenmemiş kelime gösterilmiyor</b>: altyazı hep konuştuğun kadarını yazar.<br><b>Masaüstünde de var</b> ve iki kabuk aynı matematiği kullanıyor.<br><b>Altyazıya altı görünüm geldi</b>: Şerit, Kutu, Hap, Şeritsiz, Vurgu hapı ve Gölge. Vurgu için üç animasyon (Yok, Yumuşak, Sıçra) ve altyazıya <b>Üst</b> konumu eklendi. Her görünüm okunurluk kuralına bağlı: zemini olmayan tema kontursuz ya da gölgesiz olamaz, yoksa açık renkli videoda yazı kaybolur.<br><b>Masaüstünde altyazı boyutu ve konumu artık gerçekten çalışıyor</b>: ayarların karşılığı yazılıydı ama hiçbir yere bağlı değildi, çizim 42 punto ve alt konuma sabitti.<br><b>Altyazı görünümünü artık ÖRNEĞİNE bakarak seçiyorsun</b>: altı görünüm, kendi kamera görüntünün üstünde küçük kartlar hâlinde. Kartlar uygulamanın kendi çiziminden üretiliyor, yani kartta gördüğün ile kaydettiğin aynı şey.<br><b>Süreye sığdır</b>: hedef süreyi verip tek düğmeye basıyorsun, hız metni tam o sürede bitirecek şekilde ayarlanıyor. Duraklama işaretleri hesaba katılıyor. Sığmıyorsa sessizce kırpmıyor, sebebini söylüyor.<br><b>Masaüstünde tahmini süre artık duraklamaları sayıyor</b>: nefes ve bekleme işaretleri sayılmadığı için ekranda sınıra uygun görünen metin çekimde sınırı aşabiliyordu; masaüstüne hedef süre de geldi.<br><b>Marka kiti geldi</b>: logo (dört köşeden biri, boyutu ayarlanır), marka rengi ve alt bant (ad ve unvan). Alt bant kayıt başladıktan sonra birkaç saniye görünüp kayboluyor. Marka rengin koyuysa yazı okunur bir renge düşüyor ama şerit yine senin rengin kalıyor. Rakiplerde bu katman en pahalı pakete kilitli, burada ücretsiz.<br><b>Klip önerileri</b>: çekimden sonra sonuç ekranında, videodan çıkarılabilecek kısa klipler öneriliyor. Öneriler senaryonun kendisinden geliyor — bölüm başlıkları, vurgu işaretleri ve okuma zamanları. Yapay zekâ yok, başlıklar senaryodan birebir alınıyor ve her öneri hangi ölçüme dayandığını yazıyor. Dokununca budama kutusuna yükleniyor, sınırları değiştirebilirsin.<br><b>Müzik yatağı</b>: cihazından bir müzik seçiyorsun, çekime karışıyor ve konuşurken kendiliğinden kısılıyor. Dosya cihazdan çıkmıyor ve saklanmıyor. <b>iPhone ve iPadde açılmıyor</b> ve sebebi yazıyor: orada kayıt sırasında ses işleme çekimi SESSİZ bırakıyor.<br><b>Sağdan sola diller</b>: Arapça, İbranice ve Farsça senaryolar artık doğru yönde akıyor. Yön satır satır belirleniyor, yani iki dilli bir senaryonun yarısı bozulmuyor; vurgulanan kelime de doğru uçta yanıyor ve Arapça soru işareti cümle sonu sayılıyor.<br><b>Masaüstünde kalınlık ve harf aralığı</b>: telefonda olan iki okunabilirlik ayarı masaüstüne de geldi. Harf aralığı değişince metin yeniden ölçülüyor, yani son satırlar görünmeden akış bitmiyor.<br><b>Kumanda paneli hangi yolun neden olmadığını yazıyor</b>: Bluetooth kumanda, ikinci cihaz (yerel ağ) ve internet üzerinden bağlantı — üçü de durumuyla ve sebebiyle listeleniyor. Telefonda yerel sunucu çalıştırılamadığı için ikinci cihaz yolu yok; internet yolu ise bir karar: bize ait sunucu yok, veriniz cihazınızdan çıkmıyor.',
        en:'<b>The spoken word is highlighted in the caption.</b> In burned-in captions the word you are reading shows in colour while the rest stays white. Where competitors guess this with cloud AI, Sufle does not guess: you are the one reading the script, so the highlighted word is always the right word. No internet, no extra cost.<br><b>Words you have not said yet are never shown</b>: the caption only writes what you have spoken.<br><b>On the desktop too</b>, and both shells use the same maths.<br><b>Six caption looks</b>: Band, Box, Pill, No band, Highlight pill and Shadow, plus three highlight animations (None, Soft, Pop) and a <b>Top</b> position. Every look is bound to a readability rule: a theme without a background cannot go without an outline or a shadow, or the text disappears on a bright video.<br><b>Caption size and position now really work on the desktop</b>: the settings were translated but wired to nothing, and the drawing was fixed at 42 point, bottom position.<br><b>You now pick the caption look by SEEING it</b>: six looks as small cards drawn over your own camera image. The cards come from the drawing code of the app itself, so what you see on the card is what gets recorded.<br><b>Fit to duration</b>: set a target length and tap once — the pace is set so the script ends exactly then, pause marks included. If it does not fit, it says why instead of trimming silently.<br><b>The desktop duration estimate now counts pauses</b>: breath and wait marks were left out, so a script that looked within the limit could overrun the take. The desktop also got the target duration control.<br><b>A brand kit</b>: a logo in any of the four corners with adjustable size, a brand colour, and a lower third with your name and title. The lower third appears for a few seconds after recording starts and then disappears. If your brand colour is dark, the text falls back to a readable colour while the accent stripe keeps your colour. Competitors lock this behind their most expensive plan; here it is free.<br><b>Clip suggestions</b>: after a take, the result screen proposes short clips you can cut from the video. They come from the script itself — section headings, emphasis marks and reading times. No AI, the titles are taken from your script word for word, and every suggestion states which measurement it rests on. Tap one to load it into the trim box and adjust the edges.<br><b>Music bed</b>: pick a track from your device, it is mixed into the take and ducks by itself while you speak. The file never leaves your device and is not stored. <b>It stays off on iPhone and iPad</b> and says why: audio processing during a recording leaves the take SILENT there.<br><b>Right to left languages</b>: Arabic, Hebrew and Persian scripts now flow in the right direction. Direction is decided line by line, so a bilingual script does not break in half; the highlighted word lands on the correct side and the Arabic question mark counts as a sentence end.<br><b>Weight and letter spacing on the desktop</b>: the two readability settings that existed on the phone are now on the desktop as well. Changing letter spacing re-measures the text, so the last lines are no longer skipped.<br><b>The remote panel now says which path is missing and why</b>: Bluetooth remote, second device over the local network, and over the internet are all listed with their status and the reason. A phone cannot run a local server, so the second-device path is not available there; the internet path is a decision, not a gap: we run no server and your data never leaves your device.'},
  '9.13':{tr:'<b>Budama artık videonun sonunu aşmıyor.</b> Başlangıcı en sona sürüklediğinde ya da çekim çok kısa olduğunda seçim var olmayan bir bölgeyi gösteriyordu; ekranda yazan süre ile elindeki çekim ayrışabiliyordu. Seçim artık her zaman videonun içinde kalıyor.<br><b>Süre birimi İngilizcede de doğru</b>: budama etiketleri dile bakmadan Türkçe birim yazıyordu.<br><b>Masaüstü</b>: aynı iki düzeltme oraya da geldi; orada bilgi satırının tamamı Türkçe kalıyordu.',
@@ -7988,7 +8069,7 @@ $('#pauseBtn').onclick=e=>{ e.stopPropagation(); togglePauseRec(); };
 $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(); updateHud(); };
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
-$('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); };
+$('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); cekimSayilariniTazele(); };
 /* uygulama arka plana atılırsa/kapatılırsa da konumu yaz */
 /* KAPANIŞTA GECİKTİRİLMİŞ YAZIM ÇALIŞMAZ.
    rememberPos() içindeki save() 120 ms'lik bir zamanlayıcı kuruyordu; pagehide

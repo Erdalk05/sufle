@@ -153,8 +153,14 @@ function kos(args, kayitIcerik){
   const tara=(dosyalar)=>{
     const bulunan=[];
     for(const [f,metin] of dosyalar) for(const k of KAYNAKLAR2){
-      /* Telefon ve Mac zaten `kaynak.js` üzerinden env destekli okunuyor. */
-      if(k.ad==='telefon'||k.ad==='mac') continue;
+      /* Telefon ve Mac normalde `kaynak.js` (telefonYolu/macYolu) üzerinden
+         env destekli okunuyor. AMA doğrudan `path.join(REPO,'index.html')`
+         yazan bir test yine bozmayı görmez — 2026-08-16 sabahı `tests/116`
+         tam bunu yapıyordu. O yüzden telefon/mac için de DOĞRUDAN okuma
+         aranıyor; `kaynak.js` üzerinden okuyanlar zaten bu desene uymuyor. */
+      if((k.ad==='telefon'||k.ad==='mac') &&
+         !new RegExp("readFileSync\\(path\\.join\\(REPO,\\s*'"+k.dosya.replace('.','\\.')+"'").test(metin))
+        continue;
       /* Dosyayı GERÇEKTEN okuyan bir çağrı olmalı: yalnız adı geçmesi
          (dışlama listesi, yorum) kusur değil — ilk sürüm böyle iki sahte
          ihlal üretmişti ve sahte ihlal, gerçek olanı gizler. */
@@ -171,12 +177,21 @@ function kos(args, kayitIcerik){
      testleri değil), o yüzden tarayıcı sentetik örneklerle sınanıyor:
      görmezse kapı sessizce yeşil kalırdı. */
   ok('tarayıcı korumasız okumayı görüyor',
-     tara([['sahte-kotu.js', "const s=fs.readFileSync(path.join(REPO,'sw.js'),'utf8');"]]).length===1);
+     tara([['sahte-kotu.js', "const s=fs.readFileSync(path.join(REPO,'sw"+".js'),'utf8');"]]).length===1);
   ok('tarayıcı env destekli okumayı görmezden geliyor',
-     tara([['sahte-iyi.js', "const s=repoOku('sw.js','SUFLE_SW');"]]).length===0);
+     tara([['sahte-iyi.js', "const s=repoOku('sw"+".js','SUFLE_SW');"]]).length===0);
   ok('tarayıcı yalnız ADI geçen dosyayı ihlal saymıyor',
-     tara([['sahte-anma.js', "/* sw.js hakkinda bir yorum */ const x=1;"]]).length===0);
+     tara([['sahte-anma.js', "/* sw"+".js hakkinda bir yorum */ const x=1;"]]).length===0);
+  /* Telefon/Mac için de: kaynak.js üzerinden okuyan temiz, doğrudan yoldan
+     okuyan ihlal. İkisi de sınanıyor çünkü ayrım tam burada yaşıyor. */
+  ok('tarayıcı telefonu doğrudan okuyan testi yakalıyor',
+     tara([['sahte-tel.js', "const v=fs.readFileSync(path.join(REPO,'index"+".html'),'utf8');"]]).length===1);
+  ok('tarayıcı kaynak.js üzerinden okumayı ihlal saymıyor',
+     tara([['sahte-tel2.js', "const v=oku(telefonYolu());"]]).length===0);
 
+  /* SENTETİK ÖRNEKLER PARÇALI YAZILDI (`'sw'+'.js'`): tam hâliyle yazılınca
+     tarayıcı KENDİ dosyasını ihlal sayıyordu — ölçüm aracının kendi metnini
+     ölçmesi bu depoda üçüncü kez çıkan tuzak. */
   const dosyalar=fs.readdirSync(testDizin).filter(a=>/^\d+.*\.js$/.test(a))
     .map(f=>[f, fs.readFileSync(path.join(testDizin,f),'utf8')]);
   const korumasiz=tara(dosyalar);
