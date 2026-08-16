@@ -242,10 +242,14 @@ class Tarayici:
             '--remote-debugging-port=%d' % self.port,
             'about:blank',
         ]
+        # ÖLÇÜLDÜ (2026-08-16): dosyadan sahte görüntü verilirken sahte CİHAZ
+        # bayrağı düşürülüyordu ve `getUserMedia({video,audio})` TÜMDEN
+        # başarısız oluyordu ("kamera izni yok" toastu). Yani hazır görüntüyle
+        # yapılan her ölçüm aslında KAMERASIZ koşuyordu ve bunu kimse görmedi.
+        # Doğrusu ikisi birlikte: cihaz sahte, görüntü dosyadan.
+        bayraklar.insert(-1, '--use-fake-device-for-media-stream')
         if cekim:
             bayraklar.insert(-1, '--use-file-for-fake-video-capture=' + cekim)
-        else:
-            bayraklar.insert(-1, '--use-fake-device-for-media-stream')
         self.p = subprocess.Popen(bayraklar, stdout=subprocess.DEVNULL,
                                   stderr=subprocess.DEVNULL)
         self.ws = WS(self._hedef_ws())

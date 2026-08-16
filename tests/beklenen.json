@@ -91,7 +91,7 @@
  "90-paylasim-iptali.js": 24,
  "91-altyazi-cekime-baglandi.js": 21,
  "92-damga-boslugu.js": 20,
- "93-ayar-aramasi.js": 25,
+ "93-ayar-aramasi.js": 36,
  "94-on-kosullu-ayarlar.js": 37,
  "95-dokunma-hedefi.js": 22,
  "96-isik-ornekleme-maliyeti.js": 32,
@@ -113,7 +113,7 @@
  "112-mac-riskli-bes.js": 75,
  "113-kapsam-kapisi.js": 38,
  "114-test-kalitesi.js": 18,
- "115-bozma-turu.js": 59,
+ "115-bozma-turu.js": 65,
  "116-sabah-raporu.js": 27,
  "117-cmd-origin.js": 17,
  "118-hedef-ve-kontrast.js": 33,
@@ -163,5 +163,6 @@
  "162-senaryo-turetilmis-bilgi.js": 58,
  "163-deneme-kilavuzu.js": 46,
  "164-magaza-kabugu.js": 40,
- "165-masaustu-uctan-uca.js": 13
+ "165-masaustu-uctan-uca.js": 13,
+ "166-ayar-kartlari.js": 42
 }

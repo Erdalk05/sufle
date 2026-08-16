@@ -224,11 +224,15 @@ function kos(args, kayitIcerik){
                ['gömme kapalıyken ölü tampon', /çıktı tuvali kompozit boyutuna ayrılmış/],
                /* G.4 marka kiti: alt bandın gerçekten çizildiği de ölçülüyor. */
                ['marka alt bandı', /alt bant videoya ÇİZİLMEDİ/],
-               ['marka kapalıyken tampon', /marka kapalıyken çıktı tuvali ayrılmış/]];
+               ['marka kapalıyken tampon', /marka kapalıyken çıktı tuvali ayrılmış/],
+               /* Yeşil ekran: perdenin gerçekten silindiği ve kapalıyken
+                  görüntünün olduğu gibi geçtiği ölçülüyor (A/B). */
+               ['yeşil perde silme', /yeşil perde SİLİNMEDİ/],
+               ['chroma kapalıyken geçiş', /chroma kapalıyken görüntü yine de değişmiş/]];
   for(const [ad,re] of HALKA) ok('çekim ölçümü '+ad+' halkasını kontrol ediyor', re.test(ky));
   /* Kırık halkada kırmızı vermeli: yalnız yazdırıp geçmek en sessiz kusur. */
   ok('kırık halkada sıfırdan farklı çıkış', /return 1 if kirik else 0/.test(ky));
-  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=9);
+  ok('her kırık halka sayacı artırıyor', (ky.match(/kirik \+= 1/g)||[]).length>=11);
   /* Kompozit ölçümü A/B koşuyor: yalnız açık hâli ölçmek, kapalıyken de
      çizen bir kusuru göremezdi. */
   ok('gömme ölçümü A/B koşuyor', /for gomme in \(True, False\)/.test(ky));
@@ -237,6 +241,17 @@ function kos(args, kayitIcerik){
      kullanmak — kapanış kaydı yazdığımızın üstüne yazıyordu. */
   ok('marka ölçümü arayüzü kullanıyor', /#markaAd/.test(ky) && /#markaBantSw/.test(ky));
   ok('hata günlüğü doluysa İÇERİĞİ yazdırılıyor', /hata içeriği/.test(ky));
+  /* Yeşil ekran ölçümü GERÇEK yeşil bir görüntüyle koşmalı: sahte kamera
+     deseniyle 'perde silindi' demek ölçmeden iddia etmek olurdu. */
+  ok('yeşil ekran ölçümü düz yeşil kaynak üretiyor', /YUV4MPEG2/.test(ky));
+  ok('yeşil ekran ölçümü o kaynağı tarayıcıya veriyor', /Tarayici\(cekim=y4m\)/.test(ky));
+  /* ALTYAZI ANLIK: tek kare örneklemek kararsızdı (aynı kod bir koşuda 819
+     piksel, diğerinde 0 verdi). Ölçüm birkaç saniye örnekliyor; bu bir
+     gevşetme değil, iddianın doğru ifadesi: 'çekim boyunca gömülüyor mu'. */
+  ok('gömme ölçümü tek kareye takılmıyor (örnekleme var)',
+     /for _ in range\(12\)/.test(ky) && /beyaz', 0\) >= 100/.test(ky));
+  ok('yeşil ekran ölçümü 2B tuvalden okuyor (WebGL tamponu boş döner)',
+     /compOut/.test(ky));
 }
 
 /* ---------- KANITLI TEST SAYISI DÜŞMESİN ---------- */

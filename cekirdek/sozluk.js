@@ -28,9 +28,9 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'Arka kamera',tgTorch:'Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'Ham ses (hiç işleme yapma)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
-  lightTitle:'Işık ve çerçeve denetçisi',lightBtn:'Şimdi denetle',tiltBtn:'Eğim ölç',
+  lightBtn:'Şimdi denetle',tiltBtn:'Eğim ölç',
   lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
-  compTitle:'Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
+  tgComp:'Kompoziti aç',
   compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
   tgBurn:'Altyazıyı videoya göm',capSize:'Altyazı boyutu',capPos:'Altyazı konumu',cpBottom:'Alt',cpMiddle:'Orta',
   burnHint:'Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.',
@@ -148,7 +148,23 @@ const I18N={
   /* Uzak önizleme — D.4 */
   mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'Gizlilik'},
+  privTitle:'Gizlilik',
+  /* AYAR GRUPLARI — kart başlıkları. Erdal'ın "dağınık, web modülü gibi"
+     teşhisinin karşılığı: ayarlar artık konuya göre katlanır kartlarda. */
+  gTempo:'Hız ve tempo',gGoz:'Göz teması ve çizgi',gYerlesim:'Yazı ölçüleri',
+  gYardim:'Okuma yardımcıları',gYaziTipi:'Yazı tipi ve biçim',gRenk:'Renkler',
+  gAyna:'Ayna ve gölge',gSesTest:'Ses onarımı ve testi',gCerceve:'Çerçeve ve kılavuzlar',
+  gKamera:'Kamera denetimleri',gAltyaziZ:'Altyazı zamanlaması',gSesTakip:'Sesle takip',
+  gEkran:'Ekran ve kayıt sırasında',gCihaz:'Cihaz ve yardım',gSifirla:'Sıfırlama',
+  /* Kart başlığı KISA olmak zorunda: iki satıra taşan başlık kart yığınının
+     ritmini bozuyor (ölçüldü, 390 px). Uzun ad satırın kendisinde kalıyor. */
+  gDosya:'Dosya boyutu',gIsik:'Işık denetçisi',gKompozit:'Kompozit ve yeşil ekran',
+  gMikSec:'Mikrofon seçimi',
+  /* Senaryolar sayfasının kartları */
+  gYeni:'Yeni senaryo ekle',gYedek:'Yedek ve geri alma',gAraclar:'Metin araçları',
+  gDenetim:'Metin denetimleri',
+  /* Sonuç ekranının kartları */
+  gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
@@ -168,9 +184,9 @@ const I18N={
   zoom:'Zoom',tgBack:'Rear camera',tgTorch:'Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
-  lightTitle:'Light & framing inspector',lightBtn:'Check now',tiltBtn:'Measure tilt',
+  lightBtn:'Check now',tiltBtn:'Measure tilt',
   lightHint:'Samples once per second while this tab is open. Compares face-area brightness with the edges to catch backlight, blown highlights and low contrast.',
-  compTitle:'Composite recording (real crop + green screen)',tgComp:'Enable composite',
+  tgComp:'Enable composite',
   compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
   tgBurn:'Burn captions into the video',capSize:'Caption size',capPos:'Caption position',cpBottom:'Bottom',cpMiddle:'Middle',
   burnHint:'The sentence you are reading is drawn on the video — no separate subtitle file needed. Composite must be on.',
@@ -288,5 +304,16 @@ const I18N={
   /* Uzak önizleme — D.4 */
   mPrevOn:'Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'Privacy'}
+  privTitle:'Privacy',
+  /* Ayar grupları — kart başlıkları */
+  gTempo:'Speed and pacing',gGoz:'Eye contact and line',gYerlesim:'Text size and spacing',
+  gYardim:'Reading aids',gYaziTipi:'Typeface and style',gRenk:'Colours',
+  gAyna:'Mirror and shadow',gSesTest:'Audio repair and test',gCerceve:'Framing and guides',
+  gKamera:'Camera controls',gAltyaziZ:'Caption timing',gSesTakip:'Voice follow',
+  gEkran:'Screen and recording',gCihaz:'Device and help',gSifirla:'Reset',
+  gDosya:'File size',gIsik:'Light inspector',gKompozit:'Composite and green screen',
+  gMikSec:'Microphone choice',
+  gYeni:'Add a script',gYedek:'Backup and undo',gAraclar:'Text tools',
+  gDenetim:'Text checks',
+  gDahaFazla:'More',gNasil:'Saving and trimming'}
 };

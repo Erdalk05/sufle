@@ -170,7 +170,13 @@ const kapiYolu  = path.join(REPO, 'kapi.sh');
      söyledi: tr 51 · en 241 çıktı, oysa gerçek 240/240. Sebep, TR değerlerinin
      İÇİNDE geçen bir "en:" dizisi bloğu erkenden kesmesiydi. Süslü parantez
      sayan kes() zaten yazılmıştı; asıl hata onu kullanmamaktı. */
-  const anah = (govde) => new Set([...govde.matchAll(/(?:^|[,{]\s*)([A-Za-z]\w*)\s*:/gm)].map(x => x[1]));
+  /* ⚠️ SATIR BAŞI GİRİNTİLİ OLABİLİR. İlk desen `(?:^|[,{]\s*)` idi: virgülden
+     sonra gelen anahtarı görüyordu ama ÖNÜNDE YORUM OLAN anahtarı görmüyordu
+     (yorum satırından sonra anahtar iki boşlukla başlıyor ve `^` hemen ondan
+     önce eşleşmiyor). Ölçüldü: TR'ye yorumla birlikte eklenen `gDosya` ve
+     `gYeni` sözlükte VARDI, test "en'de fazla 2 anahtar" diye kırmızı verdi —
+     yani testin kendi kusuru gerçek bir pariteyi bozuk gösteriyordu. */
+  const anah = (govde) => new Set([...govde.matchAll(/(?:^\s*|[,{]\s*)([A-Za-z]\w*)\s*:/gm)].map(x => x[1]));
   const trG = kes('tr'), enG = kes('en');
   ok('sözlükte tr ve en blokları okunabildi', !!trG && !!enG);
   if (trG && enG) {

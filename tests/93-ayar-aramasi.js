@@ -1,28 +1,34 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,repoOku}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* K1 — AYAR ARAMASI BÜTÜN AYARLARI BULUYOR MU: BULUYOR (ölçüldü).
 
-   Ayarlar sayfası dört panoya bölünmüş ve içinde 55 denetim var (anahtar,
-   kaydırıcı, segment). Arama, panoların ÜST DÜZEY çocukları üzerinde metin
-   eşleştiriyor — ama bir kaydırıcının kendi metni YOKTUR: etiketi ayrı bir
-   kardeş. O yüzden asıl soru "etiket bulunuyor mu" değil, DENETİMİN KENDİSİ
-   görünür oluyor mu.
+   Ayarlar sayfası dört panoya, panolar da KATLANIR KART'lara bölünmüş
+   (2026-08-17: "modüller dağınık, web modülü gibi" teşhisinin karşılığı).
+   İçinde 50+ denetim var (anahtar, kaydırıcı, segment). Arama, kartların
+   içindeki blokları eşleştiriyor — ama bir kaydırıcının kendi metni YOKTUR:
+   etiketi ayrı bir kardeş. O yüzden asıl soru "etiket bulunuyor mu" değil,
+   DENETİMİN KENDİSİ görünür oluyor mu.
 
    Kural şu: eşleşen ögeden sonraki kardeşler, bir sonraki `.row` etiketine
    kadar açılıyor. Böylece etiket eşleşince ona ait denetim de açılıyor.
    Ölçülen sınır durumu: okuma çizgisi kaydırıcısının etiketi İKİ kardeş
    geride (etiket → boş uyarı bloğu → kaydırıcı) ve kural onu da açıyor.
 
-   Bu test gerçek `searchSettings`i gerçek sayfa yapısıyla koşturuyor:
-   her denetim için etiketinden bir kelime aranıyor ve denetimin GÖRÜNÜR
-   olduğu sınanıyor. Ürün kodu değişmedi. */
+   KART'LARIN GETİRDİĞİ İKİNCİ KURAL: eşleşen ayar KAPALI bir kartın içinde
+   olabilir. Arama kartı AÇMAZSA "4 ayar bulundu" der ve hiçbiri görünmez —
+   bu deponun 2 numaralı hata sınıfı (tam gerektiği anda sessizce çalışmayan
+   özellik). Test bunu ayrıca ölçüyor.
+
+   Bu test gerçek `searchSettings`i gerçek sayfa yapısıyla koşturuyor. */
 
 const mSearch=kod.match(/function searchSettings\(\)\{[\s\S]*?\n\}/);
 ok('searchSettings çıkarılabildi', !!mSearch);
 if(!mSearch) return;
+const mBlok=kod.match(/function araBlok\(c, q, ac, hepsi\)\{[\s\S]*?\n\}/);
+ok('araBlok çıkarılabildi', !!mBlok);
 /* norm KOPYALANMAZ, kaynaktan çıkarılır: Türkçe harf katlaması (ç->c, ı->i)
    aramanın kalbi. İlk yazışımda sahte bir norm yazdım ve "cizgi" araması
    "çizgisi" ile eşleşmedi — kendi tezgâhım yanlış kırmızı verdi. */
@@ -30,7 +36,7 @@ const mNorm=kod.match(/function norm\(x\)\{[\s\S]*?FOLD\[c\]\|\|c\); \}/);
 ok('norm çıkarılabildi', !!mNorm);
 const mFold=kod.match(/const FOLD=\{[^}]*\};/);
 ok('FOLD tablosu çıkarılabildi', !!mFold);
-if(!mNorm || !mFold) return;
+if(!mNorm || !mFold || !mBlok) return;
 
 /* ---------- SAYFA YAPISINI ÇIKAR ---------- */
 function panolariCikar(html){
@@ -58,22 +64,59 @@ function cocuklar(pano){
 }
 const metin=h=>h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 
+/* Kart başlığı sayfada BOŞ bir span'dir; metni sözlükten gelir. Anahtarı
+   metne çevirmezsek "kompozit" araması başlığı hiç göremez ve test ürünü
+   olduğundan kötü ölçer. */
+/* Sözlük ENV üzerinden: doğrudan okuyan test bozma turunda kör kalır. */
+const soz=repoOku('cekirdek/sozluk.js','SUFLE_SOZLUK');
+const sozTr=soz.slice(soz.indexOf(' tr:{'), soz.indexOf(' en:{'));
+function i18n(anahtar){
+  const m=sozTr.match(new RegExp("\\b"+anahtar+":'((?:[^'\\\\]|\\\\.)*)'"));
+  return m? m[1].replace(/\\'/g,"'") : anahtar;
+}
+function kartMetni(html){
+  const s=html.match(/<summary>[\s\S]*?<\/summary>/);
+  if(!s) return '';
+  const k=s[0].match(/data-i18n="(\w+)"/);
+  return k? i18n(k[1]) : metin(s[0]);
+}
+function kartIcerik(html){
+  const i=html.indexOf('<div class="icerik">');
+  if(i<0) return '';
+  return html.slice(i+'<div class="icerik">'.length, html.lastIndexOf('</div></details>'));
+}
+
 const sheet=tel.slice(tel.indexOf('id="sheet"'), tel.indexOf('id="scriptsSheet"'));
 const hamPanolar=panolariCikar(sheet);
 ok('ayar panoları çıkarılabildi ('+hamPanolar.length+' pano)', hamPanolar.length>=4);
+const hamKartlar=hamPanolar.map(p=>cocuklar(p));
+const kartSayisi=hamKartlar.reduce((a,k)=>a+k.length,0);
+ok('panolar KART'+"'"+'lardan oluşuyor ('+kartSayisi+' kart)', kartSayisi>=20);
+ok('her pano çocuğu bir kart (sahipsiz ayar bloğu yok)',
+   hamKartlar.every(k=>k.every(h=>/^<details class="grup"/.test(h.trim()))));
 
 /* Sahte DOM: yalnız aramanın dokunduğu özellikler. */
+function yap(h){
+  const sinif=(h.match(/class="([^"]*)"/)||[,''])[1].split(/\s+/).filter(Boolean);
+  return { html:h, textContent:metin(h), style:{display:''},
+    classList:{ _s:new Set(sinif),
+      contains(x){ return this._s.has(x); },
+      add(x){ this._s.add(x); }, remove(x){ this._s.delete(x); } } };
+}
 function sayfaKur(){
-  const yap=h=>{
-    const sinif=(h.match(/class="([^"]*)"/)||[,''])[1].split(/\s+/).filter(Boolean);
-    return { html:h, textContent:metin(h), style:{display:''},
-      classList:{ _s:new Set(sinif),
-        contains(x){ return this._s.has(x); },
-        add(x){ this._s.add(x); }, remove(x){ this._s.delete(x); } } };
-  };
-  const panes=hamPanolar.map(p=>{
-    const ch=cocuklar(p).map(yap);
-    return { children:ch, style:{display:''} };
+  const panes=hamKartlar.map(kartlar=>{
+    const gruplar=kartlar.map(h=>{
+      const ic=kartIcerik(h).trim();
+      const cocuk=cocuklar(ic).map(yap);
+      const bas={ textContent:kartMetni(h) };
+      const icNode={ children:cocuk };
+      return { html:h, open:false, style:{display:''},
+        dataset:{acik:'0'},
+        querySelector:sel=> sel==='summary'? bas : (sel==='.icerik'? icNode : null),
+        _cocuk:cocuk };
+    });
+    return { gruplar, style:{display:''},
+      querySelectorAll:sel=> sel==='.grup'? gruplar : [] };
   });
   return panes;
 }
@@ -89,30 +132,37 @@ function ara(sorgu, once){
     ${mFold[0]}
     ${mNorm[0]}
     const el={ '#setFind':{value:__q}, '#setFindOut':__out,
-               '#sheet':{ querySelectorAll:()=>__p } };
+               '#sheet':{ querySelectorAll:sel=> sel==='.tab' ? __p
+                          : __p.reduce((a,p)=>a.concat(p.gruplar),[]) } };
     const $=k=>el[k];
     const $$=()=>__tabs;
+    function ozetTazele(){}
+    ${mBlok[0]}
     ${mSearch[0]}
     searchSettings();
   `)(panes, sorgu, cikti, tabsBtn);
   return {panes, cikti};
 }
 const gorunur=el=>el.style.display!=='none';
+const tumBloklar=panes=>panes.reduce((a,p)=>a.concat(
+  p.gruplar.reduce((b,g)=>b.concat(g._cocuk),[])),[]);
 
 /* ---------- HER DENETİM BULUNUYOR MU ---------- */
 {
   /* Denetimleri ve onları tarif eden en yakın ÖNCEKİ etiketi eşle. */
   const hedefler=[];
-  hamPanolar.forEach((p,pi)=>{
-    const c=cocuklar(p);
-    let sonEtiket='';
-    c.forEach((h,ci)=>{
-      const t=metin(h);
-      if(/class="row"/.test(h) && t) sonEtiket=t;
-      const idm=h.match(/<input[^>]*type="range"[^>]*id="(\w+)"/) ||
-                h.match(/<div class="seg" id="(\w+)"/);
-      if(idm) hedefler.push({pano:pi, sira:ci, id:idm[1], etiket:sonEtiket||t});
-      else if(/data-t="/.test(h) && t) hedefler.push({pano:pi, sira:ci, id:(h.match(/data-t="(\w+)"/)||[,''])[1], etiket:t});
+  hamKartlar.forEach((kartlar,pi)=>{
+    kartlar.forEach((kart,gi)=>{
+      const c=cocuklar(kartIcerik(kart).trim());
+      let sonEtiket='';
+      c.forEach((h,ci)=>{
+        const t=metin(h);
+        if(/class="row"/.test(h) && t) sonEtiket=t;
+        const idm=h.match(/<input[^>]*type="range"[^>]*id="(\w+)"/) ||
+                  h.match(/<div class="seg" id="(\w+)"/);
+        if(idm) hedefler.push({pano:pi, kart:gi, sira:ci, id:idm[1], etiket:sonEtiket||t});
+        else if(/data-t="/.test(h) && t) hedefler.push({pano:pi, kart:gi, sira:ci, id:(h.match(/data-t="(\w+)"/)||[,''])[1], etiket:t});
+      });
     });
   });
   ok('denetimler bulundu ('+hedefler.length+' adet)', hedefler.length>=45);
@@ -124,17 +174,23 @@ const gorunur=el=>el.style.display!=='none';
     const k=s.replace(/[0-9.,]/g,' ').split(/\s+/).filter(w=>w.length>4 && /^[\p{L}]+$/u.test(w));
     return k[0]||null;
   };
-  let denenen=0, bulunamayan=[];
+  let denenen=0, bulunamayan=[], kapali=[];
   for(const h of hedefler){
     const w=kelime(h.etiket); if(!w) continue;
     denenen++;
     const {panes}=ara(w);
-    const el=panes[h.pano].children[h.sira];
-    if(!el || !gorunur(el)) bulunamayan.push(h.id+' ("'+w+'")');
+    const grup=panes[h.pano].gruplar[h.kart];
+    const el=grup._cocuk[h.sira];
+    if(!el || !gorunur(el) || !gorunur(grup)) bulunamayan.push(h.id+' ("'+w+'")');
+    else if(!grup.open) kapali.push(h.id+' ("'+w+'")');
   }
   ok(denenen+' denetimin hepsi etiketiyle aranınca GÖRÜNÜR oluyor'+
      (bulunamayan.length?' — bulunamayan: '+bulunamayan.slice(0,5).join(', '):''),
      bulunamayan.length===0);
+  /* Kart kapalı kalırsa ayar bulunur ama KULLANILAMAZ. */
+  ok('bulunan ayarın kartı AÇILIYOR'+
+     (kapali.length?' — kapalı kalan: '+kapali.slice(0,5).join(', '):''),
+     kapali.length===0);
 }
 
 /* ---------- SINIR DURUMU: ETİKETİ İKİ KARDEŞ GERİDE OLAN KAYDIRICI ---------- */
@@ -149,8 +205,25 @@ const gorunur=el=>el.style.display!=='none';
      /class="row"><label[^>]*data-i18n="eyeLine"[\s\S]{0,200}?id="eyeUyari"[\s\S]{0,80}?id="eye"/.test(tel));
   const {panes}=ara('cizgi');
   let bulundu=false;
-  panes.forEach(p=>p.children.forEach(c=>{ if(/id="eye"/.test(c.html) && gorunur(c)) bulundu=true; }));
+  tumBloklar(panes).forEach(c=>{ if(/id="eye"/.test(c.html) && gorunur(c)) bulundu=true; });
   ok('araya boş blok girse de kaydırıcı açılıyor', bulundu);
+}
+
+/* ---------- KART BAŞLIĞI ARAMASI ---------- */
+{
+  /* Kullanıcı "kompozit" arayınca o konunun TAMAMINI görmek ister, tek
+     satırını değil: başlık eşleşince kartın bütün içeriği açılıyor. */
+  const {panes}=ara('kompozit');
+  const kart=panes.reduce((a,p)=>a.concat(p.gruplar),[])
+    .filter(g=>gorunur(g) && /gKompozit/.test(g.html))[0];
+  ok('kart başlığıyla aranınca o kart bulunuyor', !!kart);
+  if(kart){
+    ok('başlık eşleşince kart açılıyor', kart.open===true);
+    ok('başlık eşleşince kartın İÇİ tümüyle görünür',
+       kart._cocuk.every(c=>gorunur(c)));
+  }
+  const gizli=panes.reduce((a,p)=>a.concat(p.gruplar),[]).filter(g=>!gorunur(g));
+  ok('eşleşmeyen kartlar gizleniyor ('+gizli.length+' kart)', gizli.length>=15);
 }
 
 /* ---------- ARAMA DAVRANIŞI ---------- */
@@ -158,14 +231,20 @@ const gorunur=el=>el.style.display!=='none';
   const {panes,cikti}=ara('kamera');
   ok('eşleşme bulununca sayı bildiriliyor', /ayar bulundu/.test(cikti.textContent));
   ok('eşleşmeyen ögeler gizleniyor',
-     panes.some(p=>p.children.some(c=>c.style.display==='none')));
+     tumBloklar(panes).some(c=>c.style.display==='none'));
   /* ÖNCE ara, SONRA temizle — aynı sayfada. */
   const kirli=ara('kamera');
   ok('arama gerçekten bir şeyleri gizledi (temizleme sınavının ön koşulu)',
-     kirli.panes.some(p=>p.children.some(c=>c.style.display==='none')));
+     tumBloklar(kirli.panes).some(c=>c.style.display==='none'));
   const bos=ara('', kirli);
   ok('arama temizlenince her şey geri geliyor',
-     bos.panes.every(p=>p.children.every(c=>c.style.display==='')));
+     tumBloklar(bos.panes).every(c=>c.style.display===''));
+  ok('arama temizlenince kartlar da geri geliyor',
+     bos.panes.every(p=>p.gruplar.every(g=>g.style.display!=='none')));
+  /* Kart kapanışı da geri gelmeli: arama bittiğinde sayfa kullanıcının
+     bıraktığı hâle döner, 26 kart birden açık kalmaz. */
+  ok('arama temizlenince kartlar varsayılan kapalı hâle dönüyor',
+     bos.panes.every(p=>p.gruplar.every(g=>g.open===false)));
   ok('arama temizlenince panolar da geri geliyor',
      bos.panes.every(p=>p.style.display!=='none'));
   ok('arama temizlenince sonuç satırı gizleniyor', bos.cikti.style.display==='none');
@@ -184,7 +263,7 @@ const gorunur=el=>el.style.display!=='none';
      /\$\$\('#sheet \.tabs button'\)\.forEach\(b=>b\.style\.display=''\)/.test(kod));
 }
 
-/* ---------- KAYNAK DÜZEYİ: İKİ KURAL DURUYOR MU ---------- */
+/* ---------- KAYNAK DÜZEYİ: KURALLAR DURUYOR MU ---------- */
 ok('gizli bloklar için ayrı sınıf kullanılıyor (satır içi stil yetmiyor)',
    /el\.classList\.contains\('hidden'\)\) el\.classList\.add\('aramaAcik'\)/.test(kod));
 ok('aramaAcik sınıfı sayfada tanımlı', /\.aramaAcik/.test(tel));
@@ -193,3 +272,5 @@ ok('eşleşen etiketten sonraki denetimler açılıyor',
    /for\(let j=i\+1;j<c\.length;j\+\+\)\{[\s\S]{0,80}?if\(c\[j\]\.classList\.contains\('row'\)\) break;/.test(kod));
 ok('denetimden önceki etiket de açılıyor',
    /const onceki=c\[i-1\];[\s\S]{0,120}?contains\('row'\)\) ac\(onceki\)/.test(kod));
+ok('arama kartın İÇİNE bakıyor (kart düzeyinde kalmıyor)',
+   /querySelectorAll\('\.grup'\)/.test(kod) && /grup\.open\s*=\s*acik/.test(kod));

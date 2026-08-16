@@ -492,6 +492,39 @@
   /* Ayar sekmeleri de SEÇİLİ DURUM — .seg, #langSwitch ile aynı kural (B.1). */
   .tabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
   .tab{display:none}.tab.on{display:block}
+  /* ===== AYAR GRUP KARTLARI =====
+     Erdal'ın teşhisi: "modüller dağınık, mobil uygulama değil web modülü
+     gibi." Ölçülen karşılığı: Kamera sekmesi TEK akışta 15 ilgisiz modül
+     sıralıyordu (ses onarımı → kalite → filtre → çerçeve → kompozit → müzik),
+     hepsi aynı görsel ağırlıkta ve her birinin altında belge uzunluğunda
+     açıklama. Uzun liste "panel" gibi okunur; kart yığını "uygulama" gibi.
+     <details> KASITLI: aç/kapa, klavye ve ekran okuyucu davranışı tarayıcıdan
+     hazır gelir — kendi yazdığımız akordeon bu üçünü de yeniden yazmak olurdu. */
+  .grup{background:var(--s-raised);border:1px solid var(--s-line);
+    border-radius:var(--rad-lg);margin:var(--sp-3) 0;box-shadow:var(--el-1);overflow:hidden}
+  .grup>summary{display:flex;align-items:center;gap:var(--sp-2);min-height:var(--tap);
+    padding:var(--sp-3) var(--sp-4);cursor:pointer;list-style:none;
+    font-size:var(--tx-md);font-weight:700;color:var(--t-hi)}
+  .grup>summary::-webkit-details-marker{display:none}
+  .grup>summary:focus-visible{outline:none;box-shadow:var(--ring)}
+  /* Özet, kart kapalıyken o konunun O ANKİ değerlerini söyler: kullanıcı
+     kartı açmadan "1080p · Dengeli" görür. Açıkken gizlenir — aynı bilgi
+     iki kez yazılmasın. */
+  .grup>summary .ozet{margin-left:auto;font-size:var(--tx-sm);color:var(--t-mid);
+    font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52%}
+  .grup[open]>summary .ozet{display:none}
+  .grup>summary::after{content:"";width:8px;height:8px;flex:none;margin-left:var(--sp-2);
+    border-right:2px solid var(--t-mid);border-bottom:2px solid var(--t-mid);
+    transform:rotate(45deg) translateY(-2px);
+    transition:transform var(--hiz-hizli) var(--egri)}
+  /* Kart açıkken özet gizlendiği için ok'u sağa iten boşluk kalmaz. */
+  .grup[open]>summary::after{margin-left:auto;transform:rotate(-135deg) translateY(2px)}
+  .grup .icerik{padding:0 var(--sp-4) var(--sp-4)}
+  /* Kart içindeki ilk satırın üst boşluğu kartın kendi boşluğunu ikiye
+     katlıyordu; ölçü kartın padding'inden gelsin. */
+  .grup .icerik>.row:first-child{margin-top:0}
+  .grup .icerik>.tog:first-child{border-top:none;padding-top:0}
+  .grup.bos{display:none}
   .row{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px;gap:10px}
   /* İşletim sisteminde "hareketi azalt" açıksa vurgu/geçiş animasyonlarını kapat.
      Vestibüler rahatsızlığı olanlar için gerçek bir gerekçe. Kaydırmanın kendisi
@@ -766,6 +799,7 @@
 
   <!-- OKUMA -->
   <div class="tab on" id="tab-read">
+    <details class="grup"><summary><span data-i18n="mode"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="mode">Çekim modu</label><span class="v" id="vMode">—</span></div>
     <div class="row"><label data-i18n="profL">Hazır kurulum</label></div>
     <div class="seg" id="profSeg">
@@ -785,22 +819,26 @@
     <div class="hint" id="modeHint"></div>
     <div class="tog"><span data-i18n="tgSafe">Platform arayüz alanlarını göster</span><div class="sw" data-t="safe"></div></div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gTempo"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label for="wpm" data-i18n="speedWpm">Hız — WPM (dakikada kelime)</label><span class="v" id="vWpm">140</span></div>
     <input type="range" id="wpm" min="40" max="320" step="5" value="140">
     <div class="hint" data-i18n="speedHint">Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.</div>
+    <div class="sheetbtns"><button class="cancel hidden" id="tempoBtn" aria-label="Ölçülen tempoyu uygula" data-aria="tempoBtn"></button></div>
+    <div class="row"><label for="target" data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
+    <input type="range" id="target" min="0" max="600" step="15" value="0">
+    <div class="sheetbtns"><button class="cancel" id="fitBtn" data-i18n="fitBtn">Süreye sığdır</button></div>
+    <div class="hint" id="fitHint" data-i18n="fitHint">Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.</div>
+    <div class="hint" data-i18n="targetHint">Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.</div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gGoz"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label for="eye" data-i18n="eyeLine">Okuma çizgisi konumu (kameraya yaklaştır)</label><span class="v" id="vEye">18</span></div>
     <div class="hint hidden" id="eyeUyari"></div>
     <input type="range" id="eye" min="4" max="60" value="18">
 
     <div class="row"><label for="dist" data-i18n="dist">Yüz–telefon mesafesi (cm)</label><span class="v" id="vDist">60</span></div>
     <input type="range" id="dist" min="25" max="200" step="5" value="60">
-
-    <div class="row"><label for="fs" data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
-    <input type="range" id="fs" min="22" max="110" value="46">
-
-    <div class="row"><label for="lh" data-i18n="lineH">Satır aralığı</label><span class="v" id="vLh">1.45</span></div>
-    <input type="range" id="lh" min="100" max="260" value="145">
 
     <div class="row"><label for="mg" data-i18n="margin">Kenar boşluğu</label><span class="v" id="vMg">7</span></div>
     <input type="range" id="mg" min="0" max="26" value="7">
@@ -812,10 +850,19 @@
       <button data-band="2" data-i18n="b2">2 satır</button>
       <button data-band="3" data-i18n="b3">3 satır</button>
     </div>
-    <div class="sheetbtns"><button class="cancel hidden" id="tempoBtn" aria-label="Ölçülen tempoyu uygula" data-aria="tempoBtn"></button></div>
     <div class="sheetbtns"><button class="cancel" id="eyeRecipe" data-i18n="eyeRecipe">Göz teması ayarını uygula</button></div>
     <div class="hint" id="gazeHint"></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gYerlesim"></span><span class="ozet"></span></summary><div class="icerik">
+    <div class="row"><label for="fs" data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
+    <input type="range" id="fs" min="22" max="110" value="46">
 
+    <div class="row"><label for="lh" data-i18n="lineH">Satır aralığı</label><span class="v" id="vLh">1.45</span></div>
+    <input type="range" id="lh" min="100" max="260" value="145">
+
+
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gYardim"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgEye">Okuma çizgisi</span><div class="sw on" data-t="eye"></div></div>
     <div class="tog"><span data-i18n="tgDim">Odak karartma</span><div class="sw on" data-t="dim"></div></div>
     <div class="tog"><span data-i18n="tgHl">Kelime vurgusu</span><div class="sw on" data-t="hl"></div></div>
@@ -825,10 +872,12 @@
     <div class="tog"><span data-i18n="tgCount">⏱ 3-2-1 geri sayım</span><div class="sw on" data-t="count"></div></div>
     <div class="tog"><span data-i18n="tgSection">Bölüm sonunda dur (bölüm bölüm çek)</span><div class="sw" data-t="stopAtSection"></div></div>
     <div class="hint" data-i18n="secHint">Açıkken sufle her # bölümünün sonunda durur; o bölümü çekip kaydı kapatınca bölüm ✓ işaretlenir. Senaryolar sayfasında hangi bölümü çektiğini görürsün.</div>
+    </div></details>
   </div>
 
   <!-- GÖRÜNÜM -->
   <div class="tab" id="tab-look">
+    <details class="grup"><summary><span data-i18n="gYaziTipi"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="font">Yazı tipi</label></div>
     <div class="seg" id="fontSeg">
       <button data-f="system" class="on" data-i18n="fSystem">Sistem</button>
@@ -858,6 +907,8 @@
       <button data-a="left" data-i18n="aLeft">Sol</button>
     </div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gRenk"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="textColor">Yazı rengi</label></div>
     <div class="seg" id="colorSeg">
       <button data-c="#ffffff" class="on" data-i18n="cWhite">Beyaz</button>
@@ -876,13 +927,17 @@
     <div class="row"><label for="scrimSl" data-i18n="scrim">Kamera üstü karartma (okunurluk)</label><span class="v" id="vScrim">35</span></div>
     <input type="range" id="scrimSl" min="0" max="85" value="35">
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gAyna"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgMirror">Yazıyı aynala (cam rig / beam splitter)</span><div class="sw" data-t="mirrorText"></div></div>
     <div class="tog"><span data-i18n="tgFlip">Yazıyı dikey çevir</span><div class="sw" data-t="flipText"></div></div>
     <div class="tog"><span data-i18n="tgShadow">Yazı gölgesi</span><div class="sw on" data-t="shadow"></div></div>
+    </div></details>
   </div>
 
   <!-- KAMERA -->
   <div class="tab" id="tab-cam">
+    <details class="grup"><summary><span data-i18n="gSesTest"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns" style="margin-top:4px">
       <button class="save" id="fixAudio" data-i18n="fixAudio">Sesi onar (mikrofonu tazele)</button>
     </div>
@@ -893,7 +948,8 @@
     <div class="tog"><span data-i18n="tgSafeAudio">Güvenli ses modu (iPhone için önerilir)</span><div class="sw on" data-t="safeAudio"></div></div>
     <div class="hint" data-i18n="safeAudioHint">Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.</div>
 
-    <div class="row"><label data-i18n="quality">Kayıt kalitesi</label></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="quality"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="seg" id="qSeg">
       <button data-q="1080" class="on">1080p</button>
       <button data-q="720">720p</button>
@@ -901,6 +957,8 @@
     </div>
     <div class="hint" data-i18n="qHint">Cihaz desteklemezse en yakın çözünürlüğe düşer.</div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="vfxTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="vfxTitle">Görüntü filtresi</label><span class="v" id="vFxAmt">—</span></div>
     <div class="seg" id="vfxSeg">
       <button data-vfx="off" data-i18n="vfxOff">Kapalı</button>
@@ -913,6 +971,8 @@
     <input type="range" data-aria="vidAmt" id="vidAmt" min="0" max="150" value="100">
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gDosya"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:14px"><label data-i18n="brL">Video kalitesi / dosya boyutu</label><span class="v" id="vBr">—</span></div>
     <div class="seg" id="brSeg">
       <button data-br="low" data-i18n="brLow">Küçük dosya</button>
@@ -921,9 +981,13 @@
     </div>
     <div class="hint" id="brHint"></div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gMikSec"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" id="micRow" style="display:none;margin-top:14px"><label data-i18n="micSel">Mikrofon</label></div>
     <div class="seg" id="micSeg" style="display:none"></div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gCerceve"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="frameGuide">Çerçeve kılavuzu</label></div>
     <div class="seg" id="aspSeg">
       <button data-asp="none" class="on" data-i18n="aspNone">Kapalı</button>
@@ -938,13 +1002,16 @@
     <div class="row" id="zoomRow" style="display:none"><label for="zoom" data-i18n="zoom">Yakınlaştırma</label><span class="v" id="vZoom">1.0×</span></div>
     <input type="range" id="zoom" min="100" max="300" value="100" style="display:none">
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gKamera"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgBack">Arka kamera</span><div class="sw" data-t="backCam"></div></div>
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">Işık (fener)</span><div class="sw" data-t="torch"></div></div>
     <div class="tog" id="lockRow" style="display:none"><span data-i18n="tgLock">Odak ve pozlamayı kilitle</span><div class="sw" data-t="camLock"></div></div>
     <div class="hint hidden" id="lockHint" data-i18n="lockHint">Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.</div>
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
 
-    <div class="row" style="margin-top:20px"><label data-i18n="lightTitle">Işık ve çerçeve denetçisi</label></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gIsik"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns">
       <button class="cancel" id="lightBtn" data-i18n="lightBtn">Şimdi denetle</button>
       <button class="cancel" id="tiltBtn" data-i18n="tiltBtn">Eğim ölç</button>
@@ -952,7 +1019,8 @@
     <div id="lightOut"></div>
     <div class="hint" data-i18n="lightHint">Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.</div>
 
-    <div class="row" style="margin-top:20px"><label data-i18n="compTitle">Kompozit kayıt (gerçek kırpma + yeşil ekran)</label></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gKompozit"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgComp">Kompoziti aç</span><div class="sw" data-t="comp"></div></div>
     <div class="hint" data-i18n="compHint">Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.</div>
     <div id="compBox" class="hidden">
@@ -1046,10 +1114,14 @@
       <div class="hint" data-i18n="burnHint">Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.</div>
       <div class="hint" data-i18n="chromaHint">Yeşil ekran olmadan arka plan değiştirilemez — kişiyi arka plandan ayırmak için yapay zekâ modeli gerekir, o telefonda çok ağır. Düz renkli bir perde/duvar yeter (kırışıksız ve eşit aydınlatılmış olsun).</div>
     </div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="micLevel"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:18px"><label data-i18n="micLevel">Mikrofon seviyesi</label><span class="v" id="micTxt">—</span></div>
     <div id="micWrap"><div id="micBar"></div></div>
     <div class="hint" data-i18n="micHint">Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.</div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="muzikTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="muzikTitle">Müzik yatağı</label><span class="v" id="muzikDurumTxt">—</span></div>
     <div class="sheetbtns">
       <button class="cancel" id="muzikPick" data-i18n="muzikPick">Müzik seç</button>
@@ -1062,6 +1134,8 @@
     <div class="row"><label for="muzikKis" data-i18n="muzikKis">Konuşurken kıs</label><span class="v" id="vMuzikKis">80</span></div>
     <input type="range" id="muzikKis" min="0" max="100" value="80">
     <div class="hint" id="muzikHint" data-i18n="muzikHint">Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.</div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="fxTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="fxTitle">Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
     <div class="seg" id="fxSeg">
       <button data-fx="off" data-i18n="fxOff">Kapalı</button>
@@ -1082,20 +1156,19 @@
     <div class="tog"><span data-i18n="tgRaw">Ham ses (hiç işleme yapma)</span><div class="sw" data-t="rawAudio"></div></div>
     <div class="hint" data-i18n="rawHint">Ham ses daha doğal tınlar ama bazı iPhone'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.</div>
     <div class="sheetbtns"><button class="cancel" id="reopenCam" data-i18n="reopenCam">Kamerayı yeniden başlat</button></div>
+    </div></details>
   </div>
 
   <!-- DİĞER -->
   <div class="tab" id="tab-more">
+    <details class="grup"><summary><span data-i18n="gAltyaziZ"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label for="capOffset" data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="vCapOff">0.0</span></div>
     <input type="range" id="capOffset" min="-20" max="20" value="0">
     <div class="hint" data-i18n="capHint">Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.</div>
 
-    <div class="row"><label for="target" data-i18n="targetDur">Hedef süre (pacing)</label><span class="v" id="vTarget">kapalı</span></div>
-    <input type="range" id="target" min="0" max="600" step="15" value="0">
-    <div class="sheetbtns"><button class="cancel" id="fitBtn" data-i18n="fitBtn">Süreye sığdır</button></div>
-    <div class="hint" id="fitHint" data-i18n="fitHint">Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.</div>
-    <div class="hint" data-i18n="targetHint">Hedef verirsen üstteki rozet geri/ileri olduğunu gösterir.</div>
 
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gSesTakip"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="voiceLang">Sesle takip dili</label></div>
     <div class="seg" id="vlSeg">
       <button data-vl="tr-TR" class="on">Türkçe</button>
@@ -1111,18 +1184,23 @@
     <div class="hint" id="vadHint"></div>
     <div class="sheetbtns"><button class="cancel" id="voiceTest" data-i18n="voiceTest">Mikrofonu ve tanımayı sına</button></div>
     <div class="hint" id="voiceTestOut"></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gEkran"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgLock">Kayıtta ekranı kilitle</span><div class="sw" data-t="autoLock"></div></div>
     <div class="tog"><span data-i18n="tgKeepAwake">Ekranı uyanık tut</span><div class="sw on" data-t="wake"></div></div>
     <div class="tog"><span data-i18n="tgHicon">◐ Yüksek kontrast</span><div class="sw" data-t="hicon"></div></div>
     <div class="tog"><span data-i18n="tgHideUI">Kayıtta düğmeleri gizle</span><div class="sw" data-t="hideUI"></div></div>
 
-    <div class="row"><label data-i18n="backup">Yedekle / Geri yükle</label></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="backup"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns">
       <button class="cancel" id="expBtn" data-i18n="export">⬆︎ Dışa aktar</button>
       <button class="cancel" id="impBtn" data-i18n="import">⬇︎ İçe aktar</button>
     </div>
     <input type="file" id="impFile" accept="application/json,.json" class="hidden">
     <div class="sheetbtns"><button class="cancel" id="takesBtn" data-i18n="takes">Çekimlerim</button></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gCihaz"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns"><button class="cancel" id="remoteBtn" data-i18n="remote">Uzaktan kumanda</button></div>
     <div class="sheetbtns"><button class="cancel" id="devBtn" data-i18n="devBtn">Cihaz uyumluluğu</button></div>
     <div id="devOut"></div>
@@ -1130,9 +1208,12 @@
     <!-- Sürüm notlarının TEK girişi buydu: güncellemeden sonra kendiliğinden
          açılan sayfa. Kapatan ya da kaçıran bir daha ulaşamıyordu. -->
     <div class="sheetbtns"><button class="cancel" id="newsBtn" data-i18n="newsTitle">🆕 Ne değişti?</button></div>
+    </div></details>
+    <details class="grup"><summary><span data-i18n="gSifirla"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns"><button class="danger" id="resetAll" data-i18n="resetAll">↺ Ayarları varsayılana döndür</button></div>
     <div class="hint" data-i18n="resetHint">Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.</div>
     <div class="hint" id="verLine" style="text-align:center;margin-top:14px">Sufle v2.0</div>
+    </div></details>
   </div>
 </div>
 
@@ -1159,12 +1240,23 @@
     <button data-ss="len" data-i18n="ssLen">Uzunluğa göre</button>
   </div>
   <div id="scriptList"></div>
-  <div class="sheetbtns"><button class="cancel hidden" id="undoDel" data-i18n="undoDel">↺ Silineni geri getir</button><button class="cancel" id="restoreBk" data-i18n="restoreBk">Otomatik yedekten dön</button></div>
+  <!-- SENARYOLAR SAYFASI DA KART OLDU. Ölçülen kusur: tek akışta ON İKİ
+       farklı iş vardı (bölüm atlama, arama, sıralama, liste, yedekten dönme,
+       yeni/yapıştır/dosya, dosyaya yedekleme, başlık, metin, altı metin
+       aracı, iki denetim, sil/uygula). Kullanıcı senaryo yazmaya gelir;
+       yedekleme ve araçlar aynı görsel ağırlıkta durunca sayfa "yönetim
+       paneli" gibi okunuyordu. Sık olan (liste, başlık, metin) açıkta;
+       seyrek olan kartın içinde. -->
+  <details class="grup"><summary><span data-i18n="gYeni"></span><span class="ozet"></span></summary><div class="icerik">
   <div class="sheetbtns">
     <button class="cancel" id="newScript" data-i18n="newScript">＋ Yeni</button>
     <button class="cancel" id="pasteScript" data-i18n="paste">Yapıştır</button>
     <button class="cancel" id="fileScript" data-i18n="fromFile">Dosya</button>
   </div>
+  <div class="hint" data-i18n="fromFileHint">Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.</div>
+  </div></details>
+  <details class="grup"><summary><span data-i18n="gYedek"></span><span class="ozet"></span></summary><div class="icerik">
+  <div class="sheetbtns"><button class="cancel hidden" id="undoDel" data-i18n="undoDel">↺ Silineni geri getir</button><button class="cancel" id="restoreBk" data-i18n="restoreBk">Otomatik yedekten dön</button></div>
   <!-- C.2 CİHAZ DIŞI YEDEK. Uygulama içi otomatik yedek (autoBackup) VARDI
        ama o da localStorage'da — tarayıcı verisi silinince ikisi birden
        gidiyordu. Asıl koruma cihaz DIŞINA çıkan bir dosya.
@@ -1174,9 +1266,9 @@
     <button class="cancel" id="bkExport" data-i18n="bkExport">⬆︎ Dosyaya yedekle</button>
     <button class="cancel" id="bkImport" data-i18n="bkImport">⬇︎ Dosyadan geri al</button>
   </div>
+  </div></details>
   <input type="file" id="bkFile" accept=".json,application/json" class="hidden">
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
-  <div class="hint" data-i18n="fromFileHint">Word (.docx), düz metin, Markdown ve altyazı dosyaları. PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir.</div>
   <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
   <input type="text" id="title" data-i18n-ph="mPhTitle" placeholder="Senaryo başlığı">
   <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
@@ -1185,6 +1277,7 @@
     <span><button class="iconbtn" id="verBtn" aria-label="Sürüm değiştir">⇄ 1</button>
     <span class="v" id="stats">—</span></span></div>
   <textarea id="text" data-i18n-ph="phScript" placeholder="Okuyacağın metni buraya yaz veya yapıştır…" dir="auto"></textarea>
+  <details class="grup"><summary><span data-i18n="gAraclar"></span><span class="ozet"></span></summary><div class="icerik">
   <div class="seg" id="toolSeg" style="margin-top:10px">
     <button id="tClean" data-i18n="tClean">Temizle</button>
     <button id="tJoin" data-i18n="tJoin">↩︎ Satırları birleştir</button>
@@ -1197,12 +1290,15 @@
   <div class="hint" data-i18n="toolHint">Araçlar senaryoyu değiştirir — ↺ ile geri alınır. Cümle düzeni özel isimleri de küçültür, onları elle düzelt.</div>
   <div id="markPrev" class="hint" style="display:none"></div>
   <div class="hint" data-i18n="markHint"># başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz</div>
+  </div></details>
+  <details class="grup"><summary><span data-i18n="gDenetim"></span><span class="ozet"></span></summary><div class="icerik">
   <div class="sheetbtns">
     <button class="cancel" id="checkBtn" data-i18n="checkBtn">Konuşulabilirlik denetimi</button>
     <button class="cancel" id="diffBtn" data-i18n="diffBtn">Zorlanma haritası</button>
   </div>
   <div id="checkOut"></div>
   <div id="diffOut"></div>
+  </div></details>
   <div class="sheetbtns">
     <button class="danger" id="delScript" data-i18n="delete">Sil</button>
     <button class="save" id="saveScript" data-i18n="apply">Uygula</button>
@@ -1325,20 +1421,31 @@
       <button class="save" id="trimGo" data-i18n="trimGo">Kes ve uygula</button>
     </div>
   </div>
+  <!-- SONUÇ EKRANI: TEK ASIL EYLEM. Ölçülen kusur: sekiz düğme aynı görsel
+       ağırlıkta iki sıra hâlinde duruyordu (Sil · Kapat · Düzenle · Tam çekim ·
+       Altyazı · Paket · Dosyalar · Paylaş) ve çekimden sonra ne yapması
+       gerektiğini kullanıcının seçmesi bekleniyordu. Sıra artık: paylaş
+       (asıl eylem, dolu yeşil) → sık iki iş → gerisi kartın içinde. -->
   <div class="sheetbtns">
-    <button class="danger" id="redoBtn" data-i18n="deleteRedo">Sil</button>
-    <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
+    <button class="save" id="saveBtn" data-i18n="saveShare">Paylaş / Kaydet</button>
+  </div>
+  <div class="sheetbtns">
     <button class="cancel" id="editBtn" data-i18n="editBtn">Düzenle</button>
     <!-- Kesmeden sonra tam çekime dönüş: üç klip önerisi tek kesimle
          tükenmesin (ölçüldü, G.6 turunda çıktı). -->
     <button class="cancel" id="kaynakBtn" data-i18n="kaynakBtn" style="display:none">↩ Tam çekim</button>
+    <button class="cancel" id="keepBtn" data-i18n="keep">Kapat</button>
+  </div>
+  <details class="grup"><summary><span data-i18n="gDahaFazla"></span><span class="ozet"></span></summary><div class="icerik">
+  <div class="sheetbtns">
     <button class="cancel" id="capBtn" data-i18n="capBtnL">Altyazı dosyası</button>
     <button class="cancel" id="pkgBtn" data-i18n="pkgBtnL">Yayın paketi</button>
   </div>
   <div class="sheetbtns">
     <button class="cancel" id="filesBtn" data-i18n="toFiles">Dosyalar'a Kaydet</button>
-    <button class="save" id="saveBtn" data-i18n="saveShare">Paylaş / Kaydet</button>
+    <button class="danger" id="redoBtn" data-i18n="deleteRedo">Sil</button>
   </div>
+  </div></details>
   <!-- Arşive yazılamadıysa: geçici bildirim yetmez, çıkış yolu burada dursun -->
   <div id="archBox" style="display:none">
     <div class="hint" id="archWarn" style="text-align:center;font-weight:700;color:#ff6b6b"></div>
@@ -1346,9 +1453,16 @@
   </div>
   <div class="hint" id="audInfo" style="text-align:center;font-weight:700"></div>
   <div class="hint" id="shareDiag" style="text-align:center;font-weight:700"></div>
-  <div class="hint" id="trimSteps" style="display:none" data-i18n="trimSteps">Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.</div>
   <div class="hint" id="capInfo" style="text-align:center"></div>
-  <div class="hint" style="text-align:center" data-i18n="saveHint">Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.</div>
+  <!-- İKİ UZUN AÇIKLAMA KARTIN İÇİNE. Ekranın altında duran belge uzunluğunda
+       iki paragraf, ekranı "yardım sayfası" gibi gösteriyordu; ilk çekimde
+       gerekli, ondan sonra hiç gerekli değil. Tanı satırları (ses, paylaşım,
+       arşiv) DIŞARIDA kaldı: onlar bir şey ters gittiğinde çıkıyor ve tam da
+       o an görünmek zorundalar. -->
+  <details class="grup"><summary><span data-i18n="gNasil"></span><span class="ozet"></span></summary><div class="icerik">
+  <div class="hint" id="trimSteps" style="display:none" data-i18n="trimSteps">Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.</div>
+  <div class="hint" data-i18n="saveHint">Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.</div>
+  </div></details>
 </div>
 
 <div id="ready" class="sheet">
@@ -1416,7 +1530,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.16';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.17';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -1453,9 +1567,9 @@ const I18N={
   zoom:'Yakınlaştırma',tgBack:'Arka kamera',tgTorch:'Işık (fener)',tgGrid:'▦ Üçler kuralı + baş boşluğu',
   tgRaw:'Ham ses (hiç işleme yapma)',
   rawHint:'Ham ses daha doğal tınlar ama bazı iPhone\'larda sorun çıkarır — ses gelmiyorsa kapalı bırakın.',
-  lightTitle:'Işık ve çerçeve denetçisi',lightBtn:'Şimdi denetle',tiltBtn:'Eğim ölç',
+  lightBtn:'Şimdi denetle',tiltBtn:'Eğim ölç',
   lightHint:'Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.',
-  compTitle:'Kompozit kayıt (gerçek kırpma + yeşil ekran)',tgComp:'Kompoziti aç',
+  tgComp:'Kompoziti aç',
   compHint:'Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.',
   tgBurn:'Altyazıyı videoya göm',capSize:'Altyazı boyutu',capPos:'Altyazı konumu',cpBottom:'Alt',cpMiddle:'Orta',
   burnHint:'Okuduğun cümle videonun üstüne yazılır — ayrı altyazı dosyası yüklemene gerek kalmaz. Kompozit açık olmalı.',
@@ -1573,7 +1687,23 @@ const I18N={
   /* Uzak önizleme — D.4 */
   mPrevOn:'Çekimi telefonumda göster',mPrevHint:'Kumanda sayfasında kameranın gördüğü kare belirir; tek başına çekim yaparken kadrajını kontrol edebilirsin. Kareler kendi makinenden ve ağından çıkmaz, diske hiç yazılmaz.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'Gizlilik'},
+  privTitle:'Gizlilik',
+  /* AYAR GRUPLARI — kart başlıkları. Erdal'ın "dağınık, web modülü gibi"
+     teşhisinin karşılığı: ayarlar artık konuya göre katlanır kartlarda. */
+  gTempo:'Hız ve tempo',gGoz:'Göz teması ve çizgi',gYerlesim:'Yazı ölçüleri',
+  gYardim:'Okuma yardımcıları',gYaziTipi:'Yazı tipi ve biçim',gRenk:'Renkler',
+  gAyna:'Ayna ve gölge',gSesTest:'Ses onarımı ve testi',gCerceve:'Çerçeve ve kılavuzlar',
+  gKamera:'Kamera denetimleri',gAltyaziZ:'Altyazı zamanlaması',gSesTakip:'Sesle takip',
+  gEkran:'Ekran ve kayıt sırasında',gCihaz:'Cihaz ve yardım',gSifirla:'Sıfırlama',
+  /* Kart başlığı KISA olmak zorunda: iki satıra taşan başlık kart yığınının
+     ritmini bozuyor (ölçüldü, 390 px). Uzun ad satırın kendisinde kalıyor. */
+  gDosya:'Dosya boyutu',gIsik:'Işık denetçisi',gKompozit:'Kompozit ve yeşil ekran',
+  gMikSec:'Mikrofon seçimi',
+  /* Senaryolar sayfasının kartları */
+  gYeni:'Yeni senaryo ekle',gYedek:'Yedek ve geri alma',gAraclar:'Metin araçları',
+  gDenetim:'Metin denetimleri',
+  /* Sonuç ekranının kartları */
+  gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
@@ -1593,9 +1723,9 @@ const I18N={
   zoom:'Zoom',tgBack:'Rear camera',tgTorch:'Torch',tgGrid:'▦ Rule of thirds + headroom',
   tgRaw:'Raw audio (no noise suppression)',
   rawHint:'Raw sounds more natural but breaks on some iPhones — leave it off if you get no sound.',
-  lightTitle:'Light & framing inspector',lightBtn:'Check now',tiltBtn:'Measure tilt',
+  lightBtn:'Check now',tiltBtn:'Measure tilt',
   lightHint:'Samples once per second while this tab is open. Compares face-area brightness with the edges to catch backlight, blown highlights and low contrast.',
-  compTitle:'Composite recording (real crop + green screen)',tgComp:'Enable composite',
+  tgComp:'Enable composite',
   compHint:'Recording comes from a processed canvas instead of the raw camera: your chosen ratio is truly cropped and green screen works. Costs battery/heat — leave it off unless needed.',
   tgBurn:'Burn captions into the video',capSize:'Caption size',capPos:'Caption position',cpBottom:'Bottom',cpMiddle:'Middle',
   burnHint:'The sentence you are reading is drawn on the video — no separate subtitle file needed. Composite must be on.',
@@ -1713,7 +1843,18 @@ const I18N={
   /* Uzak önizleme — D.4 */
   mPrevOn:'Show the shot on my phone',mPrevHint:'The remote page shows what the camera sees, so you can check your framing alone. Frames stay on your own machine and network; nothing is written to disk.',
   /* Gizlilik özeti — F.4 */
-  privTitle:'Privacy'}
+  privTitle:'Privacy',
+  /* Ayar grupları — kart başlıkları */
+  gTempo:'Speed and pacing',gGoz:'Eye contact and line',gYerlesim:'Text size and spacing',
+  gYardim:'Reading aids',gYaziTipi:'Typeface and style',gRenk:'Colours',
+  gAyna:'Mirror and shadow',gSesTest:'Audio repair and test',gCerceve:'Framing and guides',
+  gKamera:'Camera controls',gAltyaziZ:'Caption timing',gSesTakip:'Voice follow',
+  gEkran:'Screen and recording',gCihaz:'Device and help',gSifirla:'Reset',
+  gDosya:'File size',gIsik:'Light inspector',gKompozit:'Composite and green screen',
+  gMikSec:'Microphone choice',
+  gYeni:'Add a script',gYedek:'Backup and undo',gAraclar:'Text tools',
+  gDenetim:'Text checks',
+  gDahaFazla:'More',gNasil:'Saving and trimming'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -6752,8 +6893,90 @@ function apply(){
     s.classList.toggle('on',a); s.setAttribute('aria-checked',a?'true':'false'); });
   $('#vMode').textContent=curMode().n[L]||curMode().n.tr;
   $('#modeHint').textContent=modeLine();
+  ozetTazele();
   updateHud();
   requestAnimationFrame(()=>{ measure(); if(!running) setPos(pos); });
+}
+
+/* Öge, kök ögeye kadar olan zincirde HİÇBİR display:none altında değil mi.
+   Ayrı bir fonksiyon: `display:none` bir ATAYA konduğunda çocuğun hesaplanan
+   display'i değişmez, o yüzden tek ögeye bakan kontrol yanlış cevap verir. */
+function gorunurZincir(el,kok){
+  for(let e=el; e && e!==kok; e=e.parentElement)
+    if(getComputedStyle(e).display==='none') return false;
+  return true;
+}
+
+/* ============ AYAR GRUPLARI: özet ve boş kart ============
+   Kart kapalıyken başlığın yanında o konunun O ANKİ değerleri yazar
+   ("1080p · Dengeli"), yani kullanıcı kartı açmadan ne seçili olduğunu görür.
+   ÖZET ELLE YAZILMIYOR — karttaki ilk iki değerden türetiliyor. Sebebi bu
+   deponun kendi dersi: tutulan bilgi bakım ister ve güncellenmezse YALAN
+   söyler; türetilen bilgi yalan söyleyemez. Yarın bir ayar eklendiğinde
+   özet kendiliğinden doğru kalır.
+
+   İkinci iş: koşula bağlı kartlar (mikrofon seçimi, fener, kilit) içeriği
+   tümüyle gizliyken BOŞ BİR BAŞLIK olarak kalıyordu — "aç, içi boş" bu
+   deponun ölü-ayar sınıfının görsel hâli. İçeriğinin tamamı gizliyse kart
+   da gizleniyor. */
+function ozetTazele(){
+  /* YALNIZ `display` ÖLÇÜLÜR, `visibility` DEĞİL — ölçülerek bulundu:
+     ayar sayfası kapalıyken `.sheet` üzerinde `visibility:hidden` var ve
+     visibility KALITSAL, yani sayfa kapalıyken içindeki HER ögeyi görünmez
+     sanıp 26 kartın 26'sını da "boş" diye gizledim. apply() sayfa kapalıyken
+     de koştuğu için kartlar hiç açılmıyordu. Koşula bağlı bloklar zaten
+     `.hidden{display:none!important}` ile saklanıyor; ölçüt o. */
+  /* ATA ZİNCİRİ ÖLÇÜLÜR, TEK ÖGE DEĞİL. İlk hâli yalnız ögenin kendi
+     `display`ine bakıyordu; oysa `display:none` bir ATAYA konduğunda çocuğun
+     hesaplanan display'i değişmez. Sonuç ölçüldü: kompozit KAPALIYKEN bile
+     kartın özeti gizli kutudaki eşik değerini ("30") yazıyordu — kapalı bir
+     özelliğin sayısını gösteren özet, bu deponun "yanlış sayı gösteren yüzey"
+     sınıfı. Zincir `.icerik`e kadar yürünüyor: `<details>` kapalıyken de
+     doğru çalışsın diye kartın kendisine bakılmıyor. */
+  $$('.sheet .grup').forEach(g=>{
+    const ic=g.querySelector('.icerik'); if(!ic) return;
+    const gor=el=>gorunurZincir(el,ic);
+    const cocuk=[...ic.children];
+    g.classList.toggle('bos', cocuk.length>0 && cocuk.every(c=>!gor(c)));
+    const parca=[];
+    const ekle=t=>{ t=(t||'').trim();
+      if(t && t!=='—' && !parca.includes(t) && parca.length<2) parca.push(t); };
+    /* ÇIPLAK SAYI ÖZET DEĞİLDİR. İlk hâli "18 · 60" yazıyordu; hangi sayının
+       ne olduğunu ancak kartı açan biri bilir. Sayının başına satırın KISA
+       etiketi konuyor ("Okuma çizgisi 18"). Etiket kart başlığını
+       tekrarlıyorsa (Görüntü filtresi → Görüntü filtresi %100) yalnız değer
+       kalıyor: aynı sözcüğü iki kez yazan özet, yeri boşa harcar. */
+    const baslik=norm((g.querySelector('summary span')||{}).textContent||'');
+    const kisaEtiket=r=>{
+      const l=r.querySelector('label'); if(!l) return '';
+      let t=(l.textContent||'').split('(')[0].split('—')[0].trim();
+      t=t.split(/\s+/).slice(0,2).join(' ');
+      if(t.length>18) t=t.slice(0,18).trim();
+      const n=norm(t);
+      return (!n || baslik.includes(n) || n.includes(baslik)) ? '' : t;
+    };
+    ic.querySelectorAll('.row').forEach(r=>{ if(parca.length||!gor(r)) return;
+      const v=r.querySelector('.v'); if(!v) return;
+      const d=(v.textContent||'').trim(); if(!d||d==='—') return;
+      const e=kisaEtiket(r); ekle(e? e+' '+d : d); });
+    ic.querySelectorAll('.seg').forEach(s=>{ if(parca.length>=2||!gor(s)) return;
+      const b=s.querySelector('button.on'); if(b) ekle(b.textContent); });
+    // İki parça 26 karakteri aşarsa kesilir; kesik özet yanlış okunur.
+    if(parca.length===2 && parca.join(' · ').length>26) parca.length=1;
+    /* Yalnız anahtar taşıyan kartlarda (okuma yardımcıları, ekran, kayıt)
+       gösterilecek değer yok; orada anlamlı özet AÇIK SAYISIDIR. Boş özet,
+       kartı açmadan hiçbir şey söylemeyen bir başlık bırakırdı. */
+    if(!parca.length){
+      const sw=[...ic.querySelectorAll('.tog')].filter(gor)
+        .map(t=>t.querySelector('.sw')).filter(Boolean);
+      const n=sw.filter(s=>s.classList.contains('on')).length;
+      // Tek anahtarlı kartta "1/1 açık" saymak gülünç; orada durum yeter.
+      if(sw.length===1) parca.push(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));
+      else if(sw.length) parca.push(L==='tr' ? n+'/'+sw.length+' açık'
+                                             : n+'/'+sw.length+' on');
+    }
+    const o=g.querySelector('.ozet'); if(o) o.textContent=parca.join(' · ');
+  });
 }
 
 /* ============ DOKUNMA: sürükle / hız / kilit ============ */
@@ -7871,6 +8094,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.',
+       en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de <b>Son hatalar</b> listesine korkutucu bir satır düşüyordu. Artık düşmüyor — liste yalnız gerçekten ilgilenmen gereken şeyleri gösteriyor.<br><b>Nasıl bulundu:</b> kapıya yeni bir adım eklendi ve uygulama her değişiklikte gerçek tarayıcıda baştan sona çalıştırılıyor: kamera açılıyor, kayıt yapılıyor, altyazı üretiliyor, çekim arşive yazılıyor ve <b>altyazının videoya gerçekten gömüldüğü</b> ölçülüyor.',
        en:'<b>The meaningless error line after a take is gone.</b> While inspecting the audio of a take the browser sometimes cannot decode it; that case was already handled, yet a scary line still landed in the <b>Recent errors</b> list. It does not any more, so the list only shows things that actually need you.<br><b>How it was found:</b> the gate gained a step that runs the whole app in a real browser on every change: camera on, record, captions produced, take archived, and the burned-in caption measured on the output frame.'},
  '9.15':{tr:'<b>Senaryo listesi artık ne zaman değiştirdiğini ve kaç kez çektiğini söylüyor.</b> Her senaryonun altında son değişiklik tarihi ve o senaryodan kaç çekim yaptığın yazıyor. Bu bilgi TUTULMUYOR, ölçülüyor: çekim arşivindeki kayıtlardan sayılıyor. Yani elle güncellemen gereken bir liste değil ve bayatlayamaz.<br><b>Bilinmeyen şey yazılmıyor:</b> eski senaryolarda tarih alanı yoksa tarih hiç gösterilmiyor, arşiv okunamazsa sayı hiç gösterilmiyor. Sıfır çekim de yazılmıyor.<br><b>Sınır:</b> bağ senaryonun adı üzerinden kuruluyor; adı değiştirirsen eski çekimlerle bağ kopar.',
@@ -8595,12 +8820,23 @@ function searchSettings(){
   const q=norm($('#setFind').value||'');
   const out=$('#setFindOut');
   const panes=[...$('#sheet').querySelectorAll('.tab')];
-  const temizle=()=>panes.forEach(p=>{ p.style.display='';
-    [...p.children].forEach(c=>{ c.style.display=''; c.classList.remove('aramaAcik'); }); });
+  const gruplar=[...$('#sheet').querySelectorAll('.grup')];
+  /* GRUP KARTLARINDAN SONRA: aranan ayar kapalı bir kartın içinde olabilir.
+     Arama artık kartın İÇİNE bakıyor, eşleşen kartı AÇIYOR ve eşleşmeyen
+     kartı gizliyor. Aksi hâlde "4 ayar bulundu" der, hiçbiri görünmezdi —
+     bu deponun 2 numaralı sınıfı (tam gerektiği anda sessizce çalışmayan
+     özellik) ve aramanın kendisi zaten bunun için yazılmıştı. */
+  const temizle=()=>{
+    panes.forEach(p=>{ p.style.display=''; });
+    gruplar.forEach(g=>{ g.style.display=''; g.open = g.dataset.acik==='1';
+      [...g.querySelector('.icerik').children].forEach(c=>{
+        c.style.display=''; c.classList.remove('aramaAcik'); }); });
+  };
   if(!q){
     temizle();
     $$('#sheet .tabs button').forEach(b=>b.style.display='');
     out.style.display='none';
+    ozetTazele();
     return;                       // görünürlüğü .on sınıfı yönetiyor, karışma
   }
   // Aramada sekme sınırı yok: satır içi display, sınıf tabanlı gizlemeyi ezer.
@@ -8610,33 +8846,17 @@ function searchSettings(){
   let bulunan=0;
   panes.forEach(pane=>{
     let hit=0;
-    [...pane.children].forEach(el=>{
-      const esles=norm(el.textContent||'').includes(q);
-      // GERÇEK TARAYICIDA BULUNDU: eşleşen öge `.hidden` sınıfındaysa (kompozit
-      // kapalıyken kapalı duran bloklar gibi) display:'' satır içi stili KALDIRIR
-      // ve sınıf kazanır — arama "4 ayar bulundu" der ama aradığın ayar görünmez.
-      // Satır içi 'block' sınıfı ezer. Bu bloklar hep <div>, flex değil.
-      // .hidden{display:none!important} satır içi stille ezilemiyor —
-      // eşleşen gizli bloğa eşit güçte bir sınıf takıyoruz (gerçek tarayıcıda ölçüldü).
-      if(esles) ac(el); else el.style.display='none';
-      if(esles){ hit++; bulunan++; }
+    [...pane.querySelectorAll('.grup')].forEach(grup=>{
+      const ic=grup.querySelector('.icerik');
+      const baslikEsles=norm(grup.querySelector('summary').textContent||'').includes(q);
+      let gHit=0;
+      hit += (gHit = araBlok([...ic.children], q, ac, baslikEsles));
+      bulunan += gHit;
+      const acik = gHit>0 || baslikEsles;
+      grup.style.display = acik ? '' : 'none';
+      grup.open = acik;
+      if(baslikEsles && !gHit) hit++;      // kart başlığı eşleşti: kart sayılır
     });
-    // ETİKET İLE DENETİM AYRI KARDEŞ: "nefes" araması "🫁 Nefesle akış"
-    // etiketini buluyor ama anahtarın metni "Konuşmayı kesince..." olduğu için
-    // anahtar gizli kalıyordu — bulunan ama KULLANILAMAYAN sonuç.
-    // Eşleşenin çevresindeki denetimleri de aç. (Gerçek tarayıcıda bulundu.)
-    if(hit){
-      const c=[...pane.children];
-      c.forEach((el,i)=>{
-        if(el.style.display==='none') return;
-        for(let j=i+1;j<c.length;j++){            // etiketten sonraki denetimler
-          if(c[j].classList.contains('row')) break;
-          ac(c[j]);
-        }
-        const onceki=c[i-1];                       // denetimden önceki etiket
-        if(onceki && onceki.classList.contains('row')) ac(onceki);
-      });
-    }
     pane.style.display=hit?'block':'none';
   });
   out.style.display='';
@@ -8644,7 +8864,49 @@ function searchSettings(){
     ? (L==='tr'? bulunan+' ayar bulundu — sekmeler geçici olarak kapalı':bulunan+' settings found')
     : (L==='tr'? 'Eşleşen ayar yok':'No matching setting');
 }
+/* Bir kartın içindeki blokları süzer; eşleşen sayısını döner.
+   Kart başlığı eşleşiyorsa kartın TAMAMI gösterilir (kullanıcı "kompozit"
+   arayınca o kartın bütün ayarlarını görmek ister, tek satırını değil). */
+function araBlok(c, q, ac, hepsi){
+  let hit=0;
+  c.forEach(el=>{
+    const esles = hepsi || norm(el.textContent||'').includes(q);
+    // GERÇEK TARAYICIDA BULUNDU: eşleşen öge `.hidden` sınıfındaysa (kompozit
+    // kapalıyken kapalı duran bloklar gibi) display:'' satır içi stili KALDIRIR
+    // ve sınıf kazanır — arama "4 ayar bulundu" der ama aradığın ayar görünmez.
+    // Satır içi 'block' sınıfı ezer. Bu bloklar hep <div>, flex değil.
+    // .hidden{display:none!important} satır içi stille ezilemiyor —
+    // eşleşen gizli bloğa eşit güçte bir sınıf takıyoruz (gerçek tarayıcıda ölçüldü).
+    if(esles) ac(el); else el.style.display='none';
+    if(esles) hit++;
+  });
+  // ETİKET İLE DENETİM AYRI KARDEŞ: "nefes" araması "🫁 Nefesle akış"
+  // etiketini buluyor ama anahtarın metni "Konuşmayı kesince..." olduğu için
+  // anahtar gizli kalıyordu — bulunan ama KULLANILAMAYAN sonuç.
+  // Eşleşenin çevresindeki denetimleri de aç. (Gerçek tarayıcıda bulundu.)
+  if(hit){
+    c.forEach((el,i)=>{
+      if(el.style.display==='none') return;
+      for(let j=i+1;j<c.length;j++){            // etiketten sonraki denetimler
+        if(c[j].classList.contains('row')) break;
+        ac(c[j]);
+      }
+      const onceki=c[i-1];                       // denetimden önceki etiket
+      if(onceki && onceki.classList.contains('row')) ac(onceki);
+    });
+  }
+  return hit;
+}
 $('#setFind').oninput=searchSettings;
+/* Kartların açılış durumu: arama bitince BURAYA dönülür. Varsayılanı HTML
+   söylüyor (her sekmenin ilk kartı açık), ama kullanıcı kart açıp kapatınca
+   yeni durum akılda kalsın diye burada tutuluyor — arama kullanıcının açtığı
+   kartı kapatmasın. */
+$$('.sheet .grup').forEach(g=>{
+  g.dataset.acik = g.open ? '1' : '0';
+  g.addEventListener('toggle',()=>{ if(!$('#setFind').value) g.dataset.acik=g.open?'1':'0';
+    if(g.open) ozetTazele(); });
+});
 $$('#scSort button').forEach(b=>b.onclick=()=>{ st.scSort=b.dataset.ss;
   $$('#scSort button').forEach(x=>x.classList.toggle('on',x===b)); save(); renderScripts(); });
 $$('#capStyleSeg button').forEach(b=>b.onclick=()=>{ st.capStyle=b.dataset.cs;

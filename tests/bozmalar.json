@@ -2236,8 +2236,8 @@
   "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
   "test": "116-sabah-raporu.js",
   "kaynak": "telefon",
-  "bul": "VER='9.16'",
-  "koy": "VER='9.17'"
+  "bul": "VER='9.17'",
+  "koy": "VER='9.18'"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2376,8 +2376,8 @@
   "ad": "ayar araması etiketi buluyor ama denetimi açmıyor (bulunan ama kullanılamayan sonuç)",
   "test": "93-ayar-aramasi.js",
   "kaynak": "telefon",
-  "bul": "    if(hit){\n      const c=[...pane.children];",
-  "koy": "    if(false){\n      const c=[...pane.children];"
+  "bul": "  if(hit){\n    c.forEach((el,i)=>{",
+  "koy": "  if(false){\n    c.forEach((el,i)=>{"
  },
  {
   "ad": "ayar araması gizli bloğu sınıfla açmıyor (sonuç görünmez kalır)",
@@ -2663,7 +2663,7 @@
   "ad": "kılavuz sürümü koddan ayrıştı (yanlış sürüm dağıtılır)",
   "test": "163-deneme-kilavuzu.js",
   "kaynak": "deneme",
-  "bul": "**Sürüm 9.16",
+  "bul": "**Sürüm 9.17",
   "koy": "**Sürüm 9.11"
  },
  {
@@ -2684,7 +2684,7 @@
   "ad": "mağaza kabuğu sürümü uygulamadan ayrıştı (yanlış sürüm mağazaya çıkar)",
   "test": "164-magaza-kabugu.js",
   "kaynak": "kabuk_plist",
-  "bul": "<key>CFBundleShortVersionString</key><string>9.16</string>",
+  "bul": "<key>CFBundleShortVersionString</key><string>9.17</string>",
   "koy": "<key>CFBundleShortVersionString</key><string>9.11</string>"
  },
  {
@@ -2749,5 +2749,89 @@
   "kaynak": "telefon",
   "bul": "           if(soz && soz.catch) soz.catch(()=>no(0)); }",
   "koy": "           }"
+ },
+ {
+  "ad": "yeşil ekran ölçümü sahte kamera desenine düşürülmüş (perde silinmiyor sanılmaz)",
+  "test": "115-bozma-turu.js",
+  "kaynak": "kayit_olcum",
+  "bul": "            t = Tarayici(cekim=y4m)",
+  "koy": "            t = Tarayici()"
+ },
+ {
+  "ad": "boş kart gizlenmiyor (aç, içi boş başlık kalır)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  .grup.bos{display:none}",
+  "koy": "  .grup.bos{opacity:.9}"
+ },
+ {
+  "ad": "kart başlığı 44 px dokunma hedefinin altına düştü",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": ".grup>summary{display:flex;align-items:center;gap:var(--sp-2);min-height:var(--tap);",
+  "koy": ".grup>summary{display:flex;align-items:center;gap:var(--sp-2);"
+ },
+ {
+  "ad": "kart açıkken özet de duruyor (aynı bilgi iki kez)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  .grup[open]>summary .ozet{display:none}",
+  "koy": "  .grup[open]>summary .ozet{opacity:.7}"
+ },
+ {
+  "ad": "özet çıplak sayı yazıyor (hangi ayar olduğu belirsiz)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "      const e=kisaEtiket(r); ekle(e? e+' '+d : d); });",
+  "koy": "      ekle(d); });"
+ },
+ {
+  "ad": "görünürlük yalnız ögenin kendisine bakıyor (kapalı özelliğin sayısı özete sızar)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  for(let e=el; e && e!==kok; e=e.parentElement)\n    if(getComputedStyle(e).display==='none') return false;\n  return true;",
+  "koy": "  return getComputedStyle(el).display!=='none';"
+ },
+ {
+  "ad": "tek anahtarlı kart '1/1 açık' diyor (durum yerine sayım)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "      if(sw.length===1) parca.push(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));\n      else if(sw.length)",
+  "koy": "      if(sw.length)"
+ },
+ {
+  "ad": "ayar kartı açık başlıyor (ekranın yarısı tek konuya gidiyor)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "<details class=\"grup\"><summary><span data-i18n=\"gTempo\">",
+  "koy": "<details class=\"grup\" open><summary><span data-i18n=\"gTempo\">"
+ },
+ {
+  "ad": "kartın açılış durumu unutuluyor (arama kullanıcının açtığı kartı kapatır)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  g.dataset.acik = g.open ? '1' : '0';",
+  "koy": "  g.dataset.acik = '0';"
+ },
+ {
+  "ad": "sonuç ekranında yıkıcı eylem asıl eylemin yanında (yanlış dokunuş çekimi siler)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    <button class=\"cancel\" id=\"filesBtn\" data-i18n=\"toFiles\">Dosyalar'a Kaydet</button>\n    <button class=\"danger\" id=\"redoBtn\" data-i18n=\"deleteRedo\">Sil</button>",
+  "koy": "    <button class=\"cancel\" id=\"filesBtn\" data-i18n=\"toFiles\">Dosyalar'a Kaydet</button>"
+ },
+ {
+  "ad": "sonuç ekranında ikinci dolu eylem (hangisi asıl belli değil)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    <button class=\"cancel\" id=\"editBtn\" data-i18n=\"editBtn\">Düzenle</button>",
+  "koy": "    <button class=\"save\" id=\"editBtn\" data-i18n=\"editBtn\">Düzenle</button>"
+ },
+ {
+  "ad": "ses tanısı kartın içine düştü (arıza tam o an görünmez)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  <div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div>",
+  "koy": "  <details class=\"grup\"><summary><span data-i18n=\"gNasil\"></span><span class=\"ozet\"></span></summary><div class=\"icerik\"><div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div></div></details>"
  }
 ]

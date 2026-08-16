@@ -21,7 +21,9 @@
    sanmıştım; kusur üründe değil ölçümdeydi. Bekleme süreleri o yüzden bol.
 """
 import json
+import os
 import sys
+import tempfile
 import time
 
 from ekran import Tarayici, KAPAT_ONB
@@ -131,6 +133,7 @@ def main(argv):
 
     kirik += kompozit(adres)
     kirik += marka(adres)
+    kirik += yesil_ekran(adres)
 
     print()
     print('✅ çekim akışı uçtan uca çalışıyor' if not kirik
@@ -174,9 +177,15 @@ def kompozit(adres):
                 t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='burnCaps').click()")
                 time.sleep(1.2)
             t.js("document.querySelector('#recBtn').click()")
-            time.sleep(5)
-            r = js(t, """(() => {
-              const oc=document.querySelector('#compOut');
+            time.sleep(3)
+            r = None
+            # ALTYAZI ANLIK: kelime okuma çizgisinden geçtiği SÜREDE çiziliyor.
+            # Tek kare örneklemek kararsız sonuç veriyordu (aynı kod bir koşuda
+            # 819 piksel, diğerinde 0). Doğru iddia "çekim boyunca bir noktada
+            # gömülüyor mu" — o yüzden birkaç saniye ÖRNEKLENİYOR.
+            for _ in range(12):
+                r = js(t, """(() => {
+                  const oc=document.querySelector('#compOut');
               if(!oc) return JSON.stringify({tuval:false});
               const x=oc.getContext('2d');
               if(oc.width<10) return JSON.stringify({tuval:true, en:oc.width, beyaz:0, altta:0});
@@ -189,7 +198,10 @@ def kompozit(adres):
                 }
               }
               return JSON.stringify({tuval:true, en:oc.width, boy:oc.height, beyaz:beyaz, altta:altta});
-            })()""", 'kompozit çıktı')
+                })()""", 'kompozit çıktı')
+                if r and r.get('beyaz', 0) >= 100:
+                    break
+                time.sleep(0.5)
             t.js("document.querySelector('#recBtn').click()")
             time.sleep(1)
             if gomme:
@@ -300,6 +312,101 @@ def marka(adres):
                     print('  ✓ marka kapalıyken çıktı tuvali ayrılmıyor')
         finally:
             t.kapat()
+    return kirik
+
+
+def yesil_y4m(yol, w=320, h=240, kare=20):
+    """Düz YEŞİL sahte kamera görüntüsü (Y4M). Yeşil ekranı ölçmenin tek dürüst
+       yolu, kameraya gerçekten yeşil bir perde göstermek."""
+    # RGB(0,177,64) -> YUV yaklaşık (111, 105, 30)
+    with open(yol, 'wb') as f:
+        f.write(b'YUV4MPEG2 W%d H%d F30:1 Ip A1:1 C420\n' % (w, h))
+        veri = bytes([111]) * (w * h) + bytes([105]) * (w * h // 4) + bytes([30]) * (w * h // 4)
+        for _ in range(kare):
+            f.write(b'FRAME\n')
+            f.write(veri)
+    return yol
+
+
+def yesil_ekran(adres):
+    """YEŞİL EKRAN A/B — kamera düz yeşil verirken chroma açık/kapalı ölçülüyor.
+
+       Bu özellik bugüne kadar yalnız gölgelendirici kaynağı ve ayar sınırlarıyla
+       ölçülüyordu; perdeyi gerçekten SİLİP SİLMEDİĞİ hiç görülmemişti.
+
+       ÖLÇÜM ARACININ KUSURU BURADA ÇIKTI (2026-08-16): hazır görüntü dosyası
+       verildiğinde `ekran.py` sahte CİHAZ bayrağını düşürüyordu ve
+       `getUserMedia({video,audio})` tümden başarısız oluyordu — yani dosyayla
+       yapılacak her ölçüm kamerasız koşacaktı. Onarıldı (ikisi birlikte).
+
+       Okuma `#compOut` (2B tuval) üzerinden: WebGL varsayılan tamponu kare
+       sunulduktan sonra boş dönüyor, oradan okumak yanıltıcı olurdu."""
+    kirik = 0
+    dizin = tempfile.mkdtemp(prefix='sufle-yesil-')
+    y4m = yesil_y4m(os.path.join(dizin, 'yesil.y4m'))
+    try:
+        for chroma in (True, False):
+            t = Tarayici(cekim=y4m)
+            try:
+                t.cagir('Page.enable')
+                t.cagir('Emulation.setDeviceMetricsOverride', width=430, height=932,
+                        deviceScaleFactor=2, mobile=True)
+                t.cagir('Page.navigate', url=adres)
+                time.sleep(2.5)
+                try:
+                    t.js(KAPAT_ONB)
+                except Exception:
+                    pass
+                time.sleep(0.4)
+                t.js("document.querySelector('#startCam').click()")
+                time.sleep(4.5)
+                t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='comp').click()")
+                time.sleep(2.5)
+                # Gömme açık: kompozit kare 2B tuvale kopyalanıyor, oradan okunabiliyor.
+                t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='burnCaps').click()")
+                time.sleep(1.5)
+                if chroma:
+                    t.js("[...document.querySelectorAll('.sw')].find(s=>s.dataset.t==='chroma').click()")
+                    time.sleep(2.5)
+                t.js("(()=>{ const b=document.querySelector('#playBtn'); if(b) b.click(); })()")
+                time.sleep(1.0)
+                t.js("document.querySelector('#recBtn').click()")
+                time.sleep(3.0)
+                r = js(t, """(() => {
+                  const oc=document.querySelector('#compOut');
+                  if(!oc || oc.width<10) return JSON.stringify({tuval:false});
+                  const d=oc.getContext('2d').getImageData(0,0,oc.width,oc.height).data;
+                  let yesil=0, koyu=0, n=0;
+                  for(let i=0;i<d.length;i+=4){
+                    const r=d[i], g=d[i+1], b=d[i+2]; n++;
+                    if(g>110 && r<120 && b<120) yesil++;
+                    if(r<70 && g<70 && b<80) koyu++;
+                  }
+                  return JSON.stringify({tuval:true, yesil:+(100*yesil/n).toFixed(1),
+                                         koyu:+(100*koyu/n).toFixed(1)});
+                })()""", 'yeşil ekran çıktısı')
+                t.js("document.querySelector('#recBtn').click()")
+                time.sleep(1)
+                if not r or not r.get('tuval'):
+                    print('  ✗ yeşil ekran ölçülemedi (kompozit çıktı yok)'); kirik += 1
+                elif chroma:
+                    if r['yesil'] > 5 or r['koyu'] < 50:
+                        print('  ✗ yeşil perde SİLİNMEDİ (yeşil %%%s · arka plan %%%s)' %
+                              (r['yesil'], r['koyu'])); kirik += 1
+                    else:
+                        print('  ✓ yeşil perde silinip arka plan geldi (yeşil %%%s → arka plan %%%s)' %
+                              (r['yesil'], r['koyu']))
+                else:
+                    if r['yesil'] < 50:
+                        print('  ✗ chroma kapalıyken görüntü yine de değişmiş (yeşil %%%s)' %
+                              r['yesil']); kirik += 1
+                    else:
+                        print('  ✓ chroma kapalıyken görüntü olduğu gibi geçiyor (yeşil %%%s)' % r['yesil'])
+            finally:
+                t.kapat()
+    finally:
+        import shutil
+        shutil.rmtree(dizin, ignore_errors=True)
     return kirik
 
 

@@ -2,6 +2,49 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🎛 17 Ağustos — v9.17 HAZIR, yayın kararı sende: "ayarlar web modülü gibi"
+
+Erdal: *"UI'yi hiç beğenmiyorum, özellikler/modüller dağınık, modern değil —
+mobil uygulama değil web modülü gibi."* Önce **kaynağa değil ÇİZİLMİŞ EKRANA**
+bakıldı (390×844, gerçek tarayıcı) ve şikâyetin ölçülebilir karşılığı çıktı:
+
+- **Kamera sekmesi tek akışta 15 ilgisiz modül** sıralıyordu (ses onarımı →
+  kalite → filtre → çerçeve → ışık → kompozit → mikrofon → müzik → ses stüdyosu),
+  hepsi aynı görsel ağırlıkta ve her birinin altında belge uzunluğunda açıklama.
+- **Senaryolar sayfasında on iki farklı iş** aynı sayfada: bölüm atlama, arama,
+  sıralama, liste, yedekten dönme, yeni/yapıştır/dosya, dosyaya yedekleme,
+  başlık, metin, altı metin aracı, iki denetim, sil/uygula.
+- **Sonuç ekranında sekiz düğme** aynı ağırlıkta iki sıra hâlinde; **Sil**,
+  **Paylaş**ın hemen yanında.
+
+**Yapılan:** ayarlar **26 katlanır kart**a bölündü (Çekim modu · Hız ve tempo ·
+Göz teması · Yazı ölçüleri · Kayıt kalitesi · Kompozit ve yeşil ekran · Ses ·
+Müzik yatağı …). Hiçbir kart açık başlamıyor: sayfa açılınca **konuların
+listesi** görünüyor. **Kart kapalıyken o anki değerini söylüyor** ("1080p",
+"Hız 140", "3/4 açık") ve bu özet **tutulmuyor, karttaki denetimlerden
+türetiliyor** — bu deponun kendi dersi: tutulan bilgi güncellenmezse yalan
+söyler, türetilen bilgi söyleyemez. Senaryolar sayfasında liste/başlık/metin
+dışarıda kaldı, yedekleme ve araçlar karta girdi. Sonuç ekranında tek dolu
+eylem kaldı (**Paylaş / Kaydet**); silme ve paket **Daha fazla** kartına indi.
+
+**Ölçüm sırasında çıkan üç gerçek kusur** (hepsi düzeltildi ve teste bağlandı):
+① `visibility` KALITSAL olduğu için ayar sayfası kapalıyken 26 kartın 26'sı da
+"boş" sayılıp gizleniyordu; ② `display:none` bir ATAYA konduğunda çocuğun
+hesaplanan display'i değişmediği için **kompozit kapalıyken bile** özet gizli
+kutudaki eşiği ("30") yazıyordu; ③ gruplama betiği son kartı sekmenin kapanış
+etiketinden sonra kapatıyordu (tarayıcı düzeltiyordu, yapı yine de yanlıştı).
+
+**Kapı:** yeni test `tests/166` (42 iddia) + `tests/93` kart yapısına göre
+yeniden yazıldı (36 iddia). **11 kasıtlı bozmanın 11'i yakalanıyor.** İki
+bozma ilk turda YAKALANMADI ve ikisi de testin kendi kusuruydu: biri gevşek
+desen (aynı satır iki yerde geçiyordu), biri "yokluğu doğru yer sayma"
+(düğme tümden silinince test yeşil kalıyordu). Kontrast kapısı 10 yüzeyde
+**0 ihlal**, çekim akışı uçtan uca yeşil.
+
+**v9.17 yayınlanmadı — yayın kararı sende.** Masaüstü arayüzü bu sürümde
+değişmedi; sürüm numarası iki kabuk aynı kalsın diye yükseldi ve notu bunu
+açıkça yazıyor.
+
 ## 🌙 15/16 Ağustos gecesi — FAZ G başladı (BIGVU ve teleprompter.com ölçüldü)
 
 Erdal iki iş verdi: **v9.13 yayınlansın** (yapıldı, canlıdan doğrulandı) ve **rakiplerin
@@ -971,6 +1014,32 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🟩 YEŞİL EKRAN DA KANITLANDI — ve ölçüm aracının kendi kusuru çıktı
+
+Yeşil ekran bugüne kadar yalnız gölgelendirici kaynağı ve ayar sınırlarıyla
+ölçülüyordu; perdeyi gerçekten **silip silmediği** hiç görülmemişti. Artık
+kameraya **düz yeşil bir görüntü** verilerek A/B ölçülüyor:
+
+| ölçüm | chroma AÇIK | chroma KAPALI |
+|---|---|---|
+| yeşil piksel | **%0** | %97,6 |
+| arka plan rengi | **%98,8** | %1 |
+
+**Ölçüm aracının kusuru burada çıktı:** hazır görüntü dosyası verildiğinde
+`ekran.py` sahte **cihaz** bayrağını düşürüyordu ve `getUserMedia({video,audio})`
+tümden başarısız oluyordu — yani dosyayla yapılacak her ölçüm **kamerasız**
+koşacaktı ve "kamera açılmadı" sonucunu ürün kusuru sanabilirdik. Onarıldı
+(cihaz sahte, görüntü dosyadan — ikisi birlikte).
+
+İkinci ders: WebGL varsayılan tamponu kare sunulduktan sonra **boş dönüyor**;
+ölçüm o yüzden 2B çıktı tuvalinden (`#compOut`) okuyor. Yanlış tampondan okuyup
+"perde silinmedi" demek, ölçmeden iddia etmek olurdu.
+
+Kapının 10. adımı artık **beş halkayı** kanıtlıyor: çekim zinciri · altyazı
+gömme · marka alt bandı · yeşil ekran · ve hepsinde hata günlüğünün boş kalması.
+
+---
+
 ### 🐞 YENİ KAPI ADIMI İLK KUSURUNU BULDU — her çekimde korkutucu bir hata satırı
 
 Marka kitini de uçtan uca ölçerken (alt bant: **445 marka rengi piksel, %100'ü
@@ -1140,7 +1209,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **393 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **394 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1317,9 +1386,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6401 test** (gece başında 732) · yeni test dosyası: 39–165
+- **6406 test** (gece başında 732) · yeni test dosyası: 39–166
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **393 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **394 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
