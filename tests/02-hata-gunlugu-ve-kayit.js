@@ -60,3 +60,50 @@ ok('kayıt sürerken dokunmuyor', shouldReopen({visible:1,stream:1,recState:'rec
 ok('kopan akışı yeniliyor', shouldReopen({visible:1,stream:1,recState:'inactive',track:'ended'})===true);
 ok('sağlam akışa dokunmuyor', shouldReopen({visible:1,stream:1,recState:'inactive',track:'live'})===false);
 ok('arka plandayken dokunmuyor', shouldReopen({visible:0,stream:1,recState:'inactive',track:'ended'})===false);
+
+/* ---------- GERÇEK KAYNAKTAN KOŞTURMA ----------
+   YUKARIDAKİ BLOKLAR KOPYA. Bu depoda kural açık: "testler mantığı kopyalamaz,
+   gerçek kaynaktan çıkarıp koşturur — kopya test, kod değişince sessizce yalan
+   söyler." Ölçüldü (2026-08-16): `ERRLOG` tavanını kaynaktan SÖKÜNCE bu dosya
+   yine yeşil kaldı, çünkü kendi kopyasını ölçüyordu. Kopyalar okunabilir birer
+   model olarak duruyor; aşağıdaki bölüm GERÇEK `logErr`i koşturuyor. */
+{
+  const {telefonYolu,oku,blokKes}=require('./kaynak');
+  const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+  const govde=blokKes(kod,'function logErr(');
+  ok('gerçek logErr çıkarılabildi', !!govde);
+  if(govde){
+    const kur=()=>{
+      const iz={gunluk:[], uyari:0, yazilan:null};
+      const f=new Function('__iz','__zaman', `
+        const ERRLOG=__iz.gunluk; let errShown=0;
+        const LS='x';
+        const Date={now:()=>__zaman()};
+        const localStorage={setItem:(k,v)=>{ __iz.yazilan=v; }};
+        const toast=()=>{ __iz.uyari++; };
+        const m=k=>k;
+        ${govde}
+        return logErr;
+      `);
+      let t=1770000000000;
+      const logErr=f(iz, ()=>t);
+      return {iz, logErr, ilerlet:(ms)=>{ t+=ms; }};
+    };
+    {
+      const {iz, logErr, ilerlet}=kur();
+      for(let i=0;i<50;i++){ ilerlet(100); logErr('js', new Error('hata'+i)); }
+      ok('gerçek günlük 30 ile sınırlı ('+iz.gunluk.length+')', iz.gunluk.length===30);
+      ok('gerçek günlükte en yenisi duruyor', iz.gunluk[29].msg==='hata49');
+      /* Uyarı 8 sn'de bir: 50 hata 5 saniyeye yayıldı, yani tek uyarı. */
+      ok('gerçek uyarı boğmuyor ('+iz.uyari+')', iz.uyari===1);
+      /* Kalıcılık: son 10 kayıt diske yazılıyor — sonraki oturumda okunabilsin. */
+      ok('gerçek günlük diske yazılıyor', typeof iz.yazilan==='string');
+      ok('diske yalnız son 10 kayıt yazılıyor', JSON.parse(iz.yazilan).length===10);
+    }
+    {
+      const {iz, logErr}=kur();
+      logErr('x','a'.repeat(500));
+      ok('gerçek mesaj 180 karakterde kırpılıyor', iz.gunluk[0].msg.length===180);
+    }
+  }
+}

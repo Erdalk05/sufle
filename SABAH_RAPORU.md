@@ -971,6 +971,27 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🪞 KOPYA TEST BULUNDU — tests/02 kendi kopyasını ölçüyormuş
+
+Kanıtsız dosyaları kapatırken bir bozma ısrarla yakalanmadı: hata günlüğünün
+**30 kayıt tavanını kaynaktan söktüm, `tests/02` yine yeşil kaldı.** Sebebi
+CLAUDE.mddeki ilk kuralın ihlali: dosya `logErr`i **kendi içinde yeniden
+yazmıştı**, yani kaynağı değil kopyasını ölçüyordu — kopya test, kod değişince
+sessizce yalan söyler.
+
+Onarıldı: dosya artık **gerçek `logErr`i kaynaktan çıkarıp koşturuyor**. Bu
+sırada ölçülmeyen iki davranış daha ortaya çıktı ve kilitlendi: günlüğün
+**diske yazılması** ve diske yalnız **son 10 kaydın** gitmesi (sonraki oturumda
+"Son hatalar" listesi buradan doluyor). Kopyalar okunabilir model olarak
+duruyor, ama artık yanlarında gerçek koşum var.
+
+**Kanıtlı test dosyası 115 → 122** (bozma 329 → 337): işaretleme dilinde
+eşleşmeyen yıldız, biyonik okumada kalınlık oranı, uzun satır bölmenin başlık ve
+notlara dokunmaması, göz açısının mesafeyi hesaba katması, izin kurtarma yolunun
+tarayıcıyı ayırt etmesi, sürüm sıralamasının sayısal olması ve hata günlüğü.
+
+---
+
 ### 📈 REKABET PUANI 64,3 → 64,9 · BIGVU ile fark 0,4 puan
 
 G.8 uygulandıktan sonra rubrik yeniden ölçüldü ve **7. kategori (senaryo
@@ -1058,9 +1079,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6246 test** (gece başında 732) · yeni test dosyası: 39–162
+- **6253 test** (gece başında 732) · yeni test dosyası: 39–162
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **329 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **337 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

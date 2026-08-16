@@ -2301,5 +2301,61 @@
   "kaynak": "telefon",
   "bul": "bind('#scrimSl','scrim'); bind('#target','target');",
   "koy": "bind('#target','target');"
+ },
+ {
+  "ad": "biyonik okuma kelimenin yarısını kalınlaştırıyor (okuma bozulur)",
+  "test": "22-biyonik-okuma.js",
+  "kaynak": "telefon",
+  "bul": "  const n=Math.max(1,Math.min(4,Math.round(core.replace(/[^\\p{L}\\p{N}]/gu,'').length*0.42)));",
+  "koy": "  const n=Math.max(1,Math.round(core.length*0.9));"
+ },
+ {
+  "ad": "uzun satır bölme başlık ve notlara da dokunuyor",
+  "test": "08-kaydirma-motoru.js",
+  "kaynak": "telefon",
+  "bul": "    if(!r || /^#{1,3}\\s|^\\[.*\\]$/.test(r)) return line;     // başlık ve notlara dokunma",
+  "koy": "    if(!r) return line;"
+ },
+ {
+  "ad": "göz açısı mesafeyi hesaba katmıyor (uyarı hep yanlış)",
+  "test": "20-goz-temasi.js",
+  "kaynak": "telefon",
+  "bul": "  const screenCm=14, distCm=Math.max(20,st.dist||60);",
+  "koy": "  const screenCm=14, distCm=60;"
+ },
+ {
+  "ad": "işaretleme dili eşleşmeyen yıldızı da vurgu sayıyor (metin bozulur)",
+  "test": "06-isaretleme-dili.js",
+  "kaynak": "telefon",
+  "bul": "    const em=/^\\*{1,2}[^*]+\\*{1,2}$/.test(govde);",
+  "koy": "    const em=/\\*/.test(govde);"
+ },
+ {
+  "ad": "hata günlüğü sınırsız büyüyor (depo şişer, eski hatalar taşar)",
+  "test": "02-hata-gunlugu-ve-kayit.js",
+  "kaynak": "telefon",
+  "bul": "  if(ERRLOG.length>30) ERRLOG.shift();",
+  "koy": ""
+ },
+ {
+  "ad": "izin kurtarma yolu tarayıcıyı ayırt etmiyor (yanlış yol tarif edilir)",
+  "test": "52-izin-kurtarma-yolu.js",
+  "kaynak": "telefon",
+  "bul": "    const t=/crios/i.test(u)?'Chrome':/fxios/i.test(u)?'Firefox':/edgios/i.test(u)?'Edge':'Safari';",
+  "koy": "    const t='Safari';"
+ },
+ {
+  "ad": "sürüm sıralaması metin olarak yapılıyor (10.0 < 9.1 sanılır)",
+  "test": "24-surum-siralamasi.js",
+  "kaynak": "telefon",
+  "bul": "  const A=String(a).split('.').map(Number), B=String(b).split('.').map(Number);",
+  "koy": "  const A=[String(a)], B=[String(b)];"
+ },
+ {
+  "ad": "hata günlüğü diske hiç yazılmıyor (sonraki oturumda hiçbir iz yok)",
+  "test": "02-hata-gunlugu-ve-kayit.js",
+  "kaynak": "telefon",
+  "bul": "  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
+  "koy": "  // gunluk diske yazilmiyor"
  }
 ]
