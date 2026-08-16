@@ -971,6 +971,13 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+- 🚀 **v9.14 CANLIDA ve doğrulandı** (2026-08-16 sabahı, Erdal onayıyla): `sufle-v86`,
+  `index.html` **md5 birebir** (`bb220098…`), `sw.js` **md5 birebir** (`59463bd5…`),
+  gecenin on özelliğinin izi canlıdan sayıldı (kkParcala 2 · altyaziTema 3 ·
+  klipOnerileri 2 · metinYonu 4 · markaAktif 3 · muzikDurum 6 · gerekenWpm 2 ·
+  kaynakBtn 5 · kesKaynak 7 · temaEtiketMetni 2). GitHub Pages ilk iki denemede
+  hâlâ 9.13 döndü, üçüncüde 9.14 — yayın anında değil, **yaklaşık bir dakika**
+  sonra görünüyor. `.son-yayin` ancak doğrulamadan SONRA yazıldı.
 - **v9.13 CANLIDA ve doğrulandı** (2026-08-15 gecesi, Erdal onayıyla): `sufle-v85`,
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
