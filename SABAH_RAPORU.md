@@ -971,6 +971,27 @@ ayrı bir kırılganlık; not olarak plana yazdım (**M11**).
 
 ## Sayılar
 
+### 🖥 MASAÜSTÜ YOLU UÇTAN UCA ÖLÇÜLDÜ — güvenlik kuralı ÇALIŞIRKEN kanıtlandı
+
+Kılavuz "Sunucu.command'a çift tıkla, tarayıcı localhost'u açar, QR ile telefon
+kumanda olur" diyor. Bu cümlenin üç parçası da **koşturularak** ölçüldü
+(`tests/165`, 13 iddia · 2 kasıtlı bozma):
+
+| ölçülen | sonuç |
+|---|---|
+| sunucu ayağa kalkıyor · `/info` **gerçek** portu bildiriyor | ✅ |
+| ana sayfa uygulamanın kendisi (355 KB) ve **sürüm depodakiyle aynı** | ✅ |
+| `/remote` komut düğmeleriyle geliyor · `/qr` **gerçek PNG** üretiyor | ✅ |
+| kendi sayfamızın komutu kabul · **başka siteden gelen komut 403** | ✅ |
+| tarayıcı olmayan istemci (curl/betik) engellenmiyor — bu bir karar | ✅ |
+
+**En değerlisi dördüncü satır:** açık bir sekmedeki kötü niyetli sayfanın çekimi
+başlatıp durdurabilmesini engelleyen koruma, bu sabah kaynak düzeyinde
+kilitlenmişti; şimdi **çalışırken** ölçüldü. Kaynakta duran ama çalışmayan
+koruma bu deponun 2 numaralı hata sınıfı — artık o sınıfa düşemez.
+
+---
+
 ### 🏪 MAĞAZA KABUĞU DERLENDİ VE KOŞTU — Apple hesabı beklemeden
 
 Erdal "mağazaya evet" dedi, hesap henüz yok. Hesabı bekletmeden **kabuğun ayakta
@@ -1043,7 +1064,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **388 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **390 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1216,9 +1237,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   tamamı belge/plandı; **son commit uygulama dosyalarına da dokunuyor** (klip kesimi
   kaynağı artık silmiyor), yani canlı sürüm v9.13 ile depo arasında ARTIK FARK VAR ve
   bu fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6364 test** (gece başında 732) · yeni test dosyası: 39–164
+- **6377 test** (gece başında 732) · yeni test dosyası: 39–165
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **388 kanıtlı bozma**
+- Kapı: 9 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **390 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

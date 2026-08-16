@@ -2714,5 +2714,19 @@
   "kaynak": "kabuk_betik",
   "bul": "  echo \"  ✗ sürüm sapması: uygulama $VER, kabuk plist $PVER\"",
   "koy": "  echo \"  - surum farki (onemsiz)\""
+ },
+ {
+  "ad": "ÇALIŞIRKEN: başka siteden gelen komut kabul ediliyor (çekim uzaktan durdurulur)",
+  "test": "165-masaustu-uctan-uca.js",
+  "kaynak": "sunucu",
+  "bul": "        return o.netloc == (self.headers.get(\"Host\") or \"\")",
+  "koy": "        return True"
+ },
+ {
+  "ad": "ÇALIŞIRKEN: QR üretimi bozuk (telefon kumandaya bağlanamaz)",
+  "test": "165-masaustu-uctan-uca.js",
+  "kaynak": "sunucu",
+  "bul": "            png = make_qr(qs.get(\"d\", [\"\"])[0])",
+  "koy": "            png = None"
  }
 ]
