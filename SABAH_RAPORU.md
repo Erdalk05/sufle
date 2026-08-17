@@ -2,6 +2,69 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🌙 17 Ağustos GECESİ — dokuz tur, dokuz commit, kapı 10/10 yeşil
+
+**Tek cümlede:** v9.17 yayına hazır ve yayınlanmadı (kural gereği `git push`
+senin onayınla); gece boyunca uygulama **kullanılarak** denetlendi, dört
+gerçek kusur bulunup düzeltildi, iki yeni özellik eklendi ve rekabet ölçümü
+**64,9 → 66,0** ile BIGVU'yu (65,3) geçti.
+
+### Ne değişti (kullanıcının göreceği sırayla)
+
+| | |
+|---|---|
+| **Ayarlar 26 karta bölündü** | Tek uzun liste bitti. Kart kapalıyken o anki değerini söylüyor ("1080p", "Hız 140", "3/4 açık"); özet tutulmuyor, denetimlerden türetiliyor. Arama kartın içine bakıp eşleşen kartı açıyor. |
+| **Çekim çubuğundaki altı ikonun adı göründü** | Ayarlar · Senaryo · Hazır mıyım · Sesle takip · Başlat. Ad sözlükten geliyor, dil değişince değişiyor; düğmelerin kutusu ve dokunma hedefi değişmedi. |
+| **Sonuç ekranında tek asıl eylem kaldı** | Paylaş / Kaydet. Silme ve paket "Daha fazla" kartına indi — Sil artık Paylaş'ın yanında durmuyor. |
+| **PDF'ten senaryo alma** | Okuyamadığından emin olamazsa **metin vermiyor**: taranmış sayfa, eşlemesiz yazı tipi ve şifreli dosya reddediliyor, sebebi söyleniyor. Gerçek tarayıcıda 5/5 doğru. |
+| **Elle pozlama ve beyaz ayarı** | Yalnız cihaz destekliyorsa görünüyor. Ölçüldü: sürgü kamera izinin ayarını gerçekten değiştiriyor (`manual`, 55→85). |
+| **Tipografi ölçeğe oturdu** | Dört yüzeyde 39 ölçek dışı punto vardı, sıfıra indi. |
+| **Masaüstü durum çubuğu** | 608×**151 px** blok, 826×**66 px** şeride indi; etiketler artık kendi içinde kırılmıyor. |
+
+### Kullanarak bulunan dört gerçek kusur
+
+1. **Kayıt gözcüsü iyi çekimi durdurtuyordu.** Kompozit açıkken kayıt başlar
+   başlamaz "veri gelmiyor, durdurup tekrar başlat" çıkıyordu; ölçüldü, ilk
+   veri parçası **4621 ms**'de geliyor, eşik ise 2500 ms idi. Gözcü artık iki
+   bakışlı — ölçüt süre değil ÜRETİM (v9.12'nin dersi, bu kez kayıt tarafında).
+2. **Depo kapalıyken "yer aç" deniyordu.** Gizli pencerede depo hiç yoktur ve
+   "yıldızsızları sil" düğmesi çalışamaz; kullanıcı çekimlerini silmeye ikna
+   edilip yine sonuç alamıyordu. Sebep artık ayrılıyor, çalışamayacak düğme
+   gizleniyor.
+3. **Masaüstü durum çubuğu** üç pencere genişliğinde de 608 px'de kalıp 151 px
+   yüksekliğe kırılıyordu (yukarıdaki tablo).
+4. **Kart başlığı iki satıra düşüyordu** — özet bütçesi 26 → 20 karakter.
+
+### Kapının kendi kör noktaları (üçü de kapandı)
+
+- **M11 kalktı:** port testi 8080/8081'i gerçekten açıyordu; bu gece 8081'i
+  başka bir süreç tuttuğu için test kendini atlıyor ve yedek-port kuralı hiç
+  ölçülmüyordu. Sunucu portu artık `SUFLE_PORT`'tan okuyor, test boş çift
+  seçiyor. Aynı tuzağın ikizi `tests/165`'te de vardı.
+- `denetim.py` koşullu anahtar seçimini ve `data-i18n-etiket`i görmüyordu.
+- `tests/128`'in "dış kütüphane yok" deseni düz İngilizce cümleye takılıyordu.
+
+### Kendi ölçüm araçlarımın üç kusuru (kayda geçsin)
+
+1. **`Page.enable` çağırmadan enjekte edilen hata toplayıcı sessizce
+   kurulmuyor** — iki denetim turu "0 hata" derken hiçbir şey ölçmemişti.
+   Toplayıcı artık kendini sınıyor (kasıtlı hata atıp yakaladığını görüyor).
+2. **Depo temizliği sayfa açıkken işe yaramıyor**: uygulama `pagehide`'da
+   durumu geri yazıyor. Temizlik artık sayfa kapalıyken yapılıyor.
+3. **"Metin var" ölçütü** varsayılan örneği "içe aktarıldı" sanıyordu; ölçüt
+   öncesi/sonrası karşılaştırmasına çevrildi.
+
+### Sabah senden bekleyenler
+
+1. **Yayın.** v9.17 kapıdan geçti, yayınlanmadı. "Yayınla" dersen `sw.js`
+   önbelleği artmış hâlde çıkar ve canlıdan doğrularım.
+2. **Tasarım yönü.** Kart düzeni ayarlar, senaryolar ve sonuç ekranında.
+   Beğendiysen sıradaki yüzey giriş ekranı; beğenmediysen geri almak kolay.
+3. **Mağaza hesapları** (Apple Developer / Play Console) — kod tarafında
+   bekleyen iş yok, en büyük tek puan hamlesi orada.
+
+---
+
 ## 🎛 17 Ağustos — v9.17 HAZIR, yayın kararı sende: "ayarlar web modülü gibi"
 
 Erdal: *"UI'yi hiç beğenmiyorum, özellikler/modüller dağınık, modern değil —
