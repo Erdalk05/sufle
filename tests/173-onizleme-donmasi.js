@@ -70,6 +70,9 @@ if (blok) {
       const vadDurdur=()=>{ d.iyileşme.push('nefes-birakildi'); vad=null; };
       const openCam=async()=>{ d.iyileşme.push('kamera-yeniden-acildi'); return true; };
       let onizAdim=durum.adim||0, onizZaman=0, onizKare=durum.kare||0, onizSoylendi=!!durum.soylendi;
+      let kayitDonduSoylendi=!!durum.kayitSoylendi;
+      const recElapsed=()=>12.5;
+      const buzz=()=>{};
       const onizKareSayisi=()=>durum.kare||0;   // KARE İLERLEMİYOR = donuk
       ${blok}
       return onizNabiz().then(()=>({adim:onizAdim, soylendi:onizSoylendi}));
@@ -98,8 +101,20 @@ if (blok) {
     ok('üçüncü turda kamera baştan açılıyor', r.iyileşme.includes('kamera-yeniden-acildi'));
     ok('merdiven başa dönüyor (sonsuz açma döngüsü yok)', r.son.adim===0);
     /* KAYIT SÜRERKEN AKIŞA DOKUNULMAZ — o yolun kendi kuralları var. */
+    /* KAYIT SÜRERKEN: AKIŞA DOKUNMA AMA SUSMA DA (2026-08-17, ikinci tur).
+       İlk yazımda nöbetçi kayıtta tümüyle susuyordu. Sonra ölçtüm: kayıt
+       yolundaki iki gözcü yalnız izin ÖLMESİNE bakıyor, oysa iOS kesintide
+       izi SUSTURUYOR — çekim donmuş kareyle sürüyor ve kullanıcı ancak
+       izlerken anlıyor. Doğru davranış: kurtarma YOK (akışa dokunmak
+       çekimin sesini öldürür), uyarı VAR. */
     r=await kur({duraklamis:true, kayitta:true});
-    ok('kayıt sürerken nöbetçi karışmıyor', r.iyileşme.length===0 && r.toastlar.length===0);
+    ok('kayıt sürerken akışa DOKUNULMUYOR', r.iyileşme.length===0);
+    ok('kayıt sürerken donma yine de SÖYLENİYOR', r.toastlar.length===1);
+    ok('kayıtta söylenen mesaj çekime özgü', /vidDondu/.test(r.toastlar[0]||''));
+    ok('kayıtta günlüğe de yazılıyor', r.gunluk.some(x=>/KAYITTA görüntü dondu/.test(x)));
+    /* Uyarı ÇEKİM BAŞINA bir kez: her nabızda tekrarlarsa okunan cümle kaybolur. */
+    r=await kur({duraklamis:true, kayitta:true, kayitSoylendi:true});
+    ok('kayıtta uyarı tekrarlanmıyor', r.toastlar.length===0);
     /* ARKA PLANDA DONMA NORMALDİR — yanlış alarm vermemeli. */
     r=await kur({duraklamis:true, gizli:true});
     ok('arka planda yanlış alarm vermiyor', r.iyileşme.length===0 && r.toastlar.length===0);
@@ -133,8 +148,11 @@ if (blok) {
   ok('masaüstünde de nöbetçi var', /async function onizNabiz\(\)\{/.test(msrc));
   ok('kamera açılınca başlıyor', /onizIzleBaslat\(\);/.test(msrc));
   ok('kamera kapanınca duruyor', /function stopCam\(\)\{\n    onizIzleDurdur\(\);/.test(msrc));
-  ok('kayıt sürerken karışmıyor',
-     /if\(recorder && recorder\.state==='recording'\) return;/.test(msrc));
+  /* 2026-08-17 ikinci tur: kayıtta artık TÜMÜYLE susmuyor — akışa dokunmadan
+     uyarıyor. İddia güncellendi: kurtarma yok, uyarı var (ayrıntısı aşağıdaki
+     "KAYITTA DONMA" bölümünde iki kabuk için de ölçülüyor). */
+  ok('masaüstü kayıtta akışa dokunmuyor',
+     /if\(recorder && recorder\.state==='recording'\)\{[\s\S]{0,700}?toast\(m\('vidDondu'\)\)/.test(msrc));
   ok('iz susması masaüstünde de dinleniyor',
      /vIz\.addEventListener\('mute'/.test(msrc) && /vIz\.addEventListener\('unmute'/.test(msrc));
   ok('masaüstünde de sessiz kayıt yolu var (durum şeridi çökme sanmasın)',
@@ -160,4 +178,50 @@ if (blok) {
   const {macYolu:mY} = require('./kaynak.js');
   ok('telefon kabuğuna gömülü', /==CEKIRDEK:oniz\.js==/.test(oku(telefonYolu())));
   ok('masaüstü kabuğuna gömülü', /==CEKIRDEK:oniz\.js==/.test(oku(mY())));
+}
+
+/* ---------- KAYITTA DONMA: İKİ KABUKTA DA (2026-08-17, ikinci tur) ----------
+   Kayıt yolundaki iki gözcü (görüntü/ses) yalnız izin ÖLMESİNE bakıyordu.
+   iOS kesintide izi öldürmüyor SUSTURUYOR: çekim donmuş kareyle sürüyor,
+   ses akıyor, kullanıcı ancak çekimi izlerken anlıyor. Önizlemede onarılan
+   kusurun KAYIT yolundaki kardeşi.
+
+   Kural: kayıt sürerken akışa DOKUNULMAZ (kurtarma çekimin sesini öldürür)
+   ama SUSULMAZ da — bir kez uyarılır, günlüğe yazılır. */
+{
+  const {macYolu:mY2} = require('./kaynak.js');
+  for (const [ad, src2, kayitKosul] of [
+        ['telefon', oku(telefonYolu()), "rec && rec.state==='recording'"],
+        ['masaüstü', oku(mY2()), "recorder && recorder.state==='recording'"]]) {
+    /* DALI SAYARAK ÇIKAR, PENCEREYLE DEĞİL. İlk yazımda "koşuldan sonraki
+       600 karakter" ölçülüyordu ve dalın DIŞINDAKİ kurtarma satırları da
+       pencereye giriyordu: test, ürün doğruyken kırmızı verdi. Süslü
+       parantez sayarak dalın kendisini alıyoruz. */
+    const dal=(()=>{
+      /* Dal, NABZIN İÇİNDEN aranıyor: aynı koşul openCam'in kapısında da
+         geçiyor ve ilk eşleşme oraya düşüyordu — ölçüm yanlış yeri okuyordu. */
+      const nab=(src2.match(/async function onizNabiz\(\)\{[\s\S]*?\n(  )?\}/)||[])[0]||'';
+      const src3=nab||src2;
+      const bas=src3.indexOf('if('+kayitKosul+'){');
+      if(bas<0) return '';
+      let i=src3.indexOf('{',bas), d=0;
+      for(let j=i;j<src3.length;j++){
+        if(src3[j]==='{') d++;
+        else if(src3[j]==='}'){ d--; if(!d) return src3.slice(i,j+1); }
+      }
+      return '';
+    })();
+    ok(ad+': kayıt dalı çıkarılabildi', !!dal);
+    ok(ad+': kayıtta donma ölçülüyor', /onizKareSayisi\(\)/.test(dal));
+    ok(ad+': kayıtta AKIŞA dokunulmuyor (kurtarma yok)',
+       !!dal && !/cam\.play|srcObject=|openCam\(|toggleCam\(/.test(dal));
+    ok(ad+': kayıtta günlüğe yazılıyor', /logNot\('rec'/.test(dal));
+    ok(ad+': çekime özgü mesaj kullanılıyor', /toast\(m\('vidDondu'\)\)/.test(src2));
+    ok(ad+': uyarı çekim başına bir kez', /if\(!kayitDonduSoylendi\)\{/.test(src2));
+    ok(ad+': her yeni çekimde sıfırlanıyor', /kayitDonduSoylendi=false;/.test(src2));
+    ok(ad+': susma olayı kayıtta da haber veriyor',
+       /addEventListener\('mute'[\s\S]{0,400}?vidDondu/.test(src2));
+    ok(ad+': mesaj iki dilde',
+       /vidDondu:'⛔ GÖRÜNTÜ DONDU/.test(src2) && /vidDondu:'⛔ THE PICTURE FROZE/.test(src2));
+  }
 }

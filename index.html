@@ -1696,9 +1696,20 @@
     <div class="hint" id="archWarn" style="text-align:center;font-weight:700;color:#ff6b6b"></div>
     <div class="sheetbtns"><button class="danger" id="archWipe" aria-label="Yıldızsız çekimleri sil ve arşivlemeyi tekrar dene"></button></div>
   </div>
-  <div class="hint" id="audInfo" style="text-align:center;font-weight:700"></div>
-  <div class="hint" id="shareDiag" style="text-align:center;font-weight:700"></div>
-  <div class="hint" id="capInfo" style="text-align:center"></div>
+  <!-- ÇEKİM RAPORU (2026-08-17). Üç tanı satırı ekranın altında ORTALANMIŞ,
+       farklı renklerde ve yapısız duruyordu: ses değerlendirmesi, paylaşım
+       desteği ve altyazı sayısı. Üçü de bir şey ters gittiğinde okunması
+       gereken tek yer — ama üç ayrı ortalanmış paragraf hâlinde, gözün
+       tarayabileceği bir hizası yoktu.
+       Şimdi tek bir kutuda, sola hizalı, aralarında ince ayraçla: aynı bilgi,
+       taranabilir biçimde. İçerikleri DEĞİŞMEDİ (metinleri JS üretiyor ve
+       kendi ⚠/✓ işaretlerini taşıyorlar); değişen yalnız yerleşim.
+       Kutu üçü de boşken hiç görünmüyor — boş bir çerçeve bırakmıyoruz. -->
+  <div id="cekimRapor">
+    <div class="hint" id="audInfo"></div>
+    <div class="hint" id="shareDiag"></div>
+    <div class="hint" id="capInfo"></div>
+  </div>
   <!-- İKİ UZUN AÇIKLAMA KARTIN İÇİNE. Ekranın altında duran belge uzunluğunda
        iki paragraf, ekranı "yardım sayfası" gibi gösteriyordu; ilk çekimde
        gerekli, ondan sonra hiç gerekli değil. Tanı satırları (ses, paylaşım,
@@ -1920,6 +1931,14 @@
     <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
     <line x1="10" y1="12" x2="14" y2="12"/>
   </symbol>
+  <!-- "Daha fazla" kartı ayar sürgüsü ikonu taşıyordu (`i-ayarlar`) ve o
+       kartın içinde tek bir ayar yok: altyazı dosyası, yayın paketi, dosyaya
+       kaydetme ve silme var. Yanlış ikon, ikonsuzluktan kötüdür — okuyanı
+       yanlış yere gönderir. -->
+  <symbol id="i-dahafazla" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>
+  </symbol>
   <symbol id="i-metin" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1934,7 +1953,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.20';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.21';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2358,7 +2377,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
+  restored:'↺ Senaryo geri geldi',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Arka plan görselini kaldır ya da kullanmadığın senaryoları sil.',lsFreed:'🧹 Silinen senaryolar kalıcı olarak temizlendi ve senaryon kaydedildi',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -2445,7 +2464,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
+  restored:'↺ Script restored',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Remove the background image or delete scripts you no longer need.',lsFreed:'🧹 Deleted scripts were purged and your script was saved',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -3679,12 +3698,17 @@ async function openCam(){
        anında geliyor. iOS kesintilerinde iz ölmüyor, SUSUYOR. */
     if(vTrack){
       vTrack.addEventListener('mute',()=>{
-        logNot('oniz','video izi sustu');
-        if(!(rec&&rec.state==='recording') && !onizSoylendi){ onizSoylendi=true; toast(m('onizDondu')); }
+        logNot('oniz','video izi sustu · kayıtta:'+!!(rec&&rec.state==='recording'));
+        if(rec && rec.state==='recording'){
+          /* Çekim sürerken susma = o andan sonrası donmuş kare. Nabzın 4
+             saniyesini beklemeden söylüyoruz: kullanıcı hemen karar versin. */
+          if(!kayitDonduSoylendi){ kayitDonduSoylendi=true; toast(m('vidDondu')); buzz([60,40,60]); }
+        } else if(!onizSoylendi){ onizSoylendi=true; toast(m('onizDondu')); }
       });
       vTrack.addEventListener('unmute',()=>{
-        logNot('oniz','video izi geri geldi');
-        if(!(rec&&rec.state==='recording')) cam.play().catch(e=>logErr('oniz',e));
+        logNot('oniz','video izi geri geldi · kayıtta:'+!!(rec&&rec.state==='recording'));
+        if(rec && rec.state==='recording'){ toast(m('vidGeri')); }
+        else cam.play().catch(e=>logErr('oniz',e));
       });
     }
     onizIzleBaslat();
@@ -3728,6 +3752,9 @@ async function openCam(){
 
    Kayıt sürerken akışa DOKUNULMUYOR — o yolun kendi kuralları var. */
 let onizT=null, onizKare=0, onizZaman=0, onizAdim=0, onizSoylendi=false;
+/* Kayıtta donma uyarısı ÇEKİM BAŞINA bir kez: her nabızda tekrarlarsa
+   kullanıcı okuduğu cümleyi kaybeder. Her yeni çekimde sıfırlanıyor. */
+let kayitDonduSoylendi=false;
 /* ==CEKIRDEK:oniz.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/oniz.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -3774,7 +3801,27 @@ function logNot(where,msg){
 /* ==/CEKIRDEK:oniz.js== */
 async function onizNabiz(){
   if(!stream || !body.classList.contains('cam')) return;
-  if(rec && rec.state==='recording') return;          // kayıt yolunun kuralları ayrı
+  /* KAYIT SÜRERKEN AKIŞA DOKUNULMAZ — ama SUSMAK DA YOK (2026-08-17, ikinci
+     tur). Kayıt yolundaki iki gözcü yalnız izin ÖLMESİNE bakıyordu; iOS
+     kesintide izi öldürmüyor SUSTURUYOR, yani çekim donmuş kareyle sürüyor
+     ve kullanıcı bunu ancak çekimi izlerken anlıyor (deponun 2 numaralı
+     hata sınıfı, önizlemede az önce onarılanın kardeşi).
+     Burada KURTARMA YOK, yalnız UYARI: kaydın akışına dokunmak çekimin
+     sesini ve görüntüsünü öldürür. */
+  if(rec && rec.state==='recording'){
+    const simdiK=onizKareSayisi();
+    if(simdiK!==onizKare){ onizKare=simdiK; onizZaman=Date.now(); return; }
+    if(Date.now()-onizZaman < 4000) return;
+    onizZaman=Date.now();
+    if(!kayitDonduSoylendi){
+      kayitDonduSoylendi=true;
+      const iz2=stream.getVideoTracks()[0]||null;
+      logNot('rec','KAYITTA görüntü dondu @'+(typeof recElapsed==='function'?recElapsed().toFixed(1):'?')+
+             's · iz:'+(iz2?(iz2.muted?'susmuş':iz2.readyState):'yok'));
+      toast(m('vidDondu')); buzz([60,40,60]);
+    }
+    return;
+  }
   if(document.visibilityState!=='visible'){           // arka planda donması NORMAL
     onizKare=onizKareSayisi(); onizAdim=0; return;
   }
@@ -5476,6 +5523,7 @@ function doStartRec(){
     cekimSenaryo=_s ? {title:_s.title||'', text:_s.text||'', surum2:!!_s.surum2,
                        ikiSurumlu:!!(_s.text2||'').trim(), dil:_s.dil||''} : null; }
   sonrakiUyarildi=false;   // yeni çekim: uyarı hakkı tazelensin
+  kayitDonduSoylendi=false;
   vidOldu=0;
   const vIz=src.getVideoTracks()[0];
   if(vIz) vIz.addEventListener('ended',()=>{
@@ -8090,7 +8138,7 @@ const KART_IKON={
   gAltyaziZ:'saat', gSesTakip:'dalga', gEkran:'telefon', backup:'yedek',
   gCihaz:'yardim', gSifirla:'sifirla',
   gYeni:'ekle', gYedek:'arsiv', gAraclar:'metin', gDenetim:'hazir',
-  gDahaFazla:'ayarlar', gNasil:'yardim'
+  gDahaFazla:'dahafazla', gNasil:'yardim'
 };
 const KART_BOLUM={
   'tab-read':[['bCekim',['mode','gTempo']],
@@ -9389,7 +9437,9 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.20':{tr:'<b>Kayıt düğmesi artık adını söylüyor ve kapalıyken sebebini yazıyor.</b> Kamerasız kipte ekranın en büyük düğmesi sönük duruyor, adı yazmıyor ve dokununca hiçbir şey olmuyordu — alt çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Artık altında <b>Çek</b> yazıyor, dokununca kamerayı açmayı deniyor ve neden gerektiğini söylüyor. Kayıt sürerken etiket kalkıyor, çünkü o an yapılacak iş durdurmak.<br><b>Giriş ekranı ne okuyacağını gösteriyor.</b> Ekranın yarısı boştu ve sayfa senin metnin hakkında hiçbir şey söylemiyordu. Artık senaryonun adı, kelime sayısı ve tahmini süresi başlangıçta görünüyor. Senaryo yoksa kart hiç çıkmıyor.<br><b>Giriş ekranına marka işareti geldi</b> — sahnedeki okuma çizgisinin küçültülmüş hâli.<br><b>Önizleme donması artık fark ediliyor ve kendiliğinden düzeltiliyor.</b> Kayda basmadan önizleme yaparken bir süre sonra görüntü donup ses akmaya devam edebiliyordu (iPhone). Bugüne dek kamera korumalarının hepsi KAYIT yoluna yazılmıştı; önizlemede tek bir nöbetçi yoktu. Üstelik var olan kurtarma yalnız izin ÖLMESİNE bakıyordu, oysa telefon kesintide izi öldürmüyor SUSTURUYOR — görüntü durur, iz canlı görünür. Artık kareler ilerlemiyorsa sırayla oynatma, akışı yeniden bağlama ve kamerayı baştan açma deneniyor; ne olduğu ekranda yazıyor ve teşhis için cihazın günlüğüne durum kaydediliyor.',
+ '9.21':{tr:'<b>Çekim sırasında görüntü donarsa artık haber veriliyor.</b> Kayıt yolundaki iki gözcü yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — kayıt sürer, ses akar, ekranda donmuş kare kaydedilir ve bunu ancak çekimi izlerken anlarsın. Artık kareler durduğunda bir kez uyarılıyor, geri geldiğinde de söyleniyor. Kaydın akışına dokunulmuyor: kurtarmaya çalışmak çekimin sesini öldürürdü.',
+       en:'<b>If the picture freezes during a take you are now told.</b> The two watchers on the recording path only looked for the camera dying; on an interruption the phone does not kill the camera, it mutes it — recording continues, audio flows, a frozen frame is recorded and you only find out on playback. You are now warned once when frames stop, and told when they come back. The recording stream is not touched: trying to recover it would kill the take audio.'},
+       '9.20':{tr:'<b>Kayıt düğmesi artık adını söylüyor ve kapalıyken sebebini yazıyor.</b> Kamerasız kipte ekranın en büyük düğmesi sönük duruyor, adı yazmıyor ve dokununca hiçbir şey olmuyordu — alt çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Artık altında <b>Çek</b> yazıyor, dokununca kamerayı açmayı deniyor ve neden gerektiğini söylüyor. Kayıt sürerken etiket kalkıyor, çünkü o an yapılacak iş durdurmak.<br><b>Giriş ekranı ne okuyacağını gösteriyor.</b> Ekranın yarısı boştu ve sayfa senin metnin hakkında hiçbir şey söylemiyordu. Artık senaryonun adı, kelime sayısı ve tahmini süresi başlangıçta görünüyor. Senaryo yoksa kart hiç çıkmıyor.<br><b>Giriş ekranına marka işareti geldi</b> — sahnedeki okuma çizgisinin küçültülmüş hâli.<br><b>Önizleme donması artık fark ediliyor ve kendiliğinden düzeltiliyor.</b> Kayda basmadan önizleme yaparken bir süre sonra görüntü donup ses akmaya devam edebiliyordu (iPhone). Bugüne dek kamera korumalarının hepsi KAYIT yoluna yazılmıştı; önizlemede tek bir nöbetçi yoktu. Üstelik var olan kurtarma yalnız izin ÖLMESİNE bakıyordu, oysa telefon kesintide izi öldürmüyor SUSTURUYOR — görüntü durur, iz canlı görünür. Artık kareler ilerlemiyorsa sırayla oynatma, akışı yeniden bağlama ve kamerayı baştan açma deneniyor; ne olduğu ekranda yazıyor ve teşhis için cihazın günlüğüne durum kaydediliyor.',
        en:'<b>The record button now has a name and says why it is off.</b> In prompter-only mode the largest button on screen sat dimmed, unnamed, and did nothing when tapped — the only one of the six bottom buttons without a label. It now reads <b>Record</b>, tries to open the camera when tapped and says why the camera is needed. The label goes away while recording, because the thing to do then is stop.<br><b>The start screen shows what you are about to read.</b> Half the screen was empty and the page said nothing about your text. The script name, word count and estimated duration now appear at the start. With no script, the card does not appear at all.<br><b>The start screen gained a brand mark</b> — the reading line from the stage, made small.<br><b>A frozen preview is now noticed and repaired on its own.</b> Before you press record the picture could freeze while sound kept flowing (iPhone). Every camera guard so far had been written for the RECORDING path; the preview had none. The one recovery that existed only looked for the track ENDING, yet on an interruption the phone does not end the track, it mutes it — frames stop while the track still looks live. If frames stop advancing the app now tries playing, re-attaching the stream and reopening the camera, in that order, says what happened, and records the state on the device for diagnosis.'},
  '9.19':{tr:'<b>Ayarlar artık ikonlu ve konu bloklarına ayrılmış.</b> Yirmi altı kart birbirinin aynı gri çubuğuydu; ikonsuz bir liste taranmaz, satır satır okunur. Her kartın kendi simgesi var ve kartlar konu bloklarına girdi: Kamera sekmesinde ses ile görüntü ilk kez ayrı duruyor, Diğer sekmesindeki çekmece üç bloğa bölündü.<br><b>Ayarları açtığın anda kartlar değerlerini söylüyor.</b> Bu bilgi vardı ama sayfa ilk açıldığında hiç çizilmiyordu: Okuma sekmesinin beş kartı da boş görünüyor, ancak sekme değiştirip geri gelince doluyordu. Yani ilk gördüğün ekran hep boştu.<br><b>Uzun kart başlığı artık ikiye bölünmüyor.</b> Simge satırdan yer alınca en uzun başlık alt satıra taşıyordu; başlık artık hiç küçülmüyor, gerekirse yanındaki özet kısalıyor.<br><b>Arşivden açtığın çekimin yayın paketi kendi senaryosunu taşıyor.</b> Uygulama kapanınca çekimin senaryosu bellekten siliniyordu ve paket o an açık olan senaryoyu koyuyordu — başka bir videonun metnini, sessizce. Altyazı da aynı şekilde başka bir videonun zamanlamasını alıyordu. Senaryosu saklanmamış eski çekimlerde artık yanlış metin yazmak yerine sebebi söyleniyor.<br><b>Telefonu yan çevirince talimat yazısı hız hapının üstüne biniyordu.</b> Yazının yeri ekran yüksekliğinin yüzdesiyle hesaplanıyordu; yatayda o yüzde küçülünce iki katman iç içe geçiyordu. Artık yeri alt kumanda yığınından türüyor, yer kalmayan dar ekranlarda ise hiç gösterilmiyor.<br><b>Bir çekimi silmek artık iki dokunuş istiyor.</b> Toplu silme ve senaryo silme korumalıydı ama TEK çekim tek dokunuşta gidiyordu — üstelik paylaş düğmesinin komşusu olarak. Videonun başka kopyası yok; ilk dokunuş soruyor, dört saniyede kendiliğinden vazgeçiyor, sayfa kapanınca da iptal oluyor.',
        en:'<b>Settings now have icons and are grouped by topic.</b> Twenty-six cards were identical grey bars, and a list without icons is not scanned but read line by line. Every card has its own symbol, and the cards moved into topic blocks: on the Camera tab audio and video finally sit apart, and the drawer on the More tab is split into three blocks.<br><b>Cards state their value the moment you open Settings.</b> The information was there but nothing drew it on first open: all five cards on the Reading tab looked empty and only filled in after you switched tabs and came back. So the first screen you saw was always blank.<br><b>A long card title no longer breaks into two lines.</b> The symbol took room from the row and the longest title wrapped; the title now never shrinks, and the summary beside it gives way instead.<br><b>The publish bundle of a take opened from the archive carries its own script.</b> Closing the app cleared the take script from memory and the bundle fell back to whatever script was open — the text of another video, silently. Captions took another video timing the same way. For older takes with no stored script the reason is now given instead of writing the wrong text.<br><b>Turning the phone sideways put the hint on top of the speed pill.</b> The hint was placed with a percentage of screen height, and in landscape that percentage shrank until the two overlapped. It now derives its place from the bottom control stack, and is not shown where there is no room.<br><b>Deleting a take now takes two taps.</b> Bulk delete and script delete were protected, but a SINGLE take went in one tap, right next to the share button. There is no other copy of that video; the first tap asks, it cancels itself after four seconds, and closing the sheet cancels it too.'},

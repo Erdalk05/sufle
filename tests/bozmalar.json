@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "**v9.20 hazır, yayın kararı sende:**",
+  "bul": "**v9.21 hazır, yayın kararı sende:**",
   "koy": "**Bazı işler yapıldı:**"
  },
  {
@@ -3353,11 +3353,11 @@
   "koy": "    return true;"
  },
  {
-  "ad": "D2 nöbetçi kayıt sürerken de akışa karışıyor",
+  "ad": "D2 kayıt dalı kalktı (nöbetçi çekimin akışına dokunur)",
   "test": "173-onizleme-donmasi.js",
   "kaynak": "telefon",
-  "bul": "  if(rec && rec.state==='recording') return;          // kayıt yolunun kuralları ayrı",
-  "koy": "  if(false) return;          // kayıt yolunun kuralları ayrı"
+  "bul": "  if(rec && rec.state==='recording'){\n    const simdiK=onizKareSayisi();",
+  "koy": "  if(false){\n    const simdiK=onizKareSayisi();"
  },
  {
   "ad": "D3 arka planda da yanlış alarm veriyor",
@@ -3519,5 +3519,33 @@
   "kaynak": "oniz",
   "bul": "  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
   "koy": "  "
+ },
+ {
+  "ad": "K1 kayıtta donma yine sessiz (donmuş kare kaydedilir, kimse söylemez)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "      toast(m('vidDondu')); buzz([60,40,60]);\n    }\n    return;\n  }",
+  "koy": "    }\n    return;\n  }"
+ },
+ {
+  "ad": "K2 kayıtta uyarı her nabızda tekrarlanıyor (okunan cümle kaybolur)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    if(!kayitDonduSoylendi){\n      kayitDonduSoylendi=true;",
+  "koy": "    if(true){\n      kayitDonduSoylendi=true;"
+ },
+ {
+  "ad": "K3 kayıtta akışa dokunuluyor (çekimin sesi ölür)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "      toast(m('vidDondu')); buzz([60,40,60]);",
+  "koy": "      toast(m('vidDondu')); cam.play();"
+ },
+ {
+  "ad": "K4 masaüstünde kayıtta donma sessiz",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "mac",
+  "bul": "        toast(m('vidDondu'));\n      }\n      return;",
+  "koy": "      }\n      return;"
  }
 ]

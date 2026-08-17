@@ -10,7 +10,9 @@ listesi ikonlandı ve konu bloklarına ayrıldı, ayarların ilk açılışta bo
 görünmesi düzeltildi, arşivden açılan çekimin yayın paketi kendi senaryosunu
 taşıyor.
 
-**v9.20 hazır, yayın kararı sende:** kayıt düğmesi adını söylüyor
+**v9.21 hazır, yayın kararı sende:** çekim SIRASINDA görüntü donarsa artık haber veriliyor (kayıt yolundaki gözcüler yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — donmuş kare kaydediliyordu ve bunu ancak izlerken anlıyordun). Kaydın akışına dokunulmuyor, yalnız bir kez uyarılıyor.
+
+**v9.20 YAYINLANDI ve canlıdan doğrulandı** (senin "push et"in; `sufle-v92`, index.html ve sw.js md5 birebir, canlıda izler sayıldı: `onizNabiz` 2, `logNot` 4, `arsivKaynak` 15, `takeSilArm` 6). İçindekiler: kayıt düğmesi adını söylüyor
 (<b>Çek</b>) ve kapalıyken sebebini yazıp kamerayı açmayı deniyor — kamerasız
 kipte ekranın en büyük düğmesi sönük, adsız ve dokununca sessizdi; alt
 çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Giriş ekranı artık
@@ -1359,7 +1361,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **503 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **507 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1536,7 +1538,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
 - **6790 test** (gece başında 732) · yeni test dosyası: 39–173
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **503 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **507 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
