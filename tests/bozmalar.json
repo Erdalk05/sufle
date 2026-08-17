@@ -1774,7 +1774,7 @@
   "ad": "kesme kaynak çekimi siliyor (üç klip önerisi tek kesimde tükeniyor)",
   "test": "160-klip-kaynak-korunuyor.js",
   "kaynak": "telefon",
-  "bul": "    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi};",
+  "bul": "    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi, baslik:arsivBaslik};",
   "koy": "    "
  },
  {
@@ -3699,15 +3699,15 @@
   "ad": "T1 kesilen klipte altyazı kaydırılmıyor (srt kesim kadar kayar)",
   "test": "175-kesilen-klibin-altyazisi.js",
   "kaynak": "telefon",
-  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake();",
-  "koy": "    await autoSaveTake();"
+  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake(arsivBaslik);",
+  "koy": "    await autoSaveTake(arsivBaslik);"
  },
  {
   "ad": "T2 kırpma arşive yazdıktan SONRA yapılıyor (kusur arşivde kalıcılaşır)",
   "test": "175-kesilen-klibin-altyazisi.js",
   "kaynak": "telefon",
-  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake();",
-  "koy": "    await autoSaveTake();\n    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);"
+  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake(arsivBaslik);",
+  "koy": "    await autoSaveTake(arsivBaslik);\n    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);"
  },
  {
   "ad": "T3 tam çekime dönünce altyazı klibin zamanlarında kalıyor",
@@ -3743,5 +3743,19 @@
   "kaynak": "mac",
   "bul": "      cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);",
   "koy": "      "
+ },
+ {
+  "ad": "T8 arşiv çekimini keserken kaynak belleğe alınmıyor (klip başka videonun metnini alır)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "telefon",
+  "bul": "      cekimAltyazi = arsivKaynak.kelimeler || cekimAltyazi;",
+  "koy": "      "
+ },
+ {
+  "ad": "T9 klip başlığı açık senaryodan alınıyor (kullanıcı çekimini tanıyamaz)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "telefon",
+  "bul": "    title:(baslikUstu||(cekimSenaryo&&cekimSenaryo.title)||active().title||''),",
+  "koy": "    title:active().title||'',"
  }
 ]

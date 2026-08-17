@@ -56,13 +56,41 @@ const kirp = new Function(cikar(cek, /function kirpAltyazi\(kelimeler, bas, bit\
 for (const [ad, k, aralik] of [['telefon', src, 'trimA, trimB'], ['masaüstü', msrc, 'trimA, trimB']]) {
   ok(ad+': kesimde altyazı kırpılıyor',
      new RegExp('cekimAltyazi=kirpAltyazi\\(cekimAltyazi, '+aralik+'\\);').test(k));
-  ok(ad+': kaynak altyazısı saklanıyor', /kesKaynak=\{blob:lastBlob[^}]*altyazi:cekimAltyazi\}/.test(k));
+  ok(ad+': kaynak altyazısı saklanıyor', /kesKaynak=\{blob:lastBlob[^}]*altyazi:cekimAltyazi/.test(k));
   ok(ad+': tam çekime dönünce altyazı geri geliyor',
      /if\(kesKaynak\.altyazi!==undefined\) cekimAltyazi=kesKaynak\.altyazi;/.test(k));
 }
 /* SIRALAMA KRİTİK: arşive yazma (autoSaveTake) kırpmadan SONRA olmalı,
    yoksa kayda eski zamanlar yazılır ve kusur arşivde kalıcılaşır. */
 {
-  const blok=(src.match(/cekimAltyazi=kirpAltyazi\([\s\S]{0,200}?autoSaveTake\(\)/)||[])[0];
+  const blok=(src.match(/cekimAltyazi=kirpAltyazi\([\s\S]{0,200}?autoSaveTake\(/)||[])[0];
   ok('telefon: kırpma arşive yazmadan ÖNCE yapılıyor', !!blok);
+}
+
+/* ---------- ARŞİVDEN AÇILAN ÇEKİMİ KESMEK (bileşik durum) ----------
+   Kaynak arşiv kaydıysa altyazı ve senaryo BELLEKTE DEĞİL kayıttadır. Kesim
+   sırasında bu göz ardı edilince kliple birlikte arşive yazılan üç alan
+   birden yanlış oluyordu:
+     · başlık  → o anda açık senaryonun adı (başka bir videonun adı)
+     · senaryo → boş ya da BAŞKA çekimin anlık görüntüsü
+     · altyazı → tam çekimin KAYDIRILMAMIŞ .srt'si (arsivKaynak hâlâ kuruluydu)
+   Kendi düzeltmemin kardeş yolu: arşiv kaynağı eklenince kesme yolu
+   güncellenmemişti. */
+{
+  const kaynak = oku(telefonYolu());
+  ok('kesimde arşiv kaynağı belleğe alınıyor',
+     /cekimAltyazi = arsivKaynak\.kelimeler \|\| cekimAltyazi;/.test(kaynak) &&
+     /cekimSenaryo = arsivKaynak\.senaryo   \|\| cekimSenaryo;/.test(kaynak));
+  ok('sonra arşiv kaynağı bırakılıyor (klip artık kendi çekimi)',
+     /cekimSenaryo = arsivKaynak\.senaryo[\s\S]{0,120}?arsivKaynakSil\(\);/.test(kaynak));
+  ok('kaynağın başlığı klibe taşınıyor',
+     /const arsivBaslik = arsivKaynak && arsivKaynak\.senaryo/.test(kaynak) &&
+     /await autoSaveTake\(arsivBaslik\);/.test(kaynak));
+  ok('arşive yazarken başlık sırası: verilen → çekimin damgası → açık senaryo',
+     /title:\(baslikUstu\|\|\(cekimSenaryo&&cekimSenaryo\.title\)\|\|active\(\)\.title\|\|''\)/.test(kaynak));
+  /* SIRA KRİTİK: kaynak belleğe ALINMADAN kırpma yapılırsa, kırpma boş
+     bellek üstünde çalışır ve arşive yine yanlış altyazı yazılır. */
+  const sira = kaynak.indexOf('cekimAltyazi = arsivKaynak.kelimeler');
+  const kirpma = kaynak.indexOf('cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB)');
+  ok('kaynak belleğe alma, kırpmadan ÖNCE', sira>0 && kirpma>sira);
 }

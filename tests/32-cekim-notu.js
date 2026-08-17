@@ -35,7 +35,9 @@ ok('özet eşikleri kendi içinde tekrarlamıyor (tek kaynak)',
    !/0\.12/.test(audSum) && /sesKodu\(\)/.test(audSum));
 
 /* ---------- ARŞİVE YAZILIYOR MU ---------- */
-const autoSave = cikar(tel, /async function autoSaveTake\(\)\{[\s\S]*?\n\}/, 'autoSaveTake');
+/* İmza 2026-08-17'de değişti: arşivden açılan çekimi keserken klibin
+   başlığı üst değer olarak veriliyor (`autoSaveTake(arsivBaslik)`). */
+const autoSave = cikar(tel, /async function autoSaveTake\([^)]*\)\{[\s\S]*?\n\}/, 'autoSaveTake');
 ok('çekim arşivlenirken ses değerlendirmesi de yazılıyor', /ses:sesKodu\(\)/.test(autoSave));
 
 /* ---------- LİSTEDE GÖSTERİLİYOR MU ---------- */

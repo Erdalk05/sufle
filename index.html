@@ -6172,7 +6172,22 @@ async function doTrim(){
        sınıfı: tam da gerektiği anda çalışmayan özellik.
        Artık klip YENİ çekim olarak arşivleniyor, kaynak duruyor ve
        "↩ Tam çekim" ile geri dönülüyor. Silme kullanıcının kararı kalır. */
-    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi};
+    /* ARŞİVDEN AÇILAN ÇEKİMİ KESMEK BİLEŞİK BİR DURUM (2026-08-17).
+       Kaynak arşiv kaydıysa altyazı ve senaryo BELLEKTE DEĞİL kayıttadır;
+       kliple birlikte arşive yazılan alanlar o zaman yanlış olur:
+         · başlık   → o anda açık senaryonun adı (başka bir videonun adı)
+         · senaryo  → boş ya da başka çekimin anlık görüntüsü
+         · altyazı  → tam çekimin KAYDIRILMAMIŞ .srt'si
+       Bu yüzden kesim anında kaynak BELLEĞE ALINIYOR ve `arsivKaynak`
+       bırakılıyor: klip artık kendi başına yeni bir çekim, verisi de
+       kendisinden türüyor. */
+    const arsivBaslik = arsivKaynak && arsivKaynak.senaryo ? (arsivKaynak.senaryo.title||'') : '';
+    if(arsivKaynak){
+      cekimAltyazi = arsivKaynak.kelimeler || cekimAltyazi;
+      cekimSenaryo = arsivKaynak.senaryo   || cekimSenaryo;
+      arsivKaynakSil();
+    }
+    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi, baslik:arsivBaslik};
     lastBlob=nb; lastDur=sel;
     /* ALTYAZI DA KESİLİYOR. Klip yeni bir çekim olarak arşivleniyor;
        kelime zamanları tam çekime göre kalırsa .srt dosyası kliple
@@ -6180,7 +6195,7 @@ async function doTrim(){
        dosyada kalır. Arşive YAZMADAN ÖNCE kırpılıyor — autoSaveTake
        srtText() ve kelime zamanlarını kaydın içine yazıyor. */
     cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);
-    await autoSaveTake();
+    await autoSaveTake(arsivBaslik);
     $('#trimBox').classList.add('hidden');
     showResult(lastBlob);
     toast(m('trimDone'));
@@ -6737,7 +6752,7 @@ async function dbDel(id){
    Silmeyi KENDİLİĞİNDEN yapmıyoruz: silme geri alınamaz, karar kullanıcının. */
 let arsivHatasi=false;
 let arsivSilArm=0, arsivSilT=null;
-async function autoSaveTake(){
+async function autoSaveTake(baslikUstu){
   if(!lastBlob) return;
   curTakeId=uid();
   /* Ses değerlendirmesi zaten ölçülü — sonuç ekranında gösterilip atılıyordu.
@@ -6750,7 +6765,13 @@ async function autoSaveTake(){
      aynı oturumda doğru, arşivden açınca yanlış (deponun 1 numaralı hata
      sınıfı). Anlık görüntü çekim anındaki hâli: sürüm ve dil dahil. */
   const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
-    created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu(),
+    /* BAŞLIK ÖNCE ÇEKİMİN KENDİSİNDEN. Arşivden açılan bir çekimi kesince
+       klibin adı "o anda açık senaryo" oluyordu — kullanıcı listede kendi
+       çekimini tanıyamıyordu. Verilen üst değer varsa o kullanılıyor;
+       yoksa çekimin damgası, o da yoksa açık senaryo. */
+    created:Date.now(),
+    title:(baslikUstu||(cekimSenaryo&&cekimSenaryo.title)||active().title||''),
+    srt:srtText(),ses:sesKodu(),
     senaryo:cekimSenaryo||null,
     /* KLİP ÖNERİLERİ İÇİN GEREKEN VERİ DE ÇEKİMLE BİRLİKTE. Öneriler kelime
        zamanlarından ve bölüm başlıklarından üretiliyor; arşivden açılan

@@ -152,7 +152,7 @@ const KAYITLAR=[{id:'a',fav:false},{id:'b',fav:true},{id:'c',fav:false}];
 /* ---------- BAYRAK İKİ YOLDAN DA KURULUYOR MU ----------
    Yazma false dönerse VE zincir hata fırlatırsa. İkisi ayrı yol; birinde
    bayrak kurulmazsa kutu hiç açılmaz ve düzeltme ölü olur. */
-const ast = cikar(kod, /async function autoSaveTake\(\)\{[\s\S]*?\n\}/, 'autoSaveTake');
+const ast = cikar(kod, /async function autoSaveTake\([^)]*\)\{[\s\S]*?\n\}/, 'autoSaveTake');
 ok('yazma başarısızsa bayrak kuruluyor', /arsivHatasi=!ok;/.test(ast));
 ok('yazma sonucu çağırana DÖNÜYOR (tekrar deneme sonucu bilinsin)', /\n  return ok;\n/.test(ast));
 ok('zincir hata fırlatırsa da bayrak kuruluyor',

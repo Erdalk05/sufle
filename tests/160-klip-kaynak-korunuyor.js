@@ -32,7 +32,7 @@ const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
     /* Kaynak SAKLANMADAN üstüne yazılırsa dönüş yolu boşa çıkar: sıra önemli. */
     ok('telefon: kaynak, üstüne yazılmadan önce saklanıyor',
        govde.indexOf('kesKaynak={blob:lastBlob') < govde.indexOf('lastBlob=nb'));
-    ok('telefon: klip yeni çekim olarak arşivleniyor', /await autoSaveTake\(\)/.test(govde));
+    ok('telefon: klip yeni çekim olarak arşivleniyor', /await autoSaveTake\(/.test(govde));
     /* Kaynağın KİMLİĞİ de saklanmalı: dönünce arşivdeki aynı kayda dönülsün,
        yoksa "tam çekim" ikinci bir kopya olarak yazılırdı. */
     ok('telefon: kaynağın arşiv kimliği de saklanıyor', /id:curTakeId/.test(govde));
