@@ -23,11 +23,12 @@ const parca=(re,ad)=>{ const m=kod.match(re); ok('çıkarılabildi: '+ad, !!m); 
 const sMime=parca(/function pickMime\(\)\{[\s\S]*?\n\}/,'pickMime');
 if(!sMime) return;
 
-function kos(wk,destek){
-  return new Function('__wk','__d',
+function kos(wk,destek,zorla){
+  return new Function('__wk','__d','__z',
     'const IS_WK=__wk; const window={MediaRecorder:{}};'+
     'const MediaRecorder={isTypeSupported:t=>__d.includes(t)};'+
-    sMime+'; return pickMime();')(wk,destek);
+    'const st={forceMime:__z||""};'+
+    sMime+'; return pickMime();')(wk,destek,zorla);
 }
 
 /* ---------- PLATFORM PROFİLLERİ ---------- */
@@ -46,7 +47,35 @@ function kos(wk,destek){
   ok('yalnız düz webm varsa o', kos(false,['video/webm'])==='video/webm');
   ok('hiçbiri desteklenmiyorsa boş (tarayıcı varsayılanı)', kos(false,[])==='');
   ok('MediaRecorder hiç yoksa da çökmüyor',
-     new Function(sMime+'; const IS_WK=false; const window={}; return pickMime();')()==='');
+     new Function(sMime+'; const IS_WK=false; const window={}; const st={}; return pickMime();')()==='');
+}
+{
+  /* SES TESTİNİN KAZANANI (2026-08-17'de bulunan sessiz kaçak).
+     `runAudioTest()` hangi biçimin GERÇEKTEN ses yazdığını ölçüp kazananı
+     `st.forceMime`e yazıyor, kullanıcıya "bulundu ve seçildi" diyor —
+     ama `pickMime()` o alanı hiç okumuyordu. Yani MP4de sessiz kaydeden bir
+     cihazda test doğru cevabı buluyor ve uygulama sessiz MP4 kaydetmeye
+     devam ediyordu; özelliğin var oluş sebebi tam da bu senaryoydu.
+     ÖLÇÜT SIRAYI EZMESİDİR: aşağıdaki listede mp4 en başta duruyor, buna
+     rağmen kazanan webm seçilmeli. Sıra ezilmiyorsa kaçak geri gelmiştir. */
+  const T=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4',
+           'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  ok('ses testinin kazananı listeyi eziyor',
+     kos(false,T,'video/webm;codecs=vp8,opus')==='video/webm;codecs=vp8,opus');
+  ok('iOS tarafında da kazanan geçerli',
+     kos(true,['video/mp4','video/webm'],'video/webm')==='video/webm');
+  /* Kayıt başka bir cihazdan yedekle gelmiş ya da tarayıcı güncellenmiş
+     olabilir: artık desteklenmeyen bir kazanan SESSİZCE listeye düşmeli,
+     boş dize döndürüp kaydı tarayıcı varsayılanına bırakmamalı. */
+  ok('desteklenmeyen kazanan sessizce listeye düşüyor',
+     kos(false,T,'video/ogg')==='video/mp4;codecs=avc1.42E01E,mp4a.40.2');
+  ok('kazanan boşken eski davranış aynen sürüyor',
+     kos(false,T,'')===kos(false,T));
+  /* `isTypeSupported` hiç yokken kazananı körlemesine kullanmak, kaydı
+     kuramayan bir mimeType ile MediaRecorder çağırmak demekti. */
+  ok('isTypeSupported yoksa kazanan körlemesine kullanılmıyor',
+     new Function('const IS_WK=false; const window={}; const st={forceMime:"video/webm"};'+
+                  sMime+'; return pickMime();')()==='');
 }
 {
   /* SIRA ÖNEMLİ: mp4 her zaman webmden ÖNCE denenmeli. Sıra bozulursa

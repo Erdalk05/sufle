@@ -85,9 +85,13 @@ ok('tek haneli değerler sıfırla dolduruluyor', avg([1,2,3,255])==='#010203');
     }
   }
 
-  /* ② YEŞİL EKRAN RENGİNİ ÖRNEKLEME — gerçek kod `#pickKey` işleyicisinde. */
+  /* ② YEŞİL EKRAN RENGİNİ ÖRNEKLEME — gerçek kod artık ÇEKİRDEKTE
+     (cekirdek/kroma.js), çünkü masaüstü de aynı ölçümü kullanıyor.
+     Kabuktan çıkarmaya devam etseydik bu blok, iki platformun ortak
+     hesabını değil yalnız telefonun kopyasını ölçerdi. */
   {
-    const govde=(kod.match(/let r=0,g=0,b=0; const px=d\.length\/4;[\s\S]*?join\(''\);/)||[])[0];
+    const kroma=require('./kaynak').cekirdekOku('kroma.js','SUFLE_KROMA');
+    const govde=(kroma.match(/const px=d\.length\/4;[\s\S]*?join\(''\);/)||[])[0];
     ok('gerçek renk ortalaması çıkarılabildi', !!govde);
     if(govde){
       const ort=new Function('__d', `const d=__d;\n${govde}\nreturn hex;`);

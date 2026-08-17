@@ -46,7 +46,11 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
   /* poz/wb: elle pozlama ve beyaz ayarı camLock ile aynı sınıf — masaüstü
      kameraları o yetenekleri vermiyor, kavram Mac'te YOK (tests/15'te
      gerekçesi yazılı). */
-  const MUAF=new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure',
+  /* pickKey ÇIKARILDI (2026-08-17): perde rengini kameradan ölçme masaüstüne
+     de geldi, yani hata yolu artık iki kabukta da var. "Muafiyet listesi
+     boşuna geniş değil" iddiası bunu kendiliğinden yakaladı — listenin
+     var olma sebebi tam olarak bu. */
+  const MUAF=new Set(['persist','quota','mics','softBg','voiceTest','measure',
                       'audmon','meter','bg','autoSave','mapIn','camLock','poz','wb']);
   const beklenmeyen=eksik.filter(x=>!MUAF.has(x));
   ok('Macte eksik her etiket gerekçeli'+(beklenmeyen.length?' — beklenmeyen: '+beklenmeyen.join(', '):'')+

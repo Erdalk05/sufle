@@ -169,7 +169,11 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    vermiyor — camLock muafiyetinde ölçülmüş olan aynı sınır. Mac'te bu
    sürgüler HİÇ görünmeyeceği için hata yolu da yok; muafiyet eksikliği
    değil, kavramın karşı platformda olmaması. */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
+/* pickKey MUAFİYETİ KALKTI (2026-08-17). Perde rengini kameradan ölçme
+   masaüstüne de geldi; muafiyet listesi KÜÇÜLDÜ. Liste yalnız büyüdüğünde
+   şüphelidir — burada boşluk örtülmedi, KAPATILDI (restore/otomatik yedek
+   maddesiyle aynı sınıf). */
+const SADECE_TELEFON = new Set(['persist','quota','mics','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
 /* camLock: ODAK/POZLAMA KİLİDİ TELEFONA ÖZGÜ. Kilit MediaStreamTrack
    yeteneklerine dayanıyor (focusMode/exposureMode) ve bunları yalnız mobil
    kameralar sunuyor; Mac'te getCapabilities/zoom/torch da HİÇ YOK — ölçüldü,

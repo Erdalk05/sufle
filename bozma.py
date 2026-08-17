@@ -44,6 +44,9 @@ KAYNAK = {
     # "iyi görünüyor ✓" onayıyla devam eder — sessiz yanlış sonuç sınıfı.
     # İki kabukta da gömülü olduğu için tek bozma iki platformu birden vurur.
     'isik': (os.path.join(REPO, 'cekirdek', 'isik.js'), 'SUFLE_ISIK'),
+    # Perde rengi ölçümünün TEK RENK eşiği: gevşerse iki platform da
+    # sessizce yanlış anahtar yazar ve yeşil ekran hiç tutmaz.
+    'kroma': (os.path.join(REPO, 'cekirdek', 'kroma.js'), 'SUFLE_KROMA'),
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),

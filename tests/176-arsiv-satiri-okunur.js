@@ -37,3 +37,27 @@ ok('metin sütununun min-width:0 kuralı duruyor (flex kırpması için şart)',
 /* Ölçümün kendisi kaynakta yazılı: sayı olmadan "düzeltildi" iddiası
    denetlenemez. */
 ok('ölçülen sayılar kaynakta yazılı', /98 px, 320 px'te 28 px/.test(src));
+
+/* ---------- PAYLAŞILAN DOSYANIN ADI (2026-08-17, paylaşım yolu) ----------
+   Ad her zaman "şu an"dan üretiliyordu. Taze çekimde doğru; ARŞİVDEN açılan
+   bir çekimi paylaşırken yanlış: dün çekilmiş video bugünün damgasıyla
+   iniyor. Aynı ad yayın paketinde ve altyazı dosyasında da kullanılıyor,
+   yani üçü birden kayıyor. Veri yanlış BAĞLAMDAN alınıyor — bu turun
+   tekrar eden sınıfı. */
+{
+  const kaynak = oku(telefonYolu());
+  const fn=(kaynak.match(/function fileName\(\)\{[\s\S]*?\n\}/)||[])[0];
+  ok('fileName çıkarılabildi', !!fn);
+  ok('arşiv çekiminde çekimin tarihi kullanılıyor',
+     !!fn && /arsivKaynak && arsivKaynak\.created\) \? arsivKaynak\.created : Date\.now\(\)/.test(fn));
+  ok('taze çekimde yine şu an kullanılıyor', !!fn && /Date\.now\(\)/.test(fn));
+  ok('çekim tarihi arşivden okunuyor', /created:\(kayit&&kayit\.created\)\|\|0/.test(kaynak));
+  /* KOŞARAK: aynı işlev iki bağlamda iki farklı ad üretmeli. */
+  if (fn) {
+    const kur=(ak)=>new Function('arsivKaynak', fn+'; return fileName();')(ak);
+    const eski=kur({created:new Date(2020,0,2,3,4,5).getTime()});
+    const taze=kur(null);
+    ok('arşiv çekimi kendi tarihiyle adlandırılıyor', eski==='sufle_20200102_030405');
+    ok('taze çekim bugünün damgasını alıyor', taze!==eski && /^sufle_\d{8}_\d{6}$/.test(taze));
+  }
+}

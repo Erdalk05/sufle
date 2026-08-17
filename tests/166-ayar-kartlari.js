@@ -58,6 +58,14 @@ const mOzet=kod.match(/function ozetCiz\(\)\{[\s\S]*?\n\}/);
 ok('ozetCiz çıkarılabildi', !!mOzet);
 const mZincir=kod.match(/function gorunurZincir\(el,kok\)\{[\s\S]*?\n\}/);
 ok('gorunurZincir çıkarılabildi', !!mZincir);
+/* Sığdırma 2026-08-17de ayrı fonksiyona çıktı (bütçe karakterden piksele
+   geçti). Sahte DOMda `clientWidth` yok, yani ölçüm yapılamıyor ve
+   `ozetSigdir` tam metni olduğu gibi bırakıyor — bu testin ölçtüğü şey
+   zaten METNİN KENDİSİ, sığdırma değil. Piksel davranışı tests/171de
+   gerçek tarayıcıda ölçülüyor. */
+const mSigdir=kod.match(/function ozetSigdir\(o,parca,cekirdek\)\{[\s\S]*?\n\}/);
+ok('ozetSigdir çıkarılabildi', !!mSigdir);
+if(!mSigdir) return;
 const mNorm=kod.match(/function norm\(x\)\{[\s\S]*?FOLD\[c\]\|\|c\); \}/);
 const mFold=kod.match(/const FOLD=\{[^}]*\};/);
 ok('norm ve FOLD çıkarılabildi', !!mNorm && !!mFold);
@@ -196,6 +204,7 @@ function kosturr(kartNesneleri){
        tazeliyor. Burada sahte: bu test ÖZET METNİNİ ölçüyor, kutuların
        gizlenmesini tests/166nın kutu bölümü ayrıca sınıyor. */
     function bolumleriTazele(){}
+    ${mSigdir[0]}
     ${mOzet[0]}
     ozetCiz();
   `)(koklar, stil);
@@ -268,11 +277,17 @@ function anahtar(acik){
   ok('içeriği görünen kart gizlenmiyor', !d[0].classList.contains('bos'));
 }
 {
-  /* İki uzun parça yan yana kesilirdi; kesik özet yanlış okunur. */
+  /* İKİ PARÇA SAHTE DOMDA OLDUĞU GİBİ KALIR (2026-08-17'de değişti).
+     Eskiden burada sabit bir KARAKTER sınırı vardı ve ikinci parçayı
+     karakter sayısına bakarak atıyordu; o sınır iki kartta DEĞERİ kesip
+     geriye yalnız etiketi bıraktığı için kaldırıldı. Artık eleme PİKSELLE
+     yapılıyor ve sahte DOMda genişlik ölçülemediği için metin bozulmadan
+     geçmeli — "ölçemiyorsan kırpma" kuralı. Piksel merdiveni aşağıda
+     ayrıca koşturuluyor. */
   const k=kosturr([{ baslik:'Yazı ölçüleri',
     cocuk:[satir('Satır aralığı arasında uzun etiket','1.45'), segment('Çok uzun bir seçenek adı')] }]);
-  ok('özet 26 karakteri aşarsa ikinci parça atılıyor',
-     k[0]._ozet.textContent.split(' · ').length===1);
+  ok('ölçülemeyen panelde özet bozulmadan kalıyor (iki parça)',
+     k[0]._ozet.textContent.split(' · ').length===2);
 }
 {
   /* gorunurZincir ayrı sınanıyor: ata zinciri kuralı bu düzenin temeli. */
@@ -398,20 +413,56 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   ok('giriş başlığı o adımı kullanıyor', /#intro h1\{font-size:var\(--tx-hero\)/.test(kabuk));
 }
 
-/* ---------- ÖZET BÜTÇESİ (2026-08-17, çizilmiş ekranda ölçüldü) ----------
-   Kısa etiket eklenince özet uzadı ve 390 px'te KART BAŞLIĞI İKİ SATIRA
-   düştü; üstelik özet kendisi de üç noktayla kesiliyordu, yani iki bilgi
-   birden bozuluyordu. Başlık asla kesilmemeli: kullanıcının okuduğu ilk şey
-   o. Bütçe 26 → 20 karaktere, özetin genişliği %52 → %46'ya indirildi ve
-   ölçüm yeniden koştu: üç sekmede de iki satırlık başlık 0. */
+/* ---------- ÖZET BÜTÇESİ: KARAKTER DEĞİL PİKSEL (2026-08-17 akşamı) ----------
+   Önceki tur bütçeyi 26 → 20 → 16 KARAKTERE indirmişti ve ölçütü "kart
+   başlığı iki satıra düşmesin" idi. O ölçüt tutuyordu — ama bedeli ÖZET
+   ödüyordu ve bunu kimse ölçmüyordu. Çizilmiş ekranda bulunan iki kurban:
+
+     Göz teması ve çizgi → "Okuma çizgisi 18"   96 px yer, 107 px gerek
+                                                (360 pxte yalnız 66 px)
+     Altyazı zamanlaması → 16 karakter sınırı DEĞERİ tümden kesip geriye
+                           yalnız etiketi bırakıyordu ("Altyazı kayması")
+
+   Yani sabit karakter sınırı, tam da özetin var oluş sebebini (o anki
+   DEĞERİ göstermek) yok ediyordu. Bütçe artık gerçek genişlikle ölçülüyor.
+   İlk düzeltme denemesi de burada çürütüldü: etiketi hemen atıp değere
+   düşmek özetleri "18 · Tümü" yapıyordu, yani bu dosyanın kendi ÇIPLAK SAYI
+   yasağını düzeltmenin kendisi çiğniyordu. Etiket önce KISALTILIYOR. */
 {
   const kabuk = oku(telefonYolu());
   const kod2 = kabuk.replace(/\/\*[\s\S]*?\*\//g, '');
-  const m = kod2.match(/parca\.join\(' · '\)\.length>(\d+)\) parca\.length=1;/);
-  ok('özet bütçesi kaynakta yazılı', !!m);
-  ok('iki parçalık özet en fazla 20 karakter (' + (m ? m[1] : '?') + ')', !!m && +m[1] <= 20);
-  const t = kod2.match(/parca\[0\]\.length>(\d+)\) parca\[0\]=parca\[0\]\.slice/);
-  ok('tek parçalık özet de kısaltılıyor', !!t && +t[1] <= 20);
+  ok('sabit karakter bütçesi kaldırıldı (iki parça)',
+     !/parca\.join\(' · '\)\.length>\d+\) parca\.length=1;/.test(kod2));
+  ok('sabit karakter bütçesi kaldırıldı (tek parça)',
+     !/parca\[0\]\.length>\d+\) parca\[0\]=parca\[0\]\.slice/.test(kod2));
+  ok('özet sığdırma ölçümü gerçek genişlikten okuyor',
+     /o\.scrollWidth<=o\.clientWidth/.test(kod2));
+  ok('ozetCiz sığdırmayı çağırıyor', /ozetSigdir\(o,parca,cekirdek\)/.test(kod2));
+
+  /* MERDİVEN GERÇEKTEN KOŞTURULUYOR. Sahte öge genişliği harf başına sabit
+     bir piksel varsayıyor; ölçüm mantığının kendisi kaynaktan çıkarıldı. */
+  const sahte=(genislik,harfPx)=>({ _t:'', clientWidth:genislik,
+    get textContent(){ return this._t; },
+    set textContent(v){ this._t=v; },
+    get scrollWidth(){ return this._t.length*harfPx; } });
+  const kosSigdir=(o,parca,cekirdek)=>
+    new Function('__o','__p','__c', mSigdir[0]+'; ozetSigdir(__o,__p,__c); return __o.textContent;')(o,parca,cekirdek);
+
+  ok('yer varsa tam metin duruyor',
+     kosSigdir(sahte(400,7),['Okuma çizgisi 18','Tümü'],['18','Tümü'])==='Okuma çizgisi 18 · Tümü');
+  ok('yer daralınca önce ikinci parça düşüyor',
+     kosSigdir(sahte(120,7),['Okuma çizgisi 18','Tümü'],['18','Tümü'])==='Okuma çizgisi 18');
+  ok('daha da daralınca ETİKET kısalıyor, değer kalıyor',
+     kosSigdir(sahte(60,7),['Okuma çizgisi 18','Tümü'],['18','Tümü'])==='Okuma 18');
+  ok('hiçbir şey sığmazsa çıplak değere düşülüyor',
+     kosSigdir(sahte(16,7),['Okuma çizgisi 18','Tümü'],['18','Tümü'])==='18');
+  /* ÖLÇEMİYORSAN KIRPMA: panel henüz çizilmemişken clientWidth 0 gelir ve
+     her metin "sığmıyor" görünür; o durumda tam metin korunmalı. */
+  ok('ölçülemeyen panelde tam metin korunuyor',
+     kosSigdir(sahte(0,7),['Okuma çizgisi 18','Tümü'],['18','Tümü'])==='Okuma çizgisi 18 · Tümü');
+  /* Etiketi olmayan parça (segment seçimi) kısaltılamaz; olduğu gibi kalır. */
+  ok('etiketsiz parça kısaltılmaya çalışılmıyor',
+     kosSigdir(sahte(20,7),['1080p'],['1080p'])==='1080p');
   const g = kabuk.match(/\.grup>summary \.ozet\{[^}]*max-width:(\d+)%/);
   ok('özet genişliği en fazla %46 (' + (g ? g[1] : '?') + ')', !!g && +g[1] <= 46);
 }

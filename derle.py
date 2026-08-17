@@ -67,6 +67,12 @@ PLAN = [
     # karşılığı yoktu — ortak sözlükte ölü anahtar. Kopyalamak yerine hesap
     # buraya alındı: eşik değiştiğinde iki platform birlikte değişir.
     ('isik.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Perde rengi ölçümü (2026-08-17). Masaüstünde yeşil ekran ÇALIŞIYOR ama
+    # anahtar rengi dört hazır seçenekten seçiliyordu; kullanıcının gerçek
+    # perdesi o dördünden biri değilse kenarlar kirli kalıyordu. Eşik
+    # (tek renk mi) tek yerde yaşamalı: gevşerse iki platform da sessizce
+    # yanlış anahtar yazar.
+    ('kroma.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip
     # Mac'te unutulan bir eşik, iki platformun farklı sayı göstermesi demek.
     ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),

@@ -36,6 +36,9 @@ if(!mPick) return;
        çekim damgası → açık senaryo.) */
     const arsivKaynak=null;
       const IS_WK=__d.wk;
+      /* Ses testi burada koşmadı: kazanan boş, yani tür seçimi yalnız
+         platform listesinden geliyor (asıl kilit tests/87de). */
+      const st={ forceMime:'' };
       const window={ MediaRecorder:{ isTypeSupported:t=>__d.destek.indexOf(t)>=0 } };
       const MediaRecorder=window.MediaRecorder;
       ${mPick[0]}

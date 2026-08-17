@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "**v9.21 hazır, yayın kararı sende:**",
-  "koy": "**Bazı işler yapıldı:**"
+  "bul": "**v9.22 hazır, yayın kararı sende**",
+  "koy": "**Bazı işler yapıldı**"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2368,9 +2368,9 @@
  {
   "ad": "yeşil ekran rengi tek haneli değerleri sıfırla doldurmuyor",
   "test": "10-shader-ve-bithizi.js",
-  "kaynak": "telefon",
-  "bul": "    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');",
-  "koy": "    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16)).join('');"
+  "kaynak": "kroma",
+  "bul": ".toString(16).padStart(2,'0')",
+  "koy": ".toString(16)"
  },
  {
   "ad": "ayar araması etiketi buluyor ama denetimi açmıyor (bulunan ama kullanılamayan sonuç)",
@@ -2782,8 +2782,8 @@
   "ad": "özet çıplak sayı yazıyor (hangi ayar olduğu belirsiz)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "      const e=kisaEtiket(r); ekle(e? e+' '+d : d); });",
-  "koy": "      ekle(d); });"
+  "bul": "      const e=kisaEtiket(r); ekle(e? e+' '+d : d, d); });",
+  "koy": "      ekle(d, d); });"
  },
  {
   "ad": "görünürlük yalnız ögenin kendisine bakıyor (kapalı özelliğin sayısı özete sızar)",
@@ -2796,7 +2796,7 @@
   "ad": "tek anahtarlı kart '1/1 açık' diyor (durum yerine sayım)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "      if(sw.length===1) parca.push(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));\n      else if(sw.length)",
+  "bul": "      if(sw.length===1) ekle(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));\n      else if(sw.length)",
   "koy": "      if(sw.length)"
  },
  {
@@ -3003,11 +3003,11 @@
   "koy": "  #intro h1{font-size:31px;"
  },
  {
-  "ad": "özet bütçesi gevşetildi (kart başlığı iki satıra düşer)",
+  "ad": "özet piksel toleransı gevşetildi (kesik özet yine geçer)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;",
-  "koy": "    if(parca.length===2 && parca.join(' · ').length>40) parca.length=1;"
+  "bul": "    if(!o.clientWidth || o.scrollWidth<=o.clientWidth+1) return;",
+  "koy": "    if(!o.clientWidth || o.scrollWidth<=o.clientWidth+500) return;"
  },
  {
   "ad": "özet genişliği başlığın yerini yiyor",
@@ -3834,5 +3834,187 @@
   "kaynak": "mac",
   "bul": "const s=stream ? macIsikOrnek() : null;",
   "koy": "const s=macIsikOrnek();"
+ },
+ {
+  "ad": "P1 paylaşılan dosya adı hep bugünün tarihi (eski çekim yanlış damgayla iner)",
+  "test": "176-arsiv-satiri-okunur.js",
+  "kaynak": "telefon",
+  "bul": "  const ms=(arsivKaynak && arsivKaynak.created) ? arsivKaynak.created : Date.now();",
+  "koy": "  const ms=Date.now();"
+ },
+ {
+  "ad": "KR1 tek renk denetimi kalktı (yüzü ölçüp anahtar yapar)",
+  "test": "177-perde-rengi-olcumu.js",
+  "kaynak": "kroma",
+  "bul": "function kromaTekRenkMi(o){ return o.sapma <= KROMA_SAPMA_ESIK; }",
+  "koy": "function kromaTekRenkMi(o){ return true; }"
+ },
+ {
+  "ad": "KR2 sapma eşiği gevşedi (iki farklı yüzey de geçer)",
+  "test": "177-perde-rengi-olcumu.js",
+  "kaynak": "kroma",
+  "bul": "const KROMA_SAPMA_ESIK = 22;",
+  "koy": "const KROMA_SAPMA_ESIK = 200;"
+ },
+ {
+  "ad": "KR3 sapma eşiği aşırı sıkıldı (gerçek kırışık perde reddedilir)",
+  "test": "177-perde-rengi-olcumu.js",
+  "kaynak": "kroma",
+  "bul": "const KROMA_SAPMA_ESIK = 22;",
+  "koy": "const KROMA_SAPMA_ESIK = 1;"
+ },
+ {
+  "ad": "KR5 masaüstünde reddedilen örnek yine yazılıyor",
+  "test": "177-perde-rengi-olcumu.js",
+  "kaynak": "mac",
+  "bul": "      if(!kromaTekRenkMi(o)){ toast(m('keyPickBad')); return; }",
+  "koy": "      "
+ },
+ {
+  "ad": "KR6 masaüstünde ölçme düğmesi kaldırıldı",
+  "test": "177-perde-rengi-olcumu.js",
+  "kaynak": "mac",
+  "bul": "id=\"pickKey\"",
+  "koy": "id=\"pickKeyYok\""
+ },
+ {
+  "ad": "M1 ses testinin kazananı yine yok sayılıyor (sessiz kayıt geri döner)",
+  "test": "87-kayit-turu-ve-uzanti.js",
+  "kaynak": "telefon",
+  "bul": "  const kazanan = st.forceMime;\n  if(kazanan && window.MediaRecorder && MediaRecorder.isTypeSupported\n     && MediaRecorder.isTypeSupported(kazanan)) return kazanan;",
+  "koy": "  const kazanan = st.forceMime;"
+ },
+ {
+  "ad": "M2 kazanan desteklenmese de körlemesine kullanılıyor",
+  "test": "87-kayit-turu-ve-uzanti.js",
+  "kaynak": "telefon",
+  "bul": "  if(kazanan && window.MediaRecorder && MediaRecorder.isTypeSupported\n     && MediaRecorder.isTypeSupported(kazanan)) return kazanan;",
+  "koy": "  if(kazanan) return kazanan;"
+ },
+ {
+  "ad": "V1 görüntü filtresi kapıdan çıkarıldı (sessiz ölü ayar geri döner)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "   ['#vfxDeps',    ()=>!!(st.comp&&comp.on),",
+  "koy": "   ['#vfxDepsYok', ()=>!!(st.comp&&comp.on),"
+ },
+ {
+  "ad": "V2 kapı yalnız niyete bakıyor (boru hattı koşmasa da açık sayılır)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "   ['#vfxDeps',    ()=>!!(st.comp&&comp.on),",
+  "koy": "   ['#vfxDeps',    ()=>!!(st.comp),"
+ },
+ {
+  "ad": "V3 filtre seçilince kompozit açılmaya çalışılmıyor",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "st.vidFx=b.dataset.vfx; apply(); save(); ensureCompVfx(); });",
+  "koy": "st.vidFx=b.dataset.vfx; apply(); save(); });"
+ },
+ {
+  "ad": "V4 kapalı filtre de kompoziti açıyor (gereksiz pil/ısı)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "  if(st.vidFx==='off' || comp.on) return true;",
+  "koy": "  if(comp.on) return true;"
+ },
+ {
+  "ad": "V5 kamera yokken sebep söylenmiyor (yine sessiz)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "  if(!stream){ toast(m('needCam')); apply(); return false; }",
+  "koy": "  if(!stream){ return false; }"
+ },
+ {
+  "ad": "V6 sürgü bloğun dışına çıktı (sürgü yine sessiz ölü)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "    <input type=\"range\" data-aria=\"vidAmt\" id=\"vidAmt\" min=\"0\" max=\"150\" value=\"100\">\n    </div>",
+  "koy": "    </div>\n    <input type=\"range\" data-aria=\"vidAmt\" id=\"vidAmt\" min=\"0\" max=\"150\" value=\"100\">"
+ },
+ {
+  "ad": "K1 karşılama başlığı yine sürüm notu başlığı",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "  h.textContent = newsKip==='onb' ? '👋 '+t('mDlgWelcome') : t('newsTitle');",
+  "koy": "  h.textContent = t('newsTitle');"
+ },
+ {
+  "ad": "K2 gövde çiziliyor ama başlık çizilmiyor (kipler ayrışır)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "function newsYaz(){\n  newsBaslikYaz();",
+  "koy": "function newsYaz(){"
+ },
+ {
+  "ad": "K3 başlık ögesinin adı silindi (kipe göre yazılamaz)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "<h2><span id=\"newsTitle\" data-i18n=\"newsTitle\">",
+  "koy": "<h2><span data-i18n=\"newsTitle\">"
+ },
+ {
+  "ad": "B1 seçili kayıt biçimi ekrana hiç çizilmiyor",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "renderVfx(); renderVad(); renderMime(); gateSettings();",
+  "koy": "renderVfx(); renderVad(); gateSettings();"
+ },
+ {
+  "ad": "B2 seçim yokken de satır gösteriliyor (boş bilgi)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "  satir.classList.toggle('hidden',!ad);",
+  "koy": "  satir.classList.toggle('hidden',false);"
+ },
+ {
+  "ad": "B3 cihaz varsayılanı durumu okunmuyor (seçim görünmez kalır)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "  if(st.forceNoOpts) return L==='tr' ? 'cihaz varsayılanı' : 'device default';",
+  "koy": "  "
+ },
+ {
+  "ad": "B4 kullanıcıya ham MIME dizesi gösteriliyor (jargon)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "  return x.split(';')[0].replace('video/','');",
+  "koy": "  return x;"
+ },
+ {
+  "ad": "B5 bırakma yalnız bir alanı temizliyor (seçeneksiz kip asılı kalır)",
+  "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
+  "kaynak": "telefon",
+  "bul": "$('#mimeClear').onclick=()=>{ st.forceMime=''; st.forceNoOpts=false;",
+  "koy": "$('#mimeClear').onclick=()=>{ st.forceMime='';"
+ },
+ {
+  "ad": "O1 sığdırma merdiveni iptal (özet yine üç noktayla kesilir)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  for(const a of adaylar){\n    o.textContent=a;\n    if(!o.clientWidth || o.scrollWidth<=o.clientWidth+1) return;\n  }",
+  "koy": "  { o.textContent=adaylar[0]; return; }"
+ },
+ {
+  "ad": "O2 etiket kısaltma adımı atlandı (çıplak sayı yasağı çiğnenir)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    for(let n=kelime.length-1;n>=1;n--) koy(kelime.slice(0,n).join(' ')+' '+deg);",
+  "koy": "    "
+ },
+ {
+  "ad": "O3 ölçülemeyen panelde de kırpılıyor (tam metin kaybolur)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    if(!o.clientWidth || o.scrollWidth<=o.clientWidth+1) return;",
+  "koy": "    if(o.scrollWidth<=o.clientWidth+1) return;"
+ },
+ {
+  "ad": "O4 sabit karakter bütçesi geri geldi",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "    const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);",
+  "koy": "    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;\n    const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);"
  }
 ]

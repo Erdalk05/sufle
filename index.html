@@ -1204,6 +1204,12 @@
     <div class="sheetbtns"><button class="cancel" id="audTestBtn" data-i18n="audTest">Ses testi (cihaza yaptır)</button></div>
     <div class="hint" data-i18n="audTestHint">Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.</div>
     <div id="audTestOut"></div>
+    <!-- TESTİN SONUCU GÖRÜNÜR DURUM OLMALI: seçilen biçim yalnız `st.forceMime`
+         içinde yaşıyordu, yani kullanıcı hangi biçimle kaydettiğini hiçbir
+         yerde göremiyor ve seçimini geri alamıyordu (görünmeyen ayar =
+         güvenilmez ayar). Satır yalnız bir seçim varken çiziliyor. -->
+    <div class="row hidden" id="mimeRow"><label data-i18n="mimeNow">Seçili kayıt biçimi</label><span class="v" id="vMimeNow">—</span></div>
+    <div class="sheetbtns hidden" id="mimeClearRow"><button class="cancel" id="mimeClear" data-i18n="mimeClear">Seçimi bırak (otomatik)</button></div>
     <div class="tog"><span data-i18n="tgSafeAudio">Güvenli ses modu (iPhone için önerilir)</span><div class="sw on" data-t="safeAudio"></div></div>
     <div class="hint" data-i18n="safeAudioHint">Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.</div>
 
@@ -1219,6 +1225,11 @@
     </div></details>
     <details class="grup"><summary><span data-i18n="vfxTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="vfxTitle">Görüntü filtresi</label><span class="v" id="vFxAmt">—</span></div>
+    <!-- KOMPOZİT BAĞIMLI BLOK: `vidParams()` yalnız `drawComp()` içinde
+         okunuyor, yani kompozit kapalıyken filtre ne önizlemeye ne kayda
+         işliyor. Anahtarlar (burnCaps/chroma) bu muameleyi zaten görüyordu;
+         segment ve sürgü kapının dışında kalmıştı. -->
+    <div id="vfxDeps">
     <div class="seg" id="vfxSeg">
       <button data-vfx="off" data-i18n="vfxOff">Kapalı</button>
       <button data-vfx="natural" class="on" data-i18n="vfxNat">Doğal</button>
@@ -1228,6 +1239,7 @@
       <button data-vfx="lowlight" data-i18n="vfxLow">Az ışık</button>
     </div>
     <input type="range" data-aria="vidAmt" id="vidAmt" min="0" max="150" value="100">
+    </div>
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
     </div></details>
@@ -1658,7 +1670,7 @@
 
 <div class="sheet" id="newsSheet">
   <div class="grab"></div>
-  <h2><span data-i18n="newsTitle">🆕 Ne değişti?</span><button class="iconbtn" id="newsX" aria-label="Kapat">✕</button></h2>
+  <h2><span id="newsTitle" data-i18n="newsTitle">🆕 Ne değişti?</span><button class="iconbtn" id="newsX" aria-label="Kapat">✕</button></h2>
   <div id="newsBody" class="hint"></div>
   <!-- B.7: karşılama EYLEMLE bitiyor. Çok adımlı tur yazılmadı — kimse
        okumuyor ve her adım bir çıkış noktası. 2026 pratiği: açıklama
@@ -2002,7 +2014,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.21';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.22';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2071,6 +2083,7 @@ const I18N={
   micLevel:'Mikrofon seviyesi',fixAudio:'Sesi onar (mikrofonu tazele)',
   audTest:'Ses testi (cihaza yaptır)',
   audTestHint:'Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.',
+  mimeNow:'Seçili kayıt biçimi',mimeClear:'Seçimi bırak (otomatik)',
   fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
   tgSafeAudio:'Güvenli ses modu (iPhone için önerilir)',
   safeAudioHint:'Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone\'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.',
@@ -2240,6 +2253,7 @@ const I18N={
   micLevel:'Microphone level',fixAudio:'Repair audio (refresh mic)',
   audTest:'Audio test (let the device decide)',
   audTestHint:'Tries every recording format and keeps the one that actually writes audio. Takes about 15 seconds.',
+  mimeNow:'Chosen recording format',mimeClear:'Drop the choice (automatic)',
   fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
   tgSafeAudio:'Safe audio mode (recommended on iPhone)',
   safeAudioHint:'Opens the camera with the simplest request (no resolution ask). This is the setting that fixes silent recordings on iPhone.',
@@ -2426,7 +2440,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',compTakildi:'⚠️ Görüntü işleme bir an takıldı — kareler yedek yoldan akıtılıyor. Çekimde kısa bir kesiklik olabilir; donmuş görüntü kaydedilmiyor.',oynatDondu:'📼 Görüntü donunca video baştan çözülüyor — ses akmaya devam ediyordu. Geri gelmezse donma çekimin kendisinde demektir.',oynatDosya:'⛔ Bu çekimin görüntüsü şu saniyeden sonra DOSYANIN İÇİNDE donuk — oynatıcı kurtaramadı. Sesi sağlam. Çekimi kaydedip başka bir oynatıcıda aç: orada da aynı yerde donacaktır.',sesSustu:'⛔ SES SUSTU — görüntü akıyor ama mikrofondan ses gelmiyor (arama, başka bir uygulama ya da kulaklık değişimi olabilir). Bundan sonrası SESSİZ kaydediliyor; kaydı bitir.',sesGeri:'🎙 Ses geri geldi — sessiz kalan bölüm çekimde kalır, gerekiyorsa o kısmı tekrar al.',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
+  restored:'↺ Senaryo geri geldi',compTakildi:'⚠️ Görüntü işleme bir an takıldı — kareler yedek yoldan akıtılıyor. Çekimde kısa bir kesiklik olabilir; donmuş görüntü kaydedilmiyor.',oynatDondu:'📼 Görüntü donunca video baştan çözülüyor — ses akmaya devam ediyordu. Geri gelmezse donma çekimin kendisinde demektir.',oynatDosya:'⛔ Bu çekimin görüntüsü şu saniyeden sonra DOSYANIN İÇİNDE donuk — oynatıcı kurtaramadı. Sesi sağlam. Çekimi kaydedip başka bir oynatıcıda aç: orada da aynı yerde donacaktır.',sesSustu:'⛔ SES SUSTU — görüntü akıyor ama mikrofondan ses gelmiyor (arama, başka bir uygulama ya da kulaklık değişimi olabilir). Bundan sonrası SESSİZ kaydediliyor; kaydı bitir.',sesGeri:'🎙 Ses geri geldi — sessiz kalan bölüm çekimde kalır, gerekiyorsa o kısmı tekrar al.',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPickBad:'Kameranın gördüğü köşe tek renk değil — orada perdeden başka bir şey var (duvar, omuz, gölge). Perde kareyi dolduracak şekilde kadrajı düzelt ve tekrar dene; yanlış rengi anahtar yapmaktansa hiç yapmıyoruz.',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Arka plan görselini kaldır ya da kullanmadığın senaryoları sil.',lsFreed:'🧹 Silinen senaryolar kalıcı olarak temizlendi ve senaryon kaydedildi',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -2513,7 +2527,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',compTakildi:'⚠️ The image pipeline stalled for a moment — frames are being driven by the backup path. The take may look slightly choppy there, but a frozen picture is not being recorded.',oynatDondu:'📼 The picture froze, so the video is being decoded again from that point — the sound had kept playing. If it does not come back, the freeze is in the take itself.',oynatDosya:'⛔ From this second on the picture is frozen INSIDE THE FILE — the player could not recover it. The audio is fine. Save the take and open it in another player: it will freeze at the same spot there too.',sesSustu:'⛔ THE SOUND STOPPED — video is still flowing but no audio is arriving (a call, another app or a headset switch). From here on the take is SILENT; end it.',sesGeri:'🎙 The sound is back — the silent part stays in the take, redo that part if you need to.',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
+  restored:'↺ Script restored',compTakildi:'⚠️ The image pipeline stalled for a moment — frames are being driven by the backup path. The take may look slightly choppy there, but a frozen picture is not being recorded.',oynatDondu:'📼 The picture froze, so the video is being decoded again from that point — the sound had kept playing. If it does not come back, the freeze is in the take itself.',oynatDosya:'⛔ From this second on the picture is frozen INSIDE THE FILE — the player could not recover it. The audio is fine. Save the take and open it in another player: it will freeze at the same spot there too.',sesSustu:'⛔ THE SOUND STOPPED — video is still flowing but no audio is arriving (a call, another app or a headset switch). From here on the take is SILENT; end it.',sesGeri:'🎙 The sound is back — the silent part stays in the take, redo that part if you need to.',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPickBad:'The corner the camera sees is not a single colour — something other than the screen is there (a wall, a shoulder, a shadow). Reframe so the screen fills it and try again; rather than set a wrong key colour we set none.',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Remove the background image or delete scripts you no longer need.',lsFreed:'🧹 Deleted scripts were purged and your script was saved',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -3957,6 +3971,62 @@ function isikKameraKapali(L){
            d:(L==='tr'?'Önce kamerayı aç':'Open the camera first')}];
 }
 /* ==/CEKIRDEK:isik.js== */
+/* ==CEKIRDEK:kroma.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/kroma.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* PERDE RENGİNİ KAMERADAN ÖLÇME — ortak hesap, iki kabukta da aynı.
+
+   NEDEN ÇEKİRDEKTE: ölçme yalnız telefonda vardı. Masaüstünde yeşil ekran
+   ÇALIŞIYOR (cropCv + WebGL) ama anahtar rengi hazır dört seçenekten
+   seçiliyordu; kullanıcının gerçek perdesi o dördünden biri değilse
+   silme kenarları kirli kalıyor ve sebebi hiçbir yerde yazmıyordu.
+
+   NEDEN AYNI ZAMANDA BİR DÜZELTME: telefondaki hâli örneği SESSİZCE kabul
+   ediyordu. Kullanıcı kamerayı perdeye çevirmeden düğmeye basarsa (ya da
+   köşede duvar/omuz varsa) ortalama, perdenin rengi DEĞİL karışık bir renk
+   çıkıyor; yeşil ekran bundan sonra hiç tutmuyor ve kullanıcı "özellik
+   bozuk" diye düşünüyor. Bu deponun 6 numaralı hata sınıfının kardeşi:
+   sessizce yanlış sonuç. Artık örneğin TEK RENK olup olmadığı ölçülüyor.
+
+   BURADA OLMAYAN: kareyi kameradan alan tuval ve toast'ı basan kabuk. */
+
+/* Örnek ızgarası: 32×32 = 1024 piksel. Karenin sol üst %18'lik bölgesi
+   küçültülerek buraya çiziliyor — perde genelde arkada ve geniş, yüz ise
+   ortada. (Bölge seçimi kabukta, çünkü kamera ölçüsünü o biliyor.) */
+const KROMA_IZGARA = 32;
+
+/* SAPMA EŞİĞİ — 0..255 ölçeğinde kanal başına ortalama mutlak sapma.
+   ÖLÇÜLDÜ (sentetik karelerle, tests/177):
+     · düz yeşil perde                       → sapma 0
+     · hafif gölgeli/kırışık gerçek perde    → ~6-14 (kabul, yeşil ekran tutar)
+     · perdenin yarısı + duvar               → ~35+
+     · yüz/omuz karışmış kare                → ~40+
+   Eşik 22: kırışık perdeyi geçirir, iki farklı yüzeyi geçirmez. Gevşetmek
+   "renk ölçüldü" deyip yanlış anahtar yazmak demek — sessiz yanlış sonuç. */
+const KROMA_SAPMA_ESIK = 22;
+
+/* RGBA dizisinden ortalama renk + tek renk olup olmadığı.
+   `sapma` kanal başına ortalamadan ortalama mutlak uzaklık: tek renkli
+   yüzeyde 0'a yakın, iki farklı yüzey karışınca hızla büyüyor. Standart
+   sapma yerine mutlak sapma: aynı işi görüyor ve tek geçişte hesaplanıyor. */
+function kromaOrnekle(d){
+  const px=d.length/4;
+  let r=0,g=0,b=0;
+  for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
+  r/=px; g/=px; b/=px;
+  let fark=0;
+  for(let i=0;i<d.length;i+=4)
+    fark+=Math.abs(d[i]-r)+Math.abs(d[i+1]-g)+Math.abs(d[i+2]-b);
+  const sapma=fark/(px*3);
+  const hex='#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+  return {hex, r, g, b, sapma};
+}
+
+/* Örnek kabul edilebilir mi. Ayrı fonksiyon, çünkü iki kabuk da aynı
+   soruyu soruyor ve eşiğin tek yerde yaşaması şart. */
+function kromaTekRenkMi(o){ return o.sapma <= KROMA_SAPMA_ESIK; }
+/* ==/CEKIRDEK:kroma.js== */
 async function onizNabiz(){
   if(!stream || !body.classList.contains('cam')) return;
   /* KAYIT SÜRERKEN AKIŞA DOKUNULMAZ — ama SUSMAK DA YOK (2026-08-17, ikinci
@@ -5552,6 +5622,20 @@ function renderBitrate(){
               :'~'+mb.toFixed(0)+' MB per minute · a 10-minute take ≈ '+(mb*10).toFixed(0)+' MB');
 }
 function pickMime(){
+  /* SES TESTİNİN KAZANANI HER ŞEYDEN ÖNCE GELİR (2026-08-17'de bulundu).
+     `runAudioTest()` altı adayı tek tek kaydedip hangisinin GERÇEKTEN ses
+     yazdığını ölçüyor, kazananı `st.forceMime`e yazıyor ve kullanıcıya
+     "kazanan: …" diyordu — ama burası o alanı HİÇ OKUMUYORDU. Yani MP4de
+     sessiz, webmde sesli kaydeden bir cihazda test doğru cevabı buluyor,
+     çözüldüğünü söylüyor ve uygulama sessiz MP4 kaydetmeye devam ediyordu:
+     özelliğin var oluş sebebi tam da bu senaryoydu.
+     Ölçüm: `st.` alanlarının tamamı tarandı, telefonda yazılıp hiç okunmayan
+     TEK alan buydu. `isTypeSupported` ile ayrıca doğrulanıyor — kayıt başka
+     bir cihazdan yedekle geldiyse ya da tarayıcı güncellendiyse eski kazanan
+     artık desteklenmiyor olabilir; o durumda sessizce listeye düşülüyor. */
+  const kazanan = st.forceMime;
+  if(kazanan && window.MediaRecorder && MediaRecorder.isTypeSupported
+     && MediaRecorder.isTypeSupported(kazanan)) return kazanan;
   // MP4 her platformda öncelikli: galeriler, Instagram ve iOS yalnız onu sorunsuz kabul ediyor.
   // (Eskiden masaüstü/Android'de webm seçiliyordu ve paylaşınca galeri kabul etmiyordu.)
   const list = IS_WK
@@ -8350,7 +8434,7 @@ function apply(){
   $$('#capAnimSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ka===(st.capAnim||'yumusak')));
   if($('#capMaxW')){ $('#capMaxW').value=st.capMaxW||7; $('#vCapW').textContent=st.capMaxW||7; }
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
-  renderBitrate(); renderFx(); renderVfx(); renderVad(); gateSettings();
+  renderBitrate(); renderFx(); renderVfx(); renderVad(); renderMime(); gateSettings();
   if($('#vadSens')) $('#vadSens').value=(st.vadSens==null?20:st.vadSens);
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
@@ -8530,6 +8614,44 @@ function ozetTazele(zorla){
   ozetSon=simdi;
   ozetCiz();
 }
+/* ÖZET PİKSELLE SIĞDIRILIR, KARAKTERLE DEĞİL (2026-08-17, çizilmiş ekranda
+   390 ve 360 pxte ölçüldü). Eski kural sabit 16 karakterdi; oysa özete kalan
+   YER, kart başlığı ne kadar uzunsa o kadar azalıyor. İki kurban ölçüldü:
+     · "Göz teması ve çizgi" → "Okuma çizgisi 18" 96 px yer buluyor, 107 px
+       istiyordu (360 pxte yalnız 66 px) → ekranda "Okuma çizgi…", sayı yok.
+     · "Altyazı zamanlaması" → 16 karakterlik sınır DEĞERİ tümden kesip
+       geriye yalnız etiketi bırakıyordu ("Altyazı kayması").
+   Kapı "hiçbir kart başlığı iki satıra düşmesin" diyordu ve bu doğruydu —
+   başlık düşmüyor, bedeli ÖZET ödüyordu. Ölçmeyen kural, olmayan kusuru
+   değil gerçek kusuru kaçırır.
+   Sıra uzundan kısaya: tam metin → yalnız ilk parça → ETİKETİ kelime kelime
+   kısaltılmış ilk parça → çıplak değer.
+   ⚠️ Etiketi hemen atıp değere düşmek YANLIŞTI: ilk denememde özet
+   "Okuma çizgisi 18" yerine "18 · Tümü" oldu, yani bu dosyanın kendi
+   "ÇIPLAK SAYI ÖZET DEĞİLDİR" kuralını düzeltme kendisi çiğnedi (ölçüldü,
+   390 ve 360 px). Etiket önce KISALTILIYOR ("Okuma 18"), çıplak değere
+   ancak hiçbir şey sığmazsa düşülüyor. Panel henüz çizilmemişse
+   (clientWidth 0) ölçüm yalan söyler, o yüzden tam metin olduğu gibi kalır. */
+function ozetSigdir(o,parca,cekirdek){
+  const adaylar=[];
+  const koy=x=>{ x=(x||'').trim(); if(x && !adaylar.includes(x)) adaylar.push(x); };
+  koy(parca.join(' · '));
+  if(parca.length>1) koy(parca[0]);
+  /* Etiket, ilk parçanın sonundaki değeri çıkararak geri kazanılıyor —
+     üçüncü bir dizi taşımaya gerek yok. */
+  const ilk=parca[0]||'', deg=cekirdek[0]||'';
+  if(deg && ilk.length>deg.length && ilk.slice(-deg.length)===deg){
+    const kelime=ilk.slice(0,ilk.length-deg.length).trim().split(/\s+/).filter(Boolean);
+    for(let n=kelime.length-1;n>=1;n--) koy(kelime.slice(0,n).join(' ')+' '+deg);
+  }
+  koy(deg);
+  if(!adaylar.length){ o.textContent=''; return; }
+  for(const a of adaylar){
+    o.textContent=a;
+    if(!o.clientWidth || o.scrollWidth<=o.clientWidth+1) return;
+  }
+  o.textContent=adaylar[adaylar.length-1];
+}
 function ozetCiz(){
   /* YALNIZ `display` ÖLÇÜLÜR, `visibility` DEĞİL — ölçülerek bulundu:
      ayar sayfası kapalıyken `.sheet` üzerinde `visibility:hidden` var ve
@@ -8559,8 +8681,13 @@ function ozetCiz(){
     const cocuk=[...ic.children];
     g.classList.toggle('bos', cocuk.length>0 && cocuk.every(c=>!gor(c)));
     const parca=[];
-    const ekle=t=>{ t=(t||'').trim();
-      if(t && t!=='—' && !parca.includes(t) && parca.length<2) parca.push(t); };
+    /* `cekirdek` = aynı parçanın ETİKETSİZ hâli. Yer yetmediğinde etiketi
+       atıp DEĞERİ korumak için gerekiyor; eskiden karakter sınırı tam tersini
+       yapıp değeri kesiyordu (aşağıdaki ozetSigdir açıklamasına bak). */
+    const cekirdek=[];
+    const ekle=(t,c)=>{ t=(t||'').trim();
+      if(t && t!=='—' && !parca.includes(t) && parca.length<2){
+        parca.push(t); cekirdek.push(((c==null?t:c)||'').trim()||t); } };
     /* ÇIPLAK SAYI ÖZET DEĞİLDİR. İlk hâli "18 · 60" yazıyordu; hangi sayının
        ne olduğunu ancak kartı açan biri bilir. Sayının başına satırın KISA
        etiketi konuyor ("Okuma çizgisi 18"). Etiket kart başlığını
@@ -8586,7 +8713,7 @@ function ozetCiz(){
     ic.querySelectorAll('.row').forEach(r=>{ if(parca.length||!gor(r)) return;
       const v=r.querySelector('.v'); if(!v) return;
       const d=(v.textContent||'').trim(); if(!d||d==='—') return;
-      const e=kisaEtiket(r); ekle(e? e+' '+d : d); });
+      const e=kisaEtiket(r); ekle(e? e+' '+d : d, d); });
     ic.querySelectorAll('.seg').forEach(s=>{ if(parca.length>=2||!gor(s)) return;
       const b=s.querySelector('button.on'); if(b) ekle(b.textContent); });
     /* BÜTÇE 26 DEĞİL 20 KARAKTER (2026-08-17, çizilmiş ekranda ölçüldü).
@@ -8597,8 +8724,10 @@ function ozetCiz(){
        ölçüldü). İkon satırdan 42 px aldı; eski 20 karakterlik özet artık
        başlığı ikinci satıra itiyordu. Sayı tavandan değil, çizilmiş ekranda
        "hiçbir kart başlığı iki satıra düşmüyor" ölçümünden geliyor. */
-    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;
-    if(parca.length===1 && parca[0].length>16) parca[0]=parca[0].slice(0,16).trim();
+    /* BÜTÇE ARTIK KARAKTER DEĞİL PİKSEL — aşağıdaki `ozetSigdir` yapıyor.
+       Sabit 16 karakterlik sınır iki kartta ölçülerek çürüdü; açıklaması
+       fonksiyonun başında. Karakter sınırı burada kalırsa piksel ölçümüne
+       hiç sıra gelmeden değer zaten kesilmiş oluyordu. */
     /* Yalnız anahtar taşıyan kartlarda (okuma yardımcıları, ekran, kayıt)
        gösterilecek değer yok; orada anlamlı özet AÇIK SAYISIDIR. Boş özet,
        kartı açmadan hiçbir şey söylemeyen bir başlık bırakırdı. */
@@ -8607,11 +8736,11 @@ function ozetCiz(){
         .map(t=>t.querySelector('.sw')).filter(Boolean);
       const n=sw.filter(s=>s.classList.contains('on')).length;
       // Tek anahtarlı kartta "1/1 açık" saymak gülünç; orada durum yeter.
-      if(sw.length===1) parca.push(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));
-      else if(sw.length) parca.push(L==='tr' ? n+'/'+sw.length+' açık'
-                                             : n+'/'+sw.length+' on');
+      if(sw.length===1) ekle(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));
+      else if(sw.length) ekle(L==='tr' ? n+'/'+sw.length+' açık'
+                                       : n+'/'+sw.length+' on');
     }
-    const o=g.querySelector('.ozet'); if(o) o.textContent=parca.join(' · ');
+    const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);
   });
   /* `.bos` sınıfı burada belirleniyor; bölüm kutusunun "içi kaldı mı" kararı
      ona bağlı, o yüzden hemen ardından koşuyor. */
@@ -9772,6 +9901,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.22':{tr:'<b>Ses testinin bulduğu kayıt biçimi artık gerçekten kullanılıyor.</b> Ses testi altı kayıt biçimini tek tek deneyip hangisinin GERÇEKTEN ses yazdığını ölçüyor, kazananı buluyor ve bunu sana söylüyordu; ama kayıt başlarken o seçim okunmuyordu. Yani MP4 biçiminde sessiz, webm biçiminde sesli kaydeden bir telefonda test doğru cevabı buluyor, çözüldüğünü söylüyor ve uygulama sessiz kaydetmeye devam ediyordu. Testin var oluş sebebi tam da bu durumdu. Seçilen biçim artık ayarlarda YAZILI duruyor ve tek dokunuşla bırakılabiliyor.<br><b>Görüntü filtresi kompozit kapalıyken sessizce ölüydü.</b> Filtre yalnız kompozit boru hattında çiziliyor, kompozit ise varsayılan olarak kapalı. Yani her yeni kullanıcıda kart Doğal yazıyor ve hiçbir şey olmuyordu. Artık filtre seçince kompozit kendiliğinden açılıyor; kamera yoksa sebebi yazıyor ve denetimler soluk duruyor.<br><b>İlk açılış ekranı artık Ne değişti demiyor.</b> Uygulamayı ilk kez açanlara gövdesinde Üç adımda başla yazan bir sayfa NEW rozetli sürüm notu başlığıyla açılıyordu. Artık hoş geldin diyor.<br><b>Ayar kartlarının özeti artık kesilmiyor.</b> Kart kapalıyken o anki değeri yazar; başlığı uzun iki kartta bu değer üç noktayla kesiliyor ve hiç okunamıyordu (Okuma çizgi… gibi). Bütçe artık karakterle değil gerçek genişlikle ölçülüyor: yer daralınca önce etiket kısalıyor, sayı her zaman görünüyor.',
+  en:'<b>The recording format found by the audio test is finally used.</b> The test measures which format actually writes audio and picks a winner, but recording ignored that choice: on a phone that records silent MP4 and audible webm, the test found the right answer, said it was fixed, and the app kept recording silence. The chosen format is now shown in settings and can be dropped with one tap.<br><b>The video filter was silently dead with the composite pipeline off.</b> It is only drawn inside that pipeline, which is off by default, so every new user saw Natural on the card and nothing happening. Picking a filter now turns the pipeline on; without a camera the reason is shown and the controls stay dimmed.<br><b>The first-run screen no longer says What is new.</b><br><b>Settings card summaries are no longer clipped.</b> The budget is measured in real width instead of characters: when space runs short the label shrinks first and the value always stays.'},
  '9.21':{tr:'<b>Çekim sırasında görüntü donarsa artık haber veriliyor.</b> Kayıt yolundaki iki gözcü yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — kayıt sürer, ses akar, ekranda donmuş kare kaydedilir ve bunu ancak çekimi izlerken anlarsın. Artık kareler durduğunda bir kez uyarılıyor, geri geldiğinde de söyleniyor. Kaydın akışına dokunulmuyor: kurtarmaya çalışmak çekimin sesini öldürürdü.<br><b>Çekim sonrası ekranındaki tanı satırları tek kutuda toplandı.</b> Ses değerlendirmesi, paylaşım desteği ve altyazı sayısı ekranın altında ortalanmış üç ayrı paragraf hâlinde duruyordu; bir şey ters gittiğinde okunması gereken tek yer orası ama gözün tarayabileceği bir hiza yoktu. Aynı bilgi, sola hizalı tek kutuda. Satır yoksa gösterilmiyor, üçü de boşsa kutu hiç çıkmıyor.<br><b>Durum şeridindeki kum saati emojisi ikonla değişti.</b> Emoji her platformda başka çiziliyor. Metin etiket de denendi ve ölçüldü: şeridi iki satıra çıkarıp hız hapının üstüne bindiriyordu, o yüzden ikonda kalındı.',
        en:'<b>If the picture freezes during a take you are now told.</b> The two watchers on the recording path only looked for the camera dying; on an interruption the phone does not kill the camera, it mutes it — recording continues, audio flows, a frozen frame is recorded and you only find out on playback. You are now warned once when frames stop, and told when they come back. The recording stream is not touched: trying to recover it would kill the take audio.<br><b>The diagnostic lines on the result screen are now one box.</b> The audio verdict, share support and caption count sat at the bottom as three separate centred paragraphs; that is the one place you must read when something goes wrong, and it had no alignment to scan. Same information, left aligned, in one box. An empty line is not shown, and with all three empty the box does not appear.<br><b>The hourglass emoji in the status strip became an icon.</b> Emoji render differently on every platform. Text labels were tried and measured: they pushed the strip onto a second row and over the speed pill, so the icon stayed.'},
        '9.20':{tr:'<b>Kayıt düğmesi artık adını söylüyor ve kapalıyken sebebini yazıyor.</b> Kamerasız kipte ekranın en büyük düğmesi sönük duruyor, adı yazmıyor ve dokununca hiçbir şey olmuyordu — alt çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Artık altında <b>Çek</b> yazıyor, dokununca kamerayı açmayı deniyor ve neden gerektiğini söylüyor. Kayıt sürerken etiket kalkıyor, çünkü o an yapılacak iş durdurmak.<br><b>Giriş ekranı ne okuyacağını gösteriyor.</b> Ekranın yarısı boştu ve sayfa senin metnin hakkında hiçbir şey söylemiyordu. Artık senaryonun adı, kelime sayısı ve tahmini süresi başlangıçta görünüyor. Senaryo yoksa kart hiç çıkmıyor.<br><b>Giriş ekranına marka işareti geldi</b> — sahnedeki okuma çizgisinin küçültülmüş hâli.<br><b>Önizleme donması artık fark ediliyor ve kendiliğinden düzeltiliyor.</b> Kayda basmadan önizleme yaparken bir süre sonra görüntü donup ses akmaya devam edebiliyordu (iPhone). Bugüne dek kamera korumalarının hepsi KAYIT yoluna yazılmıştı; önizlemede tek bir nöbetçi yoktu. Üstelik var olan kurtarma yalnız izin ÖLMESİNE bakıyordu, oysa telefon kesintide izi öldürmüyor SUSTURUYOR — görüntü durur, iz canlı görünür. Artık kareler ilerlemiyorsa sırayla oynatma, akışı yeniden bağlama ve kamerayı baştan açma deneniyor; ne olduğu ekranda yazıyor ve teşhis için cihazın günlüğüne durum kaydediliyor.',
@@ -9843,7 +9974,20 @@ let newsKip=null;   // 'onb' (ilk açılış) | 'news' (sürüm notu)
 function onbGovde(){ return L==='tr'
   ? '<b>Üç adımda başla:</b><br><br>1️⃣ <b>Senaryolar</b>&#39;a metnini yapıştır.<br>2️⃣ Ana ekranda <b>−/+</b> ile hızını ayarla (kendi okuma hızını bul).<br>3️⃣ <b>Hazır mıyım</b> ile ışığı ve sesi kontrol et, sonra <b>●</b> ile çek.<br><br>Gerisi isteğe bağlı — hepsini şimdi öğrenmen gerekmiyor.'
   : '<b>Three steps:</b><br><br>1️⃣ Paste your text in <b>Scripts</b>.<br>2️⃣ Set your pace with <b>−/+</b>.<br>3️⃣ Run <b>Ready?</b>, then hit <b>●</b>.'; }
+/* BAŞLIK DA KİPE GÖRE DEĞİŞİR (2026-08-17). Aynı sayfa iki amaca hizmet
+   ediyor; düğmeler bu yüzden ayrılmıştı ama BAŞLIK ayrılmamıştı. Sonuç:
+   uygulamayı ilk kez açan kullanıcı, gövdesinde "Üç adımda başla" yazan bir
+   sayfayı "🆕 Ne değişti?" başlığıyla görüyordu — hiç kullanmadığı bir üründe
+   neyin değiştiği sorusu anlamsız. Deponun 1 numaralı sınıfı: yarım kalmış
+   düzeltme. Karşılama anahtarı (`mDlgWelcome`) sözlükte zaten vardı.
+   `applyLang` önce `[data-i18n]` süpürmesini yapıp SONRA `newsYaz()`
+   çağırdığı için başlığı burada yazmak dil değişiminde de doğru kalıyor. */
+function newsBaslikYaz(){
+  const h=$('#newsTitle'); if(!h) return;
+  h.textContent = newsKip==='onb' ? '👋 '+t('mDlgWelcome') : t('newsTitle');
+}
 function newsYaz(){
+  newsBaslikYaz();
   if(newsKip==='onb'){ $('#newsBody').innerHTML=onbGovde(); return; }
   const k=Object.keys(NEWS).sort(verCmp).pop();
   $('#newsBody').innerHTML='<b>v'+k+'</b><br><br>'+(NEWS[k][L]||NEWS[k].tr);
@@ -10238,6 +10382,26 @@ $('#fixAudio').onclick=async()=>{
 $('#lightBtn').onclick=renderLight;
 $('#tiltBtn').onclick=enableTilt;
 
+/* SES TESTİNİN SEÇİMİ GÖRÜNÜR VE GERİ ALINABİLİR.
+   Seçim yalnız `st.forceMime` içinde yaşarken kullanıcı ne seçildiğini
+   göremiyor, yanlış bir turda seçilmişse de bırakamıyordu. `(seçeneksiz)`
+   durumu ayrı saklanıyor (`forceNoOpts`), o yüzden ikisi birlikte okunuyor. */
+function mimeKisa(){
+  if(st.forceNoOpts) return L==='tr' ? 'cihaz varsayılanı' : 'device default';
+  const x=st.forceMime||''; if(!x) return '';
+  return x.split(';')[0].replace('video/','');
+}
+function renderMime(){
+  const satir=$('#mimeRow'), dugme=$('#mimeClearRow'), deger=$('#vMimeNow');
+  if(!satir||!dugme||!deger) return;
+  const ad=mimeKisa();
+  satir.classList.toggle('hidden',!ad);
+  dugme.classList.toggle('hidden',!ad);
+  deger.textContent=ad||'—';
+}
+$('#mimeClear').onclick=()=>{ st.forceMime=''; st.forceNoOpts=false; apply(); save();
+  const box=$('#audTestOut'); if(box) box.innerHTML=''; };
+
 /* Kompozit gerektiren anahtar açıldığında kompoziti de aç; olmuyorsa anahtarı geri al. */
 function ensureComp(k){
   if(!st[k] || comp.on) return true;
@@ -10322,7 +10486,17 @@ $$('.tog').forEach(row=>{
   }
   };
 });
-$$('#vfxSeg button').forEach(b=>b.onclick=()=>{ st.vidFx=b.dataset.vfx; apply(); save(); });
+/* Filtre seçmek AÇIK bir istektir: koşulunu kendimiz sağlıyoruz (burnCaps ve
+   chroma ile aynı karar, v5.7). Fark: anahtar değil seçim olduğu için seçimi
+   GERİ ALMIYORUZ — kamera yoksa seçim duruyor, gateSettings bloğu soluklaştırıp
+   sebebini yazıyor. Sessiz kalmak yasak; ikisinden biri her zaman oluyor. */
+function ensureCompVfx(){
+  if(st.vidFx==='off' || comp.on) return true;
+  if(!stream){ toast(m('needCam')); apply(); return false; }
+  if(!startComp()){ apply(); return false; }
+  st.comp=true; apply(); save(); toast(m('needsComp')); return true;
+}
+$$('#vfxSeg button').forEach(b=>b.onclick=()=>{ st.vidFx=b.dataset.vfx; apply(); save(); ensureCompVfx(); });
 $('#vidAmt').oninput=e=>{ st.vidAmt=+e.target.value; renderVfx(); save(); };
 $$('#fxSeg button').forEach(b=>b.onclick=()=>{ sonrakiCekimde(); st.audioFx=b.dataset.fx;
   st.fxGate=null; st.fxPres=null; st.fxWarm=null;      // hazır ayara dönerken elle değerleri bırak
@@ -10338,15 +10512,19 @@ $$('#brSeg button').forEach(b=>b.onclick=()=>{ sonrakiCekimde(); st.bitrate=b.da
 $('#pickKey').onclick=()=>{
   if(!stream||!cam.videoWidth){ toast(m('needCam')); return; }
   try{
-    const c=document.createElement('canvas'); c.width=32; c.height=32;
-    const x=c.getContext('2d');
-    x.drawImage(cam, 0,0, Math.round(cam.videoWidth*0.18), Math.round(cam.videoHeight*0.18), 0,0,32,32);
-    const d=x.getImageData(0,0,32,32).data;
-    let r=0,g=0,b=0; const px=d.length/4;
-    for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
-    const hex='#'+[r/px,g/px,b/px].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
-    st.keyColor=hex; apply(); save();
-    toast(m('keyPicked')+' '+hex);
+    const c=document.createElement('canvas'); c.width=KROMA_IZGARA; c.height=KROMA_IZGARA;
+    const x=c.getContext('2d',{willReadFrequently:true});
+    x.drawImage(cam, 0,0, Math.round(cam.videoWidth*0.18), Math.round(cam.videoHeight*0.18),
+                0,0,KROMA_IZGARA,KROMA_IZGARA);
+    const o=kromaOrnekle(x.getImageData(0,0,KROMA_IZGARA,KROMA_IZGARA).data);
+    /* ÖRNEK TEK RENK DEĞİLSE YAZMA. Eski hâli ne ölçerse onu anahtar
+       yapıyordu: kamera perdeye dönük değilse (ya da köşeye duvar/omuz
+       giriyorsa) ortalama, perdenin rengi DEĞİL karışık bir renk çıkıyor;
+       yeşil ekran bundan sonra hiç tutmuyor ve kullanıcı özelliği bozuk
+       sanıyor. Sessizce yanlış sonuç üretmektense sebebini söylüyoruz. */
+    if(!kromaTekRenkMi(o)){ toast(m('keyPickBad')); return; }
+    st.keyColor=o.hex; apply(); save();
+    toast(m('keyPicked')+' '+o.hex);
   }catch(e){ logErr('pickKey',e); toast(m('keyPickFail')); }
 };
 $$('#keySeg button').forEach(b=>b.onclick=()=>{ st.keyColor=b.dataset.k; apply(); save(); });
@@ -10700,7 +10878,14 @@ function gateSettings(){
    ['#burnDeps',   ()=>!!st.burnCaps,
     L==='tr'?'altyazı gömme açık olmalı':'needs burned-in captions'],
    ['#wakeDeps',   ()=>!!st.voiceCmd,
-    L==='tr'?'sesli komut açık olmalı':'needs voice commands']
+    L==='tr'?'sesli komut açık olmalı':'needs voice commands'],
+   /* GÖRÜNTÜ FİLTRESİ (2026-08-17). K2 taramasının kör noktasıydı: ölçütü
+      "anahtar" (`data-t=…`) olduğu için segment ve sürgü hiç taranmadı.
+      `vidParams()` yalnız `drawComp()` içinde okunuyor — kompozit kapalıyken
+      filtre ne önizlemede ne kayıtta var. Varsayılan `comp:false` olduğu için
+      bu HER YENİ KULLANICIDA böyleydi ve kart yine de "Doğal" yazıyordu. */
+   ['#vfxDeps',    ()=>!!(st.comp&&comp.on),
+    L==='tr'?'kompozit açık olmalı':'needs the composite pipeline']
   ].forEach(([sel,ok,sebep])=>{
     const blok=$(sel); if(!blok) return;
     const uygun=ok();

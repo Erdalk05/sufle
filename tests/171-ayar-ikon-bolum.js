@@ -115,7 +115,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
   ok('arama sonrası bölümler tazeleniyor',
      /pane\.style\.display=hit\?'block':'none';\s*\n\s*\}\);\s*\n\s*bolumleriTazele\(\);/.test(kod));
   ok('özet çizildikten sonra bölümler tazeleniyor',
-     /o\.textContent=parca\.join\(' · '\);\s*\n\s*\}\);\s*\n\s*bolumleriTazele\(\);/.test(kod));
+     /ozetSigdir\(o,parca,cekirdek\);\s*\n\s*\}\);\s*\n\s*bolumleriTazele\(\);/.test(kod));
 }
 
 /* ---------- 2b. SENARYOLAR PANELİ DE BÖLÜMLENDİ (2026-08-17) ----------
@@ -234,12 +234,28 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
      /\.grup>summary>span\[data-i18n\]\{flex:0 0 auto;white-space:nowrap\}/.test(tel));
   ok('özet küçülebiliyor (min-width:0)', /\.ozet\{[\s\S]{0,220}?flex:0 1 auto;min-width:0/.test(tel));
 
-  /* Bütçe ikon eklendikten SONRA yeniden ölçüldü: 20 karakter başlığı ikinci
-     satıra itiyordu, 16 itmiyor. Sayı tavandan değil ölçümden geliyor. */
-  const m=kod.match(/parca\.join\(' · '\)\.length>(\d+)\) parca\.length=1;/);
-  ok('özet bütçesi 16 karakter (ikonlu satırda ölçüldü)', !!m && +m[1]===16);
-  const m2=kod.match(/parca\[0\]\.length>(\d+)\) parca\[0\]=parca\[0\]\.slice\(0,(\d+)\)/);
-  ok('tek parçalı özet de aynı bütçeye tabi', !!m2 && +m2[1]===16 && +m2[2]===16);
+  /* BÜTÇE ARTIK KARAKTER DEĞİL PİKSEL (2026-08-17 akşamı).
+     Bir önceki tur bütçeyi 26 → 20 → 16 KARAKTERE indirdi ve ölçütü
+     "kart başlığı iki satıra düşmesin" idi. O ölçüt tutuyordu; bedeli ÖZET
+     ödüyordu ve hiçbir kapı ona bakmıyordu. Çizilmiş ekranda ölçülen iki
+     kurban: "Göz teması ve çizgi" kartında "Okuma çizgisi 18" 96 px yer
+     bulup 107 px istiyordu (360 pxte yalnız 66 px), "Altyazı zamanlaması"
+     kartında ise 16 karakter sınırı DEĞERİ tümden kesip geriye yalnız
+     etiketi bırakıyordu. Yani sabit sayı, özetin var oluş sebebini yok
+     ediyordu. Merdivenin kendisi tests/166da koşturuluyor; buradaki iddia
+     KARAKTER SINIRININ GERİ GELMEMESİ. */
+  ok('sabit karakter bütçesi geri gelmedi (iki parça)',
+     !/parca\.join\(' · '\)\.length>\d+\) parca\.length=1;/.test(kod));
+  ok('sabit karakter bütçesi geri gelmedi (tek parça)',
+     !/parca\[0\]\.length>\d+\) parca\[0\]=parca\[0\]\.slice/.test(kod));
+  ok('sığdırma gerçek genişlikle ölçülüyor', /o\.scrollWidth<=o\.clientWidth\+1/.test(kod));
+  /* Etiket atılmadan ÖNCE kısaltılıyor: ilk düzeltme denemesi bu adımı
+     atlayınca özetler "18 · Tümü" oldu, yani bu dosyanın kendi ÇIPLAK SAYI
+     yasağını düzeltmenin kendisi çiğnedi. */
+  ok('değere düşmeden önce etiket kısaltılıyor',
+     /kelime\.slice\(0,n\)\.join\(' '\)\+' '\+deg/.test(kod));
+  /* Ölçemiyorsan kırpma: panel çizilmemişken clientWidth 0 gelir. */
+  ok('ölçülemeyen panelde kırpma yapılmıyor', /!o\.clientWidth \|\|/.test(kod));
 }
 
 /* ---------- 5. KUTU GÖRSEL KURALLARI ---------- */

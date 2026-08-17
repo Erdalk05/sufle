@@ -288,7 +288,26 @@ OLC = r"""
     if (!adHesapla(el)) adsiz.push(el.id ? '#' + el.id : yol(el));
   }
 
-  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz });
+  /* KIRPILAN KART ÖZETİ (2026-08-17 akşamı eklendi — KAPININ KÖR NOKTASIYDI).
+     Ayar kartı kapalıyken o anki DEĞERİ yazar; bütün varlık sebebi budur.
+     Bütçe karakterle ölçülüyordu, yer ise pikselle belirleniyor: başlığı uzun
+     iki kartta özet üç noktayla kesiliyor ve değer HİÇ okunmuyordu
+     ("Okuma çizgi…", "Altyazı kay…"). Kapı yalnız "başlık iki satıra
+     düşmesin" diyordu — o doğruydu, bedeli özet ödüyordu. Kaynak düzeyi bir
+     test bunu göremez; yalnız çizilmiş ekran gösterir. Ölçüt MUTLAK: 0. */
+  const kirpik = [];
+  for (const o of document.querySelectorAll('.grup > summary > .ozet')) {
+    if (!o.getClientRects().length) continue;
+    const t = (o.textContent || '').trim();
+    if (!t) continue;
+    if (o.scrollWidth > o.clientWidth + 1) {
+      const b = o.parentElement.querySelector('span[data-i18n]');
+      kirpik.push(((b ? b.textContent.trim() : '?') + ' → "' + t + '"'
+                   + ' (' + Math.round(o.clientWidth) + '/' + Math.round(o.scrollWidth) + 'px)'));
+    }
+  }
+
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik });
 })()
 """
 
@@ -432,6 +451,16 @@ def main():
         if adsiz:
             print('   ⛔ erişilebilir adı olmayan %d etkileşimli öge: %s'
                   % (len(adsiz), ' · '.join(adsiz[:10])))
+            kirmizi = True
+        # KIRPILAN ÖZET DE MUTLAK KURAL, tabana göre değil: doğru sayı 0 ve
+        # ölçüldüğünde 0'a indirildi. Taban kullanmak, birinin tabanı yükseltip
+        # kusuru kalıcılaştırmasına izin verirdi (adsız öge ile aynı gerekçe).
+        kirpik = r.get('kirpik', [])
+        yeni[ad + '~kirpik'] = len(kirpik)
+        if kirpik:
+            print('   ⛔ üç noktayla kesilen %d kart özeti (değer okunmuyor):' % len(kirpik))
+            for x in kirpik[:8]:
+                print('      ✂ %s' % x)
             kirmizi = True
         for k, v in r['dil'][:8]:
             print('   ⚠ %-26s "%s"' % (k, v))

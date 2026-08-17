@@ -2,6 +2,64 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔍 17 Ağustos akşamı — **v9.22 hazır, yayın kararı sende** (denetim turu)
+
+Uygulama gerçek tarayıcıda 390 ve 360 pxte, TR ve EN olarak AÇILDI; kapının
+ölçmediği sınıflar için yeni dedektörler yazıldı. Dört gerçek kusur çıktı,
+dördü de kapatıldı ve kapıya kilitlendi. Ayrıntı: `DENETIM_20260817_AKSAM.md`.
+
+**🔴 Ses testi cihazın verdiği cevabı çöpe atıyordu.** `runAudioTest()` altı
+kayıt biçimini tek tek deneyip hangisinin GERÇEKTEN ses yazdığını ölçüyor,
+kazananı `st.forceMime`e yazıyor ve sana "bulundu ve seçildi" diyordu — ama
+`pickMime()` o alanı HİÇ okumuyordu. MP4de sessiz, webmde sesli kaydeden bir
+telefonda test doğru cevabı buluyor, çözüldüğünü söylüyor ve uygulama sessiz
+MP4 kaydetmeye devam ediyordu; özelliğin var oluş sebebi tam da buydu.
+Nasıl bulundu: bütün `st.` alanları tarandı — telefonda **yazılıp hiç
+okunmayan tek alan** buydu. Destekleyici kanıt: `runAudioTest`, `recordWith`
+ve `probeAudio` hiçbir test dosyasında anılmıyordu, yani özelliğin sıfır testi
+vardı. Artık kazanan sıraya bakılmaksızın kullanılıyor (desteklenmiyorsa
+sessizce listeye düşülüyor), seçim ayarlarda YAZILI ve tek dokunuşla
+bırakılabiliyor.
+
+**🟠 Görüntü filtresi kompozit kapalıyken tümüyle ölüydü.** `vidParams()`
+yalnız `drawComp()` içinde okunuyor; varsayılan `comp:false` olduğu için her
+yeni kullanıcıda kart "Doğal" yazıyor ve ne önizlemede ne kayıtta bir şey
+oluyordu. Çekim kipleri bu ayarı ayrıca kuruyordu (Reels → Aydınlık).
+**Kapının kör noktası:** ön koşullu ayarları arayan K2 taramasının ölçütü
+ANAHTAR (`data-t=…`) idi; görüntü filtresi bir segment ile bir sürgü olduğu
+için hiç taranmadı. Artık filtre seçmek kompoziti kendisi açıyor (burnCaps ve
+chroma ile aynı karar) ve açamıyorsa sebebini yazıp denetimleri soluklaştırıyor.
+
+**🟠 İlk açılış ekranının başlığı "🆕 Ne değişti?" idi.** Gövdesinde "Üç adımda
+başla" yazan sayfa, uygulamayı ilk kez açana NEW rozetiyle açılıyordu. Kod bu
+riski biliyordu ve DÜĞMELERİ iki kip için ayırmıştı; başlık ayrılmamıştı —
+deponun 1 numaralı sınıfı, yarım kalmış düzeltme. Karşılama anahtarı
+(`mDlgWelcome`) sözlükte zaten duruyordu, kullanılmıyordu.
+
+**🟡 Ayar kartı özetleri üç noktayla kesiliyordu.** Bütçe KARAKTERLE (16)
+ölçülüyordu, yer ise PİKSELLE belirleniyor ve başlık uzadıkça özete kalan yer
+azalıyor. Ölçülen iki kurban: "Göz teması ve çizgi" kartında "Okuma çizgisi 18"
+96 px yer bulup 107 px istiyordu (360 pxte yalnız 66 px), "Altyazı zamanlaması"
+kartında ise karakter sınırı DEĞERİ tümden kesip geriye yalnız etiketi
+bırakıyordu. Kapı "hiçbir kart başlığı iki satıra düşmesin" diyordu ve bu
+doğruydu — bedeli özet ödüyordu. Bütçe artık gerçek genişlikle ölçülüyor:
+yer daralınca önce etiket kısalıyor, sayı her zaman kalıyor.
+İlk düzeltme denemem çürütüldü: etiketi hemen atıp değere düşmek özetleri
+"18 · Tümü" yaptı, yani bu dosyanın kendi ÇIPLAK SAYI yasağını düzeltmenin
+kendisi çiğnedi. Merdivene etiket kısaltma adımı eklendi.
+
+**Kapı büyüdü:** çizilmiş arayüz denetimi (`kontrast.py`) artık kesilen kart
+özetini de sayıyor ve ölçütü MUTLAK 0 — kaynak düzeyi bir test bunu göremez.
+Dedektörün ayırt ettiği kanıtlandı: sığdırma iptal edilince üç kart özetini
+yakaladı, açıkken sıfır dedi. Yeni test dosyası `tests/178`, **20 yeni kasıtlı
+bozma**, test **6968 → 7025**.
+
+**Kendi hatalarım (tekrarlamayayım):** şablon dizesi içindeki yoruma yine ters
+tırnak koydum (CLAUDE.md bunu üç kez yazmış) · iki yeni iddia AYIRT ETMİYORDU
+ve bunu ancak kasıtlı bozma turu gösterdi (`renderMime\(\)` deseni fonksiyonun
+KENDİ TANIMIYLA eşleşiyordu; `[\s\S]*?` ile yazılmış blok deseni kapanış
+etiketini aşıyordu). İkisi de sıkılaştırıldı.
+
 ## 🎨 17 Ağustos — "UI hâlâ rakiplerin gerisinde": ayar listesi baştan çizildi
 
 **v9.19 YAYINLANDI ve canlıdan doğrulandı** (Erdal onayıyla; `sufle-v91`,
@@ -10,7 +68,7 @@ listesi ikonlandı ve konu bloklarına ayrıldı, ayarların ilk açılışta bo
 görünmesi düzeltildi, arşivden açılan çekimin yayın paketi kendi senaryosunu
 taşıyor.
 
-**v9.21 hazır, yayın kararı sende:** çekim SIRASINDA görüntü donarsa artık haber veriliyor (kayıt yolundaki gözcüler yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — donmuş kare kaydediliyordu ve bunu ancak izlerken anlıyordun). Kaydın akışına dokunulmuyor, yalnız bir kez uyarılıyor.
+**v9.21 YAYINLANDI ve canlıdan doğrulandı** (`sufle-v93`; canlıda izler sayıldı: `compCanliTut` 2, `oynatNabiz` 2, `kirpAltyazi` 2, `sesSustu` 6). İçindekiler: çekim SIRASINDA görüntü donarsa artık haber veriliyor (kayıt yolundaki gözcüler yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — donmuş kare kaydediliyordu ve bunu ancak izlerken anlıyordun). Kaydın akışına dokunulmuyor, yalnız bir kez uyarılıyor.
 
 **v9.20 YAYINLANDI ve canlıdan doğrulandı** (senin "push et"in; `sufle-v92`, index.html ve sw.js md5 birebir, canlıda izler sayıldı: `onizNabiz` 2, `logNot` 4, `arsivKaynak` 15, `takeSilArm` 6). İçindekiler: kayıt düğmesi adını söylüyor
 (<b>Çek</b>) ve kapalıyken sebebini yazıp kamerayı açmayı deniyor — kamerasız
@@ -1371,7 +1429,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **540 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **549 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1546,9 +1604,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **6912 test** (gece başında 732) · yeni test dosyası: 39–176
+- **7025 test** (gece başında 732) · yeni test dosyası: 39–178
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **540 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

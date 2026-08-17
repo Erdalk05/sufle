@@ -177,3 +177,39 @@ const ready=cikar(kod,/function readyChecks\(\)\{[\s\S]*?\n\}/,'readyChecks');
 ok('hazırlık kontrolü ışık denetçisini kullanıyor', /lightCheck\(\)\.forEach/.test(ready));
 ok('bilgi satırları hazırlık kontrolüne taşınmıyor (gürültü olmasın)',
    /o\.lv!=='info'/.test(ready));
+
+/* ---------- ÇEKİRDEK ADLARI VE MASAÜSTÜ ZİNCİRİ (2026-08-17 akşamı) ----------
+   Hesap `cekirdek/isik.js`e taşınıp masaüstüne de gömüldü, ama fonksiyonların
+   HİÇBİRİ testlerde adıyla anılmıyordu; kapsam kapısı bunu "kapsanmayan +6"
+   diye bildirdi. Tabanı büyütmek yerine eksik olan yazıldı: aşağıdaki
+   iddialar zincirin GERÇEKTEN bağlı olduğunu ölçüyor, ad saymıyor. */
+{
+  /* Çekirdek DOSYADAN okunuyor: gömülü kopya değil, tek kaynak ölçülsün. */
+  const cek = cekirdekOku('isik.js');
+  ok('istatistik ve bulgu ayrı fonksiyonlar (ölçüm/yargı ayrımı)',
+     /function isikIstatistik\(d\)\{/.test(cek) && /function isikBulgular\(s, L, tiltDeg\)\{/.test(cek));
+  ok('kamera kapalı durumu ayrı fonksiyonda', /function isikKameraKapali\(L\)\{/.test(cek));
+  /* Kamera kapalıyken üretilen satır YARGI DEĞİL BİLGİ olmalı: hazırlık
+     kontrolü info satırlarını atıyor, aksi hâlde kamerasız kipte
+     "ışığın kötü" diye yalan bir uyarı çıkardı. */
+  const kapali=new Function(cek+'; return isikKameraKapali("tr");')();
+  ok('kamera kapalı satırı info seviyesinde', kapali.length===1 && kapali[0].lv==='info');
+  const kapaliEn=new Function(cek+'; return isikKameraKapali("en");')();
+  ok('kamera kapalı satırı iki dilde', kapaliEn[0].t!==kapali[0].t);
+
+  /* MASAÜSTÜ AYNI ÇEKİRDEĞİ ÇAĞIRIYOR MU — kopya hesap varsa iki platform
+     zamanla ayrışır ve bunu kimse fark etmez. */
+  const macKod=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+  ok('masaüstü bulgusu çekirdeği çağırıyor',
+     /function macIsikBulgu\(\)\{[\s\S]*?isikBulgular\(s, L, null\)/.test(macKod));
+  ok('masaüstü kamera kapalıyken çekirdeğin bilgi satırını kullanıyor',
+     /macIsikBulgu\(\)\{[\s\S]*?isikKameraKapali\(L\)/.test(macKod));
+  ok('masaüstü çizimi bulgudan besleniyor',
+     /function macIsikCiz\(\)\{[\s\S]*?macIsikBulgu\(\)\.map/.test(macKod));
+  /* Nabız yalnız kamera açıkken atmalı; kapalıyken saniyede bir boş ölçüm
+     yapmak pil yakar ve panelde bayat sonuç bırakır. */
+  ok('masaüstü nabzı kamerasızken kurulmuyor',
+     /function macIsikBaslat\(\)\{[\s\S]*?if\(!stream\) return;/.test(macKod));
+  ok('nabız kurulmadan önce eskisi durduruluyor (çift zamanlayıcı olmasın)',
+     /function macIsikBaslat\(\)\{\s*\n?\s*macIsikDurdur\(\);/.test(macKod));
+}
