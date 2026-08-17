@@ -3134,5 +3134,19 @@
   "kaynak": "telefon",
   "bul": "    padding:10px 10px var(--barAlt);",
   "koy": "    padding:10px 10px calc(30px + env(safe-area-inset-bottom));"
+ },
+ {
+  "ad": "masaüstünde seyrek blok yine hep açık (panelin yarısını kaplar)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "mac",
+  "bul": "      <details class=\"grup\"><summary><span data-i18n=\"mDiffTitle\">Zorlanma haritası</span></summary><div class=\"icerik\">",
+  "koy": "      <details class=\"grup\" open><summary><span data-i18n=\"mDiffTitle\">Zorlanma haritası</span></summary><div class=\"icerik\">"
+ },
+ {
+  "ad": "masaüstünde sık kullanılan anahtar da kartın içine alındı",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "mac",
+  "bul": "      <div class=\"toggle\"><span data-i18n=\"mSwEye\">Göz çizgisi</span><div class=\"sw2 on\" data-t=\"eye\"></div></div>",
+  "koy": "      <details class=\"grup\"><summary><span data-i18n=\"mSwEye\">Göz çizgisi</span></summary><div class=\"icerik\"><div class=\"toggle\"><span data-i18n=\"mSwEye\">Göz çizgisi</span><div class=\"sw2 on\" data-t=\"eye\"></div></div></div></details>"
  }
 ]

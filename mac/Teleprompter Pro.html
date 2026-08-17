@@ -262,6 +262,26 @@
   .ctrl label{font-size:12px;color:var(--txt)}
   .ctrl .v{font-size:12px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
   input[type=range]{width:100%;accent-color:var(--accent);height:22px}
+  /* ===== SAĞ PANEL KART'LARI (2026-08-17) =====
+     Telefonda ayarlar kartlara bölününce ekran sakinleşti; masaüstünde de
+     iki blok aynı sorunu yaşıyordu: kumanda öğretme ve zorlanma haritası,
+     paragraflarıyla birlikte panelin yarısını kaplıyor ve HER ZAMAN açık
+     duruyorlardı — oysa ikisi de seyrek kullanılıyor. Sık kullanılan
+     anahtarlar açıkta kaldı, bu ikisi katlanır karta girdi.
+     <details> KASITLI: aç/kapa, klavye ve ekran okuyucu davranışı
+     tarayıcıdan hazır gelir (telefondaki kararla aynı). */
+  .grup{background:var(--card,#17171c);border:1px solid var(--line);
+    border-radius:12px;margin:10px 0;overflow:hidden}
+  .grup>summary{display:flex;align-items:center;gap:8px;min-height:40px;
+    padding:8px 12px;cursor:pointer;list-style:none;
+    font-size:13px;font-weight:700;color:var(--txt)}
+  .grup>summary::-webkit-details-marker{display:none}
+  .grup>summary::after{content:"";width:7px;height:7px;flex:none;margin-left:auto;
+    border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(45deg) translateY(-2px);transition:transform .12s}
+  .grup[open]>summary::after{transform:rotate(-135deg) translateY(2px)}
+  .grup .icerik{padding:0 12px 12px}
+  .grup .icerik>.field{margin-bottom:0}
   .field{margin-bottom:11px}
   .field:last-child{margin-bottom:0}
   .field .top{display:flex;justify-content:space-between;margin-bottom:3px}
@@ -849,8 +869,8 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       <!-- D.3 — ÖĞRENMELİ TUŞ EŞLEME. Sabit tablo piyasadaki kumandaları
            karşılıyor ama ALIŞILMADIK tuş gönderen pedal için kullanıcının
            yapabileceği bir şey yoktu. Telefondaki yetenek buraya taşındı. -->
+      <details class="grup"><summary><span data-i18n="mRemoteKeys">Kumanda tuşları</span></summary><div class="icerik">
       <div class="field" style="margin-top:10px">
-        <label data-i18n="mRemoteKeys">Kumanda tuşları</label>
         <div class="meta" data-i18n="mRemoteKeysHint">Sunum kumandası ya da sayfa çevirici pedal bağla. Tanınmayan bir tuş gönderiyorsa öğret.</div>
         <div class="row" style="margin-top:6px">
           <span data-i18n="lastKeyL">Gelen son tuş</span>
@@ -876,15 +896,17 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
         <div class="row" style="margin-top:10px"><span data-i18n="mapList">Eşleme tablosu</span></div>
         <div id="macMapList"></div>
       </div>
+      </div></details>
 
       <!-- A.4 — ZORLANMA HARİTASI. Prova raporunun (E.4) tamamlayıcısı:
            o "nasıl okudum", bu "nerede takıldım" der. -->
+      <details class="grup"><summary><span data-i18n="mDiffTitle">Zorlanma haritası</span></summary><div class="icerik">
       <div class="field" style="margin-top:10px">
-        <label data-i18n="mDiffTitle">Zorlanma haritası</label>
         <div class="meta" data-i18n="mDiffHint">Okurken yavaşladığın, geri sardığın ve duraklattığın yerler burada birikiyor — prova ettikçe doluyor.</div>
         <div id="macDiffOut" style="margin-top:6px"></div>
         <button class="btn" id="macDiffClear" data-i18n="mDiffClear" style="margin-top:6px">↺ Haritayı sıfırla</button>
       </div>
+      </div></details>
     </div>
 
     <div class="ctrl" id="remoteCtrl" data-rtab="cam">
@@ -4190,8 +4212,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
- '9.18':{tr:'<b>Bu sürümün işi telefon giriş ekranındaydı:</b> dört eşit düğme yerine tek asıl eylem, altında kamerasız yol ve en altta yardım ile sürüm. Masaüstü arayüzünde değişiklik yok; sürüm numarası iki kabuk aynı kalsın diye yükseldi.',
-       en:'<b>This version was phone start-screen work:</b> one main action instead of four equal buttons, the camera-free path under it, help and the version at the bottom. Nothing changed in the desktop interface; the version moved so both shells stay in step.'},
+ '9.18':{tr:'<b>Sağ paneldeki iki ağır blok katlanır karta girdi:</b> kumanda tuşları ve zorlanma haritası, paragraflarıyla panelin yarısını kaplayıp her zaman açık duruyordu; ikisi de seyrek kullanılıyor. Sık kullandığın anahtarlar (ayna, göz çizgisi, odak karartma, kelime vurgusu, sayaç) açıkta kaldı.<br><b>Telefon tarafında:</b> dört eşit düğme yerine tek asıl eylem, altında kamerasız yol ve en altta yardım ile sürüm. Masaüstü arayüzünde değişiklik yok; sürüm numarası iki kabuk aynı kalsın diye yükseldi.',
+       en:'<b>Two heavy blocks in the right panel moved into collapsible cards:</b> the remote keys and the difficulty map filled half the panel with their paragraphs and were always open, though both are used rarely. The switches you use often (mirror, eye line, focus dimming, word highlight, countdown) stay in the open.<br><b>On the phone side:</b> one main action instead of four equal buttons, the camera-free path under it, help and the version at the bottom. Nothing changed in the desktop interface; the version moved so both shells stay in step.'},
  '9.17':{tr:'<b>Alt durum çubuğu okunur hâle geldi.</b> Kısayolları, WPM değerini, cihaz özetini ve dil seçicisini taşıyan çubuk pencere ne kadar geniş olursa olsun 608 piksellik dar bir sütunda kalıyor ve 151 piksel yüksekliğe kırılıyordu: her etiket kendi içinde bölünüyor, cihaz özeti altı satıra iniyor ve görüntünün altını kaplıyordu. Artık etiketler bölünmüyor, çubuk pencerenin genişliğini kullanıyor ve yüksekliği 66 piksele indi.<br><b>Telefon tarafında:</b> ayarlar tek uzun liste olmaktan çıkıp konu konu katlanır kartlara bölündü; kart kapalıyken o anki değerini söylüyor ve arama kartların içine bakıyor. Masaüstünde bu düzenin karşılığı henüz yok, sağ panel olduğu gibi duruyor.<br><b>PDF dosyasından senaryo alabiliyorsun</b> — masaüstünde de. Okuyucu emin olamazsa metin vermiyor, sebebini söylüyor.',
        en:'<b>The bottom status bar is readable again.</b> The bar holding the shortcuts, the WPM value, the device summary and the language switch stayed in a narrow 608 pixel column no matter how wide the window was, and wrapped to 151 pixels tall: every label broke inside itself, the device summary ran to six lines and it covered the bottom of the picture. Labels no longer break, the bar uses the width of the window, and its height came down to 66 pixels.<br><b>On the phone side:</b> settings are no longer one long list but collapsible cards by topic; a closed card states its current value and search looks inside the cards. The desktop has no equivalent of that layout yet — the right panel is unchanged.<br><b>You can import a script from a PDF</b> on the desktop too. If the reader cannot be sure, it gives no text and says why.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de Son hatalar listesine korkutucu bir satır düşüyordu. Artık düşmüyor.',

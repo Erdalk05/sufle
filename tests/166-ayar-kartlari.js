@@ -380,3 +380,39 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   ok('sekme değişince özet ZORLA tazeleniyor', /ozetTazele\(true\);\n\}\);/.test(kod3));
   ok('kart açılınca da zorla tazeleniyor', /if\(g\.open\) ozetTazele\(true\);/.test(kod3));
 }
+
+/* ---------- MASAÜSTÜ SAĞ PANELİ DE KARTLANDI (2026-08-17) ----------
+   Telefonda ayarlar kartlara bölününce ekran sakinleşti; masaüstünde de iki
+   blok aynı sorunu yaşıyordu. "Kumanda tuşları" (öğretme kutusu + eşleme
+   tablosu) ve "Zorlanma haritası", paragraflarıyla panelin yarısını kaplayıp
+   HER ZAMAN açık duruyordu — oysa ikisi de seyrek kullanılıyor.
+
+   Kural: SIK kullanılan anahtarlar açıkta kalır, SEYREK kullanılan bloklar
+   katlanır kartta durur ve kart açık başlamaz. Ölçüldü: iki kart, ikisi de
+   kapalı, panel yüksekliği 421 px; kartlar açılınca düğmeler çalışıyor
+   (tuş öğret kutusu açıldı, harita sıfırlandı), JS hatası 0. */
+{
+  const { macYolu } = require('./kaynak.js');
+  const mac = oku(macYolu());
+  const okuma = mac.slice(mac.indexOf('<div class="ctrl" data-rtab="read">'),
+                          mac.indexOf('<div class="ctrl" id="remoteCtrl"'));
+  const kart = [...okuma.matchAll(/<details class="grup"( open)?><summary><span data-i18n="(\w+)"/g)];
+  ok('masaüstü Okuma sekmesinde kart var (' + kart.length + ')', kart.length === 2);
+  ok('masaüstünde de hiçbir kart açık başlamıyor', kart.every(k => !k[1]));
+  ok('kartlar seyrek kullanılan iki blok',
+     kart.map(k => k[2]).sort().join(',') === 'mDiffTitle,mRemoteKeys');
+  /* Sık kullanılan anahtarlar KART DIŞINDA kalmalı: onları da katlamak
+     masaüstünde her seferinde fazladan tıklama demek olurdu. */
+  const disarida = (id) => {
+    const i = okuma.indexOf(id); if (i < 0) return false;
+    const once = okuma.slice(0, i);
+    return (once.match(/<details class="grup">/g) || []).length ===
+           (once.match(/<\/details>/g) || []).length;
+  };
+  for (const t of ['data-t="mirror"', 'data-t="eye"', 'data-t="dim"', 'data-t="hl"', 'data-t="count"'])
+    ok('anahtar kart dışında: ' + t, disarida(t));
+  ok('kumanda öğretme kartın içinde', !disarida('id="macLearn"'));
+  ok('zorlanma haritası kartın içinde', !disarida('id="macDiffClear"'));
+  ok('masaüstünde kart biçimi tanımlı', /\.grup\{background:var\(--card/.test(mac));
+  ok('masaüstü kart başlığı en az 40 px', /\.grup>summary\{[^}]*min-height:40px/.test(mac));
+}
