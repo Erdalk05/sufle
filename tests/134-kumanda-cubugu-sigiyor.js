@@ -198,3 +198,30 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   ok('çubuk iç kenarında ham piksel yok',
      !/#bar\{[^}]*padding:10px 10px calc\(\d+px \+ env/.test(src3));
 }
+
+/* ---------- YATAY EKRANDA ÇAKIŞMA (2026-08-17, ölçülerek bulundu) ----------
+   Telefonu yan çevirince (844×390) talimat yazısı HIZ HAPININ TAM ÜSTÜNE
+   biniyordu: not `bottom: 22% + 78px` ile konumlanıyordu ve yatayda yüzde
+   küçüldüğü için hapın üstüne düşüyordu. Kapı görmedi, çünkü çakışma
+   dedektörünün listesinde `.tapnote` YOKTU — ölçmeyen dedektör gerçek kusuru
+   kaçırır.
+
+   İki düzeltme: (1) not artık alt yığının yüksekliğine göre konumlanıyor,
+   yani çubuk büyüyünce kendiliğinden yukarı kayıyor; (2) çok kısa ekranda
+   (≤430 px yükseklik) not hiç gösterilmiyor — orada yer yok ve göstermek
+   onu suflenin üstüne bindirmek olurdu.
+   Ölçüldü: 844×390, 932×430, 390×844, 430×932 → çakışan çift 0. */
+{
+  const src4 = oku(telefonYolu());
+  ok('talimat yazısı yığın yüksekliğine göre konumlanıyor',
+     /\.tapnote\{position:absolute;bottom:calc\(var\(--barH\) \+ \d+px\)/.test(src4));
+  ok('yüzdeye dayalı eski konum geri gelmedi',
+     !/\.tapnote\{position:absolute;bottom:calc\(\d+% /.test(src4));
+  ok('kısa ekranda not gizleniyor',
+     /@media \(max-height:\d+px\)\{ \.tapnote\{display:none\} \}/.test(src4));
+  /* Dedektör de düzeltildi: aynı sınıf bir daha sessiz kalmasın. */
+  const ekranPy = require('fs').readFileSync(
+    require('path').join(__dirname, '..', 'ekran.py'), 'utf8');
+  ok('çakışma dedektörü talimat yazısını da ölçüyor',
+     /#speedCtl,#hud,#hud>span,#bar,#audBadge,#recFrame,\.tapnote/.test(ekranPy));
+}

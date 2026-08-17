@@ -137,6 +137,11 @@ function ara(sorgu, once){
     const $=k=>el[k];
     const $$=()=>__tabs;
     function ozetTazele(){}
+    /* Kartlar bölüm kutularına ayrıldıktan sonra (KART_BOLUM) arama
+       kutuları da gösterip gizliyor; simülasyon o işlevi sağlamazsa
+       ReferenceError ile çöker. Sahte olması doğru: bu test ARAMANIN
+       neyi bulduğunu ölçüyor, kutuların çizimini değil. */
+    function bolumleriTazele(){}
     ${mBlok[0]}
     ${mSearch[0]}
     searchSettings();

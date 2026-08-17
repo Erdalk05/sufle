@@ -44,7 +44,16 @@ ok('reçeteye yönlendiriyor', /Göz teması reçetesi/.test(jsHam));
 
 // ---- İPUCU ARTIK SENARYOYU KAPATMIYOR ----
 ok('ipucu okuma alanından çıkarıldı', !/\.tapnote\{position:absolute;top:52%/.test(src));
-ok('ipucu hız hapının üstünde', /\.tapnote\{position:absolute;bottom:calc\(22% \+ 78px\)/.test(src));
+/* 2026-08-17: bu satır BİÇİMİ kilitliyordu (`22% + 78px`) ve tam da bu
+   yüzden gerçek kusuru gizledi: yüzde, yatay ekranda (844x390) küçülüp
+   ipucunu hız hapının TAM ÜSTÜNE bindiriyordu — test yine de yeşildi,
+   çünkü sayı değişmemişti; YANLIŞ OLAN SAYININ KENDİSİYDİ (aynı hata
+   aşağıdaki v8.6 notunda da anlatılıyor, üçüncü tekrarı).
+   Artık İDDİA kilitli: ipucunun konumu alt yığının yüksekliğinden türüyor,
+   yani çubuk ya da hap büyüyünce ipucu kendiliğinden yukarı kayıyor. */
+ok('ipucu konumu yığından türüyor (sabit yüzde değil)',
+   /\.tapnote\{position:absolute;bottom:calc\(var\(--barH\) \+ \d+px\)/.test(src)
+   && !/\.tapnote\{position:absolute;bottom:calc\(\d+% /.test(src));
 ok('sebebi kodda yazılı', /senaryonun ilk satırlarını kapatıyordu/.test(src));
 
 // ---------- ALT BÖLGE YIĞILMASI (v8.6, ekran görüntüsünden) ----------
@@ -74,7 +83,12 @@ ok('durum satırında sabit alt konum kalmadı', !/#hud\{[^}]*bottom:calc\(\d+px
    yığının içine girerse yalnız yığını kaplar. */
 ok('sayaç yığının dışında', /<div id="count"[\s\S]{0,200}<div id="altYigin">/.test(src));
 ok('şerit ile çipler arasında boşluk var (130 > 86)', 130-86>=40);
-ok('ipucu hız hapının üstüne alındı', /\.tapnote\{[^}]*bottom:calc\(22% \+ 78px\)/.test(src));
+/* Aynı gerekçe: ipucu hâlâ hız hapının ÜSTÜNDE olmalı, ama bunu artık
+   yığının yüksekliğinden alıyor. Yatayda yer kalmadığında (≤430 px)
+   hiç gösterilmiyor — göstermek onu suflenin üstüne bindirmek olurdu. */
+ok('ipucu hapın üstünde ve dar ekranda yer açıyor',
+   /\.tapnote\{[^}]*bottom:calc\(var\(--barH\) \+ \d+px\)/.test(src)
+   && /@media \(max-height:\d+px\)\{ \.tapnote\{display:none\} \}/.test(src));
 ok('ipucu artık okuma alanında değil', !/\.tapnote\{[^}]*top:52%/.test(src));
 
 // İpucu bir kez başlattıktan sonra bir daha çıkmamalı

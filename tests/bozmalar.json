@@ -2768,8 +2768,8 @@
   "ad": "kart başlığı 44 px dokunma hedefinin altına düştü",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": ".grup>summary{display:flex;align-items:center;gap:var(--sp-2);min-height:var(--tap);",
-  "koy": ".grup>summary{display:flex;align-items:center;gap:var(--sp-2);"
+  "bul": ".grup>summary{display:flex;align-items:center;gap:var(--sp-3);min-height:var(--tap);",
+  "koy": ".grup>summary{display:flex;align-items:center;gap:var(--sp-3);"
  },
  {
   "ad": "kart açıkken özet de duruyor (aynı bilgi iki kez)",
@@ -3006,15 +3006,15 @@
   "ad": "özet bütçesi gevşetildi (kart başlığı iki satıra düşer)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "    if(parca.length===2 && parca.join(' · ').length>20) parca.length=1;",
+  "bul": "    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;",
   "koy": "    if(parca.length===2 && parca.join(' · ').length>40) parca.length=1;"
  },
  {
   "ad": "özet genişliği başlığın yerini yiyor",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}",
-  "koy": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}"
+  "bul": "    flex:0 1 auto;min-width:0;max-width:46%}",
+  "koy": "    flex:0 1 auto;min-width:0;max-width:70%}"
  },
  {
   "ad": "pozlama sürgüsü desteksiz cihazda da görünüyor (ölü ayar)",
@@ -3069,8 +3069,8 @@
   "ad": "özet sınırlayıcısı rAF'a bağlandı (arka planda asılı kalır)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "let ozetSon=0;\nfunction ozetTazele(zorla){\n  const simdi=performance.now();\n  if(!zorla && simdi-ozetSon<120) return;\n  ozetSon=simdi;\n  ozetCiz();\n}",
-  "koy": "let ozetBekliyor=false;\nfunction ozetTazele(zorla){\n  if(ozetBekliyor) return; ozetBekliyor=true;\n  requestAnimationFrame(()=>{ ozetBekliyor=false; ozetCiz(); });\n}"
+  "bul": "function ozetTazele(zorla){\n  const simdi=performance.now();\n  if(!zorla && simdi-ozetSon<120) return;\n  ozetSon=simdi;\n  ozetCiz();\n}",
+  "koy": "function ozetTazele(zorla){\n  if(ozetSon) return; ozetSon=1;\n  requestAnimationFrame(()=>{ ozetSon=0; ozetCiz(); });\n}"
  },
  {
   "ad": "sekme değişince özet tazelenmiyor (yeni sekme boş özetle açılır)",
@@ -3083,7 +3083,7 @@
   "ad": "görünmeyen sekmenin kartları da hesaplanıyor (boşuna maliyet)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "    if(pano && pano.classList.contains('tab') && !pano.classList.contains('on')) return;",
+  "bul": "    const pano=g.closest('.tab');\n    if(pano && !pano.classList.contains('on')) return;",
   "koy": ""
  },
  {
@@ -3148,5 +3148,145 @@
   "kaynak": "mac",
   "bul": "      <div class=\"toggle\"><span data-i18n=\"mSwEye\">Göz çizgisi</span><div class=\"sw2 on\" data-t=\"eye\"></div></div>",
   "koy": "      <details class=\"grup\"><summary><span data-i18n=\"mSwEye\">Göz çizgisi</span></summary><div class=\"icerik\"><div class=\"toggle\"><span data-i18n=\"mSwEye\">Göz çizgisi</span><div class=\"sw2 on\" data-t=\"eye\"></div></div></div></details>"
+ },
+ {
+  "ad": "Y1 talimat yazısı yine yüzdeyle konumlanıyor (yatayda hız hapına biner)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": ".tapnote{position:absolute;bottom:calc(var(--barH) + 108px)",
+  "koy": ".tapnote{position:absolute;bottom:calc(22% + 78px)"
+ },
+ {
+  "ad": "Y2 kısa ekranda not gizleme kuralı silindi",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "@media (max-height:430px){ .tapnote{display:none} }",
+  "koy": "@media (max-height:430px){ .tapnote{opacity:.9} }"
+ },
+ {
+  "ad": "S1 tek çekim silmesi yine onaysız (video tek dokunuşta gider)",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "telefon",
+  "bul": "      if(takeSilArm!==it.id){",
+  "koy": "      if(false){"
+ },
+ {
+  "ad": "S2 sayfa kapanınca silme onayı silinmiyor (dönünce tek dokunuş siler)",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "telefon",
+  "bul": "  if(takeSilArm){ takeSilArm=null; clearTimeout(takeSilT); takeSilT=null;",
+  "koy": "  if(false){ takeSilArm=null; clearTimeout(takeSilT); takeSilT=null;"
+ },
+ {
+  "ad": "S3 sonuç ekranı silmesi yine onaysız (az önceki çekim tek dokunuşta gider)",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "telefon",
+  "bul": "  if(!redoArm){\n    redoArm=1;",
+  "koy": "  if(false){\n    redoArm=1;"
+ },
+ {
+  "ad": "S4 sonuç ekranı kapanınca silme onayı düşmüyor",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "telefon",
+  "bul": "  redoArm=0; clearTimeout(redoT); redoT=null;",
+  "koy": "  clearTimeout(redoT); redoT=null;"
+ },
+ {
+  "ad": "S5 masaüstünde 'sil' yazınca yine anında siliniyor",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "mac",
+  "bul": "      if(silArm.id!==it.id || simdi-silArm.an>30000){",
+  "koy": "      if(false){"
+ },
+ {
+  "ad": "S6 masaüstü onayı süresiz bekliyor (30 sn kuralı kalktı)",
+  "test": "170-cekim-silme-onayi.js",
+  "kaynak": "mac",
+  "bul": "simdi-silArm.an>30000",
+  "koy": "simdi-silArm.an>0"
+ },
+ {
+  "ad": "İ1 bir ayar kartı ikonsuz bırakıldı (liste yine gri çubuk yığını)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  gAltyaziZ:'saat', gSesTakip:'dalga',",
+  "koy": "  gSesTakip:'dalga',"
+ },
+ {
+  "ad": "İ2 ikon adı var ama SVG sembolü yok (boş kutucuk çizilir)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  gGoz:'goz',",
+  "koy": "  gGoz:'gozz',"
+ },
+ {
+  "ad": "İ3 ikon ekran okuyucudan gizlenmiyor (kart adı iki kez okunur)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "    kut.setAttribute('aria-hidden','true');",
+  "koy": ""
+ },
+ {
+  "ad": "B1 ses kartı GÖRÜNTÜ bölümüne karıştı (iki konu yine iç içe)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  'tab-cam' :[['bGoruntu',['quality','vfxTitle','gDosya','gCerceve','gKamera','gIsik','gKompozit']],",
+  "koy": "  'tab-cam' :[['bGoruntu',['quality','vfxTitle','gDosya','gCerceve','gKamera','gIsik','gKompozit','fxTitle']],"
+ },
+ {
+  "ad": "B2 bölümler dilden SONRA kuruluyor (başlıkta anahtar adı kalır)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "kartlariDuzenle();\nfromShare(); applyLang();",
+  "koy": "fromShare(); applyLang(); kartlariDuzenle();"
+ },
+ {
+  "ad": "B3 içi boşalan bölüm başlığıyla ekranda kalıyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "    kutu.style.display = ilk ? '' : 'none';",
+  "koy": ""
+ },
+ {
+  "ad": "B4 arama sonrası bölümler tazelenmiyor (boş başlık kalır)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "    pane.style.display=hit?'block':'none';\n  });\n  bolumleriTazele();",
+  "koy": "    pane.style.display=hit?'block':'none';\n  });"
+ },
+ {
+  "ad": "A1 ayarlar açılınca özet çizilmiyor (ilk ekran yine boş çubuklar)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  if(id==='#sheet') ozetTazele(true);",
+  "koy": ""
+ },
+ {
+  "ad": "A2 başlık yine sırayla seçiliyor (ikon başlık sanılır, etiket düşer)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "g.querySelector(':scope > summary > span[data-i18n]')",
+  "koy": "g.querySelector('summary span')"
+ },
+ {
+  "ad": "A3 başlık esnemede küçülüyor (uzun özet başlığı ikiye böler)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  .grup>summary>span[data-i18n]{flex:0 0 auto;white-space:nowrap}",
+  "koy": ""
+ },
+ {
+  "ad": "A4 kutu içindeki kart yine kendi çerçevesini çiziyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  .kutuIc .grup{background:none;border:none;border-radius:0;margin:0;box-shadow:none}",
+  "koy": ""
+ },
+ {
+  "ad": "A5 ilk görünür kartın üst ayracı kalkmıyor (kenar altında çift çizgi)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  .kutuIc .grup.ilkGorunur>summary{border-top:none}",
+  "koy": ""
  }
 ]

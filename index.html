@@ -561,9 +561,51 @@
      açıklama. Uzun liste "panel" gibi okunur; kart yığını "uygulama" gibi.
      <details> KASITLI: aç/kapa, klavye ve ekran okuyucu davranışı tarayıcıdan
      hazır gelir — kendi yazdığımız akordeon bu üçünü de yeniden yazmak olurdu. */
+  /* ===== 2026-08-17: KART YIĞINI → BÖLÜMLENMİŞ İKONLU LİSTE =====
+     Kart yığını "panel"den iyiydi ama yeterli değildi; Erdal "hâlâ rakiplerin
+     çok gerisinde" dedi ve çizilmiş ekranda ölçünce haklı çıktı:
+
+       · 26 kart = 26 birbirinin AYNI gri çubuk. İkon yok, bölüm yok, ritim yok.
+         İkonsuz liste TARANMAZ, satır satır OKUNUR — bu bir belgenin
+         davranışıdır, uygulamanın değil. iOS ve Android ayarları istisnasız
+         ikon + gruplanmış (inset) liste kullanır.
+       · Her kart 12 px aralıkla ayrı ayrı yüzüyordu: göz "16 eşit ağırlıklı
+         nesne" görüyor, "üç konu" görmüyor. Öncelik iletilmiyor.
+       · Jetonlar SAYILDI: --el-* beş yerde, --rad-* dört yerde kullanılıyordu.
+         Yani derinlik ve biçim jetonları TANIMLIYDI ama ekranı hiç
+         etkilemiyordu — bu deponun "ölü ayar" sınıfının tasarım hâli.
+
+     Yeni düzen: kartlar konu KUTULARINA giriyor (`.kutu`), kutunun üstünde
+     ALL-CAPS bölüm adı, kutunun içinde kartlar kendi çerçevesi olmadan ince
+     ayraçla ayrılıyor. Kart yığınının 12 px'lik boşluk gürültüsü gidiyor,
+     yerine üç-dört konu bloğu geliyor. Bölümleme ve ikonlar `KART_IKON`
+     haritasından geliyor — tek yer, ve tests/171 her kartın ikonu olduğunu
+     ölçüyor (ikonsuz kalan kart, bu deponun "yarım kalmış düzeltme" sınıfı). */
+  .kutu{margin:var(--sp-6) 0 0}
+  .kutu:first-of-type{margin-top:var(--sp-4)}
+  .bolum{font-size:var(--tx-xs);font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--t-low);padding:0 var(--sp-3) var(--sp-2)}
+  .kutuIc{background:var(--s-raised);border:1px solid var(--s-line);
+    border-radius:var(--rad-lg);overflow:hidden;box-shadow:var(--el-1)}
+  /* Kutu içindeki kart kendi kâğıdı değildir: çerçevesi ve gölgesi kutuya ait. */
+  .kutuIc .grup{background:none;border:none;border-radius:0;margin:0;box-shadow:none}
+  /* Ayraç yalnız İLK GÖRÜNÜR kartın üstünde çıkmaz. `:first-child` yetmiyor:
+     `.bos` kartlar ve arama `display:none` ile gizleniyor, CSS onları hâlâ
+     "birinci çocuk" saymıyor ve kutunun kendi kenarının hemen altına ikinci
+     bir çizgi düşüyordu. Görünürlüğü bilen taraf JS; sınıfı o koyuyor. */
+  .kutuIc .grup>summary{border-top:1px solid var(--s-line)}
+  .kutuIc .grup.ilkGorunur>summary{border-top:none}
+  /* İKON KUTUCUĞU. Açıkken vurgu rengine dönüyor: hangi kartın açık olduğu
+     kaydırırken de görünür (ok işareti tek başına bunu yapmıyordu). */
+  .kikon{width:30px;height:30px;flex:none;border-radius:9px;display:flex;
+    align-items:center;justify-content:center;background:rgba(255,255,255,.055);
+    color:var(--t-mid);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+    transition:background var(--hiz-hizli) var(--egri),color var(--hiz-hizli) var(--egri)}
+  .kikon svg{width:17px;height:17px;display:block}
+  .grup[open]>summary .kikon{background:rgba(0,212,126,.16);color:var(--r-action-t)}
   .grup{background:var(--s-raised);border:1px solid var(--s-line);
     border-radius:var(--rad-lg);margin:var(--sp-3) 0;box-shadow:var(--el-1);overflow:hidden}
-  .grup>summary{display:flex;align-items:center;gap:var(--sp-2);min-height:var(--tap);
+  .grup>summary{display:flex;align-items:center;gap:var(--sp-3);min-height:var(--tap);
     padding:var(--sp-3) var(--sp-4);cursor:pointer;list-style:none;
     font-size:var(--tx-md);font-weight:700;color:var(--t-hi)}
   .grup>summary::-webkit-details-marker{display:none}
@@ -571,8 +613,17 @@
   /* Özet, kart kapalıyken o konunun O ANKİ değerlerini söyler: kullanıcı
      kartı açmadan "1080p · Dengeli" görür. Açıkken gizlenir — aynı bilgi
      iki kez yazılmasın. */
+  /* BAŞLIK KIRILMAZ, ÖZET KISALIR. İkon kutucuğu satırdan 42 px aldı ve
+     ölçüldü: "Göz teması ve çizgi" + "Okuma çizgisi 18" başlığı İKİ SATIRA
+     düşürüyordu — artifact'te "kart başlığı tek satıra sığar" diye kilitlenen
+     kuralın kendisi. Esneklikte kim önce pes edecek sorusunu CSS cevaplasın:
+     başlık `flex:0 0 auto` ile hiç küçülmez, özet tek küçülen taraftır.
+     Karakter bütçesi (aşağıda 20→16) ikinci savunma; tek başına yeterli
+     değildi çünkü 16 karakterlik bir özet de geniş harflerle taşabiliyor. */
+  .grup>summary>span[data-i18n]{flex:0 0 auto;white-space:nowrap}
   .grup>summary .ozet{margin-left:auto;font-size:var(--tx-sm);color:var(--t-mid);
-    font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+    font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    flex:0 1 auto;min-width:0;max-width:46%}
   .grup[open]>summary .ozet{display:none}
   .grup>summary::after{content:"";width:8px;height:8px;flex:none;margin-left:var(--sp-2);
     border-right:2px solid var(--t-mid);border-bottom:2px solid var(--t-mid);
@@ -738,6 +789,7 @@
   .listitem .meta{flex:1;min-width:0}
   .listitem .t{font-size:var(--tx-md);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .listitem .s{font-size:var(--tx-xs);color:var(--muted);margin-top:3px}
+  .iconbtn.arm{background:var(--dan,#c0392b);color:#fff;border-color:var(--dan,#c0392b)}
   .iconbtn{background:transparent;border:none;color:#9aa0a6;font-size:var(--tx-lg);padding:7px 8px;flex:none;
     position:relative}
   /* DOKUNMA HEDEFİ BÜYÜDÜ, DÜĞME BÜYÜMEDİ (K11).
@@ -772,8 +824,17 @@
    başlarken 'Merhaba! Bu' satırı ipucunun altında kalıyordu. Okuma alanından
    çıkarıp denetim çubuğunun hemen üstüne aldık. */
 /* İpucu da aynı banda düşüyordu; hız hapının (bottom:22%) ÜSTÜNE alındı. */
-  .tapnote{position:absolute;bottom:calc(22% + 78px);left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
+  /* ⚠️ KONUM YÜZDEYLE DEĞİL YIĞINA GÖRE (2026-08-17, yatay ekranda ölçüldü).
+     Eski hâl `bottom: 22% + 78px` idi: dikeyde hız hapının üstünde kalıyor
+     ama YATAYDA (844x390) yüzde küçüldüğü için hapın TAM ÜSTÜNE biniyordu —
+     talimat yazısı ile hız hapı iç içe geçiyordu. Artık alt yığının
+     yüksekliğine göre konumlanıyor, yani çubuk ya da hap büyüyünce not da
+     kendiliğinden yukarı kayıyor (çubuk yüksekliğindeki kuralın aynısı). */
+  .tapnote{position:absolute;bottom:calc(var(--barH) + 108px);left:50%;transform:translateX(-50%);z-index:7;color:rgba(255,255,255,.5);
     font-size:var(--tx-sm);pointer-events:none;transition:opacity .4s;text-align:center;line-height:1.7;width:80%}
+  /* Çok kısa ekranda (yatay telefon) not için yer YOK: göstermek onu
+     suflenin üstüne bindirmek olurdu. Aynı bilgi Nasıl kullanılır bölümünde. */
+  @media (max-height:430px){ .tapnote{display:none} }
 
   @media (min-width:820px){
     #bar{padding-bottom:22px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,92%);background:none}
@@ -1613,6 +1674,165 @@
     <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
     <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
   </symbol>
+
+  <!-- ================= AYAR KARTI İKONLARI (2026-08-17) =================
+       NEDEN: 26 ayar kartı, 26 aynı gri metin çubuğuydu. İkonsuz liste
+       TARANMAZ, okunur — telefonda ayar bulmak satır satır okumaya dönüyordu
+       ve "mobil uygulama değil web modülü" hissinin ölçülebilir yarısı buydu.
+       iOS ve Android ayarları istisnasız ikon + adlandırılmış satır kullanır.
+
+       Hangi kartın hangi ikonu aldığı `KART_IKON` haritasında (tek yer).
+       Kart ikonsuz kalırsa kapı KIRMIZI verir: tests/171 her `.grup` için
+       ikon arar, çünkü sessizce ikonsuz kalan bir kart tam da bu turda
+       düzelttiğimiz "yarım kalmış düzeltme" sınıfıdır. -->
+  <symbol id="i-film" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+    <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+    <line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/>
+    <line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
+  </symbol>
+  <symbol id="i-tempo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  </symbol>
+  <symbol id="i-goz" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="i-olcu" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+    <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+  </symbol>
+  <symbol id="i-kitap" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+  </symbol>
+  <symbol id="i-yazitipi" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="4 7 4 4 20 4 20 7"/>
+    <line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>
+  </symbol>
+  <symbol id="i-renk" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+  </symbol>
+  <symbol id="i-ayna" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+    <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+  </symbol>
+  <symbol id="i-ses" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+  </symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="23 7 16 12 23 17 23 7"/>
+    <rect x="1" y="5" width="15" height="14" rx="2"/>
+  </symbol>
+  <symbol id="i-filtre" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="14.31" y1="8" x2="20.05" y2="17.94"/>
+    <line x1="9.69" y1="8" x2="21.17" y2="8"/>
+    <line x1="7.38" y1="12" x2="13.12" y2="2.06"/>
+    <line x1="9.69" y1="16" x2="3.95" y2="6.06"/>
+    <line x1="14.31" y1="16" x2="2.83" y2="16"/>
+    <line x1="16.62" y1="12" x2="10.88" y2="21.94"/>
+  </symbol>
+  <symbol id="i-disk" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="22" y1="12" x2="2" y2="12"/>
+    <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+    <line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>
+  </symbol>
+  <symbol id="i-izgara" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </symbol>
+  <symbol id="i-kamera" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+    <circle cx="12" cy="13" r="4"/>
+  </symbol>
+  <symbol id="i-isik" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </symbol>
+  <symbol id="i-katman" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+    <polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+  </symbol>
+  <symbol id="i-seviye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="14"/>
+  </symbol>
+  <symbol id="i-muzik" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+  </symbol>
+  <symbol id="i-kulaklik" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+  </symbol>
+  <symbol id="i-saat" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </symbol>
+  <symbol id="i-dalga" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="2"/>
+    <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+  </symbol>
+  <symbol id="i-telefon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+  </symbol>
+  <symbol id="i-yedek" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+    <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+  </symbol>
+  <symbol id="i-yardim" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+  </symbol>
+  <symbol id="i-sifirla" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+  </symbol>
+  <symbol id="i-ekle" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+  </symbol>
+  <symbol id="i-arsiv" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
+    <line x1="10" y1="12" x2="14" y2="12"/>
+  </symbol>
+  <symbol id="i-metin" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+  </symbol>
 </svg>
 <!-- ==/CEKIRDEK:ikonlar.html== -->
 
@@ -1643,6 +1863,12 @@ const I18N={
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
   startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
+  /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
+     taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
+     daha çok bozuyor (başlık kartın değil bloğun ölçüsünü veriyor). */
+  bCekim:'Çekim ve tempo',bMetin:'Metni okurken',bGorunum:'Yazının görünüşü',
+  bGoruntu:'Görüntü',bSes:'Ses',bAltyazi:'Altyazı ve sesle takip',
+  bCihazB:'Cihaz',bVeri:'Verilerin',
   speedHint:'Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.',eyeLine:'Okuma çizgisi konumu (kameraya yaklaştır)',
   fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'Okuma çizgisi',tgDim:'Odak karartma',
   tgHl:'Kelime vurgusu',tgFade:'Okunanı soluklaştır',tgPause:'Paragraf sonunda nefes durağı',tgCount:'⏱ 3-2-1 geri sayım',
@@ -1696,7 +1922,7 @@ const I18N={
   title:'Başlık',text:'Metin',
   markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz',delete:'Sil',apply:'Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
-  takeReady:'Çekim hazır',deleteRedo:'Sil',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
+  takeReady:'Çekim hazır',deleteRedo:'Sil',deleteSure:'Emin misin? Bu çekim geri gelmez',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
   editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
   trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',scCekim:'{n} çekim',scSonDeg:'son değişiklik {t}',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
@@ -1808,6 +2034,9 @@ const I18N={
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
+  bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
+  bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
+  bCihazB:'Device',bVeri:'Your data',
   speedHint:'Natural speech is 120–160 WPM. Estimated duration below.',eyeLine:'Reading line position (closer to lens)',
   fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'Reading line',tgDim:'Focus dimming',
   tgHl:'Word highlight',tgFade:'Fade read words',tgPause:'Breath pause at paragraphs',tgCount:'⏱ 3-2-1 countdown',
@@ -1861,7 +2090,7 @@ const I18N={
   title:'Title',text:'Script',
   markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait · word{pro-nun} hint',delete:'Delete',apply:'Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
-  takeReady:'Take ready',deleteRedo:'Delete',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
+  takeReady:'Take ready',deleteRedo:'Delete',deleteSure:'Are you sure? This take is gone for good',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
   editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
   trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',scCekim:'{n} takes',scSonDeg:'edited {t}',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
@@ -2009,7 +2238,7 @@ const MSG={
   audClip:'⚠️ Ses kırpıyor — mikrofondan uzaklaş ya da daha sakin konuş',
   takeFav:'Yıldızla', takeUnfav:'Yıldızı kaldır', takePlay:'Çekimi oynat',
   takeSrt:'Altyazı dosyasını indir', takeShare:'Çekimi paylaş veya kaydet',
-  takeDel:'Çekimi sil', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
+  takeDel:'Çekimi sil', takeDelSure:'Silmeyi onayla — geri alınamaz', scDup:'Senaryoyu çoğalt', mapDel:'Tuş eşlemesini sil',
   pkgDone:'dosya tek pakette hazır', noTake:'Önce bir çekim yap',
   takeNote:'Çekim notu yaz', takeNotePrompt:'Bu çekim için not (neden iyi ya da kötü):',
   verSwitch:'Senaryonun diğer sürümüne geç', verSwitched:'Sürüm', verEmpty:'Önce bu sürüme metin yaz',
@@ -2106,7 +2335,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   audClip:'⚠️ Audio is clipping — back off the mic or speak softer',
   takeFav:'Star this take', takeUnfav:'Remove star', takePlay:'Play take',
   takeSrt:'Download subtitle file', takeShare:'Share or save take',
-  takeDel:'Delete take', scDup:'Duplicate script', mapDel:'Delete key mapping',
+  takeDel:'Delete take', takeDelSure:'Confirm delete — cannot be undone', scDup:'Duplicate script', mapDel:'Delete key mapping',
   pkgDone:'files bundled', noTake:'Record a take first',
   takeNote:'Add take note', takeNotePrompt:'Note for this take (why it was good or bad):',
   verSwitch:'Switch to the other script version', verSwitched:'Version', verEmpty:'Write something in this version first',
@@ -5272,6 +5501,10 @@ function closeResult(){
   const v=$('#resultVid'); v.pause(); v.removeAttribute('src'); v.load();
   if(resultUrl){ URL.revokeObjectURL(resultUrl); resultUrl=null; }
   kesKaynak=null;                    // çekim kapandı, dönülecek kaynak da yok
+  /* Silme onayı ekranla birlikte düşer: kapatmak her arayüzde "vazgeç"
+     demektir. Toplu silmede bunun tersi yaşandı ve geri dönen kullanıcı
+     tek dokunuşla siliyordu. */
+  if(typeof redoIptal==='function') redoIptal();
   $('#result').classList.remove('open'); arkayiKilitle(); reset();
 }
 function fileName(){
@@ -5985,6 +6218,10 @@ async function cekimSayilariniTazele(){
   renderScripts();
 }
 let takeSort='new';
+/* Silme onayı ÇEKİM KİMLİĞİNDE tutuluyor: liste her çizimde yeniden kuruluyor
+   ve satır nesneleri değişiyor; düğmede tutulsa yeniden çizim onayı kaybeder
+   ya da başka satıra taşırdı. */
+let takeSilArm=null, takeSilT=null;
 function sortTakes(list){
   const c={ big:(a,b)=>(b.size||0)-(a.size||0), long:(a,b)=>(b.dur||0)-(a.dur||0),
             new:(a,b)=>(b.created||0)-(a.created||0) }[takeSort];
@@ -6048,7 +6285,28 @@ async function renderTakes(){
       const tam=await dbGetir(it.id);
       if(!tam || !tam.blob){ toast(m('takeGone')); renderTakes(); return; }
       lastBlob=tam.blob; lastDur=tam.dur||0; saveRec(); };
-    d.querySelector('[data-a="del"]').onclick=async()=>{ await dbDel(it.id); renderTakes(); toast(m('deleted')); };
+    /* TEK DOKUNUŞLA VİDEO SİLİNİYORDU (2026-08-17). Toplu silme iki adımlı,
+       senaryo silmede geri-al var; ama asıl geri getirilemez şey olan ÇEKİM
+       tek dokunuşta gidiyordu — üstelik ⬇︎ paylaş düğmesinin hemen yanında,
+       satırdaki altı simgeden biri olarak. Yanlış simgeye dokunmak çekimi
+       kalıcı olarak yok ediyordu; videonun bir kopyası başka hiçbir yerde yok.
+       Artık toplu silmeyle AYNI desen: ilk dokunuş soruyor, ikinci siliyor,
+       4 saniyede kendiliğinden vazgeçiyor. Sayfa kapanınca da vazgeçer
+       (toplu silmede aynı kusur yaşandı: kapatıp dönünce tek dokunuş siliyordu). */
+    const sb=d.querySelector('[data-a="del"]');
+    sb.onclick=async()=>{
+      if(takeSilArm!==it.id){
+        takeSilArm=it.id; clearTimeout(takeSilT);
+        sb.textContent='✓?'; sb.classList.add('arm');
+        sb.setAttribute('aria-label', m('takeDelSure'));
+        takeSilT=setTimeout(()=>{ takeSilArm=null;
+          sb.textContent='🗑'; sb.classList.remove('arm');
+          sb.setAttribute('aria-label', m('takeDel')); },4000);
+        return;
+      }
+      takeSilArm=null; clearTimeout(takeSilT);
+      await dbDel(it.id); renderTakes(); toast(m('deleted'));
+    };
     box.appendChild(d);
   });
 }
@@ -7248,6 +7506,15 @@ function openSheet(id){
      çizmek israf. Ama panel açılınca da kimse çizmiyordu ve altı kart BOŞ
      görünüyordu; "ön koşulu olan ayar = ölü ayar" kuralının kart hâli. */
   if(id==='#sheet') temaKartlariCiz(true);
+  /* ÖZET DE AÇILIŞTA ÇİZİLİR — yukarıdaki kart tuvali kusurunun İKİZİ,
+     2026-08-17'de çizilmiş ekranda ölçülerek bulundu. `ozetCiz()` yalnız
+     `apply()` yolunda koşuyor ve görünmeyen sekmeleri atlıyor; sayfa açıldığı
+     anda hiçbir şey onu tetiklemiyordu. Sonuç ÖLÇÜLDÜ: Ayarlar ilk açıldığında
+     Okuma sekmesinin BEŞ kartı da özetsiz — kullanıcının gördüğü ilk ekran beş
+     aynı gri çubuk. Sekme değiştirip geri gelince doluyor ("Serbest", "140",
+     "Okuma çizgisi 18"…), yani kural vardı ama tam da ilk izlenimde ölüydü.
+     "Kapalı kart değerini söyler" kuralının bedeli burada ödeniyor. */
+  if(id==='#sheet') ozetTazele(true);
 }
 /* SAYFAYI KAPATMAK VAZGEÇMEKTİR — ONAY AÇIK KALMAMALI.
    Toplu silme iki aşamalı: ilk dokunuş "Emin misin? (12)" diye kuruyor,
@@ -7262,6 +7529,9 @@ function silmeyiIptal(){
   const b=$('#takesWipe'); if(b) b.textContent=t('wipeTakes');
   arsivSilArm=0; clearTimeout(arsivSilT); arsivSilT=null;
   const a=$('#archWipe'); if(a) a.textContent=m('archWipeBtn');
+  /* Tek çekim silmesi de kapatınca vazgeçmeli — aynı tuzağın ikizi. */
+  if(takeSilArm){ takeSilArm=null; clearTimeout(takeSilT); takeSilT=null;
+    if($('#takeList')) renderTakes(); }
 }
 function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); arkayiKilitle(); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); silmeyiIptal(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
@@ -7449,6 +7719,92 @@ function gorunurZincir(el,kok){
    döndüğünde özetler bir daha hiç tazelenmez. Zaman damgalı sınırlayıcı
    takılamaz: en kötü ihtimalle bir sonraki çağrıda koşar. */
 let ozetSon=0;
+/* ============ AYAR KARTLARI: İKON + BÖLÜM ============
+   TEK YER. Her ayar kartının ikonu ve hangi bölüme girdiği burada yazılı;
+   HTML'de 32 ayrı `data-ikon` niteliği tutmak yerine harita tutuluyor, çünkü
+   ikonsuz kalan bir kart HTML'de gözden kaçar, haritada kaçmaz — ve
+   tests/171 haritayı DEĞİL çizilmiş sayfayı ölçüyor (her `.grup` içinde bir
+   `.kikon` var mı), yani harita ile ekran ayrışırsa kapı kırmızı verir.
+
+   BÖLÜM SIRASI KASITLI: Kamera sekmesinde ses ve görüntü kartları DOM'da iç
+   içeydi (ses onarımı → kalite → filtre → dosya → mikrofon → çerçeve → …).
+   Kartlar bölüme yerleşirken harita SIRASINA göre taşınıyor, yani "SES" ve
+   "GÖRÜNTÜ" artık gerçekten ayrı iki blok. Taşıma DOM düğümünü hareket
+   ettiriyor; kartın içeriği, olay bağları ve durumu onunla birlikte gidiyor. */
+const KART_IKON={
+  mode:'film', gTempo:'tempo', gGoz:'goz', gYerlesim:'olcu', gYardim:'kitap',
+  gYaziTipi:'yazitipi', gRenk:'renk', gAyna:'ayna',
+  gSesTest:'ses', quality:'video', vfxTitle:'filtre', gDosya:'disk',
+  gMikSec:'mikrofon', gCerceve:'izgara', gKamera:'kamera', gIsik:'isik',
+  gKompozit:'katman', micLevel:'seviye', muzikTitle:'muzik', fxTitle:'kulaklik',
+  gAltyaziZ:'saat', gSesTakip:'dalga', gEkran:'telefon', backup:'yedek',
+  gCihaz:'yardim', gSifirla:'sifirla',
+  gYeni:'ekle', gYedek:'arsiv', gAraclar:'metin', gDenetim:'hazir',
+  gDahaFazla:'ayarlar', gNasil:'yardim'
+};
+const KART_BOLUM={
+  'tab-read':[['bCekim',['mode','gTempo']],
+              ['bMetin',['gGoz','gYerlesim','gYardim']]],
+  'tab-look':[['bGorunum',['gYaziTipi','gRenk','gAyna']]],
+  'tab-cam' :[['bGoruntu',['quality','vfxTitle','gDosya','gCerceve','gKamera','gIsik','gKompozit']],
+              ['bSes',['gSesTest','gMikSec','micLevel','muzikTitle','fxTitle']]],
+  'tab-more':[['bAltyazi',['gAltyaziZ','gSesTakip']],
+              ['bCihazB',['gEkran','gCihaz']],
+              ['bVeri',['backup','gSifirla']]]
+};
+function kartAnahtari(g){
+  const s=g.querySelector(':scope > summary > span[data-i18n]');
+  return s ? s.dataset.i18n : '';
+}
+function kartlariDuzenle(){
+  /* 1) İKON — her karta, sekmede olsun olmasın. */
+  $$('.grup').forEach(g=>{
+    const sum=g.querySelector(':scope > summary'); if(!sum) return;
+    if(sum.querySelector('.kikon')) return;
+    const ad=KART_IKON[kartAnahtari(g)]; if(!ad) return;
+    const kut=document.createElement('span');
+    kut.className='kikon'; kut.setAttribute('aria-hidden','true');
+    /* Ekran okuyucu ikonu OKUMAZ: kartın adı zaten summary metninde.
+       Süs çizim için ikinci bir ad, gürültüden başka bir şey değil. */
+    kut.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-'+ad+'"/></svg>';
+    sum.insertBefore(kut,sum.firstChild);
+  });
+  /* 2) BÖLÜM KUTULARI — yalnız ayar sekmelerinde. */
+  Object.keys(KART_BOLUM).forEach(paneId=>{
+    const pane=$('#'+paneId); if(!pane || pane.querySelector(':scope > .kutu')) return;
+    KART_BOLUM[paneId].forEach(([etiket,anahtarlar])=>{
+      const kutu=document.createElement('section'); kutu.className='kutu';
+      const bas=document.createElement('h3');
+      bas.className='bolum'; bas.dataset.i18n=etiket; bas.textContent=etiket;
+      const ic=document.createElement('div'); ic.className='kutuIc';
+      kutu.appendChild(bas); kutu.appendChild(ic); pane.appendChild(kutu);
+      anahtarlar.forEach(k=>{
+        const g=[...pane.querySelectorAll('.grup')].find(x=>kartAnahtari(x)===k);
+        if(g) ic.appendChild(g);   // taşır: düğüm, durumu ve bağlarıyla gider
+      });
+    });
+    /* HARİTADA OLMAYAN KART SESSİZCE KAYBOLMASIN. Yarın bir kart eklenip
+       haritaya yazılmazsa kutuların DIŞINDA kalır ve eski görünümüyle
+       durur — görünmez olmaz. tests/171 bunu ayrıca sayıyor. */
+  });
+  bolumleriTazele();
+}
+/* Kutunun içinde ilk GÖRÜNÜR kart hangisiyse üst ayracı ondan kalkar; kutu
+   tümüyle boşaldıysa (arama, `.bos`, koşula bağlı kartlar) bölüm başlığıyla
+   birlikte gizlenir. Başlığı duran ama içi boş bir bölüm, bu deponun
+   "aç, içi boş" kusurunun bölüm ölçeğindeki hâli olurdu. */
+function bolumleriTazele(){
+  $$('#sheet .kutu').forEach(kutu=>{
+    const kartlar=[...kutu.querySelectorAll(':scope > .kutuIc > .grup')];
+    let ilk=null;
+    kartlar.forEach(g=>{
+      const gorunur = g.style.display!=='none' && !g.classList.contains('bos');
+      g.classList.toggle('ilkGorunur', gorunur && !ilk);
+      if(gorunur && !ilk) ilk=g;
+    });
+    kutu.style.display = ilk ? '' : 'none';
+  });
+}
 function ozetTazele(zorla){
   const simdi=performance.now();
   if(!zorla && simdi-ozetSon<120) return;
@@ -7473,8 +7829,13 @@ function ozetCiz(){
     const ic=g.querySelector('.icerik'); if(!ic) return;
     /* Görünmeyen sekmenin kartı hesaplanmaz: sınıf kontrolü getComputedStyle
        çağırmadan yapılıyor, yani ölçümün kendisi de ucuz. */
-    const pano=g.parentElement;
-    if(pano && pano.classList.contains('tab') && !pano.classList.contains('on')) return;
+    /* `parentElement` DEĞİL `closest`: kartlar artık bölüm kutularının içinde
+       (`.tab > .kutu > .kutuIc > .grup`). Doğrudan ebeveyne bakan eski
+       kontrol hiçbir kartı "sekmede" saymıyor, yani GÖRÜNMEYEN sekmelerin
+       kartlarını da her turda hesaplıyordu — ucuzluk iddiası sessizce
+       kaybolurdu. Ölçüt aynı, yolu düzeldi. */
+    const pano=g.closest('.tab');
+    if(pano && !pano.classList.contains('on')) return;
     const gor=el=>gorunurZincir(el,ic);
     const cocuk=[...ic.children];
     g.classList.toggle('bos', cocuk.length>0 && cocuk.every(c=>!gor(c)));
@@ -7486,7 +7847,15 @@ function ozetCiz(){
        etiketi konuyor ("Okuma çizgisi 18"). Etiket kart başlığını
        tekrarlıyorsa (Görüntü filtresi → Görüntü filtresi %100) yalnız değer
        kalıyor: aynı sözcüğü iki kez yazan özet, yeri boşa harcar. */
-    const baslik=norm((g.querySelector('summary span')||{}).textContent||'');
+    /* BAŞLIK SPAN'İ ADIYLA SEÇİLİR, SIRASIYLA DEĞİL. `summary span` yazmak
+       kartın ilk span'ini alıyordu; ikon kutucuğu eklenince o span İKON oldu
+       ve başlık boş dizeye düştü. Bedeli sessizdi ve tam da bu turda ölçüldü:
+       `kisaEtiket` içindeki `n.includes(baslik)` kontrolü boş dizede HER
+       ZAMAN doğru döndüğü için bütün kısa etiketler atıldı — özetler
+       "Okuma çizgisi 18" yerine çıplak "18" yazmaya başladı. Yani çıplak
+       sayıyı yasaklayan kural, ikon eklendiği anda kendini kapatmıştı.
+       tests/171 bu iki özeti (etiketli biçimlerini) kilitliyor. */
+    const baslik=norm((g.querySelector(':scope > summary > span[data-i18n]')||{}).textContent||'');
     const kisaEtiket=r=>{
       const l=r.querySelector('label'); if(!l) return '';
       let t=(l.textContent||'').split('(')[0].split('—')[0].trim();
@@ -7505,8 +7874,12 @@ function ozetCiz(){
        26 karakterlik özet 390 px'te başlığı İKİ SATIRA düşürüyordu ve
        kendisi de üç noktayla kesiliyordu: hem başlık hem özet bozuluyor.
        Kart başlığı asla kesilmemeli — okunacak ilk şey o. */
-    if(parca.length===2 && parca.join(' · ').length>20) parca.length=1;
-    if(parca.length===1 && parca[0].length>20) parca[0]=parca[0].slice(0,20).trim();
+    /* BÜTÇE 20 → 16 (2026-08-17, ikon kutucuğu eklendikten SONRA yeniden
+       ölçüldü). İkon satırdan 42 px aldı; eski 20 karakterlik özet artık
+       başlığı ikinci satıra itiyordu. Sayı tavandan değil, çizilmiş ekranda
+       "hiçbir kart başlığı iki satıra düşmüyor" ölçümünden geliyor. */
+    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;
+    if(parca.length===1 && parca[0].length>16) parca[0]=parca[0].slice(0,16).trim();
     /* Yalnız anahtar taşıyan kartlarda (okuma yardımcıları, ekran, kayıt)
        gösterilecek değer yok; orada anlamlı özet AÇIK SAYISIDIR. Boş özet,
        kartı açmadan hiçbir şey söylemeyen bir başlık bırakırdı. */
@@ -7521,6 +7894,9 @@ function ozetCiz(){
     }
     const o=g.querySelector('.ozet'); if(o) o.textContent=parca.join(' · ');
   });
+  /* `.bos` sınıfı burada belirleniyor; bölüm kutusunun "içi kaldı mı" kararı
+     ona bağlı, o yüzden hemen ardından koşuyor. */
+  bolumleriTazele();
 }
 
 /* ============ DOKUNMA: sürükle / hız / kilit ============ */
@@ -8638,8 +9014,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.18':{tr:'<b>Giriş ekranı yenilendi.</b> Eskiden dört düğme alt alta duruyordu ve hepsi aynı ağırlıktaydı; uygulamayı ilk açan kişi daha hiçbir şey görmeden dört yol arasından seçim yapmak zorunda kalıyordu. Artık tek bir asıl eylem var (<b>Kamerayı Aç &amp; Başla</b>), hemen altında kamerasız yol, en altta ise yardım ve sürüm tek satırda. Ortada üç rozet duruyor — <b>hesap yok</b>, <b>internet gerekmez</b>, <b>ücretsiz</b> — ve üçü de süs değil: her biri koda karşı sınanıyor, ürüne hesap, ağ çağrısı ya da ödeme girerse kapı kırmızı veriyor.',
-       en:'<b>A new start screen.</b> Four buttons used to sit on top of each other with equal weight, so the first thing the app asked of you was to choose between four paths. There is now one main action (<b>Open camera &amp; start</b>), the camera-free path right under it, and help plus the version on a single line at the bottom. Three badges sit in the middle — <b>no account</b>, <b>works offline</b>, <b>free</b> — and none of them is decoration: each is tested against the code, so the gate turns red if an account, a network call or a payment ever enters the product.'},
+ '9.18':{tr:'<b>Giriş ekranı yenilendi.</b> Eskiden dört düğme alt alta duruyordu ve hepsi aynı ağırlıktaydı; uygulamayı ilk açan kişi daha hiçbir şey görmeden dört yol arasından seçim yapmak zorunda kalıyordu. Artık tek bir asıl eylem var (<b>Kamerayı Aç &amp; Başla</b>), hemen altında kamerasız yol, en altta ise yardım ve sürüm tek satırda. Ortada üç rozet duruyor — <b>hesap yok</b>, <b>internet gerekmez</b>, <b>ücretsiz</b> — ve üçü de süs değil: her biri koda karşı sınanıyor, ürüne hesap, ağ çağrısı ya da ödeme girerse kapı kırmızı veriyor.<br><b>Telefonu yan çevirince talimat yazısı hız hapının üstüne biniyordu.</b> Yazının yeri ekran yüksekliğinin yüzdesiyle hesaplanıyordu; yatayda o yüzde küçülünce iki katman iç içe geçiyordu. Artık yeri alt kumanda yığınından türüyor, yer kalmayan dar ekranlarda ise hiç gösterilmiyor.<br><b>Bir çekimi silmek artık iki dokunuş istiyor.</b> Toplu silme ve senaryo silme korumalıydı ama TEK çekim tek dokunuşta gidiyordu — üstelik paylaş düğmesinin komşusu olarak. Videonun başka kopyası yok; ilk dokunuş soruyor, dört saniyede kendiliğinden vazgeçiyor, sayfa kapanınca da iptal oluyor.',
+       en:'<b>A new start screen.</b> Four buttons used to sit on top of each other with equal weight, so the first thing the app asked of you was to choose between four paths. There is now one main action (<b>Open camera &amp; start</b>), the camera-free path right under it, and help plus the version on a single line at the bottom. Three badges sit in the middle — <b>no account</b>, <b>works offline</b>, <b>free</b> — and none of them is decoration: each is tested against the code, so the gate turns red if an account, a network call or a payment ever enters the product.<br><b>Turning the phone sideways put the hint on top of the speed pill.</b> The hint was placed with a percentage of screen height, and in landscape that percentage shrank until the two overlapped. It now derives its place from the bottom control stack, and is not shown where there is no room.<br><b>Deleting a take now takes two taps.</b> Bulk delete and script delete were protected, but a SINGLE take went in one tap, right next to the share button. There is no other copy of that video; the first tap asks, it cancels itself after four seconds, and closing the sheet cancels it too.'},
  '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.<br><b>Çekim başlarken çıkan yanlış uyarı kalktı.</b> Kayıt başladıktan 2,5 saniye sonra ilk veri parçası gelmemişse uygulama "veri gelmiyor, durdurup tekrar başlat" diyordu. Ölçüldü: gerçek tarayıcıda ilk parça 4,6 saniyede geldi ve çekim tümüyle sağlamdı — yani iyi bir çekim durdurtuluyordu. Uyarı artık ikinci bir bakıştan sonra çıkıyor; gerçekten boş kalan kayıt hâlâ bildiriliyor.<br><b>PDF dosyasından senaryo alabiliyorsun.</b> Word ve düz metnin yanına PDF eklendi. Okuyucu bilerek sınırlı: metni doğru okuyabildiğinden emin olamazsa (taranmış sayfa, eşlemesiz yazı tipi, şifreli dosya) <b>metin vermiyor</b> ve sebebini söyleyip kopyala-yapıştır yoluna gönderiyor. Bir suflede yanlış metin, metin olmamasından kötüdür.<br><b>Elle pozlama ve beyaz ayarı geldi</b> — ama yalnız kameran destekliyorsa. Arkadan ışık alan çekimde yüzün kararmasın diye parlaklığı sen seçiyorsun; ışığın rengi değişse bile ten rengin aynı kalıyor. Cihazın bu ayarı vermiyorsa sürgü <b>hiç görünmüyor</b>: çekip hiçbir şey olmayan bir ayar bırakmıyoruz.',
        en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.<br><b>The false warning at the start of a take is gone.</b> If no data chunk had arrived 2.5 seconds into a recording the app said the recorder was producing nothing and told you to stop. Measured in a real browser: the first chunk arrived at 4.6 seconds and the take was perfectly fine, so a good take was being thrown away. The warning now waits for a second look; a recording that truly stays empty is still reported.<br><b>You can import a script from a PDF.</b> PDF joins Word and plain text. The reader is deliberately limited: when it cannot be sure it read the text correctly (a scanned page, a font without a mapping, an encrypted file) it <b>gives no text</b> and says why, sending you to copy and paste instead. In a prompter, wrong text is worse than no text.<br><b>Manual exposure and white balance arrived</b> — but only if your camera supports them. You choose the brightness so your face does not go dark with light behind you, and your skin tone stays the same when the light colour changes. If your device does not offer the control, the slider <b>never appears</b>: we do not leave a setting that does nothing when you drag it.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de <b>Son hatalar</b> listesine korkutucu bir satır düşüyordu. Artık düşmüyor — liste yalnız gerçekten ilgilenmen gereken şeyleri gösteriyor.<br><b>Nasıl bulundu:</b> kapıya yeni bir adım eklendi ve uygulama her değişiklikte gerçek tarayıcıda baştan sona çalıştırılıyor: kamera açılıyor, kayıt yapılıyor, altyazı üretiliyor, çekim arşive yazılıyor ve <b>altyazının videoya gerçekten gömüldüğü</b> ölçülüyor.',
@@ -9418,6 +9794,10 @@ function searchSettings(){
     });
     pane.style.display=hit?'block':'none';
   });
+  /* Arama kartları gizliyor; içi tümüyle boşalan bölüm BAŞLIĞIYLA BİRLİKTE
+     kalkmalı. Aksi hâlde "SES" yazan ama altında hiçbir şey olmayan bir
+     başlık kalırdı ve arama sonucu bozuk görünürdü. */
+  bolumleriTazele();
   out.style.display='';
   out.textContent = bulunan
     ? (L==='tr'? bulunan+' ayar bulundu — sekmeler geçici olarak kapalı':bulunan+' settings found')
@@ -9771,7 +10151,29 @@ $('#kaynakBtn').onclick=()=>{
   showResult(lastBlob); toast(m('kaynakGeri'));
 };
 $('#keepBtn').onclick=()=>{ toast(m('takeKept')); closeResult(); };
-$('#redoBtn').onclick=async()=>{ if(curTakeId){ await dbDel(curTakeId); curTakeId=null; }
+/* SONUÇ EKRANINDAKİ SİL DE TEK DOKUNUŞTU (2026-08-17, arşiv silmesiyle
+   aynı tur). Burada risk daha da yüksek: düğme "Dosyalar'a Kaydet"in
+   KOMŞUSU ve silinen şey henüz hiçbir yere kaydedilmemiş, az önce çekilmiş
+   videodur. Arşivdekiyle aynı iki adımlı desen; ekran kapanınca vazgeçer. */
+let redoArm=0, redoT=null;
+function redoIptal(){
+  redoArm=0; clearTimeout(redoT); redoT=null;
+  /* ETİKET SÖZLÜĞÜ t(), MESAJ SÖZLÜĞÜ m() — ikisi ayrı ad alanı. İlk
+     yazışta m() kullandım ve düğmede çeviri yerine `deleteSure` anahtarı
+     göründü; testler sahte m() ile geçti, kusuru ancak uygulamayı
+     KULLANMAK gösterdi. */
+  const b=$('#redoBtn'); if(b) b.textContent=t('deleteRedo');
+}
+$('#redoBtn').onclick=async()=>{
+  const b=$('#redoBtn');
+  if(!redoArm){
+    redoArm=1; clearTimeout(redoT);
+    b.textContent=t('deleteSure');
+    redoT=setTimeout(redoIptal,4000);
+    return;
+  }
+  redoIptal();
+  if(curTakeId){ await dbDel(curTakeId); curTakeId=null; }
   lastBlob=null; toast(m('deleted')); closeResult(); };
 
 /* DÖNDÜRMEDE KONUM PİKSEL DEĞİL KELİME OLARAK KORUNMALI.
@@ -9828,6 +10230,10 @@ if(IS_IOS_ALT){
 }
 load();
 if(st.ilkAkis && $('#tapnote')) $('#tapnote').style.display='none';
+/* İKON + BÖLÜM, DİLDEN ÖNCE. Bölüm başlıkları `data-i18n` ile üretiliyor;
+   applyLang'den sonra çalışsalardı başlıklar anahtar adıyla ("bSes") ekranda
+   kalırdı — ve TR'de fark edilmesi zor, EN'e geçince bariz olurdu. */
+kartlariDuzenle();
 fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
 firstRun();

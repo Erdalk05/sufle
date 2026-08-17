@@ -401,7 +401,10 @@ def kare_uret(t, k):
          çakışma saymak, aracın kendisinin yalancı alarm vermesi olurdu —
          bu oturumda benzerine iki kez düştüm. */
       const vpA=innerWidth*innerHeight;
-      const list=[...document.querySelectorAll('#speedCtl,#hud,#hud>span,#bar,#audBadge,#recFrame')]
+      /* `.tapnote` 2026-08-17'de listeye eklendi: yatay ekranda hız hapının
+         TAM ÜSTÜNE biniyordu ve dedektör onu hiç ölçmediği için kapı sessiz
+         kaldı. Ölçmeyen dedektör, olmayan kusuru değil GERÇEK kusuru kaçırır. */
+      const list=[...document.querySelectorAll('#speedCtl,#hud,#hud>span,#bar,#audBadge,#recFrame,.tapnote')]
         .filter(gor)
         .filter(e=>{const b=e.getBoundingClientRect(); return (b.width*b.height) < vpA*0.8;});
       let n=0;

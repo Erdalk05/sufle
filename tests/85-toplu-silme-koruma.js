@@ -28,6 +28,9 @@ function kur(kayitlar){
   const durum={ veri:kayitlar.map(k=>({...k})), iz:[], etiket:'', zamanlayici:null };
   const api=new Function('__d', `
     let wipeArm=0, wipeT=null, arsivSilArm=0, arsivSilT=null;
+    /* Tek çekim silmesinin onayı da (2026-08-17) aynı iptal işlevinden
+       düşüyor; simülasyonda tanımlı olmazsa test ÜRÜN DOĞRUYKEN çöker. */
+    let takeSilArm=null, takeSilT=null;
     const el={ '#takesWipe':{ set textContent(v){ __d.etiket=v; }, get textContent(){ return __d.etiket; } },
                '#archWipe':{ textContent:'' } };
     const $=k=>el[k]||null;

@@ -70,21 +70,62 @@ if(!mOzet || !mZincir || !mNorm || !mFold) return;
    ve `querySelector('summary span')` hep null dönüyordu; ozetTazele başlığı
    hiç göremediği için testin altı iddiası ürün doğruyken kırmızı verdi —
    tezgâhın kendi kusuru. */
+/* NİTELİK VE ÇOCUK BİRLEŞİMİ (2026-08-17'de eklendi — GEREKÇESİ ÖLÇÜLDÜ).
+   Ürün tarafında başlık span'i `summary span` ile seçiliyordu; ayar kartlarına
+   ikon kutucuğu eklenince o "ilk span" İKON oldu ve başlık boş dizeye düştü.
+   Sessiz bedeli: `kisaEtiket` içindeki `n.includes(baslik)` boş dizede her
+   zaman doğru döndüğü için bütün kısa etiketler atıldı — özetler "Okuma
+   çizgisi 18" yerine çıplak "18" yazmaya başladı, yani çıplak sayıyı
+   yasaklayan kural kendini kapattı. Ürün artık `:scope > summary >
+   span[data-i18n]` kullanıyor; tezgâh o seçiciyi ANLAMAZSA testin altı iddiası
+   ürün doğruyken kırmızı verir (bu dosyanın bilinen kusur sınıfı). */
 function parcaEslesir(d,parca){
+  const nitelikler=[];
+  parca=parca.replace(/\[([\w-]+)(?:=["']?([^\]"']*)["']?)?\]/g,
+    (_,a,v)=>{ nitelikler.push([a,v]); return ''; });
   const m=parca.match(/^([a-z]+)?((?:\.[\w-]+)*)$/i);
   if(!m) return false;
   if(m[1] && d._n.etiket!==m[1]) return false;
   const siniflar=(m[2]||'').split('.').filter(Boolean);
-  return siniflar.every(s=>d.classList.contains(s));
+  if(!siniflar.every(s=>d.classList.contains(s))) return false;
+  const nit=d._n.nitelik||{};
+  return nitelikler.every(([a,v])=>
+    Object.prototype.hasOwnProperty.call(nit,a) && (v===undefined || nit[a]===v));
 }
-function eslesir(d,sel){
-  const p=sel.trim().split(/\s+/);
-  if(!parcaEslesir(d,p[p.length-1])) return false;
-  let ata=d.parentElement;
-  for(let i=p.length-2;i>=0;i--){
-    while(ata && !parcaEslesir(ata,p[i])) ata=ata.parentElement;
-    if(!ata) return false;
-    ata=ata.parentElement;
+/* Seçici yolu: ":scope" başlangıcı ve ">" (doğrudan çocuk) birleşimi.
+   Eski eşleştirici yalnız torun ilişkisini biliyordu; `:scope > summary`
+   yazan bir seçiciyi HİÇ eşleştiremez ve sessizce null döndürürdü. */
+function selYol(sel){
+  const t=sel.trim().split(/\s+/);
+  let kokten=false, i=0;
+  if(t[0]===':scope'){ kokten=true; i=1; }
+  const adim=[];
+  for(; i<t.length; i++){
+    if(t[i]==='>'){ adim.push({b:'>', p:t[++i]}); }
+    else adim.push({b:' ', p:t[i]});
+  }
+  return {kokten, adim};
+}
+function eslesir(d,sel,kok){
+  const {kokten,adim}=selYol(sel);
+  if(!adim.length) return false;
+  if(!parcaEslesir(d,adim[adim.length-1].p)) return false;
+  let cur=d;
+  for(let i=adim.length-1;i>=1;i--){
+    if(adim[i].b==='>'){
+      cur=cur.parentElement;
+      if(!cur || !parcaEslesir(cur,adim[i-1].p)) return false;
+    } else {
+      cur=cur.parentElement;
+      while(cur && !parcaEslesir(cur,adim[i-1].p)) cur=cur.parentElement;
+      if(!cur) return false;
+    }
+  }
+  if(kokten){
+    if(!kok) return false;
+    if(adim[0].b==='>') return cur.parentElement===kok;
+    let a=cur.parentElement; while(a && a!==kok) a=a.parentElement;
+    return a===kok;
   }
   return true;
 }
@@ -101,9 +142,22 @@ function el(o){
       add(x){ this._s.add(x); }, remove(x){ this._s.delete(x); },
       toggle(x,v){ if(v) this._s.add(x); else this._s.delete(x); } },
     querySelector(sel){ return dugum.querySelectorAll(sel)[0]||null; },
+    /* `closest` 2026-08-17'de gerekti: kartlar bölüm kutularının içine
+       taşınınca ürün `parentElement` yerine `closest('.tab')` kullanmaya
+       başladı. Sahte DOM bunu sağlamayınca test ÜRÜN DOĞRUYKEN çöküyordu
+       (TypeError, tek bir iddia bile basmadan) — CLAUDE.mddeki "çıkarım
+       çökerse rapor okunmaz" tuzağının aynısı. */
+    closest(sel){
+      let d=dugum;
+      while(d){ if(eslesir(d,sel)) return d; d=d.parentElement; }
+      return null;
+    },
     querySelectorAll(sel){
       const out=[];
-      const gez=d=>{ d.children.forEach(c=>{ if(eslesir(c,sel)) out.push(c); gez(c); }); };
+      /* Kök İLETİLİR: `:scope` olan seçicilerde "hangi ögeye göre" sorusunun
+         cevabı budur. İletmezsek `:scope > summary` hiçbir şey döndürmez ve
+         başlık yine sessizce boş kalır — düzelttiğimiz kusurun tezgâh hâli. */
+      const gez=d=>{ d.children.forEach(c=>{ if(eslesir(c,sel,dugum)) out.push(c); gez(c); }); };
       gez(dugum); return out;
     }
   };
@@ -115,8 +169,14 @@ function kur(kartlar){
   const koklar=kartlar.map(k=>{
     const ic=el({ sinif:['icerik'], cocuk:k.cocuk });
     const ozet=el({ etiket:'span', sinif:['ozet'], metin:'' });
-    const baslik=el({ etiket:'span', metin:k.baslik });
-    const sum=el({ etiket:'summary', cocuk:[baslik,ozet] });
+    /* İKON KUTUCUĞU TEZGÂHTA DA VAR — ve BAŞLIKTAN ÖNCE. Gerçekte kartın ilk
+       span'i artık ikon; tezgâh onu koymazsa `summary span` yazan eski
+       (kusurlu) seçici burada YİNE başlığı bulur ve test kusuru göremez.
+       Yani bu span, düzeltmenin ayırt edilebilmesi için ŞART: kaldırılırsa
+       "özet çıplak sayı yazıyor" bozması sessizce geçer. */
+    const ikon=el({ etiket:'span', sinif:['kikon'], metin:'' });
+    const baslik=el({ etiket:'span', metin:k.baslik, nitelik:{'data-i18n':k.anahtar||'x'} });
+    const sum=el({ etiket:'summary', cocuk:[ikon,baslik,ozet] });
     const kart=el({ etiket:'details', sinif:['grup'], cocuk:[sum,ic] });
     kart._ozet=ozet; kart._ic=ic;
     return kart;
@@ -132,6 +192,10 @@ function kosturr(kartNesneleri){
     ${mZincir[0]}
     const getComputedStyle=e=>({display:__stil.get(e)||''});
     const $$=sel=>__k;
+    /* Özet çizimi bittiğinde bölüm kutularının boş kalıp kalmadığını da
+       tazeliyor. Burada sahte: bu test ÖZET METNİNİ ölçüyor, kutuların
+       gizlenmesini tests/166nın kutu bölümü ayrıca sınıyor. */
+    function bolumleriTazele(){}
     ${mOzet[0]}
     ozetCiz();
   `)(koklar, stil);
@@ -369,14 +433,28 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   /* ⚠️ SINIRLAYICI rAF'A BAĞLANMAZ: arka plan sekmesinde rAF hiç koşmaz ve
      bayrak asılı kalır — özetler bir daha hiç tazelenmez (deponun 2 numaralı
      hata sınıfı). Zaman damgalı sınırlayıcı takılamaz. */
+  /* Desen İDDİAYA bağlanır, KOMŞULUĞA değil (CLAUDE.md, 5 vakayla ölçülmüş
+     ders). Eski hâli `let ozetSon=0;` ile sınırlayıcı arasında en fazla 200
+     karakter olduğunu varsayıyordu; araya ikon/bölüm haritası girince
+     DAVRANIŞ HİÇ DEĞİŞMEDEN kırmızıya döndü. İddia şu: sınırlayıcı bir zaman
+     damgasına bakıyor — hangi satırda durduğu değil. */
+  const mTazele=kod3.match(/function ozetTazele\(zorla\)\{[\s\S]*?\n\}/);
+  ok('ozetTazele çıkarılabildi', !!mTazele);
   ok('özet sınırlayıcısı zaman damgalı (rAF değil)',
-     /let ozetSon=0;[\s\S]{0,200}?simdi-ozetSon<120/.test(kod3));
+     !!mTazele && /performance\.now\(\)/.test(mTazele[0])
+               && /simdi-ozetSon<120/.test(mTazele[0]));
+  ok('sınırlayıcının sayacı tanımlı', /let ozetSon=0;/.test(kod3));
   ok('özet tazeleme rAF ile ertelenmiyor',
      !/function ozetTazele\(\)\{[\s\S]{0,200}?requestAnimationFrame/.test(kod3));
   /* Görünmeyen sekmenin kartları hesaplanmıyor; sekme değişince ZORLA
      tazeleniyor, yoksa yeni sekme boş özetle açılırdı. */
+  /* Kartlar bölüm kutularının içine taşındı; sekmeyi bulmanın yolu artık
+     `closest('.tab')`. Doğrudan ebeveyne bakan eski kontrol HİÇBİR kartı
+     "sekmede" saymaz — yani atlama sessizce çalışmaz olurdu. Kilitlenen şey
+     yol değil, DAVRANIŞ: sekmesi kapalı olan kart hesaplanmaz. */
   ok('görünmeyen sekmenin kartları atlanıyor',
-     /pano\.classList\.contains\('tab'\) && !pano\.classList\.contains\('on'\)\) return;/.test(kod3));
+     /const pano=g\.closest\('\.tab'\);\s*\n\s*if\(pano && !pano\.classList\.contains\('on'\)\) return;/
+       .test(kod3));
   ok('sekme değişince özet ZORLA tazeleniyor', /ozetTazele\(true\);\n\}\);/.test(kod3));
   ok('kart açılınca da zorla tazeleniyor', /if\(g\.open\) ozetTazele\(true\);/.test(kod3));
 }

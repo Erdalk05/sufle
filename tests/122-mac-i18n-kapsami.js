@@ -208,3 +208,38 @@ if (taban === null || eksik.length < taban) {
   ok('mesajlar bittiğinde m() de tanımlı olmalı',
      sabit.length > 0 || /const m=k=>/.test(kodM));
 }
+
+/* ---------- DENETİMİN KENDİ KÖR NOKTASI (2026-08-17) ----------
+   `denetim.py` Mac dosyasını sözlük denetiminden TÜMÜYLE muaf tutuyordu;
+   gerekçe "Mac tek dilli" idi ve artık doğru değil — Mac'te de I18N/MMSG
+   tr+en taşıyor ve `L` ile dil değişiyor. Muafiyet yüzünden Mac kaynağında
+   SÖZLÜKTE HİÇ OLMAYAN yedi anahtar kapıdan sessizce geçti: dördü o gece
+   eklediğim silme onayı, ÜÇÜ ise daha eski PDF hata mesajlarıydı
+   (pdfSifreli / pdfMetinYok / pdfBelirsiz). Yani bozuk bir PDF açan
+   masaüstü kullanıcısı, sebebi anlatan cümle yerine `pdfSifreli` yazan bir
+   bildirim görüyordu — kimse fark etmemişti çünkü ölçen yoktu.
+
+   Ders: MUAFİYET DE BİR KUSUR SINIFIDIR. Kapıyı zayıflatan satır, kapının
+   bulamadığı hatadan daha pahalıya patlar. */
+{
+  const fs2=require('fs'), path2=require('path');
+  const dsrc=fs2.readFileSync(path2.join(__dirname,'..','denetim.py'),'utf8');
+  ok('Mac sözlük denetiminden muaf DEĞİL',
+     !/if is_mac:\s*\n\s*return problems/.test(dsrc));
+  ok('Mac için doğru sözlük değişkenleri kullanılıyor',
+     /msg_var, i18n_var = "const MMSG", "const I18N"/.test(dsrc));
+  /* Dedektörü KOŞARAK sına: eksik anahtarı gerçekten bildiriyor mu?
+     (Bulguyu dedektöre çevirirken dedektörü önce kendine karşı sına.) */
+  const cp=require('child_process');
+  const os2=require('os');
+  const gecici=path2.join(os2.tmpdir(),'sufle-denetim-sinav.html');
+  const mac=fs2.readFileSync(macYolu(),'utf8');
+  /* Var olan bir anahtarı sözlükten silip çağrısını bırakıyoruz: dedektör
+     bunu "MSGde olmayan m() anahtarı" diye bildirmeli. */
+  const bozuk=mac.replace(/takeDelAsk:'[^']*',/,'');
+  fs2.writeFileSync(gecici,bozuk);
+  const c=cp.spawnSync('python3',[path2.join(__dirname,'..','denetim.py'),gecici],{encoding:'utf8'});
+  ok('dedektör eksik sözlük anahtarını GERÇEKTEN yakalıyor',
+     /MSG'de olmayan m\(\) anahtarı/.test(c.stdout) && /takeDelAsk/.test(c.stdout));
+  try{ fs2.unlinkSync(gecici); }catch(e){}
+}

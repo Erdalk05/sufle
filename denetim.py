@@ -73,6 +73,18 @@ def kullanilan_anahtarlar(path):
     yardimci = set()
     for a, b in re.findall(r"\bbilgiGosterK\('([A-Za-z0-9]+)'\s*,\s*'([A-Za-z0-9]+)'\)", js):
         yardimci.add(a); yardimci.add(b)
+    # KOŞUM SIRASINDA BAĞLANAN BAŞLIK DA KULLANIMDIR (2026-08-17).
+    # Ayar kartları KART_BOLUM tablosuna göre kutulara dağıtılıyor ve bölüm
+    # başlığı `bas.dataset.i18n=etiket` ile bağlanıyor — yani anahtar HTML'de
+    # `data-i18n="..."` olarak hiç görünmüyor, tabloda dizge olarak duruyor.
+    # Dedektör tabloyu görmeyince sekiz başlığı "hiç kullanılmıyor" diye
+    # bildirdi; oysa sekizi de ekranda yazıyor. Bu, `bilgiGosterK` ve
+    # `data-i18n-etiket` ile aynı sınıfın üçüncü örneği: dedektörün kör
+    # noktası, gerçek olmayan kusuru bildirip güvenilirliğini yiyor.
+    # Kapsam DAR: yalnız bu tablonun içindeki dizgeler.
+    tablo = re.search(r"const KART_BOLUM=\{(.*?)\n\};", js, re.S)
+    if tablo:
+        yardimci |= set(re.findall(r"'([A-Za-z0-9]+)'", tablo.group(1)))
     return (yardimci | set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
             | set(re.findall(r'data-i18n="([^"]+)"', html))
             | set(re.findall(r'data-i18n-ph="([^"]+)"', html))
@@ -273,14 +285,26 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     if olu_fn:
         problems.append(("tanımlı ama hiç anılmayan fonksiyon", olu_fn))
 
+    # ⚠️ BU MUAFİYET BİR KÖR NOKTAYDI (2026-08-17). Gerekçesi "Mac tek dilli"
+    # idi ve ARTIK DOĞRU DEĞİL: Mac'te de I18N/MMSG sözlükleri tr+en taşıyor
+    # ve `L` ile dil değişiyor. Muafiyet yüzünden Mac dosyasında SÖZLÜKTE
+    # OLMAYAN dört anahtar (takeDelAsk, takeDelType, takeDelWord,
+    # takeDelCancel) kapıdan sessizce geçti; uygulamada düğmede çevirinin
+    # yerine anahtar adı yazacaktı. Telefonda aynı kusur ilk koşuda yakalanır,
+    # çünkü orada denetim koşuyordu — muafiyetin kendisi kusuru gizledi.
+    # Mac'in sözlük değişkenleri başka adlarda: MMSG (m) ve I18N (t).
     if is_mac:
-        return problems      # Mac tek dilli: yalnız sözlük ve data-i18n kontrolleri geçersiz
+        msg_var, i18n_var = "const MMSG", "const I18N"
 
     mt, me = keys(msg_var); it, ie = keys(i18n_var)
     if mt ^ me: problems.append(("MSG TR/EN farkı", sorted(mt ^ me)))
     if (it ^ ie) - {"camera"}: problems.append(("I18N TR/EN farkı", sorted((it ^ ie) - {"camera"})))
-    mc = set(re.findall(r"\bm\('([A-Za-z0-9]+)'\)", js))
-    tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
+    # YORUMLARI AT: Mac kaynağında sözlüğün NASIL kullanılacağını anlatan bir
+    # yorum `t('x')` örneği veriyor ve dedektör bunu gerçek çağrı sanıp
+    # "I18N'de olmayan anahtar: x" diye var olmayan bir kusur bildirdi.
+    kod_y = re.sub(r"/\*.*?\*/", " ", js, flags=re.S)
+    mc = set(re.findall(r"\bm\('([A-Za-z0-9]+)'\)", kod_y))
+    tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", kod_y))
     # KOŞULLU ANAHTAR SEÇİMİ DE KULLANIMDIR (2026-08-17). Arşiv hatasının
     # sebebine göre metin seçilirken `m(kapali?'archWarnKapali':'archWarnTxt')`
     # yazıldı ve denetim ÜÇ anahtarı birden "hiç kullanılmıyor" saydı — oysa
@@ -316,7 +340,13 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     # görünmüyor?" diye aranan zamanı yer.
     # Not: m()/t() yalnız sabit dizgeyle çağrılıyor (değişkenle çağrı yok,
     # kontrol edildi) — olmasaydı bu denetim yanlış pozitif üretirdi.
-    if re.search(r"\bm\(\s*[A-Za-z_$][\w$]*\s*\)", code) or re.search(r"\bt\(\s*[A-Za-z_$][\w$]*\s*\)", code):
+    # `bilgiGoster(t(bAnahtar), t(mAnahtar))` ANAHTARI SAKLAYAN YARDIMCININ
+    # gövdesi: anahtarlar `bilgiGosterK('a','b')` çağrılarından geliyor ve
+    # yukarıda zaten sayılıyor. Bu iki adı dışarıda bırakmazsak uyarı sürekli
+    # yanar ve "ölü anahtar denetimi güvenilmez" diyerek gerçek bir denetimi
+    # sürekli kapalı tutar — dedektörü kör eden şey, dedektörün kendisidir.
+    kod_d = re.sub(r"\b[mt]\(\s*[bm]Anahtar\s*\)", " ", code)
+    if re.search(r"\bm\(\s*[A-Za-z_$][\w$]*\s*\)", kod_d) or re.search(r"\bt\(\s*[A-Za-z_$][\w$]*\s*\)", kod_d):
         problems.append(("sözlük anahtarı değişkenle çağrılıyor — ölü anahtar denetimi güvenilmez", ["m()/t()"]))
     else:
         olu_msg = sorted(mt - mc)
