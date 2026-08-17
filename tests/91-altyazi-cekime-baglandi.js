@@ -110,4 +110,7 @@ ok('anlık görüntü yoksa ekrandan üretmeye devam ediyor',
 }
 /* Yayın paketi zaten çekilen senaryoyu taşıyordu (C1); altyazı da artık
    aynı ilkeye bağlı. İkisi ayrışırsa paketteki metin ile altyazı çelişir. */
-ok('yayın paketi de çekim senaryosunu kullanıyor', /const s=cekimSenaryo\|\|active\(\)/.test(kod));
+/* Kaynak sırası 2026-08-17'de genişledi (arşiv kaydı → çekim damgası →
+   açık senaryo). İddia aynı: paket AÇIK senaryoya kendiliğinden düşmez. */
+ok('yayın paketi de çekim senaryosunu kullanıyor',
+   /const s=arsivKaynak \? arsivKaynak\.senaryo : \(cekimSenaryo\|\|active\(\)\)/.test(kod));

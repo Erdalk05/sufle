@@ -20,11 +20,13 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
    çıkmıyor — gereksiz gürültü olurdu. */
 
 /* ---------- C1 KARARI YERİNDE ---------- */
+/* Kaynak sırası 2026-08-17'de genişledi (arşiv kaydı → çekim damgası →
+   açık senaryo). İddia aynı: paket AÇIK senaryoya kendiliğinden düşmez. */
 ok('pakete yalnız çekilen sürümün metni giriyor',
-   /const s=cekimSenaryo\|\|active\(\);\s*\n\s*if\(s && \(s\.text\|\|''\)\.trim\(\)\) dosyalar\.push\(\{ad:'senaryo\.txt'/.test(kod));
+   /const s=arsivKaynak \? arsivKaynak\.senaryo : \(cekimSenaryo\|\|active\(\)\);\s*\n\s*if\(s && \(s\.text\|\|''\)\.trim\(\)\) dosyalar\.push\(\{ad:'senaryo\.txt'/.test(kod));
 ok('ikinci sürüm metni pakete hiç konmuyor', !/text2[^\n]*dosyalar\.push/.test(kod));
 ok('yayın notu da çekilen senaryodan üretiliyor',
-   /const s=cekimSenaryo\|\|active\(\)\|\|\{\}, ham=s\.text\|\|'';/.test(kod));
+   /const s=\(arsivKaynak \? arsivKaynak\.senaryo : \(cekimSenaryo\|\|active\(\)\)\)\|\|\{\}, ham=s\.text\|\|'';/.test(kod));
 
 /* ---------- DAMGA ÇEKİM ANINDA ALINIYOR ---------- */
 const mDamga=kod.match(/cekimSenaryo=_s \? \{[\s\S]*?\} : null;/);
@@ -51,6 +53,10 @@ ok('pakette yalnız bu sürümün olduğu da söyleniyor',
 /* ---------- GERÇEK NOTU KOŞTUR ---------- */
 function not(damga){
   return new Function('__c', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
     const cekimSenaryo=__c; const L='tr'; const lastDur=42; const lastPath=null;
     const active=()=>cekimSenaryo||{text:''};
     const duzMetin=x=>x.replace(/^#{1,3}\\s*/gm,'');
@@ -101,6 +107,10 @@ const METIN='# Baslik\nBir cumle. Iki cumle.';
 {
   /* İngilizce not da tam olmalı. */
   const rEn=new Function('__c', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
     const cekimSenaryo=__c; const L='en'; const lastDur=42; const lastPath=null;
     const active=()=>cekimSenaryo;
     const duzMetin=x=>x.replace(/^#{1,3}\\s*/gm,'');

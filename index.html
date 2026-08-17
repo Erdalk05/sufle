@@ -2256,7 +2256,7 @@ const MSG={
   toFilesDone:'📁 Dosyalar\'a indi — Dosyalar uygulamasında aç, oradan Fotoğraflar\'a taşıyabilirsin',
   savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Klip kaydedildi — tam çekim arşivde duruyor, başka klip de kesebilirsin',kaynakGeri:'↩ Tam çekime dönüldü — sıradaki klibi seçebilirsin',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
-  noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
+  capArsivYok:'Bu çekimde altyazı saklanmamış — altyazı, çekimle birlikte kaydedilmeye sonradan başlandı. Yeni bir çekimde altyazı dosyası çıkar.',noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
   camDenied:'📷 Kamera izni verilmemiş — ',
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
@@ -2342,7 +2342,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
-  noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
+  capArsivYok:'No captions were stored with this take — captions began being saved with takes later. A new take will produce a caption file.',noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   needsComp:'Composite turned on — this feature only works on the composite image',
   camDenied:'📷 Camera permission denied — ',
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
@@ -5031,6 +5031,18 @@ let fxTrack=null, fxUsed=false, vidOldu=0, sesOldu=0, fxWatch=0, fxWarned=false;
    yayın notu İngilizce. Kullanıcı paketi açana kadar fark etmiyor.
    Çekim başlarken senaryonun kopyası damgalanıyor; paket onu kullanıyor. */
 let cekimSenaryo=null, cekimAltyazi=null;
+/* ARŞİVDEN AÇILAN ÇEKİM. Sonuç ekranı hem taze çekim hem arşiv kaydı için
+   açılıyor; ikisinde de "altyazı dosyası" ve "yayın paketi" düğmeleri var.
+   Taze çekimde kaynak bellekteki `cekimSenaryo`/`cekimAltyazi`; ARŞİVDE ise
+   o değişkenler ya boş (uygulama yeniden açılmış) ya da BAŞKA bir çekime
+   ait. İkisi de sessizce yanlış dosya üretiyordu. Artık kaynak kaydın
+   kendisi; kayıtta yoksa (eski çekimler) üretilmiyor ve SEBEBİ söyleniyor.
+   `(x||'')` biçiminde okunuyor: eski kayıtlarda bu alanlar hiç yok. */
+let arsivKaynak=null;
+function arsivdenAc(kayit){
+  arsivKaynak={ srt:(kayit&&kayit.srt)||'', senaryo:(kayit&&kayit.senaryo)||null };
+}
+function arsivKaynakSil(){ arsivKaynak=null; }
 /* E.4 — RAPORUN DÜRÜSTLÜĞÜ BUNA BAĞLI. `capTimes` damgaları kelimenin okuma
    çizgisinden GEÇTİĞİ an; çizgiyi kim sürüyorsa onu ölçer. Sesle takip
    açıkken bu KONUŞMACIdır, kapalıyken suflenin kendi sabit akışıdır — yani
@@ -5205,6 +5217,9 @@ function doStartRec(){
      olduğunu ancak metni okuyarak anlıyor. Ölçüm zaten yapılıyordu;
      artık işini yapıyor. Sürüm sayısı ve dil de damgalanıyor: ayar
      çekimden sonra değişebilir, videonun içindekiler değişmez. */
+  /* Taze çekim: arşiv kaydından gelen kaynak burada düşmeli, yoksa yeni
+     çekimin paketine ESKİ çekimin senaryosu girerdi (kusurun aynadaki yüzü). */
+  arsivKaynakSil();
   { const _s=active();
     cekimSenaryo=_s ? {title:_s.title||'', text:_s.text||'', surum2:!!_s.surum2,
                        ikiSurumlu:!!(_s.text2||'').trim(), dil:_s.dil||''} : null; }
@@ -5505,6 +5520,7 @@ function closeResult(){
      demektir. Toplu silmede bunun tersi yaşandı ve geri dönen kullanıcı
      tek dokunuşla siliyordu. */
   if(typeof redoIptal==='function') redoIptal();
+  arsivKaynakSil();
   $('#result').classList.remove('open'); arkayiKilitle(); reset();
 }
 function fileName(){
@@ -5856,6 +5872,9 @@ function provaYaz(){
   box.innerHTML=h; box.classList.remove('hidden');
 }
 function srtText(){
+  /* Arşivden açılan çekimin altyazısı KAYDIN KENDİSİNDE duruyor; ekrandaki
+     metinden yeniden üretmek başka bir videonun zamanlamasını verirdi. */
+  if(arsivKaynak) return arsivKaynak.srt;
   const cues=buildCues();
   return cues.map((c,n)=>(n+1)+'\n'+tc(c.start,',')+' --> '+tc(c.end,',')+'\n'+c.text+'\n').join('\n');
 }
@@ -5863,8 +5882,11 @@ function srtText(){
    .srt her editörde (Premiere, DaVinci, CapCut, YouTube) çalışıyor; tek biçim yeter. */
 async function shareCaptions(fmt){
   const txt = srtText();
-  const cues=buildCues();
-  if(!cues.length){ toast(m('noCaps')); return; }
+  /* Arşiv kaydında altyazı yoksa "sufle akmamış" demek YANLIŞ olurdu:
+     o çekim akmış olabilir, altyazı o sürümde saklanmıyordu. */
+  if(arsivKaynak && !txt.trim()){ toast(m('capArsivYok')); return; }
+  const cues=arsivKaynak ? [] : buildCues();
+  if(!arsivKaynak && !cues.length){ toast(m('noCaps')); return; }
   const name=fileName()+'.'+fmt;
   const file=new File([txt],name,{type:'text/plain'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -5948,7 +5970,10 @@ async function zipYap(dosyalar){
 }
 /* İşaretleme dilini ve yönerge notlarını atıp okunabilir düz metin bırakır. */
 function yayinNotu(){
-  const s=cekimSenaryo||active()||{}, ham=s.text||'';
+  /* Notun anlattığı senaryo, VİDEONUN senaryosu olmalı. Arşivden açılan
+     çekimde bellekteki değişken başka bir çekime ait olabilir. */
+  const s=(arsivKaynak ? arsivKaynak.senaryo : (cekimSenaryo||active()))||{}, ham=s.text||'';
+  const metinYok=arsivKaynak && !arsivKaynak.senaryo;
   const basliklar=ham.split(/\r?\n/).filter(l=>/^#{1,3}\s/.test(l))
                      .map(l=>l.replace(/^#{1,3}\s*/,'').trim()).filter(Boolean);
   const duz=duzMetin(ham);
@@ -5972,8 +5997,11 @@ function yayinNotu(){
     T?'SUFLE YAYIN NOTU':'SUFLE PUBLISH NOTE',
     new Date().toLocaleString(),
     '',
+    /* TEMPO YALNIZ ÖLÇÜLEBİLDİYSE. Süre bilinmeyen (eski) kayıtlarda `sn`
+       1 saniyeye yuvarlanıyor ve 100 kelimelik metin "6000 wpm" veriyordu:
+       uydurma bir sayı, hiç sayı olmamasından kötü. */
     (T?'Süre: ':'Duration: ')+clock(sn)+(T?' · Kelime: ':' · Words: ')+kelime+
-      (kelime?(T?' · Tempo: ':' · Pace: ')+wpm+' wpm':''),
+      (kelime && (lastDur||0)>=2 ? (T?' · Tempo: ':' · Pace: ')+wpm+' wpm' : ''),
     '',
     T?'BAŞLIK ADAYLARI':'TITLE OPTIONS',
     ...(basliklar.length?basliklar.map((b,i)=>(i+1)+') '+b)
@@ -5985,7 +6013,9 @@ function yayinNotu(){
       (T?' — pakette yalnız bu sürüm var':' — only this version is in the bundle'),
       ''] : []),
     T?'AÇIKLAMA (taslak)':'DESCRIPTION (draft)',
-    cumle.slice(0,3).join(' ')||(T?'(metin boş)':'(empty script)'),
+    metinYok ? (T?'(bu çekim senaryosu saklanmadan önce alınmış — pakette senaryo.txt yok)'
+                 :'(this take was recorded before scripts were saved with takes — no senaryo.txt in the bundle)')
+             : (cumle.slice(0,3).join(' ')||(T?'(metin boş)':'(empty script)')),
     '',
     T?'ETİKET ADAYLARI':'TAG OPTIONS',
     etiket.join(' ')||(T?'(başlık yok — etiket üretilemedi)':'(no headings — no tags)'),
@@ -6014,11 +6044,18 @@ async function paketPaylas(){
   /* Blob'u OLDUĞU GİBİ ver — arrayBuffer() ile belleğe almak 10 dakikalık
      1080p çekimde ~1,3 GB tepe yapıyordu. */
   const dosyalar=[{ ad:taban+(mp4?'.mp4':'.webm'), veri:lastBlob }];
-  const cues=buildCues();
-  if(cues.length) dosyalar.push({ad:'altyazi.srt', veri:enc.encode(srtText())});
+  /* Arşivden açılan çekimde altyazı KAYITTAN gelir; ekrandaki metinden
+     üretmek başka bir videonun zamanlamasını pakete koyardı. */
+  const srt=srtText();
+  if(srt.trim()) dosyalar.push({ad:'altyazi.srt', veri:enc.encode(srt)});
   /* KARAR (C1): pakete YALNIZ çekilen sürüm giriyor. İkinci sürüm başka bir
      videonun metni; bu videonun paketine koymak yanıltıcı olurdu. */
-  const s=cekimSenaryo||active();
+  /* KAYNAK SIRASI: arşivden açıldıysa O KAYDIN senaryosu; taze çekimde
+     çekim anındaki anlık görüntü. `active()`e DÜŞMÜYORUZ — o, şu anda açık
+     olan senaryo, yani başka bir videonun metni olabilir. Eski kayıtlarda
+     senaryo saklanmıyordu; paket sessizce yanlış metin taşımaktansa metinsiz
+     çıkıyor ve yayın notu bunu yazıyor. */
+  const s=arsivKaynak ? arsivKaynak.senaryo : (cekimSenaryo||active());
   if(s && (s.text||'').trim()) dosyalar.push({ad:'senaryo.txt', veri:enc.encode(s.text)});
   dosyalar.push({ad:'yayin-notu.txt', veri:enc.encode(yayinNotu())});
 
@@ -6183,8 +6220,15 @@ async function autoSaveTake(){
   /* Ses değerlendirmesi zaten ölçülü — sonuç ekranında gösterilip atılıyordu.
      Arşive de yazılınca "hangi çekimde ses iyiydi" sorusu sonradan yanıtlanabiliyor.
      audStats stopAudioMonitor'de SIFIRLANMIYOR, o yüzden burada hâlâ dolu. */
+  /* SENARYO DA ÇEKİMLE BİRLİKTE SAKLANIYOR (2026-08-17). Eskiden yalnız
+     başlık yazılıyordu; arşivden açılan bir çekimin yayın paketine O ANDA
+     AÇIK OLAN senaryo giriyordu — yani başka bir videonun metni, sessizce.
+     "Paket her zaman çektiğin senaryoyu içerir" düzeltmesi yarım kalmıştı:
+     aynı oturumda doğru, arşivden açınca yanlış (deponun 1 numaralı hata
+     sınıfı). Anlık görüntü çekim anındaki hâli: sürüm ve dil dahil. */
   const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
-    created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu()});
+    created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu(),
+    senaryo:cekimSenaryo||null});
   arsivHatasi=!ok;
   if(ok) cekimSayaci=null;      // yeni çekim geldi: sayım bayat, pano açılınca yenilenir
   // Sebebe göre söyle: depo kapalıysa "yer aç" demek çıkışsız bir yol.
@@ -6275,7 +6319,9 @@ async function renderTakes(){
     d.querySelector('[data-a="play"]').onclick=async()=>{
       const tam=await dbGetir(it.id);
       if(!tam || !tam.blob){ toast(m('takeGone')); renderTakes(); return; }
-      lastBlob=tam.blob; lastDur=tam.dur||0; curTakeId=tam.id; closeSheets(); showResult(tam.blob); };
+      lastBlob=tam.blob; lastDur=tam.dur||0; curTakeId=tam.id;
+      arsivdenAc(tam);
+      closeSheets(); showResult(tam.blob); };
     if(it.srt) d.querySelector('[data-a="srt"]').onclick=()=>{
       const b=new Blob([it.srt],{type:'text/plain;charset=utf-8'}), u=URL.createObjectURL(b);
       const a=document.createElement('a'); a.href=u; a.download='altyazi_'+it.id+'.srt';

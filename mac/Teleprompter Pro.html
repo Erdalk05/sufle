@@ -4208,6 +4208,9 @@ function provaRapor(kaynak, sesle){
     const cumle=duz.split(/(?<=[.!?…])\s+/).map(x=>x.trim()).filter(Boolean);
     const kelime=(duz.match(/\S+/g)||[]).length;
     const sn=Math.max(1,Math.round((recStop-recStart)/1000||0));
+    /* Ham süre AYRICA tutuluyor: `sn` en az 1e yuvarlandığı için "ölçüldü mü"
+       sorusunu artık cevaplayamıyor (telefonda `lastDur`ın karşılığı). */
+    const sureOlculdu=(recStop-recStart)/1000||0;
     const wpm=Math.round(kelime/(sn/60));
     /* Bağlaç ve soru sözcükleri etiket olarak işe yaramıyor — telefonla aynı liste. */
     const DURAK=new Set(('nasıl neden nedir hangi kimdir bunlar şunlar için ile ama fakat '+
@@ -4223,7 +4226,13 @@ function provaRapor(kaynak, sesle){
       'SUFLE YAYIN NOTU',
       new Date().toLocaleString(),
       '',
-      'Süre: '+fmtTime(sn)+' · Kelime: '+kelime+(kelime?' · Tempo: '+wpm+' wpm':''),
+      /* TEMPO YALNIZ ÖLÇÜLEBİLDİYSE (2026-08-17, telefonla birlikte).
+         Süresi bilinmeyen kayıtta `sn` 1 saniyeye yuvarlanıyor ve 100
+         kelimelik metin "6000 wpm" veriyordu — uydurma sayı, hiç sayı
+         olmamasından kötü. Telefonda düzeltildi; iki kabuk BİREBİR aynı
+         notu üretmeli (tests/108 tam bu yüzden kırmızı verdi). */
+      'Süre: '+fmtTime(sn)+' · Kelime: '+kelime+
+        (kelime && sureOlculdu>=2 ? ' · Tempo: '+wpm+' wpm' : ''),
       '',
       'BAŞLIK ADAYLARI',
       ...(basliklar.length?basliklar.map((b,i)=>(i+1)+') '+b):['(senaryoda # başlık yok)']),

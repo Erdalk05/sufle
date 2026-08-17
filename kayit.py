@@ -57,7 +57,19 @@ def main(argv):
 
         # 1) KAMERA
         t.js("document.querySelector('#startCam').click()")
-        time.sleep(4.5)
+        # SABİT BEKLEME DEĞİL, SONUÇ BEKLEME (2026-08-17). 4,5 sn makine
+        # boşken yetiyordu; kapı başka bir Chrome ile yan yana koşarken
+        # yetmedi ve "kamera açılmadı" diye GERÇEK OLMAYAN bir kusur
+        # bildirdi — sonraki bütün adımlar geçtiği hâlde. Ölçüm aracının
+        # kendi kırılganlığı, üründeki hatadan daha pahalıya patlar: bir
+        # sonraki gerçek kırmızıya kimse inanmaz.
+        for _ in range(30):                      # en çok ~15 sn
+            h = js(t, "JSON.stringify({a:!!(document.querySelector('#cam')||{}).srcObject,"
+                      "i:document.querySelector('#intro').classList.contains('hidden')})",
+                   'kamera bekleme') or {}
+            if h.get('a') and h.get('i'):
+                break
+            time.sleep(0.5)
         kam = js(t, """JSON.stringify({
           akis: !!(document.querySelector('#cam')||{}).srcObject,
           introGizli: document.querySelector('#intro').classList.contains('hidden'),

@@ -2,6 +2,58 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🎨 17 Ağustos — "UI hâlâ rakiplerin gerisinde": ayar listesi baştan çizildi
+
+Kart düzeni (v9.17/9.18) yayına hazırken Erdal **"hâlâ çok zayıf, UI'ye kafayı
+taktım"** dedi. Kaynağa değil **çizilmiş ekrana** bakıldı (390×844, gerçek
+Chrome) ve teşhis somutlaştı.
+
+**Kart yığını yetmiyordu, çünkü:** 26 ayar kartı birbirinin AYNI gri metin
+çubuğuydu. **İkonsuz liste taranmaz, satır satır okunur** — bu bir belgenin
+davranışı, uygulamanın değil; iOS ve Android ayarları istisnasız ikon +
+gruplanmış (inset) liste kullanır. Her kart 12 px aralıkla ayrı yüzdüğü için
+göz "üç konu" değil "16 eşit ağırlıklı nesne" görüyordu. Jetonlar sayıldı:
+`--el-*` beş, `--rad-*` dört yerde kullanılıyordu — yani derinlik ve biçim
+jetonları **tanımlıydı ama ekranı hiç etkilemiyordu** (bu deponun "ölü ayar"
+sınıfının tasarım hâli).
+
+**Yapılan:** 28 yeni Feather ikonu (aynı 1.8 kalem), kartlar konu
+**kutularına** girdi, kutuların üstünde ALL-CAPS bölüm adı, kutu içinde kart
+kendi çerçevesi olmadan ince ayraçla. Kamera sekmesinde **ses ve görüntü
+kartları ayrıldı** — DOM'da iç içeydiler (ses onarımı → kalite → filtre →
+dosya → mikrofon → çerçeve → …), yani "konuya göre kart" vaadi o sekmede
+yarım kalmıştı.
+
+### Ölçerken çıkan üç gerçek kusur (üçü de kaynağa bakarak görülemezdi)
+
+1. **🔴 Ayarlar açıldığında hiçbir özet çizilmiyordu.** `ozetCiz` yalnız
+   `apply()` yolundan tetikleniyor ve görünmeyen sekmeleri atlıyor; sayfa
+   açıldığı an onu çağıran kimse yoktu. Sonuç: kullanıcının gördüğü **İLK
+   ekranda** Okuma sekmesinin beş kartı da boştu. Sekme değiştirip dönünce
+   doluyordu — yani artifact'te "kilitlenen kural" diye yazdığım *"kapalı kart
+   değerini söyler"* tam da ilk izlenimde ölüydü. Aynı fonksiyonda kart
+   tuvalleri için bu kusur bir kez düzeltilmişti; özet için yarım kalmıştı
+   (deponun 1 numaralı sınıfı: **yarım kalmış düzeltme**).
+2. **İkon eklenince özetler etiketini kaybetti.** `querySelector('summary
+   span')` başlık yerine İKONU buldu, `baslik` boş dizeye düştü ve
+   `n.includes('')` her zaman doğru olduğu için bütün kısa etiketler atıldı:
+   "Okuma çizgisi 18" yerine çıplak **"18"**. Çıplak sayıyı yasaklayan kural,
+   ikon eklendiği anda **kendini kapatmıştı**. Seçici artık adıyla:
+   `:scope > summary > span[data-i18n]`.
+3. **Başlık iki satıra düştü.** İkon satırdan 42 px alınca "Göz teması ve
+   çizgi" kırıldı — artifact'te kilitlenen *"kart başlığı tek satıra sığar"*
+   kuralının kendisi. Özet bütçesi 20→16 (ikonlu satırda yeniden ölçüldü) ve
+   esneklikte başlığın hiç küçülmemesi CSS'e yazıldı.
+
+**Ölçüm:** dört sekme × 25 görünür kart — başlığı iki satıra düşen **0**,
+ikonsuz **0**, satırı taşan **0**, sayfa yatay kayması **yok** (390/390).
+Kontrast 10 yüzeyde **ihlal 0 · adsız öge 0**.
+
+**Kapı:** yeni test `tests/171` (**31 iddia**) + `tests/166` sahte DOM'u
+gerçek seçicileri (`:scope`, `>`, `[nitelik]`) anlayacak şekilde genişletildi —
+tezgâh o seçiciyi anlamazsa test **ürün doğruyken** çöküyordu. **12 yeni
+kasıtlı bozma**, hepsi kanıtlandı.
+
 ## 🌙 17 Ağustos GECESİ — dokuz tur, dokuz commit, kapı 10/10 yeşil
 
 **Tek cümlede:** **v9.17 YAYINLANDI ve canlıdan doğrulandı** (senin
@@ -1294,7 +1346,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **394 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **478 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1469,9 +1521,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **6672 test** (gece başında 732) · yeni test dosyası: 39–170
+- **6721 test** (gece başında 732) · yeni test dosyası: 39–172
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **458 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **478 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

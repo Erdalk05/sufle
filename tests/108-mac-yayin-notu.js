@@ -67,6 +67,10 @@ if(!mTel||!mMac||!dTel||!dMac) return;
 
 function telNot(metin, sn){
   return new Function('__m','__s', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
     const L='tr'; const lastDur=__s; const lastPath=null;
     const cekimSenaryo={title:'T', text:__m, surum2:false, ikiSurumlu:false, dil:''};
     const active=()=>cekimSenaryo;
@@ -79,6 +83,10 @@ function telNot(metin, sn){
 }
 function macNot(metin, sn){
   return new Function('__m','__s', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
     const curScript=()=>({title:'T', text:__m});
     const recStart=0, recStop=__s*1000;
     const fmtTime=s=>{const m=Math.floor(s/60),k=Math.round(s%60);return String(m).padStart(2,'0')+':'+String(k).padStart(2,'0');};

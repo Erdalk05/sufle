@@ -19,6 +19,10 @@ const tel=oku(telefonYolu());
    geçiriyor ve CRC'yi akıştan hesaplıyor — o yolun da gerçekten sınanması gerek. */
 function zipFn(){
   return new Function('__TE', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
     const TextEncoder=__TE;
     ${cikar(tel, /let crcTab=null;[\s\S]*?\nfunction crc32\(buf\)\{[\s\S]*?\n\}/, 'crc tablosu')}
     ${cikar(tel, /async function crc32Akis\(blob\)\{[\s\S]*?\n\}/, 'crc32Akis')}
@@ -131,6 +135,10 @@ if (!unzipVar) {
 
 /* ---------- YAYIN NOTU METNİ ---------- */
 const notKur = (metin, sure, dil) => new Function('__metin','__sure','__L', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
   const L=__L, lastDur=__sure;
   /* Yayın notu artık ÇEKİM BAŞINDA damgalanan senaryoyu tercih ediyor
      (bkz. tests/61): çekimden sonra sürüm değiştirmek notu başka bir metinden
@@ -187,7 +195,10 @@ ok('düğme metni iki dilde tanımlı', (tel.match(/pkgBtnL:'/g)||[]).length >= 
 const paket = paketKaynak;
 /* Video artık arrayBuffer() ile belleğe ALINMADAN, Blob olarak ekleniyor. */
 ok('pakete video ekleniyor', /veri:lastBlob/.test(paket));
-ok('pakete altyazı ekleniyor (varsa)', /altyazi\.srt/.test(paket) && /cues\.length/.test(paket));
+/* Koşul `cues.length`ten `srt.trim()`e döndü (2026-08-17): arşivden açılan
+   çekimde altyazı kaydın KENDİSİNDEN geliyor, ekrandaki kelimelerden değil.
+   İddia değişmedi: altyazı varsa pakete girer, yoksa girmez. */
+ok('pakete altyazı ekleniyor (varsa)', /altyazi\.srt/.test(paket) && /srt\.trim\(\)/.test(paket));
 ok('pakete senaryo metni ekleniyor', /senaryo\.txt/.test(paket));
 ok('pakete yayın notu ekleniyor', /yayin-notu\.txt/.test(paket));
 ok('çekim yokken uyarıyor', /if\(!lastBlob\)/.test(paket));

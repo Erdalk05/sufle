@@ -31,6 +31,10 @@ if(!mPick) return;
   /* Gerçek pickMimei koştur: hangi türler destekleniyorsa ne seçiyor. */
   function sec(destek){
     return new Function('__d', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
       const IS_WK=__d.wk;
       const window={ MediaRecorder:{ isTypeSupported:t=>__d.destek.indexOf(t)>=0 } };
       const MediaRecorder=window.MediaRecorder;
@@ -88,8 +92,10 @@ if(!mPick) return;
 ok('gömülü altyazı durumu ÇEKİM ANINDA damgalanıyor', /burn:usedComp && !!st\.burnCaps,/.test(kod));
 ok('damga yalnız kompozit gerçekten kullanıldıysa doğru olabiliyor',
    /burn:usedComp &&/.test(kod));
+/* Altyazı artık `srt` değişkeninden geçiyor: arşivden açılan çekimde
+   kaydın kendi altyazısı, taze çekimde üretilen. Dosya yine pakette. */
 ok('paket altyazı dosyasını hâlâ veriyor (yeniden kurgu için)',
-   /dosyalar\.push\(\{ad:'altyazi\.srt', veri:enc\.encode\(srtText\(\)\)\}\)/.test(kod));
+   /dosyalar\.push\(\{ad:'altyazi\.srt', veri:enc\.encode\(srt\)\}\)/.test(kod));
 
 const mNot=kod.match(/function yayinNotu\(\)\{[\s\S]*?\n\}/);
 ok('yayinNotu çıkarılabildi', !!mNot);
@@ -104,6 +110,10 @@ ok('dosyanın neden durduğu da yazıyor', /yeniden kurgu ve arşiv için duruyo
   /* Gerçek yayinNotunu koştur: uyarı yalnız gerektiğinde çıkmalı. */
   function not(lp){
     return new Function('__lp', `
+    /* Bu simülasyon TAZE çekimi ölçüyor: arşivden açılmış bir kayıt yok.
+       (2026-08-17'de eklendi — kaynak sırası genişledi: arşiv kaydı →
+       çekim damgası → açık senaryo.) */
+    const arsivKaynak=null;
       const lastPath=__lp; const L='tr'; const lastDur=42;
       const cekimSenaryo={text:'# Baslik\\nBir cumle. Iki cumle.'};
       const active=()=>cekimSenaryo;

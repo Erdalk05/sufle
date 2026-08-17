@@ -125,9 +125,12 @@ const GECERLI=/^\d{2,}:[0-5]\d:[0-5]\d,\d{3}$/;
   const mSrt=kod.match(/function srtText\(\)\{[\s\S]*?\n\}/);
   ok('srtText çıkarılabildi', !!mSrt);
   if(mSrt){
-    const srt=new Function('buildCues','tc', mSrt[0]+'; return srtText;')(
+    /* `arsivKaynak` 2026-08-17'de eklendi: arşivden açılan çekimin altyazısı
+       kaydın kendisinden gelir. Burada null — bu test TAZE çekimin zaman
+       damgası biçimini ölçüyor. */
+    const srt=new Function('buildCues','tc','arsivKaynak', mSrt[0]+'; return srtText;')(
       ()=>[{start:5.9996,end:8.4,text:'birinci'},{start:8.4,end:12.99951,text:'ikinci'}],
-      tc);
+      tc, null);
     const cikti=srt();
     ok('kuyruklar 1den başlayarak numaralanıyor', /^1\n/.test(cikti));
     ok('okla ayrılıyor', /-->/.test(cikti));

@@ -59,7 +59,7 @@
  "58-kumanda-profili-ice-aktarma.js": 41,
  "59-gorunmez-karakterler.js": 31,
  "60-tahmini-sure-duraklamalar.js": 30,
- "61-paket-cekilen-senaryo.js": 19,
+ "61-paket-cekilen-senaryo.js": 20,
  "62-duzen-ayarlarinda-konum.js": 22,
  "63-olcumsuz-duzen-ayarlari.js": 23,
  "64-sesli-takip-yeniden-olcum.js": 20,
@@ -169,5 +169,6 @@
  "168-elle-pozlama.js": 37,
  "169-giris-ekrani.js": 16,
  "170-cekim-silme-onayi.js": 35,
- "171-ayar-ikon-bolum.js": 31
+ "171-ayar-ikon-bolum.js": 31,
+ "172-arsiv-paket-kaynagi.js": 17
 }

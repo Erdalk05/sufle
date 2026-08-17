@@ -3216,15 +3216,15 @@
   "ad": "İ2 ikon adı var ama SVG sembolü yok (boş kutucuk çizilir)",
   "test": "171-ayar-ikon-bolum.js",
   "kaynak": "telefon",
-  "bul": "  gGoz:'goz',",
-  "koy": "  gGoz:'gozz',"
+  "bul": "gGoz:'goz',",
+  "koy": "gGoz:'gozz',"
  },
  {
   "ad": "İ3 ikon ekran okuyucudan gizlenmiyor (kart adı iki kez okunur)",
   "test": "171-ayar-ikon-bolum.js",
   "kaynak": "telefon",
-  "bul": "    kut.setAttribute('aria-hidden','true');",
-  "koy": ""
+  "bul": "    kut.className='kikon'; kut.setAttribute('aria-hidden','true');",
+  "koy": "    kut.className='kikon';"
  },
  {
   "ad": "B1 ses kartı GÖRÜNTÜ bölümüne karıştı (iki konu yine iç içe)",
@@ -3251,8 +3251,8 @@
   "ad": "B4 arama sonrası bölümler tazelenmiyor (boş başlık kalır)",
   "test": "171-ayar-ikon-bolum.js",
   "kaynak": "telefon",
-  "bul": "    pane.style.display=hit?'block':'none';\n  });\n  bolumleriTazele();",
-  "koy": "    pane.style.display=hit?'block':'none';\n  });"
+  "bul": "  bolumleriTazele();\n  out.style.display='';",
+  "koy": "  out.style.display='';"
  },
  {
   "ad": "A1 ayarlar açılınca özet çizilmiyor (ilk ekran yine boş çubuklar)",
@@ -3265,8 +3265,8 @@
   "ad": "A2 başlık yine sırayla seçiliyor (ikon başlık sanılır, etiket düşer)",
   "test": "171-ayar-ikon-bolum.js",
   "kaynak": "telefon",
-  "bul": "g.querySelector(':scope > summary > span[data-i18n]')",
-  "koy": "g.querySelector('summary span')"
+  "bul": "    const baslik=norm((g.querySelector(':scope > summary > span[data-i18n]')||{}).textContent||'');",
+  "koy": "    const baslik=norm((g.querySelector('summary span')||{}).textContent||'');"
  },
  {
   "ad": "A3 başlık esnemede küçülüyor (uzun özet başlığı ikiye böler)",
@@ -3288,5 +3288,61 @@
   "kaynak": "telefon",
   "bul": "  .kutuIc .grup.ilkGorunur>summary{border-top:none}",
   "koy": ""
+ },
+ {
+  "ad": "A1 paket yine açık senaryoya düşüyor (başka videonun metni)",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "  const s=arsivKaynak ? arsivKaynak.senaryo : (cekimSenaryo||active());",
+  "koy": "  const s=cekimSenaryo||active();"
+ },
+ {
+  "ad": "A2 yayın notu arşiv kaydını yok sayıyor",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "  const s=(arsivKaynak ? arsivKaynak.senaryo : (cekimSenaryo||active()))||{}, ham=s.text||'';",
+  "koy": "  const s=(cekimSenaryo||active())||{}, ham=s.text||'';"
+ },
+ {
+  "ad": "A3 senaryo çekimle birlikte saklanmıyor",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "    senaryo:cekimSenaryo||null});",
+  "koy": "    });"
+ },
+ {
+  "ad": "A4 arşivden açarken kaynak kurulmuyor",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "      arsivdenAc(tam);",
+  "koy": "      "
+ },
+ {
+  "ad": "A5 yeni çekimde arşiv kaynağı düşmüyor (eski senaryo sızar)",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "  arsivKaynakSil();\n  { const _s=active();",
+  "koy": "  { const _s=active();"
+ },
+ {
+  "ad": "A6 süre bilinmeyen kayıtta uydurma tempo yazılıyor",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "      (kelime && (lastDur||0)>=2 ? (T?' · Tempo: ':' · Pace: ')+wpm+' wpm' : ''),",
+  "koy": "      (kelime?(T?' · Tempo: ':' · Pace: ')+wpm+' wpm':''),"
+ },
+ {
+  "ad": "A7 arşiv altyazısı ekrandaki metinden üretiliyor",
+  "test": "172-arsiv-paket-kaynagi.js",
+  "kaynak": "telefon",
+  "bul": "  if(arsivKaynak) return arsivKaynak.srt;",
+  "koy": "  "
+ },
+ {
+  "ad": "A8 masaüstü yine uydurma tempo yazıyor (iki platform ayrışır)",
+  "test": "108-mac-yayin-notu.js",
+  "kaynak": "mac",
+  "bul": "        (kelime && sureOlculdu>=2 ? ' · Tempo: '+wpm+' wpm' : ''),",
+  "koy": "        (kelime?' · Tempo: '+wpm+' wpm':''),"
  }
 ]

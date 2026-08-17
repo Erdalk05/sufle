@@ -44,12 +44,21 @@ ok('senaryo yoksa damga null', /cekimSenaryo=_s \? \{[^}]*\} : null;/.test(ds));
 
 /* ---------- PAKET DAMGAYI KULLANIYOR MU ---------- */
 const pp=cikar(kod,/async function paketPaylas\(\)\{[\s\S]*?\n\}/,'paketPaylas');
-ok('paket damgalı senaryoyu tercih ediyor', /const s=cekimSenaryo\|\|active\(\);/.test(pp));
+/* 2026-08-17: bu iki iddia BİÇİME kilitliydi (`cekimSenaryo||active()`
+   birebir). Kural genişleyince — arşivden açılan çekimde kaynak O KAYDIN
+   senaryosu — davranış DAHA DOĞRU hâle geldiği hâlde iki test kırmızı verdi.
+   İddia artık şu: paket, o anda açık senaryoya KENDİLİĞİNDEN düşmez;
+   önce çekimin damgası, arşivde ise kaydın kendi senaryosu gelir. */
+ok('paket önce çekimin damgasını kullanıyor',
+   /const s=arsivKaynak \? arsivKaynak\.senaryo : \(cekimSenaryo\|\|active\(\)\);/.test(pp));
+ok('arşiv çekiminde açık senaryoya düşmüyor',
+   /arsivKaynak \? arsivKaynak\.senaryo/.test(pp));
 ok('senaryo dosyası hâlâ pakete giriyor', /ad:'senaryo\.txt'/.test(pp));
 ok('boş senaryo pakete girmiyor', /if\(s && \(s\.text\|\|''\)\.trim\(\)\)/.test(pp));
 
 const yn=cikar(kod,/function yayinNotu\(\)\{[\s\S]*?\n\}/,'yayinNotu');
-ok('yayın notu da damgalı senaryoyu tercih ediyor', /const s=cekimSenaryo\|\|active\(\)\|\|\{\}/.test(yn));
+ok('yayın notu da aynı kaynağı kullanıyor',
+   /const s=\(arsivKaynak \? arsivKaynak\.senaryo : \(cekimSenaryo\|\|active\(\)\)\)\|\|\{\}/.test(yn));
 ok('paketten önce hiç çekim yoksa yine de çalışıyor (active yedek)',
    /cekimSenaryo\|\|active\(\)/.test(yn) && /cekimSenaryo\|\|active\(\)/.test(pp));
 
@@ -59,7 +68,8 @@ ok('paketten önce hiç çekim yoksa yine de çalışıyor (active yedek)',
   const sec=new Function('__damga','__aktif', `
     const cekimSenaryo=__damga;
     const active=()=>__aktif;
-    const s=cekimSenaryo||active();
+    const arsivKaynak=null;                 // bu blok TAZE çekimi ölçüyor
+    const s=arsivKaynak ? arsivKaynak.senaryo : (cekimSenaryo||active());
     return s;
   `);
   const damga={title:'Tanıtım', text:'Türkçe metin', surum2:false};
