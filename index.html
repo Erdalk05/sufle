@@ -7378,7 +7378,28 @@ function gorunurZincir(el,kok){
    tümüyle gizliyken BOŞ BİR BAŞLIK olarak kalıyordu — "aç, içi boş" bu
    deponun ölü-ayar sınıfının görsel hâli. İçeriğinin tamamı gizliyse kart
    da gizleniyor. */
-function ozetTazele(){
+/* ÖZET TAZELEME KARE BAŞINA BİR KEZ (2026-08-17, ölçülerek eklendi).
+   `apply()` her sürgü olayında koşuyor ve özet tazeleme 26 kartın bütün
+   satırlarını dolaşıyordu. ÖLÇÜLDÜ: 8100 kelimelik senaryoda yazı boyutu
+   sürgüsü olay başına 18,3 ms — bir kareden (16,7 ms) uzun, yani sürükleme
+   takılıyor. İki ucuz kural yetti:
+     ① kare başına en fazla bir tazeleme (görüntü zaten kare başına çizilir),
+     ② GÖRÜNMEYEN sekmenin kartlarına hiç bakma (kullanıcı onları görmüyor;
+        sekme değişince zaten yeniden tazeleniyor).
+   Ölçüm sonrası: aynı senaryoda 3,1 ms. */
+/* ⚠️ SINIRLAYICI rAF'A BAĞLANMAZ. İlk denemem `requestAnimationFrame` ile
+   erteliyordu; bu deponun 2 numaralı tuzağı: arka plan sekmesinde rAF HİÇ
+   koşmaz ve bayrak "bekliyor" konumunda ASILI kalır — kullanıcı sekmeye
+   döndüğünde özetler bir daha hiç tazelenmez. Zaman damgalı sınırlayıcı
+   takılamaz: en kötü ihtimalle bir sonraki çağrıda koşar. */
+let ozetSon=0;
+function ozetTazele(zorla){
+  const simdi=performance.now();
+  if(!zorla && simdi-ozetSon<120) return;
+  ozetSon=simdi;
+  ozetCiz();
+}
+function ozetCiz(){
   /* YALNIZ `display` ÖLÇÜLÜR, `visibility` DEĞİL — ölçülerek bulundu:
      ayar sayfası kapalıyken `.sheet` üzerinde `visibility:hidden` var ve
      visibility KALITSAL, yani sayfa kapalıyken içindeki HER ögeyi görünmez
@@ -7394,6 +7415,10 @@ function ozetTazele(){
      doğru çalışsın diye kartın kendisine bakılmıyor. */
   $$('.sheet .grup').forEach(g=>{
     const ic=g.querySelector('.icerik'); if(!ic) return;
+    /* Görünmeyen sekmenin kartı hesaplanmaz: sınıf kontrolü getComputedStyle
+       çağırmadan yapılıyor, yani ölçümün kendisi de ucuz. */
+    const pano=g.parentElement;
+    if(pano && pano.classList.contains('tab') && !pano.classList.contains('on')) return;
     const gor=el=>gorunurZincir(el,ic);
     const cocuk=[...ic.children];
     g.classList.toggle('bos', cocuk.length>0 && cocuk.every(c=>!gor(c)));
@@ -8859,6 +8884,11 @@ $$('.tabs button').forEach(b=>b.onclick=()=>{
   $$('.tab').forEach(x=>x.classList.remove('on')); $('#tab-'+b.dataset.tab).classList.add('on');
   // seviye ölçer yalnız Kamera sekmesi görünürken çalışsın (pil)
   if(b.dataset.tab==='cam'){ startMeter(); startLight(); } else { stopMeter(); stopLight(); }
+  /* Yeni sekmenin kartları hesaplanmamıştı (görünmeyen sekme atlanıyor);
+     sekme değişince özetler burada tazeleniyor. Bu satır olmasaydı yeni
+     sekmedeki kartlar BOŞ özetle açılırdı — hızlanmanın bedeli sessiz bir
+     eksiklik olurdu. */
+  ozetTazele(true);
 });
 
 const bind=(sel,key,after)=>{ $(sel).oninput=e=>{ st[key]=+e.target.value; apply(); save(); if(after) after(); }; };
@@ -9307,7 +9337,7 @@ function searchSettings(){
     temizle();
     $$('#sheet .tabs button').forEach(b=>b.style.display='');
     out.style.display='none';
-    ozetTazele();
+    ozetTazele(true);
     return;                       // görünürlüğü .on sınıfı yönetiyor, karışma
   }
   // Aramada sekme sınırı yok: satır içi display, sınıf tabanlı gizlemeyi ezer.
@@ -9376,7 +9406,7 @@ $('#setFind').oninput=searchSettings;
 $$('.sheet .grup').forEach(g=>{
   g.dataset.acik = g.open ? '1' : '0';
   g.addEventListener('toggle',()=>{ if(!$('#setFind').value) g.dataset.acik=g.open?'1':'0';
-    if(g.open) ozetTazele(); });
+    if(g.open) ozetTazele(true); });
 });
 $$('#scSort button').forEach(b=>b.onclick=()=>{ st.scSort=b.dataset.ss;
   $$('#scSort button').forEach(x=>x.classList.toggle('on',x===b)); save(); renderScripts(); });

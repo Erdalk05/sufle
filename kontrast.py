@@ -88,9 +88,22 @@ DURUMLAR = [
 
 # Sonuç ekranı iki aşamalı: kamera akmadan kayıt başlatmak anlamsız.
 SONRA = {
-    'telefon-sonuc': ("const b=document.querySelector('#recBtn'); b.click();"
-                      " await new Promise(r=>setTimeout(r,4000)); b.click();"
-                      " await new Promise(r=>setTimeout(r,3500));"),
+    # ⚠️ SABİT SÜRE DEĞİL, DURUM BEKLENİYOR (2026-08-17). Eskiden "tıkla,
+    # 4 sn bekle, tıkla" idi: makine yüklüyken kayıt o an henüz başlamamış
+    # oluyor, ikinci tıklama kaydı BAŞLATIYOR ve sonuç ekranı hiç açılmıyor.
+    # Kapı o zaman ürün kusursuzken çöküyordu (bu gece oldu: kontrast adımı
+    # "hedef duruma varılmadı" diye patladı). Kapının çekim ölçümünde
+    # düzeltilen tuzağın aynısı — makine hızına bağlı ölçüm.
+    'telefon-sonuc': ("const b=document.querySelector('#recBtn');"
+                      " const bek=async(k,ms)=>{const t0=Date.now();"
+                      "   while(Date.now()-t0<ms){ if(k()) return true;"
+                      "     await new Promise(r=>setTimeout(r,150)); } return false; };"
+                      " b.click();"
+                      " await bek(()=>document.body.classList.contains('rec'), 15000);"
+                      " await new Promise(r=>setTimeout(r,3000));"
+                      " b.click();"
+                      " await bek(()=>getComputedStyle(document.querySelector('#result'))"
+                      "   .display!=='none', 20000);"),
     # Kompozit kutusu ancak kamera aktıktan sonra açılabiliyor (ensureComp
     # kamera ister). Sonra ayarlar → Kamera sekmesi → kompozit ve gömme.
     # NEDEN ANAHTARA BASMIYORUZ: kompozit WebGL istiyor, başsız tarayıcı ise

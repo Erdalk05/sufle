@@ -77,7 +77,26 @@ def main(argv):
         t.js("(()=>{ const b=document.querySelector('#playBtn'); if(b) b.click(); })()")
         time.sleep(1.2)
         t.js("document.querySelector('#recBtn').click()")
-        time.sleep(3.5)
+        # ⚠️ SABİT SÜRE DEĞİL, SONUÇ BEKLENİYOR (2026-08-17).
+        # Eskiden 3,5 sn beklenip altyazı üretilmiş olması umuluyordu. Makine
+        # yüklüyken (gece boyunca çok sayıda tarayıcı koştu) o sürede HİÇBİR
+        # kelime okuma çizgisinden geçmiyor ve kapı "altyazı üretilmedi" diye
+        # KIRMIZI veriyor — ürün kusursuzken. Ölçüldü: aynı akış 3,5 sn'de
+        # 0 kelime, 8 sn'de 11 kelime geçiriyor. Kapı artık makinenin hızına
+        # değil ÜRÜNÜN ÜRETİMİNE bakıyor: yeterli kelime geçene kadar (ya da
+        # tavan dolana kadar) kayıt sürüyor. M11 ile aynı sınıf.
+        gecen = 0
+        for _ in range(30):                      # en fazla ~15 sn
+            time.sleep(0.5)
+            try:
+                gecen = t.js("document.querySelectorAll('#scroller .w.done').length") or 0
+            except Exception:
+                gecen = 0
+            if gecen >= 3:
+                break
+        if gecen < 3:
+            print('  ⚠ kayıt sırasında yalnız %d kelime çizgiyi geçti '
+                  '(makine yavaş olabilir)' % gecen)
         rec = js(t, """JSON.stringify({
           rec: document.body.classList.contains('rec'),
           etiket: (document.querySelector('#recLbl')||{textContent:''}).textContent.trim()

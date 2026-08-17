@@ -3064,5 +3064,33 @@
   "kaynak": "telefon",
   "bul": "    if(st.wb) applyWb();",
   "koy": "    applyWb();"
+ },
+ {
+  "ad": "özet sınırlayıcısı rAF'a bağlandı (arka planda asılı kalır)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "let ozetSon=0;\nfunction ozetTazele(zorla){\n  const simdi=performance.now();\n  if(!zorla && simdi-ozetSon<120) return;\n  ozetSon=simdi;\n  ozetCiz();\n}",
+  "koy": "let ozetBekliyor=false;\nfunction ozetTazele(zorla){\n  if(ozetBekliyor) return; ozetBekliyor=true;\n  requestAnimationFrame(()=>{ ozetBekliyor=false; ozetCiz(); });\n}"
+ },
+ {
+  "ad": "sekme değişince özet tazelenmiyor (yeni sekme boş özetle açılır)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "     eksiklik olurdu. */\n  ozetTazele(true);\n});",
+  "koy": "     eksiklik olurdu. */\n});"
+ },
+ {
+  "ad": "görünmeyen sekmenin kartları da hesaplanıyor (boşuna maliyet)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    if(pano && pano.classList.contains('tab') && !pano.classList.contains('on')) return;",
+  "koy": ""
+ },
+ {
+  "ad": "çekim ölçümü yine sabit süreye bağlandı (yavaş makinede yalancı kırmızı)",
+  "test": "115-bozma-turu.js",
+  "kaynak": "kayit_olcum",
+  "bul": "            if gecen >= 3:\n                break",
+  "koy": "            if True:\n                break"
  }
 ]

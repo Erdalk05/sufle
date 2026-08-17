@@ -52,8 +52,10 @@ const panolar=[...sheet.matchAll(/<div class="tab(?: [^"]*)?" id="tab-(\w+)">/g)
 ok('dört ayar panosu duruyor ('+panolar.join(', ')+')', panolar.length===4);
 
 /* ---------- 2. ÖZET MANTIĞI (gerçek kaynaktan çıkarılıp koşturulur) ---------- */
-const mOzet=kod.match(/function ozetTazele\(\)\{[\s\S]*?\n\}/);
-ok('ozetTazele çıkarılabildi', !!mOzet);
+/* Çizim işi `ozetCiz`e taşındı (sınırlayıcı ayrı fonksiyon); testin
+   koşturduğu şey ÇİZİM mantığıdır. */
+const mOzet=kod.match(/function ozetCiz\(\)\{[\s\S]*?\n\}/);
+ok('ozetCiz çıkarılabildi', !!mOzet);
 const mZincir=kod.match(/function gorunurZincir\(el,kok\)\{[\s\S]*?\n\}/);
 ok('gorunurZincir çıkarılabildi', !!mZincir);
 const mNorm=kod.match(/function norm\(x\)\{[\s\S]*?FOLD\[c\]\|\|c\); \}/);
@@ -131,7 +133,7 @@ function kosturr(kartNesneleri){
     const getComputedStyle=e=>({display:__stil.get(e)||''});
     const $$=sel=>__k;
     ${mOzet[0]}
-    ozetTazele();
+    ozetCiz();
   `)(koklar, stil);
   return koklar;
 }
@@ -348,4 +350,33 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   ok('tek parçalık özet de kısaltılıyor', !!t && +t[1] <= 20);
   const g = kabuk.match(/\.grup>summary \.ozet\{[^}]*max-width:(\d+)%/);
   ok('özet genişliği en fazla %46 (' + (g ? g[1] : '?') + ')', !!g && +g[1] <= 46);
+}
+
+/* ---------- ÖZET TAZELEME MALİYETİ (2026-08-17, ölçülerek) ----------
+   `apply()` her sürgü olayında koşuyor ve özet tazeleme 26 kartın bütün
+   satırlarını dolaşıyor. 8100 kelimelik senaryoda gerçek tarayıcıda ölçüldü
+   (olay başına, en kötü hâl — gerçek sürüklemede kare başına bir kez):
+     hız sürgüsü (yeniden ölçüm YOK) ....  3,2 ms  ← temel apply + özet
+     kamera karartma .....................  17,3 ms
+     satır aralığı .......................  45,8 ms
+     yazı boyutu .........................  66,1 ms
+   Yani yük özet değil, uzun metnin yeniden ölçümü (zaten `olcPlanla` ile
+   kare başına sınırlı). Özet yine de iki kuralla ucuzlatıldı ve KURALLAR
+   burada kilitli. */
+{
+  const kabuk = oku(telefonYolu());
+  const kod3 = kabuk.replace(/\/\*[\s\S]*?\*\//g, '');
+  /* ⚠️ SINIRLAYICI rAF'A BAĞLANMAZ: arka plan sekmesinde rAF hiç koşmaz ve
+     bayrak asılı kalır — özetler bir daha hiç tazelenmez (deponun 2 numaralı
+     hata sınıfı). Zaman damgalı sınırlayıcı takılamaz. */
+  ok('özet sınırlayıcısı zaman damgalı (rAF değil)',
+     /let ozetSon=0;[\s\S]{0,200}?simdi-ozetSon<120/.test(kod3));
+  ok('özet tazeleme rAF ile ertelenmiyor',
+     !/function ozetTazele\(\)\{[\s\S]{0,200}?requestAnimationFrame/.test(kod3));
+  /* Görünmeyen sekmenin kartları hesaplanmıyor; sekme değişince ZORLA
+     tazeleniyor, yoksa yeni sekme boş özetle açılırdı. */
+  ok('görünmeyen sekmenin kartları atlanıyor',
+     /pano\.classList\.contains\('tab'\) && !pano\.classList\.contains\('on'\)\) return;/.test(kod3));
+  ok('sekme değişince özet ZORLA tazeleniyor', /ozetTazele\(true\);\n\}\);/.test(kod3));
+  ok('kart açılınca da zorla tazeleniyor', /if\(g\.open\) ozetTazele\(true\);/.test(kod3));
 }

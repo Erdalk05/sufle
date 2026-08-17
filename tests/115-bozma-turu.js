@@ -271,3 +271,22 @@ function kos(args, kayitIcerik){
   ok('süzgeçle koşarken taban güncellenmiyor (yarım tur tabanı bozmasın)',
      /if suzgec is None:/.test(py));
 }
+
+/* ---------- KAPININ ÇEKİM ÖLÇÜMÜ MAKİNENİN HIZINA BAĞLI OLMASIN ----------
+   (2026-08-17) Adım 10, kaydı başlatıp SABİT 3,5 saniye bekliyor ve altyazı
+   üretilmiş olmasını umuyordu. Makine yüklüyken o sürede hiçbir kelime okuma
+   çizgisinden geçmiyor ve kapı ürün kusursuzken KIRMIZI veriyor. Ölçüldü:
+   aynı akış 3,5 sn'de 0 kelime, 8 sn'de 11 kelime geçiriyor.
+   M11 ile aynı sınıf: kapı makine durumuna değil ÜRÜNÜN ÜRETİMİNE bakmalı. */
+{
+  /* ⚠️ ENV ÜZERİNDEN OKU. İlk yazımda depodaki dosyayı doğrudan okudum ve
+     kasıtlı bozma (geçici kopyada) teste HİÇ ulaşmadı — tam da bu dosyanın
+     polislik ettiği tuzağın içine düştüm. */
+  const kayitPy = require('fs').readFileSync(
+    process.env.SUFLE_KAYIT_OLCUM || require('path').join(REPO, 'kayit.py'), 'utf8');
+  ok('çekim ölçümü kelime geçişini BEKLİYOR (sabit süre değil)',
+     /\.w\.done'\)\.length/.test(kayitPy) && /if gecen >= 3:/.test(kayitPy));
+  ok('bekleme sonsuz değil (tavanı var)', /for _ in range\(30\):/.test(kayitPy));
+  ok('yetersiz geçişte sessiz kalmıyor, uyarıyor',
+     /yalnız %d kelime çizgiyi geçti/.test(kayitPy));
+}
