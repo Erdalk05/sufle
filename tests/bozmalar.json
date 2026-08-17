@@ -2831,8 +2831,8 @@
   "ad": "ses tanısı kartın içine düştü (arıza tam o an görünmez)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "  <div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div>",
-  "koy": "  <details class=\"grup\"><summary><span data-i18n=\"gNasil\"></span><span class=\"ozet\"></span></summary><div class=\"icerik\"><div class=\"hint\" id=\"audInfo\" style=\"text-align:center;font-weight:700\"></div></div></details>"
+  "bul": "    <div class=\"hint\" id=\"audInfo\"></div>",
+  "koy": "    <details class=\"grup\"><summary><span data-i18n=\"gNasil\"></span><span class=\"ozet\"></span></summary><div class=\"icerik\"><div class=\"hint\" id=\"audInfo\"></div></div></details>"
  },
  {
   "ad": "kayıt gözcüsü ikinci bakışı atlıyor (iyi çekim için yanlış alarm)",
@@ -3547,5 +3547,131 @@
   "kaynak": "mac",
   "bul": "        toast(m('vidDondu'));\n      }\n      return;",
   "koy": "      }\n      return;"
+ },
+ {
+  "ad": "R1 tanı satırları yine ortalanmış (taranacak hiza yok)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  #cekimRapor > .hint{margin:0;padding:11px 14px;text-align:left;font-weight:700;",
+  "koy": "  #cekimRapor > .hint{margin:0;padding:11px 14px;text-align:center;font-weight:700;"
+ },
+ {
+  "ad": "R2 boş tanı satırı kutuda yer kaplıyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  #cekimRapor > .hint:empty{display:none}",
+  "koy": ""
+ },
+ {
+  "ad": "R3 üçü de boşken boş çerçeve ekranda kalıyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  kutu.classList.toggle('bos', ilk);   // hiç dolu satır çıkmadıysa",
+  "koy": ""
+ },
+ {
+  "ad": "R4 ayraç görünmeyen satırların arasına da çiziliyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "    sat.classList.toggle('ustCizgi', dolu && !ilk);",
+  "koy": "    sat.classList.toggle('ustCizgi', !ilk);"
+ },
+ {
+  "ad": "R5 çekim raporu hiç tazelenmiyor (ayraçlar yanlış kalır)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  cekimRaporuTazele();\n  provaYaz();",
+  "koy": "  provaYaz();"
+ },
+ {
+  "ad": "R6 'Daha fazla' kartı yine ayar sürgüsü ikonu taşıyor (yanlış ikon)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  gDahaFazla:'dahafazla', gNasil:'yardim'",
+  "koy": "  gDahaFazla:'ayarlar', gNasil:'yardim'"
+ },
+ {
+  "ad": "H1 durum şeridine emoji geri geldi (platformda başka çizilir)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  $('#hRemV').textContent=clock(left/st.wpm*60);",
+  "koy": "  $('#hRem').textContent='⏳ '+clock(left/st.wpm*60);"
+ },
+ {
+  "ad": "H2 şerit ikonu satırı yükseltiyor (çubuk sığma aritmetiği bozulur)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  .hudIk{width:.92em;height:.92em;vertical-align:-.13em;margin-right:3px}",
+  "koy": "  .hudIk{width:1.05em;height:1.05em;vertical-align:-.16em;margin-right:4px}\n  #hRem{display:inline-flex;align-items:center}"
+ },
+ {
+  "ad": "H3 kalan süre ikonu silindi (iki saat ayırt edilemez)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "<svg class=\"hudIk\" aria-hidden=\"true\"><use href=\"#i-kalan\"/></svg>",
+  "koy": ""
+ },
+ {
+  "ad": "O1 kompozit canlı tutucu kurulmuyor (rAF kısılınca dosyaya donmuş kare yazılır)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  drawComp();\n  compCanliTut();",
+  "koy": "  drawComp();"
+ },
+ {
+  "ad": "O2 yedek yol seyreltildi (kareler pratikte akmaz)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  },120);   /* ÖLÇÜLDÜ",
+  "koy": "  },900);   /* ÖLÇÜLDÜ"
+ },
+ {
+  "ad": "O3 iki rAF zinciri birden dönüyor (çift çizim, ısı)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  cancelAnimationFrame(comp.raf);\n  comp.raf=requestAnimationFrame(drawComp);",
+  "koy": "  comp.raf=requestAnimationFrame(drawComp);"
+ },
+ {
+  "ad": "O4 kayıtta uzun takılma sessiz geçiyor",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    if(gecen>1000 && rec && rec.state==='recording' && !compDurduSoylendi){",
+  "koy": "    if(false){"
+ },
+ {
+  "ad": "O5 oynatma nöbetçisi sayaç yokken de ölçüyor (donmayı hiç göremez)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(!kareSayaciVar(v)) return;          // ölçemiyoruz: yanlış teşhis üretme",
+  "koy": "  "
+ },
+ {
+  "ad": "O6 oynatmada dosya-içi donma söylenmiyor",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    toast(m('oynatDosya'));",
+  "koy": "    "
+ },
+ {
+  "ad": "O7 masaüstünde oynatma nöbetçisi yok",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "mac",
+  "bul": "    v.onplay=()=>oynatIzleBaslat();",
+  "koy": "    "
+ },
+ {
+  "ad": "O8 genel kare ölçer çekirdekten çıkarıldı",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "oniz",
+  "bul": "function kareSayaciVar(el){",
+  "koy": "function kareSayaciVarDegil(el){"
+ },
+ {
+  "ad": "O9 masaüstünde kırpma canlı tutucusu yok (dosyaya donmuş kare yazılır)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "mac",
+  "bul": "    loop();\n    cropCanliTut();",
+  "koy": "    loop();"
  }
 ]

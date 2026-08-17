@@ -336,6 +336,13 @@
   #hud{z-index:7;display:flex;gap:6px;margin-left:12px;
     font-size:var(--tx-xs);font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
   #hud span{background:rgba(0,0,0,.45);padding:var(--sp-1) 9px;border-radius:20px;backdrop-filter:blur(6px)}
+  /* Şerit ikonu metinle aynı ölçekte ve aynı renkte: `currentColor` sayesinde
+     uyarı durumunda (`.warn`) o da sararıyor. Genişlik emojinin yerini birebir
+     alıyor, yani sığma aritmetiği değişmiyor. */
+  /* ÖLÇÜLDÜ: `inline-flex` + 1,05em ikon şeridin yüksekliğini 26 pxten
+     29 pxe çıkarıyordu; çubuğun sığma aritmetiği o yüksekliğe bağlı
+     (tests/134). Satır içi akışta ve 0,92em ölçüde yükseklik değişmiyor. */
+  .hudIk{width:.92em;height:.92em;vertical-align:-.13em;margin-right:3px}
   #hud .warn{color:#ffb300}
   /* Mod rozeti (B.5): rol jetonlarından. Ses = bilgi mavisi (bir şey
      dinleniyor), otomatik = eylem yeşili (bir şey akıyor), elle = nötr. */
@@ -853,6 +860,21 @@
     padding:max(16px,env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
   #result.open{display:flex}
   #result h2{font-size:var(--tx-lg);text-align:center;margin-bottom:10px}
+  /* ÇEKİM RAPORU. Ayarlardaki kutu dilinin aynısı: tek yüzey, ince ayraç,
+     sola hizalı. Satırlar kendi renklerini korur (uyarı sarısı, onay yeşili) —
+     kaldırılan tek şey ORTALAMA, çünkü ortalanmış üç satırın taranacak bir
+     hizası olmuyor. */
+  #cekimRapor{margin-top:var(--sp-3);background:var(--s-raised);
+    border:1px solid var(--s-line);border-radius:var(--rad-lg);
+    overflow:hidden;box-shadow:var(--el-1)}
+  #cekimRapor.bos{display:none}
+  #cekimRapor > .hint{margin:0;padding:11px 14px;text-align:left;font-weight:700;
+    line-height:1.45}
+  #cekimRapor > .hint:empty{display:none}
+  /* Ayraç yalnız GÖRÜNÜR satırların arasına: boş satır `:empty` ile
+     gizlendiği için `+` seçicisi yanlış yere çizgi koyardı. Sınıfı
+     görünürlüğü bilen taraf koyuyor (ayar kutularındaki kuralın aynısı). */
+  #cekimRapor > .hint.ustCizgi{border-top:1px solid var(--s-line)}
   #resultVid{flex:1;width:100%;border-radius:16px;background:#111;object-fit:contain;min-height:0}
 
   .toast{position:absolute;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);
@@ -915,7 +937,7 @@
     <span id="spVal" class="tnum">140<small data-i18n="spLabel">HIZ · WPM</small></span>
     <button id="spUp" aria-label="Hızlandır" data-aria="spUp">+</button>
   </div>
-  <div id="hud"><span id="hMode">Elle</span><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum">–</span><span id="hWpm" class="tnum">140</span></div>
+  <div id="hud"><span id="hMode">Elle</span><span id="hEl" class="tnum">00:00</span><span id="hRem" class="tnum"><svg class="hudIk" aria-hidden="true"><use href="#i-kalan"/></svg><span id="hRemV">–</span></span><span id="hWpm" class="tnum">140</span></div>
   </div>
   <div class="tapnote" id="tapnote" data-i18n="tapNote">▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)</div>
 </div>
@@ -1935,6 +1957,21 @@
        kartın içinde tek bir ayar yok: altyazı dosyası, yayın paketi, dosyaya
        kaydetme ve silme var. Yanlış ikon, ikonsuzluktan kötüdür — okuyanı
        yanlış yere gönderir. -->
+  <!-- DURUM ŞERİDİNDEKİ "KALAN" İŞARETİ. Orada `⏳` emojisi vardı ve bu
+       dosyanın en başındaki kural tam da onu yasaklıyor: renkli emoji her
+       platformda başka çizilir (Apple/Google/Windows ayrı setler), koyu
+       arayüzde renk uyumu yoktur.
+       NEDEN ETİKET DEĞİL İKON: metin etiket denendi ve ÖLÇÜLDÜ — "SÜRE",
+       "KALAN", "KELİME" eklenince şerit 26 pxden 48 pxe, tek satırdan İKİ
+       satıra çıkıyor (390 px ve 360 pxte aynı sonuç) ve alttaki hız hapına
+       biniyor; tests/134ün sığma kuralı tam olarak bunu koruyor. İkon aynı
+       kutuda kalıyor, genişlik değişmiyor. -->
+  <symbol id="i-kalan" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2h12M6 22h12"/>
+    <path d="M8 2v4.2c0 1.2.5 2.3 1.4 3.1L12 12l2.6-2.7c.9-.8 1.4-1.9 1.4-3.1V2"/>
+    <path d="M8 22v-4.2c0-1.2.5-2.3 1.4-3.1L12 12l2.6 2.7c.9.8 1.4 1.9 1.4 3.1V22"/>
+  </symbol>
   <symbol id="i-dahafazla" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>
@@ -2377,7 +2414,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
+  restored:'↺ Senaryo geri geldi',compTakildi:'⚠️ Görüntü işleme bir an takıldı — kareler yedek yoldan akıtılıyor. Çekimde kısa bir kesiklik olabilir; donmuş görüntü kaydedilmiyor.',oynatDondu:'📼 Görüntü donunca video baştan çözülüyor — ses akmaya devam ediyordu. Geri gelmezse donma çekimin kendisinde demektir.',oynatDosya:'⛔ Bu çekimin görüntüsü şu saniyeden sonra DOSYANIN İÇİNDE donuk — oynatıcı kurtaramadı. Sesi sağlam. Çekimi kaydedip başka bir oynatıcıda aç: orada da aynı yerde donacaktır.',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Arka plan görselini kaldır ya da kullanmadığın senaryoları sil.',lsFreed:'🧹 Silinen senaryolar kalıcı olarak temizlendi ve senaryon kaydedildi',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -2464,7 +2501,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
+  restored:'↺ Script restored',compTakildi:'⚠️ The image pipeline stalled for a moment — frames are being driven by the backup path. The take may look slightly choppy there, but a frozen picture is not being recorded.',oynatDondu:'📼 The picture froze, so the video is being decoded again from that point — the sound had kept playing. If it does not come back, the freeze is in the take itself.',oynatDosya:'⛔ From this second on the picture is frozen INSIDE THE FILE — the player could not recover it. The audio is fine. Save the take and open it in another player: it will freeze at the same spot there too.',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Remove the background image or delete scripts you no longer need.',lsFreed:'🧹 Deleted scripts were purged and your script was saved',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -3498,7 +3535,10 @@ function showRecTime(){
 function updateHud(){
   const doneW=Math.max(0,activeIdx+1), left=Math.max(0,words.length-doneW);
   $('#hEl').textContent=clock(elapsed);
-  $('#hRem').textContent='⏳ '+clock(left/st.wpm*60);
+  /* DEĞER İÇ SPANE YAZILIR: `#hRem`in kendisine `textContent` yazmak
+     yanındaki ikonu da silerdi — ikon bir kez çizilip kaybolan bir
+     süs olurdu ve kimse fark etmezdi. */
+  $('#hRemV').textContent=clock(left/st.wpm*60);
   const w=$('#hWpm');
   if(st.target>0 && words.length){
     const expected=st.target*(doneW/words.length);
@@ -3774,14 +3814,30 @@ let kayitDonduSoylendi=false;
 /* KARE İLERLİYOR MU. Safari `webkitDecodedFrameCount`, Chrome
    `getVideoPlaybackQuality` veriyor; ikisi de yoksa `currentTime` ilerlemesi
    ölçülüyor — MediaStream oynatılırken kare geldikçe artar, donunca durur. */
-function onizKareSayisi(){
-  if(cam.getVideoPlaybackQuality){
-    const q=cam.getVideoPlaybackQuality();
+/* HANGİ VİDEO ÖGESİ OLURSA OLSUN kare sayacı. Aynı ölçüm iki yerde gerekiyor:
+   kamera önizlemesi (donarsa kurtarılır) ve ÇEKİMİN OYNATILMASI (donarsa
+   sebebi söylenir). İkincisi 2026-08-17'de eklendi: Erdal "videoyu izlerken
+   belirli süre sonra görüntü donuyor, ses devam ediyor" diye bildirdi —
+   yani sorun kamerada değil, OYNATMADA ya da dosyanın kendisinde.
+   Ölçüt: `currentTime` ilerlerken ÇÖZÜLEN KARE sayısı ilerlemiyorsa
+   "ses akıyor, görüntü donuk" durumu tam olarak budur. */
+function kareSayisi(el){
+  if(!el) return 0;
+  if(el.getVideoPlaybackQuality){
+    const q=el.getVideoPlaybackQuality();
     if(q && typeof q.totalVideoFrames==='number') return q.totalVideoFrames;
   }
-  if(typeof cam.webkitDecodedFrameCount==='number') return cam.webkitDecodedFrameCount;
-  return Math.round((cam.currentTime||0)*1000);
+  if(typeof el.webkitDecodedFrameCount==='number') return el.webkitDecodedFrameCount;
+  /* Kare sayacı yoksa `currentTime` ilerlemesine düşülüyor. Bu, ÖNİZLEME
+     için doğru (kare gelmezse zaman da durur) ama OYNATMA için körlük
+     yaratır: donmuş görüntüde ses ilerlediği için zaman da ilerler.
+     Bu yüzden oynatma nöbetçisi sayaç YOKSA ölçüm yapmadığını söylüyor. */
+  return Math.round((el.currentTime||0)*1000);
 }
+function kareSayaciVar(el){
+  return !!(el && (el.getVideoPlaybackQuality || typeof el.webkitDecodedFrameCount==='number'));
+}
+function onizKareSayisi(){ return kareSayisi(cam); }
 function onizIzleBaslat(){
   onizIzleDurdur();
   onizKare=onizKareSayisi(); onizZaman=Date.now(); onizAdim=0;
@@ -4292,7 +4348,8 @@ const FS_SRC=
 // maske önizlemesi: silinen bölge mor. Eşiği körlemesine ayarlamak yerine GÖRÜLEREK ayarlanıyor.
 'if(mask>0.5){ gl_FragColor=vec4(mix(vec3(1.0,0.0,0.8),c,a),1.0); return; }'+
 'gl_FragColor=vec4(mix(b,c,a),1.0);}';
-let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false};
+let comp={cv:null,gl:null,pr:null,tex:null,bgTex:null,raf:0,stream:null,on:false,bgReady:false,
+          sonCizim:0, canli:0};
 /* GÖRÜNTÜ FİLTRELERİ
    Telefon kamerası ham görüntüyü düz ve yumuşak verir. Bu hazır ayarlar
    konuşan-kafa çekimi için ayarlandı: hafif kontrast, cilde zarar vermeyen
@@ -4388,11 +4445,51 @@ function startComp(){
   loadCompBg();
   comp.on=true; compFps.n=0; compFps.t0=performance.now(); compFps.v=0; compFps.son=0;
   body.classList.add('comp'); body.classList.toggle('burn',!!st.burnCaps);
+  comp.sonCizim=performance.now();
   drawComp();
+  compCanliTut();
   return true;
+}
+/* ============ KOMPOZİT CANLI TUTUCU (2026-08-17, GERÇEK CİHAZ) ============
+   Erdal iPhone'da bildirdi: çekimi İZLERKEN bir süre sonra görüntü donuyor,
+   ses akmaya devam ediyor. Donma dosyanın İÇİNDE.
+
+   Sebep ölçüldü: kompozit tuvali (kırpma/9:16, yeşil ekran, gömülü altyazı,
+   marka) `requestAnimationFrame` ile çiziliyor, kayıt ise o tuvalden
+   `captureStream(30)` ile alınıyor. iOS rAF'ı kısarsa ya da bir an durdurursa
+   TUVAL YENİ KARE ÜRETMEZ — ama captureStream SON KAREYİ TEKRARLAMAYA DEVAM
+   EDER. Sonuç: dosyada donmuş görüntü, sağlam ses. Kayıt "çalışıyor" görünür,
+   kimse uyarmaz; kullanıcı ancak çekimi izlerken anlar.
+
+   Çözüm rAF'a GÜVENMEMEK: 200 ms'de bir bakan bir zamanlayıcı, çizim
+   durduysa kendisi çiziyor. rAF sağlıklıysa bu zamanlayıcı hiçbir şey
+   yapmıyor (koşul tutmaz); kısılmışsa kareler en az 5 fps akmaya devam
+   ediyor — takılmış bir video yerine biraz kesik ama GERÇEK görüntü.
+   Ayrıca çizim 1 saniyeden uzun durduysa ve KAYIT SÜRÜYORSA kullanıcıya
+   bir kez söyleniyor: sessizce toparlanmak, çekimin kalitesi hakkında
+   yanlış güven verirdi. */
+let compDurduSoylendi=false;
+function compCanliTut(){
+  clearInterval(comp.canli);
+  comp.canli=setInterval(()=>{
+    if(!comp.on){ clearInterval(comp.canli); comp.canli=0; return; }
+    if(document.visibilityState!=='visible') return;   // arka planda durması NORMAL
+    const gecen=performance.now()-comp.sonCizim;
+    if(gecen<120) return;
+    if(gecen>1000 && rec && rec.state==='recording' && !compDurduSoylendi){
+      compDurduSoylendi=true;
+      logNot('comp','çizim '+Math.round(gecen)+' ms durdu (KAYITTA) — canlı tutucu devrede');
+      toast(m('compTakildi'));
+    }
+    try{ drawComp(); }catch(e){ logErr('compCanli',e); }
+  },120);   /* ÖLÇÜLDÜ: 200 ms yedek yol 3 fps veriyordu, 120 ms ~8 fps.
+               Kesik ama GERÇEK görüntü; donmuş kareye göre kıyas kabul etmez.
+               rAF sağlıklıysa geri kalan koşul tutmaz, maliyet bir
+               karşılaştırma. */
 }
 function stopComp(){
   comp.on=false; cancelAnimationFrame(comp.raf); comp.raf=0;
+  clearInterval(comp.canli); comp.canli=0;
   body.classList.remove('comp','burn');
   if(comp.stream){
     // DİKKAT: comp.stream kameranın SES izini ödünç alıyor. Hepsini durdurmak
@@ -4584,6 +4681,10 @@ function drawComp(){
   if(compFps.son && nowF-compFps.son>1000){ compFps.n=1; compFps.t0=nowF; }
   compFps.son=nowF;
   if(nowF-compFps.t0>=2000){ compFps.v=Math.round(compFps.n*1000/(nowF-compFps.t0)); compFps.n=0; compFps.t0=nowF; }
+  /* TEK ZİNCİR: canlı tutucu da drawComp'u çağırabiliyor; önce eskisini
+     iptal etmezsek iki rAF zinciri birden dönerdi (çift çizim, çift ısı). */
+  comp.sonCizim=nowF;
+  cancelAnimationFrame(comp.raf);
   comp.raf=requestAnimationFrame(drawComp);
 }
 const compFps={n:0,t0:0,v:0,son:0};
@@ -5524,6 +5625,7 @@ function doStartRec(){
                        ikiSurumlu:!!(_s.text2||'').trim(), dil:_s.dil||''} : null; }
   sonrakiUyarildi=false;   // yeni çekim: uyarı hakkı tazelensin
   kayitDonduSoylendi=false;
+  compDurduSoylendi=false;
   vidOldu=0;
   const vIz=src.getVideoTracks()[0];
   if(vIz) vIz.addEventListener('ended',()=>{
@@ -5711,10 +5813,86 @@ function sonucTazele(){
   if(lastBlob) showResult(lastBlob);
   provaYaz();
 }
+/* ÇEKİM RAPORU KUTUSU: boş satırı gizler, ayracı yalnız GÖRÜNÜR satırların
+   arasına koyar, üçü de boşsa kutuyu tümden kaldırır.
+   `:empty` ile gizlenen satırlar CSS için hâlâ "kardeş" olduğundan `+`
+   seçicisi ayracı yanlış yere çizerdi — ayar kutularındaki `ilkGorunur`
+   kuralının aynı gerekçesi. Boş bir çerçeve bırakmak da bu deponun
+   "aç, içi boş" kusuru olurdu. */
+function cekimRaporuTazele(){
+  const kutu=$('#cekimRapor'); if(!kutu) return;
+  let ilk=true;
+  [...kutu.children].forEach(sat=>{
+    const dolu=(sat.textContent||'').trim().length>0;
+    sat.classList.toggle('ustCizgi', dolu && !ilk);
+    if(dolu) ilk=false;
+  });
+  kutu.classList.toggle('bos', ilk);   // hiç dolu satır çıkmadıysa
+}
+
+/* ============ OYNATMA DONMA NÖBETÇİSİ (2026-08-17, Erdal iPhone'da bildirdi) ============
+   "Videoyu izlerken belirli bir süre sonra görüntü donuyor, ses devam ediyor."
+   Bu, kamera/önizleme kusuru DEĞİL: çekim bitmiş, dosya oynatılıyor.
+
+   İki ihtimal var ve ikisi bambaşka:
+     A) DOSYANIN İÇİ donuk — kayıt sırasında kare akışı kesilmiş. O zaman
+        video başka bir oynatıcıda da aynı yerde donar.
+     B) OYNATICI takılmış — dosya sağlam, tarayıcının çözücüsü duraklamış.
+        Geri sarıp yeniden çözünce görüntü geri gelir.
+
+   Kimse tahmin etmek zorunda kalmasın diye AYIRT EDİYORUZ: donma görülünce
+   önce küçük bir sıçrama (çözücüyü dürter), olmazsa dosyayı aynı saniyeden
+   yeniden yükleriz. Kareler geri gelirse (B) olduğunu söyleriz; gelmezse
+   (A) — yani o saniyeden sonrası çekimde donmuş — ve kullanıcıya dosyayı
+   dışarıda açmasını öneririz, çünkü orada da aynı yerde donacaktır.
+
+   ÖLÇÜT: `currentTime` ilerlerken ÇÖZÜLEN KARE sayısı ilerlemiyor. Sayaç
+   olmayan tarayıcıda ölçüm yapılmıyor ve bu SÖYLENİYOR — ölçmediğini
+   "sorun yok" diye sunmak bu depoda yasak. */
+let oynatT=null, oynatKare=0, oynatSaniye=0, oynatAdim=0, oynatSoylendi=false;
+function oynatIzleBaslat(){
+  oynatIzleDurdur();
+  const v=$('#resultVid'); if(!v) return;
+  if(!kareSayaciVar(v)) return;          // ölçemiyoruz: yanlış teşhis üretme
+  oynatKare=kareSayisi(v); oynatSaniye=v.currentTime; oynatAdim=0;
+  oynatT=setInterval(oynatNabiz,1000);
+}
+function oynatIzleDurdur(){ if(oynatT){ clearInterval(oynatT); oynatT=null; } }
+async function oynatNabiz(){
+  const v=$('#resultVid'); if(!v || v.paused || v.ended) return;
+  const k=kareSayisi(v), t=v.currentTime;
+  const sesIlerledi = t - oynatSaniye > 0.7;      // ses/zaman akıyor
+  const kareDurdu   = k === oynatKare;            // görüntü akmıyor
+  oynatSaniye=t;
+  if(!kareDurdu || !sesIlerledi){ oynatKare=k; oynatAdim=0; return; }
+  oynatAdim++;
+  logNot('oynat','oynatmada görüntü dondu @'+t.toFixed(1)+'s · adım '+oynatAdim+
+         ' · hazır:'+v.readyState+' · tür:'+((lastBlob&&lastBlob.type)||'?'));
+  if(oynatAdim===1){
+    /* Çözücüyü dürt: minik sıçrama çoğu takılmayı açar. */
+    try{ v.currentTime = t + 0.05; }catch(e){ logErr('oynat',e); }
+  } else if(oynatAdim===2){
+    /* Dosyayı aynı saniyeden yeniden yükle: çözücü baştan kurulur. */
+    try{ v.load(); v.currentTime=t; await v.play(); }catch(e){ logErr('oynat',e); }
+    if(!oynatSoylendi){ oynatSoylendi=true; toast(m('oynatDondu')); }
+  } else if(oynatAdim>=3){
+    /* İki deneme de kareyi geri getirmedi: donma DOSYANIN İÇİNDE. */
+    oynatIzleDurdur();
+    logNot('oynat','dosya içi donma @'+t.toFixed(1)+'s — oynatıcı kurtaramadı');
+    toast(m('oynatDosya'));
+  }
+  oynatKare=kareSayisi(v);
+}
+
 function showResult(blob){
   if(resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl=URL.createObjectURL(blob);
   const v=$('#resultVid'); v.src=resultUrl; v.load();
+  /* Nöbetçi oynatma boyunca çalışır; duraklamada ve bitişte durur. */
+  oynatSoylendi=false;
+  v.onplay=()=>oynatIzleBaslat();
+  v.onpause=()=>oynatIzleDurdur();
+  v.onended=()=>oynatIzleDurdur();
   const fmt=(blob.type.indexOf('mp4')>=0)?'MP4':(blob.type.indexOf('webm')>=0?'WebM':(blob.type||'?'));
   $('#rSize').textContent='· '+fmt+' · '+(blob.size/1048576).toFixed(1)+' MB · '+clock(lastDur);
   // tanı satırı: kaydetme çalışmazsa sebebi burada görünür
@@ -5797,6 +5975,7 @@ function showResult(blob){
     : (L==='tr'? 'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.'
                : 'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.');
   $('#capBtn').style.display = n?'':'none';
+  cekimRaporuTazele();
   provaYaz();                         // E.4 — çekim sonrası prova raporu
   $('#trimBox').classList.add('hidden');
   // iOS Safari video akışı vermiyor: kesme orada çalışmaz. Yanlış beklenti kurma, doğru yolu göster.
@@ -5820,6 +5999,7 @@ function closeResult(){
      demektir. Toplu silmede bunun tersi yaşandı ve geri dönen kullanıcı
      tek dokunuşla siliyordu. */
   if(typeof redoIptal==='function') redoIptal();
+  oynatIzleDurdur();
   arsivKaynakSil();
   $('#result').classList.remove('open'); arkayiKilitle(); reset();
 }
@@ -9437,8 +9617,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.21':{tr:'<b>Çekim sırasında görüntü donarsa artık haber veriliyor.</b> Kayıt yolundaki iki gözcü yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — kayıt sürer, ses akar, ekranda donmuş kare kaydedilir ve bunu ancak çekimi izlerken anlarsın. Artık kareler durduğunda bir kez uyarılıyor, geri geldiğinde de söyleniyor. Kaydın akışına dokunulmuyor: kurtarmaya çalışmak çekimin sesini öldürürdü.',
-       en:'<b>If the picture freezes during a take you are now told.</b> The two watchers on the recording path only looked for the camera dying; on an interruption the phone does not kill the camera, it mutes it — recording continues, audio flows, a frozen frame is recorded and you only find out on playback. You are now warned once when frames stop, and told when they come back. The recording stream is not touched: trying to recover it would kill the take audio.'},
+ '9.21':{tr:'<b>Çekim sırasında görüntü donarsa artık haber veriliyor.</b> Kayıt yolundaki iki gözcü yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — kayıt sürer, ses akar, ekranda donmuş kare kaydedilir ve bunu ancak çekimi izlerken anlarsın. Artık kareler durduğunda bir kez uyarılıyor, geri geldiğinde de söyleniyor. Kaydın akışına dokunulmuyor: kurtarmaya çalışmak çekimin sesini öldürürdü.<br><b>Çekim sonrası ekranındaki tanı satırları tek kutuda toplandı.</b> Ses değerlendirmesi, paylaşım desteği ve altyazı sayısı ekranın altında ortalanmış üç ayrı paragraf hâlinde duruyordu; bir şey ters gittiğinde okunması gereken tek yer orası ama gözün tarayabileceği bir hiza yoktu. Aynı bilgi, sola hizalı tek kutuda. Satır yoksa gösterilmiyor, üçü de boşsa kutu hiç çıkmıyor.<br><b>Durum şeridindeki kum saati emojisi ikonla değişti.</b> Emoji her platformda başka çiziliyor. Metin etiket de denendi ve ölçüldü: şeridi iki satıra çıkarıp hız hapının üstüne bindiriyordu, o yüzden ikonda kalındı.',
+       en:'<b>If the picture freezes during a take you are now told.</b> The two watchers on the recording path only looked for the camera dying; on an interruption the phone does not kill the camera, it mutes it — recording continues, audio flows, a frozen frame is recorded and you only find out on playback. You are now warned once when frames stop, and told when they come back. The recording stream is not touched: trying to recover it would kill the take audio.<br><b>The diagnostic lines on the result screen are now one box.</b> The audio verdict, share support and caption count sat at the bottom as three separate centred paragraphs; that is the one place you must read when something goes wrong, and it had no alignment to scan. Same information, left aligned, in one box. An empty line is not shown, and with all three empty the box does not appear.<br><b>The hourglass emoji in the status strip became an icon.</b> Emoji render differently on every platform. Text labels were tried and measured: they pushed the strip onto a second row and over the speed pill, so the icon stayed.'},
        '9.20':{tr:'<b>Kayıt düğmesi artık adını söylüyor ve kapalıyken sebebini yazıyor.</b> Kamerasız kipte ekranın en büyük düğmesi sönük duruyor, adı yazmıyor ve dokununca hiçbir şey olmuyordu — alt çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Artık altında <b>Çek</b> yazıyor, dokununca kamerayı açmayı deniyor ve neden gerektiğini söylüyor. Kayıt sürerken etiket kalkıyor, çünkü o an yapılacak iş durdurmak.<br><b>Giriş ekranı ne okuyacağını gösteriyor.</b> Ekranın yarısı boştu ve sayfa senin metnin hakkında hiçbir şey söylemiyordu. Artık senaryonun adı, kelime sayısı ve tahmini süresi başlangıçta görünüyor. Senaryo yoksa kart hiç çıkmıyor.<br><b>Giriş ekranına marka işareti geldi</b> — sahnedeki okuma çizgisinin küçültülmüş hâli.<br><b>Önizleme donması artık fark ediliyor ve kendiliğinden düzeltiliyor.</b> Kayda basmadan önizleme yaparken bir süre sonra görüntü donup ses akmaya devam edebiliyordu (iPhone). Bugüne dek kamera korumalarının hepsi KAYIT yoluna yazılmıştı; önizlemede tek bir nöbetçi yoktu. Üstelik var olan kurtarma yalnız izin ÖLMESİNE bakıyordu, oysa telefon kesintide izi öldürmüyor SUSTURUYOR — görüntü durur, iz canlı görünür. Artık kareler ilerlemiyorsa sırayla oynatma, akışı yeniden bağlama ve kamerayı baştan açma deneniyor; ne olduğu ekranda yazıyor ve teşhis için cihazın günlüğüne durum kaydediliyor.',
        en:'<b>The record button now has a name and says why it is off.</b> In prompter-only mode the largest button on screen sat dimmed, unnamed, and did nothing when tapped — the only one of the six bottom buttons without a label. It now reads <b>Record</b>, tries to open the camera when tapped and says why the camera is needed. The label goes away while recording, because the thing to do then is stop.<br><b>The start screen shows what you are about to read.</b> Half the screen was empty and the page said nothing about your text. The script name, word count and estimated duration now appear at the start. With no script, the card does not appear at all.<br><b>The start screen gained a brand mark</b> — the reading line from the stage, made small.<br><b>A frozen preview is now noticed and repaired on its own.</b> Before you press record the picture could freeze while sound kept flowing (iPhone). Every camera guard so far had been written for the RECORDING path; the preview had none. The one recovery that existed only looked for the track ENDING, yet on an interruption the phone does not end the track, it mutes it — frames stop while the track still looks live. If frames stop advancing the app now tries playing, re-attaching the stream and reopening the camera, in that order, says what happened, and records the state on the device for diagnosis.'},
  '9.19':{tr:'<b>Ayarlar artık ikonlu ve konu bloklarına ayrılmış.</b> Yirmi altı kart birbirinin aynı gri çubuğuydu; ikonsuz bir liste taranmaz, satır satır okunur. Her kartın kendi simgesi var ve kartlar konu bloklarına girdi: Kamera sekmesinde ses ile görüntü ilk kez ayrı duruyor, Diğer sekmesindeki çekmece üç bloğa bölündü.<br><b>Ayarları açtığın anda kartlar değerlerini söylüyor.</b> Bu bilgi vardı ama sayfa ilk açıldığında hiç çizilmiyordu: Okuma sekmesinin beş kartı da boş görünüyor, ancak sekme değiştirip geri gelince doluyordu. Yani ilk gördüğün ekran hep boştu.<br><b>Uzun kart başlığı artık ikiye bölünmüyor.</b> Simge satırdan yer alınca en uzun başlık alt satıra taşıyordu; başlık artık hiç küçülmüyor, gerekirse yanındaki özet kısalıyor.<br><b>Arşivden açtığın çekimin yayın paketi kendi senaryosunu taşıyor.</b> Uygulama kapanınca çekimin senaryosu bellekten siliniyordu ve paket o an açık olan senaryoyu koyuyordu — başka bir videonun metnini, sessizce. Altyazı da aynı şekilde başka bir videonun zamanlamasını alıyordu. Senaryosu saklanmamış eski çekimlerde artık yanlış metin yazmak yerine sebebi söyleniyor.<br><b>Telefonu yan çevirince talimat yazısı hız hapının üstüne biniyordu.</b> Yazının yeri ekran yüksekliğinin yüzdesiyle hesaplanıyordu; yatayda o yüzde küçülünce iki katman iç içe geçiyordu. Artık yeri alt kumanda yığınından türüyor, yer kalmayan dar ekranlarda ise hiç gösterilmiyor.<br><b>Bir çekimi silmek artık iki dokunuş istiyor.</b> Toplu silme ve senaryo silme korumalıydı ama TEK çekim tek dokunuşta gidiyordu — üstelik paylaş düğmesinin komşusu olarak. Videonun başka kopyası yok; ilk dokunuş soruyor, dört saniyede kendiliğinden vazgeçiyor, sayfa kapanınca da iptal oluyor.',

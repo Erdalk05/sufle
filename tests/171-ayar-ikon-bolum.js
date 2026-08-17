@@ -169,6 +169,41 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
      /\.alanEt\{font-size:var\(--tx-xs\)!important;[\s\S]{0,90}?text-transform:uppercase/.test(tel));
 }
 
+/* ---------- 2c. ÇEKİM SONRASI EKRANI (2026-08-17) ----------
+   Üç tanı satırı ekranın altında ORTALANMIŞ, farklı renklerde ve yapısız
+   duruyordu: ses değerlendirmesi, paylaşım desteği, altyazı sayısı. Üçü de
+   bir şey ters gittiğinde okunması gereken tek yer — ama ortalanmış üç ayrı
+   paragrafın gözün tarayabileceği bir hizası yoktu. */
+{
+  ok('tanı satırları tek kutuda toplanmış',
+     /<div id="cekimRapor">[\s\S]{0,400}?id="audInfo"[\s\S]{0,200}?id="shareDiag"[\s\S]{0,200}?id="capInfo"/.test(tel));
+  /* Satırların KENDİ renkleri korunuyor (uyarı sarısı, onay yeşili);
+     kaldırılan tek şey ortalama. */
+  ok('kutu içinde satırlar sola hizalı',
+     /#cekimRapor > \.hint\{[^}]*text-align:left/.test(tel));
+  /* Boş satır gizlenir, ayraç yalnız GÖRÜNÜR satırların arasına girer:
+     `:empty` ile gizlenen satır CSS için hâlâ kardeş, `+` seçicisi ayracı
+     yanlış yere çizerdi (ayar kutularındaki `ilkGorunur` ile aynı gerekçe). */
+  ok('boş tanı satırı gizleniyor', /#cekimRapor > \.hint:empty\{display:none\}/.test(tel));
+  ok('ayracı görünürlüğü bilen taraf koyuyor',
+     /sat\.classList\.toggle\('ustCizgi', dolu && !ilk\)/.test(kod));
+  /* Üçü de boşken kutu hiç görünmez — boş bir çerçeve bu deponun
+     "aç, içi boş" kusuru olurdu. */
+  ok('üçü de boşken kutu gizleniyor',
+     /kutu\.classList\.toggle\('bos', ilk\)/.test(kod) &&
+     /#cekimRapor\.bos\{display:none\}/.test(tel));
+  ok('rapor çekim sonrası tazeleniyor', /cekimRaporuTazele\(\);/.test(kod) &&
+     /function cekimRaporuTazele\(\)\{/.test(kod));
+
+  /* YANLIŞ İKON, İKONSUZLUKTAN KÖTÜDÜR: "Daha fazla" kartı ayar sürgüsü
+     ikonu taşıyordu ve içinde tek bir ayar yok (altyazı dosyası, yayın
+     paketi, dosyaya kaydetme, silme). */
+  const mHarita=kod.match(/const KART_IKON=\{[\s\S]*?\};/);
+  const harita = mHarita ? eval('('+mHarita[0].replace(/^const KART_IKON=/,'').replace(/;$/,'')+')') : {};
+  ok('"Daha fazla" kartı ayar ikonu taşımıyor', harita.gDahaFazla==='dahafazla');
+  ok('dahafazla sembolü tanımlı', /<symbol id="i-dahafazla"/.test(tel));
+}
+
 /* ---------- 3. SAYFA AÇILINCA ÖZET ÇİZİLİR ---------- */
 {
   const mAc=kod.match(/function openSheet\(id\)\{[\s\S]*?\n\}/);

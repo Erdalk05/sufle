@@ -219,6 +219,29 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   /* Duraklat düğmesi kayıt sırasında görünüyor; adsız kalırsa o an ekrandaki
      TEK adsız düğme olurdu — aynı kusurun ikizi. */
   ok('duraklat düğmesinin de adı var', /id="pauseBtn"[^>]*data-i18n-etiket="cbDurakla"/.test(src2));
+
+  /* ---- DURUM ŞERİDİNDE EMOJİ YOK (2026-08-17) ----
+     `⏳` emojisi vardı; ikon dosyasının en başındaki kural tam da onu
+     yasaklıyor (her platformda başka çizilir, koyu arayüzde renk uyumu yok).
+     ⚠️ ETİKET DENENDİ VE ÖLÇÜLDÜ, SIĞMADI: "SÜRE/KALAN/KELİME" eklenince
+     şerit 26 pxden 48 pxe, tek satırdan İKİ satıra çıkıyor (390 ve 360 pxte
+     aynı) ve hız hapına biniyor. Bu satır, bir dahakine aynı denemeyi
+     ölçmeden yapmayı engellesin diye burada. */
+  ok('durum şeridinde emoji yok', !/#hRem'\)\.textContent='⏳/.test(kod2) &&
+     !/id="hRem"[^>]*>⏳/.test(src2));
+  ok('kalan süre ikonu SVG (jeton sisteminden)',
+     /<svg class="hudIk"[^>]*><use href="#i-kalan"\/><\/svg>/.test(src2) &&
+     /<symbol id="i-kalan"/.test(src2));
+  /* Değer İÇ SPANE yazılır: `#hRem`in kendisine `textContent` yazmak yanındaki
+     ikonu siler ve ikon bir kez çizilip kaybolan bir süs olurdu. */
+  ok('kalan süre değeri iç span\'e yazılıyor',
+     /\$\('#hRemV'\)\.textContent=clock\(/.test(kod2) &&
+     !/\$\('#hRem'\)\.textContent=/.test(kod2));
+  /* İkon metinle aynı ölçekte; `inline-flex` + 1,05em hâli şeridi 3 px
+     yükseltmişti ve çubuğun sığma aritmetiği o yüksekliğe bağlı. */
+  ok('şerit ikonu satır içi akışta (yüksekliği değiştirmiyor)',
+     /\.hudIk\{width:\.92em;height:\.92em;/.test(src2) &&
+     !/#hRem\{display:inline-flex/.test(src2));
 }
 
 /* ---------- ÇUBUK YÜKSEKLİĞİ TEK KAYNAKTAN (2026-08-17) ----------

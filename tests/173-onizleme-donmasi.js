@@ -31,8 +31,10 @@ ok('susma sonrası görüntü yeniden oynatılıyor',
    /addEventListener\('unmute'[\s\S]{0,220}cam\.play\(\)/.test(src));
 ok('kare sayısı iki tarayıcı yoluyla da okunuyor (Safari + Chrome)',
    /getVideoPlaybackQuality/.test(src) && /webkitDecodedFrameCount/.test(src));
+/* Kare ölçer 2026-08-17'de ÇEKİRDEĞE taşındı (oynatma nöbetçisi de aynı
+   ölçümü kullanıyor); iddia artık tek kaynağa bakıyor. */
 ok('kare sayacı yoksa currentTime ile ölçülüyor',
-   /return Math\.round\(\(cam\.currentTime\|\|0\)\*1000\);/.test(src));
+   /return Math\.round\(\(el\.currentTime\|\|0\)\*1000\);/.test(repoOku('cekirdek/oniz.js','SUFLE_ONIZ')));
 ok('teşhis satırı hangi yolun tuttuğunu yazıyor',
    /sesle takip:'\+\(!!voiceOn\)/.test(src) && /nefes:'\+\(!!\(vad&&vad\.ctx\)\)/.test(src));
 /* Ele alınmış durum, ÇÖKME uyarısı gibi görünmemeli. */

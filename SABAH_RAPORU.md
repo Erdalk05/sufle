@@ -19,6 +19,16 @@ kipte ekranın en büyük düğmesi sönük, adsız ve dokununca sessizdi; alt
 okuyacağın senaryonun adını, kelime sayısını ve tahmini süresini gösteriyor,
 ayrıca marka işareti geldi.
 
+**Arayüz payı:** çekim sonrası ekranındaki üç tanı satırı — ses
+değerlendirmesi, paylaşım desteği, altyazı sayısı — tek kutuda ve sola hizalı.
+Bir şey ters gittiğinde okunması gereken tek yer orasıydı ama ortalanmış üç
+ayrı paragrafın gözün tarayabileceği bir hizası yoktu. Boş satır gizleniyor,
+üçü de boşsa kutu hiç çıkmıyor. "Daha fazla" kartındaki yanlış ikon (ayar
+sürgüsü — kartta tek bir ayar yok) değişti. Durum şeridindeki `⏳` emojisi
+ikon oldu; **metin etiket denendi ve ölçüldü**: "SÜRE/KALAN/KELİME" şeridi
+26 pxden 48 pxe, tek satırdan iki satıra çıkarıp hız hapına bindiriyordu
+(390 ve 360 pxte aynı), o yüzden ikonda kalındı.
+
 Kart düzeni (v9.17/9.18) yayına hazırken Erdal **"hâlâ çok zayıf, UI'ye kafayı
 taktım"** dedi. Kaynağa değil **çizilmiş ekrana** bakıldı (390×844, gerçek
 Chrome) ve teşhis somutlaştı.
@@ -1361,7 +1371,7 @@ iPhone sunucusunun ölü adres kuralını Macten ayırması, yedek porta düşen
 sunucunun **/info ile QR'ı boş porta yollaması**, tempo ölçümünün yanlış sayaca
 dönmesi ve dokunma hedefi örtüsünün 44 pikselin altına düşmesi.
 
-**Sayılar:** 6279 test · **507 kanıtlı bozma** · kanıtlı dosya **159/162**.
+**Sayılar:** 6279 test · **525 kanıtlı bozma** · kanıtlı dosya **159/162**.
 
 ---
 
@@ -1536,9 +1546,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **6790 test** (gece başında 732) · yeni test dosyası: 39–173
+- **6868 test** (gece başında 732) · yeni test dosyası: 39–174
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **507 kanıtlı bozma**
+- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **525 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

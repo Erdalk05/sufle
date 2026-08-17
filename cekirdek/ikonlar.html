@@ -193,6 +193,21 @@
        kartın içinde tek bir ayar yok: altyazı dosyası, yayın paketi, dosyaya
        kaydetme ve silme var. Yanlış ikon, ikonsuzluktan kötüdür — okuyanı
        yanlış yere gönderir. -->
+  <!-- DURUM ŞERİDİNDEKİ "KALAN" İŞARETİ. Orada `⏳` emojisi vardı ve bu
+       dosyanın en başındaki kural tam da onu yasaklıyor: renkli emoji her
+       platformda başka çizilir (Apple/Google/Windows ayrı setler), koyu
+       arayüzde renk uyumu yoktur.
+       NEDEN ETİKET DEĞİL İKON: metin etiket denendi ve ÖLÇÜLDÜ — "SÜRE",
+       "KALAN", "KELİME" eklenince şerit 26 pxden 48 pxe, tek satırdan İKİ
+       satıra çıkıyor (390 px ve 360 pxte aynı sonuç) ve alttaki hız hapına
+       biniyor; tests/134ün sığma kuralı tam olarak bunu koruyor. İkon aynı
+       kutuda kalıyor, genişlik değişmiyor. -->
+  <symbol id="i-kalan" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2h12M6 22h12"/>
+    <path d="M8 2v4.2c0 1.2.5 2.3 1.4 3.1L12 12l2.6-2.7c.9-.8 1.4-1.9 1.4-3.1V2"/>
+    <path d="M8 22v-4.2c0-1.2.5-2.3 1.4-3.1L12 12l2.6 2.7c.9.8 1.4 1.9 1.4 3.1V22"/>
+  </symbol>
   <symbol id="i-dahafazla" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>

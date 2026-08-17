@@ -132,7 +132,7 @@
  "131-magaza-hazirlik.js": 40,
  "132-magaza-metni.js": 51,
  "133-seo-vitrin.js": 39,
- "134-kumanda-cubugu-sigiyor.js": 56,
+ "134-kumanda-cubugu-sigiyor.js": 60,
  "135-vitrin-sayfasi.js": 64,
  "136-buyuk-kutuphane.js": 23,
  "137-prova-raporu.js": 59,
@@ -159,7 +159,7 @@
  "158-yazi-tipi-erisilebilirlik.js": 66,
  "159-kumanda-yollari.js": 67,
  "160-klip-kaynak-korunuyor.js": 41,
- "161-cekirdek-zinciri.js": 117,
+ "161-cekirdek-zinciri.js": 119,
  "162-senaryo-turetilmis-bilgi.js": 58,
  "163-deneme-kilavuzu.js": 46,
  "164-magaza-kabugu.js": 40,
@@ -169,7 +169,8 @@
  "168-elle-pozlama.js": 37,
  "169-giris-ekrani.js": 20,
  "170-cekim-silme-onayi.js": 35,
- "171-ayar-ikon-bolum.js": 42,
+ "171-ayar-ikon-bolum.js": 50,
  "172-arsiv-paket-kaynagi.js": 17,
- "173-onizleme-donmasi.js": 61
+ "173-onizleme-donmasi.js": 61,
+ "174-oynatma-ve-kompozit-donmasi.js": 41
 }

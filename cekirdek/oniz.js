@@ -13,14 +13,30 @@
 /* KARE İLERLİYOR MU. Safari `webkitDecodedFrameCount`, Chrome
    `getVideoPlaybackQuality` veriyor; ikisi de yoksa `currentTime` ilerlemesi
    ölçülüyor — MediaStream oynatılırken kare geldikçe artar, donunca durur. */
-function onizKareSayisi(){
-  if(cam.getVideoPlaybackQuality){
-    const q=cam.getVideoPlaybackQuality();
+/* HANGİ VİDEO ÖGESİ OLURSA OLSUN kare sayacı. Aynı ölçüm iki yerde gerekiyor:
+   kamera önizlemesi (donarsa kurtarılır) ve ÇEKİMİN OYNATILMASI (donarsa
+   sebebi söylenir). İkincisi 2026-08-17'de eklendi: Erdal "videoyu izlerken
+   belirli süre sonra görüntü donuyor, ses devam ediyor" diye bildirdi —
+   yani sorun kamerada değil, OYNATMADA ya da dosyanın kendisinde.
+   Ölçüt: `currentTime` ilerlerken ÇÖZÜLEN KARE sayısı ilerlemiyorsa
+   "ses akıyor, görüntü donuk" durumu tam olarak budur. */
+function kareSayisi(el){
+  if(!el) return 0;
+  if(el.getVideoPlaybackQuality){
+    const q=el.getVideoPlaybackQuality();
     if(q && typeof q.totalVideoFrames==='number') return q.totalVideoFrames;
   }
-  if(typeof cam.webkitDecodedFrameCount==='number') return cam.webkitDecodedFrameCount;
-  return Math.round((cam.currentTime||0)*1000);
+  if(typeof el.webkitDecodedFrameCount==='number') return el.webkitDecodedFrameCount;
+  /* Kare sayacı yoksa `currentTime` ilerlemesine düşülüyor. Bu, ÖNİZLEME
+     için doğru (kare gelmezse zaman da durur) ama OYNATMA için körlük
+     yaratır: donmuş görüntüde ses ilerlediği için zaman da ilerler.
+     Bu yüzden oynatma nöbetçisi sayaç YOKSA ölçüm yapmadığını söylüyor. */
+  return Math.round((el.currentTime||0)*1000);
 }
+function kareSayaciVar(el){
+  return !!(el && (el.getVideoPlaybackQuality || typeof el.webkitDecodedFrameCount==='number'));
+}
+function onizKareSayisi(){ return kareSayisi(cam); }
 function onizIzleBaslat(){
   onizIzleDurdur();
   onizKare=onizKareSayisi(); onizZaman=Date.now(); onizAdim=0;
