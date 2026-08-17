@@ -3001,5 +3001,19 @@
   "kaynak": "telefon",
   "bul": "  #intro h1{font-size:var(--tx-hero);",
   "koy": "  #intro h1{font-size:31px;"
+ },
+ {
+  "ad": "özet bütçesi gevşetildi (kart başlığı iki satıra düşer)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    if(parca.length===2 && parca.join(' · ').length>20) parca.length=1;",
+  "koy": "    if(parca.length===2 && parca.join(' · ').length>40) parca.length=1;"
+ },
+ {
+  "ad": "özet genişliği başlığın yerini yiyor",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}",
+  "koy": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}"
  }
 ]

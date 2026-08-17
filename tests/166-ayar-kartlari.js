@@ -331,3 +331,21 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   ok('marka başlığı ölçeğin bir adımı (--tx-hero)', /--tx-hero:\s*30px/.test(kabuk));
   ok('giriş başlığı o adımı kullanıyor', /#intro h1\{font-size:var\(--tx-hero\)/.test(kabuk));
 }
+
+/* ---------- ÖZET BÜTÇESİ (2026-08-17, çizilmiş ekranda ölçüldü) ----------
+   Kısa etiket eklenince özet uzadı ve 390 px'te KART BAŞLIĞI İKİ SATIRA
+   düştü; üstelik özet kendisi de üç noktayla kesiliyordu, yani iki bilgi
+   birden bozuluyordu. Başlık asla kesilmemeli: kullanıcının okuduğu ilk şey
+   o. Bütçe 26 → 20 karaktere, özetin genişliği %52 → %46'ya indirildi ve
+   ölçüm yeniden koştu: üç sekmede de iki satırlık başlık 0. */
+{
+  const kabuk = oku(telefonYolu());
+  const kod2 = kabuk.replace(/\/\*[\s\S]*?\*\//g, '');
+  const m = kod2.match(/parca\.join\(' · '\)\.length>(\d+)\) parca\.length=1;/);
+  ok('özet bütçesi kaynakta yazılı', !!m);
+  ok('iki parçalık özet en fazla 20 karakter (' + (m ? m[1] : '?') + ')', !!m && +m[1] <= 20);
+  const t = kod2.match(/parca\[0\]\.length>(\d+)\) parca\[0\]=parca\[0\]\.slice/);
+  ok('tek parçalık özet de kısaltılıyor', !!t && +t[1] <= 20);
+  const g = kabuk.match(/\.grup>summary \.ozet\{[^}]*max-width:(\d+)%/);
+  ok('özet genişliği en fazla %46 (' + (g ? g[1] : '?') + ')', !!g && +g[1] <= 46);
+}

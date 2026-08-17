@@ -537,7 +537,7 @@
      kartı açmadan "1080p · Dengeli" görür. Açıkken gizlenir — aynı bilgi
      iki kez yazılmasın. */
   .grup>summary .ozet{margin-left:auto;font-size:var(--tx-sm);color:var(--t-mid);
-    font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52%}
+    font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
   .grup[open]>summary .ozet{display:none}
   .grup>summary::after{content:"";width:8px;height:8px;flex:none;margin-left:var(--sp-2);
     border-right:2px solid var(--t-mid);border-bottom:2px solid var(--t-mid);
@@ -7304,8 +7304,12 @@ function ozetTazele(){
       const e=kisaEtiket(r); ekle(e? e+' '+d : d); });
     ic.querySelectorAll('.seg').forEach(s=>{ if(parca.length>=2||!gor(s)) return;
       const b=s.querySelector('button.on'); if(b) ekle(b.textContent); });
-    // İki parça 26 karakteri aşarsa kesilir; kesik özet yanlış okunur.
-    if(parca.length===2 && parca.join(' · ').length>26) parca.length=1;
+    /* BÜTÇE 26 DEĞİL 20 KARAKTER (2026-08-17, çizilmiş ekranda ölçüldü).
+       26 karakterlik özet 390 px'te başlığı İKİ SATIRA düşürüyordu ve
+       kendisi de üç noktayla kesiliyordu: hem başlık hem özet bozuluyor.
+       Kart başlığı asla kesilmemeli — okunacak ilk şey o. */
+    if(parca.length===2 && parca.join(' · ').length>20) parca.length=1;
+    if(parca.length===1 && parca[0].length>20) parca[0]=parca[0].slice(0,20).trim();
     /* Yalnız anahtar taşıyan kartlarda (okuma yardımcıları, ekran, kayıt)
        gösterilecek değer yok; orada anlamlı özet AÇIK SAYISIDIR. Boş özet,
        kartı açmadan hiçbir şey söylemeyen bir başlık bırakırdı. */
