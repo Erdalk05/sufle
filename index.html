@@ -1032,6 +1032,16 @@
 
     </div></details>
     <details class="grup"><summary><span data-i18n="gKamera"></span><span class="ozet"></span></summary><div class="icerik">
+    <!-- ELLE POZLAMA VE BEYAZ AYARI (2026-08-17). Rakiplerin "pro" katmanı;
+         bizde de yalnız CİHAZ DESTEKLİYORSA görünüyor. Desteksiz cihazda
+         göstermek deponun 3 numaralı hata sınıfı olurdu (ön koşulu olan
+         ayar = ölü ayar): kullanıcı sürgüyü çeker, hiçbir şey olmaz. -->
+    <div class="row" id="pozRow" style="display:none"><label for="poz" data-i18n="pozLabel">Pozlama (parlaklık)</label><span class="v" id="vPoz">0</span></div>
+    <input type="range" id="poz" min="-3" max="3" step="1" value="0" style="display:none">
+    <div class="hint hidden" id="pozHint" data-i18n="pozHint">Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.</div>
+    <div class="row" id="wbRow" style="display:none"><label for="wb" data-i18n="wbLabel">Beyaz ayarı (renk sıcaklığı)</label><span class="v" id="vWb">Otomatik</span></div>
+    <input type="range" id="wb" min="2800" max="7500" step="100" value="5000" style="display:none">
+    <div class="hint hidden" id="wbHint" data-i18n="wbHint">Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir.</div>
     <div class="tog"><span data-i18n="tgBack">Arka kamera</span><div class="sw" data-t="backCam"></div></div>
     <div class="tog" id="torchRow" style="display:none"><span data-i18n="tgTorch">Işık (fener)</span><div class="sw" data-t="torch"></div></div>
     <div class="tog" id="lockRow" style="display:none"><span data-i18n="tgLock">Odak ve pozlamayı kilitle</span><div class="sw" data-t="camLock"></div></div>
@@ -1734,7 +1744,11 @@ const I18N={
   gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma',
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
   cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
-  cbBaslat:'Başlat'},
+  cbBaslat:'Başlat',
+  /* Elle pozlama ve beyaz ayarı — yalnız cihaz destekliyorsa görünür */
+  pozLabel:'Pozlama (parlaklık)',pozHint:'Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.',
+  wbLabel:'Beyaz ayarı (renk sıcaklığı)',wbAuto:'Otomatik',
+  wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
@@ -1887,7 +1901,10 @@ const I18N={
   gDenetim:'Text checks',
   gDahaFazla:'More',gNasil:'Saving and trimming',
   cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
-  cbBaslat:'Start'}
+  cbBaslat:'Start',
+  pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
+  wbLabel:'White balance (colour temperature)',wbAuto:'Auto',
+  wbHint:'Your skin tone stays the same even when the light colour changes. A low value matches warm (yellow) light, a high value cool (blue) light. Double tap the slider to go back to auto.'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -1987,7 +2004,9 @@ const MSG={
   /* PDF okuyucu: emin olmadığında metin ÜRETMEZ, sebebini söyler (2026-08-17) */
   pdfBelirsiz:'PDF metni güvenilir okunamadı (yazı tipi eşlemesi yok). Yanlış metin vermektense hiç vermiyoruz — PDF dosyasını aç, metni kopyala, Yapıştır ile getir',
   pdfMetinYok:'Bu PDF dosyasında gömülü metin yok, sayfalar görüntü (taranmış). Aç, metni kopyala, Yapıştır ile getir',
-  pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir'},
+  pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir',
+  pozNo:'Bu kamera elle pozlamayı kabul etmedi — ayar kaldırıldı, otomatik pozlama sürüyor',
+  wbNo:'Bu kamera elle beyaz ayarını kabul etmedi — ayar kaldırıldı, otomatik sürüyor'},
  en:{muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
   muzikBuyuk:'The music file is too large — pick one under 20 MB',
   muzikSet:'Music added: {a}',muzikCleared:'Music removed',
@@ -2070,7 +2089,9 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   docxBad:'Word file could not be read — is it really a .docx?',
   pdfBelirsiz:'The PDF text could not be read reliably (no font mapping). Rather than give you wrong text we give none — open the PDF, copy the text and use Paste',
   pdfMetinYok:'This PDF has no embedded text, the pages are images (scanned). Open it, copy the text and use Paste',
-  pdfSifreli:'The PDF is encrypted — open it, copy the text and use Paste'}
+  pdfSifreli:'The PDF is encrypted — open it, copy the text and use Paste',
+  pozNo:'This camera refused manual exposure — the control is gone, automatic exposure continues',
+  wbNo:'This camera refused manual white balance — the control is gone, automatic continues'}
 };
 /* ==/CEKIRDEK:mesajlar.js== */
 
@@ -2512,7 +2533,7 @@ const DEF={
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
   hideUI:true,
-  target:0, voiceLang:'tr-TR', zoom:100, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   /* G.1: karaoke vurgusu VARSAYILAN AÇIK. Eski kullanıcının kaydında bu alan
      yok ama Object.assign varsayılanın üstüne yazdığı için EKSİK ALAN
@@ -3345,6 +3366,91 @@ function setupCaps(){
   const hasTorch = !!(caps && caps.torch);
   $('#torchRow').style.display=hasTorch?'flex':'none';
   if(!hasTorch) st.torch=false; else applyTorch();
+
+  /* ELLE POZLAMA. iOS Safari bugün `exposureCompensation` vermiyor, Android
+     Chrome çoğu cihazda veriyor — o yüzden yetenek SORULUYOR, varsayılmıyor.
+     Desteksizse sürgü hiç görünmüyor ve durum sıfırlanıyor ki "açık ama ölü"
+     bir ayar kalmasın. */
+  /* İKİ AYRI YOL VAR ve cihazlar ikiye bölünüyor:
+       · exposureCompensation → otomatik pozlamaya ±sapma (kullanıcıya en
+         kolay gelen biçim; bazı Android cihazlar veriyor)
+       · exposureMode:'manual' + exposureTime → pozlamanın KENDİSİ elle
+         (daha yaygın; Chrome'un sahte kamerası da bunu veriyor)
+     Yalnız birine bakmak, desteği olan cihazların yarısını dışarıda
+     bırakırdı. Kullanıcıya gösterilen şey ikisinde de aynı: "parlaklık". */
+  const sapma = caps && caps.exposureCompensation;
+  const elleKip = ((caps && caps.exposureMode) || []).includes('manual');
+  const sure = caps && caps.exposureTime;
+  pozYolu = sapma ? 'sapma' : (elleKip && sure ? 'sure' : null);
+  const pozYet = !!pozYolu;
+  $('#pozRow').style.display = pozYet ? 'flex' : 'none';
+  $('#poz').style.display   = pozYet ? 'block' : 'none';
+  $('#pozHint').classList.toggle('hidden', !pozYet);
+  if(pozYet){
+    const yet = pozYolu==='sapma' ? sapma : sure;
+    const mn=(yet.min!==undefined?yet.min:-3), mx=(yet.max!==undefined?yet.max:3);
+    const ad=(yet.step||((mx-mn)/12)||1);
+    $('#poz').min=mn; $('#poz').max=mx; $('#poz').step=ad;
+    /* Varsayılan: sapmada 0 (nötr), sürede aralığın ortası — cihazın kendi
+       otomatik değeri bilinmiyor, orta değer en az sürprizli başlangıç. */
+    const varsayilan = pozYolu==='sapma' ? Math.min(Math.max(0,mn),mx)
+                                         : Math.round((mn+mx)/2);
+    if(st.poz===undefined || st.poz<mn || st.poz>mx) st.poz=varsayilan;
+    $('#poz').value=st.poz; yazPoz();
+    applyPoz();
+  } else { st.poz=undefined; }
+
+  /* BEYAZ AYARI. Kip 'manual'a alınmadan renk sıcaklığı uygulanmıyor —
+     ikisi BİRLİKTE gerekiyor; yalnız birini istemek sessizce hiçbir şey
+     yapmaz (bu deponun "yarım kalmış düzeltme" sınıfı). */
+  const wbKip = ((caps && caps.whiteBalanceMode) || []).includes('manual');
+  const wbYet = caps && caps.colorTemperature;
+  const wbVar = !!(wbKip && wbYet);
+  $('#wbRow').style.display = wbVar ? 'flex' : 'none';
+  $('#wb').style.display   = wbVar ? 'block' : 'none';
+  $('#wbHint').classList.toggle('hidden', !wbVar);
+  if(wbVar){
+    const mn=wbYet.min||2800, mx=wbYet.max||7500;
+    $('#wb').min=mn; $('#wb').max=mx; $('#wb').step=wbYet.step||100;
+    if(st.wb && (st.wb<mn || st.wb>mx)) st.wb=0;
+    $('#wb').value=st.wb||Math.round((mn+mx)/2);
+    yazWb();
+    applyWb();
+  } else { st.wb=0; }
+}
+/* Pozlama iki yoldan biriyle uygulanıyor; hangisi olduğunu setupCaps seçti.
+   Kip ile değer BİRLİKTE gönderiliyor: yalnız değeri istemek, kip otomatik
+   kalırken sessizce hiçbir şey yapmaz (deponun "yarım kalmış düzeltme" sınıfı). */
+let pozYolu=null;
+function applyPoz(){
+  if(!vTrack || !vTrack.applyConstraints || st.poz===undefined || !pozYolu) return;
+  const ileri = pozYolu==='sapma'
+    ? {exposureMode:'continuous', exposureCompensation:st.poz}
+    : {exposureMode:'manual', exposureTime:st.poz};
+  vTrack.applyConstraints({advanced:[ileri]})
+    .catch(e=>{ logErr('poz',e); toast(m('pozNo')); $('#pozRow').style.display='none';
+      $('#poz').style.display='none'; st.poz=undefined; pozYolu=null; save(); });
+}
+/* Değer iki yolda farklı okunuyor: sapma nötre göre ±, süre ise ham sayı.
+   Kullanıcıya ikisinde de ANLAŞILIR bir şey yazılmalı. */
+function yazPoz(){
+  if(st.poz===undefined){ $('#vPoz').textContent='—'; return; }
+  $('#vPoz').textContent = pozYolu==='sapma'
+    ? (st.poz>0?'+':'')+st.poz
+    : Math.round((st.poz - +$('#poz').min) /
+        Math.max(1,(+$('#poz').max - +$('#poz').min)) * 100) + '%';
+}
+/* Beyaz ayarı: 0 = otomatik. Elle değer verilmişse kip de manual olmalı. */
+function applyWb(){
+  if(!vTrack || !vTrack.applyConstraints) return;
+  const ileri = st.wb ? {whiteBalanceMode:'manual', colorTemperature:st.wb}
+                      : {whiteBalanceMode:'continuous'};
+  vTrack.applyConstraints({advanced:[ileri]})
+    .catch(e=>{ logErr('wb',e); toast(m('wbNo')); $('#wbRow').style.display='none';
+      $('#wb').style.display='none'; st.wb=0; save(); });
+}
+function yazWb(){
+  $('#vWb').textContent = st.wb ? st.wb+'K' : t('wbAuto');
 }
 function applyZoom(){
   if(!vTrack) return;
@@ -8441,8 +8547,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.<br><b>Çekim başlarken çıkan yanlış uyarı kalktı.</b> Kayıt başladıktan 2,5 saniye sonra ilk veri parçası gelmemişse uygulama "veri gelmiyor, durdurup tekrar başlat" diyordu. Ölçüldü: gerçek tarayıcıda ilk parça 4,6 saniyede geldi ve çekim tümüyle sağlamdı — yani iyi bir çekim durdurtuluyordu. Uyarı artık ikinci bir bakıştan sonra çıkıyor; gerçekten boş kalan kayıt hâlâ bildiriliyor.<br><b>PDF dosyasından senaryo alabiliyorsun.</b> Word ve düz metnin yanına PDF eklendi. Okuyucu bilerek sınırlı: metni doğru okuyabildiğinden emin olamazsa (taranmış sayfa, eşlemesiz yazı tipi, şifreli dosya) <b>metin vermiyor</b> ve sebebini söyleyip kopyala-yapıştır yoluna gönderiyor. Bir suflede yanlış metin, metin olmamasından kötüdür.',
-       en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.<br><b>The false warning at the start of a take is gone.</b> If no data chunk had arrived 2.5 seconds into a recording the app said the recorder was producing nothing and told you to stop. Measured in a real browser: the first chunk arrived at 4.6 seconds and the take was perfectly fine, so a good take was being thrown away. The warning now waits for a second look; a recording that truly stays empty is still reported.<br><b>You can import a script from a PDF.</b> PDF joins Word and plain text. The reader is deliberately limited: when it cannot be sure it read the text correctly (a scanned page, a font without a mapping, an encrypted file) it <b>gives no text</b> and says why, sending you to copy and paste instead. In a prompter, wrong text is worse than no text.'},
+ '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.<br><b>Çekim başlarken çıkan yanlış uyarı kalktı.</b> Kayıt başladıktan 2,5 saniye sonra ilk veri parçası gelmemişse uygulama "veri gelmiyor, durdurup tekrar başlat" diyordu. Ölçüldü: gerçek tarayıcıda ilk parça 4,6 saniyede geldi ve çekim tümüyle sağlamdı — yani iyi bir çekim durdurtuluyordu. Uyarı artık ikinci bir bakıştan sonra çıkıyor; gerçekten boş kalan kayıt hâlâ bildiriliyor.<br><b>PDF dosyasından senaryo alabiliyorsun.</b> Word ve düz metnin yanına PDF eklendi. Okuyucu bilerek sınırlı: metni doğru okuyabildiğinden emin olamazsa (taranmış sayfa, eşlemesiz yazı tipi, şifreli dosya) <b>metin vermiyor</b> ve sebebini söyleyip kopyala-yapıştır yoluna gönderiyor. Bir suflede yanlış metin, metin olmamasından kötüdür.<br><b>Elle pozlama ve beyaz ayarı geldi</b> — ama yalnız kameran destekliyorsa. Arkadan ışık alan çekimde yüzün kararmasın diye parlaklığı sen seçiyorsun; ışığın rengi değişse bile ten rengin aynı kalıyor. Cihazın bu ayarı vermiyorsa sürgü <b>hiç görünmüyor</b>: çekip hiçbir şey olmayan bir ayar bırakmıyoruz.',
+       en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.<br><b>The false warning at the start of a take is gone.</b> If no data chunk had arrived 2.5 seconds into a recording the app said the recorder was producing nothing and told you to stop. Measured in a real browser: the first chunk arrived at 4.6 seconds and the take was perfectly fine, so a good take was being thrown away. The warning now waits for a second look; a recording that truly stays empty is still reported.<br><b>You can import a script from a PDF.</b> PDF joins Word and plain text. The reader is deliberately limited: when it cannot be sure it read the text correctly (a scanned page, a font without a mapping, an encrypted file) it <b>gives no text</b> and says why, sending you to copy and paste instead. In a prompter, wrong text is worse than no text.<br><b>Manual exposure and white balance arrived</b> — but only if your camera supports them. You choose the brightness so your face does not go dark with light behind you, and your skin tone stays the same when the light colour changes. If your device does not offer the control, the slider <b>never appears</b>: we do not leave a setting that does nothing when you drag it.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de <b>Son hatalar</b> listesine korkutucu bir satır düşüyordu. Artık düşmüyor — liste yalnız gerçekten ilgilenmen gereken şeyleri gösteriyor.<br><b>Nasıl bulundu:</b> kapıya yeni bir adım eklendi ve uygulama her değişiklikte gerçek tarayıcıda baştan sona çalıştırılıyor: kamera açılıyor, kayıt yapılıyor, altyazı üretiliyor, çekim arşive yazılıyor ve <b>altyazının videoya gerçekten gömüldüğü</b> ölçülüyor.',
        en:'<b>The meaningless error line after a take is gone.</b> While inspecting the audio of a take the browser sometimes cannot decode it; that case was already handled, yet a scary line still landed in the <b>Recent errors</b> list. It does not any more, so the list only shows things that actually need you.<br><b>How it was found:</b> the gate gained a step that runs the whole app in a real browser on every change: camera on, record, captions produced, take archived, and the burned-in caption measured on the output frame.'},
  '9.15':{tr:'<b>Senaryo listesi artık ne zaman değiştirdiğini ve kaç kez çektiğini söylüyor.</b> Her senaryonun altında son değişiklik tarihi ve o senaryodan kaç çekim yaptığın yazıyor. Bu bilgi TUTULMUYOR, ölçülüyor: çekim arşivindeki kayıtlardan sayılıyor. Yani elle güncellemen gereken bir liste değil ve bayatlayamaz.<br><b>Bilinmeyen şey yazılmıyor:</b> eski senaryolarda tarih alanı yoksa tarih hiç gösterilmiyor, arşiv okunamazsa sayı hiç gösterilmiyor. Sıfır çekim de yazılmıyor.<br><b>Sınır:</b> bağ senaryonun adı üzerinden kuruluyor; adı değiştirirsen eski çekimlerle bağ kopar.',
@@ -8833,6 +8939,14 @@ $('#resultVid').addEventListener('play',()=>{
 function shareCancelled(){ toast(L==='tr'?'Paylaşım iptal edildi — dosya duruyor, tekrar deneyebilirsin'
                                         :'Sharing cancelled — the file is still here'); }
 $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
+/* Pozlama ve beyaz ayarı: değer ANINDA kameraya gidiyor ki kullanıcı
+   sürgüyü çekerken sonucu görsün — sonradan uygulanan bir ayar burada
+   işe yaramaz, doğru değeri gözle bulunuyor. */
+$('#poz').oninput=e=>{ st.poz=+e.target.value; yazPoz(); applyPoz(); save(); };
+$('#wb').oninput=e=>{ st.wb=+e.target.value; yazWb(); applyWb(); save(); };
+/* Çift dokunuş = otomatiğe dön. Elle beyaz ayarını AÇMAK kolay, geri
+   dönmek zor olmamalı; aksi hâlde kullanıcı yanlış renkte kalır. */
+$('#wb').ondblclick=()=>{ st.wb=0; yazWb(); applyWb(); save(); };
 
 $$('#colorSeg button').forEach(b=>b.onclick=()=>{ st.color=b.dataset.c; apply(); save(); });
 $$('#bgSeg button').forEach(b=>b.onclick=()=>{ st.bg=b.dataset.b; apply(); save(); });

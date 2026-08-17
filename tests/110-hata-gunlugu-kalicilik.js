@@ -43,8 +43,11 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
   const ESD={dbPut:'idbPut', dbDel:'idbDel', dbListe:'idbListe', dbGetir:'idbGetir', bkImport:'import'};
   const M=new Set(m);
   const eksik=t.filter(x=>!M.has(ESD[x]||x)).filter(x=>x!=='dbGuncelle');
+  /* poz/wb: elle pozlama ve beyaz ayarı camLock ile aynı sınıf — masaüstü
+     kameraları o yetenekleri vermiyor, kavram Mac'te YOK (tests/15'te
+     gerekçesi yazılı). */
   const MUAF=new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure',
-                      'audmon','meter','bg','autoSave','mapIn','camLock']);
+                      'audmon','meter','bg','autoSave','mapIn','camLock','poz','wb']);
   const beklenmeyen=eksik.filter(x=>!MUAF.has(x));
   ok('Macte eksik her etiket gerekçeli'+(beklenmeyen.length?' — beklenmeyen: '+beklenmeyen.join(', '):'')+
      ' ('+eksik.length+' muaf)', beklenmeyen.length===0);

@@ -90,7 +90,9 @@ const MSG={
   /* PDF okuyucu: emin olmadığında metin ÜRETMEZ, sebebini söyler (2026-08-17) */
   pdfBelirsiz:'PDF metni güvenilir okunamadı (yazı tipi eşlemesi yok). Yanlış metin vermektense hiç vermiyoruz — PDF dosyasını aç, metni kopyala, Yapıştır ile getir',
   pdfMetinYok:'Bu PDF dosyasında gömülü metin yok, sayfalar görüntü (taranmış). Aç, metni kopyala, Yapıştır ile getir',
-  pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir'},
+  pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir',
+  pozNo:'Bu kamera elle pozlamayı kabul etmedi — ayar kaldırıldı, otomatik pozlama sürüyor',
+  wbNo:'Bu kamera elle beyaz ayarını kabul etmedi — ayar kaldırıldı, otomatik sürüyor'},
  en:{muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
   muzikBuyuk:'The music file is too large — pick one under 20 MB',
   muzikSet:'Music added: {a}',muzikCleared:'Music removed',
@@ -173,5 +175,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   docxBad:'Word file could not be read — is it really a .docx?',
   pdfBelirsiz:'The PDF text could not be read reliably (no font mapping). Rather than give you wrong text we give none — open the PDF, copy the text and use Paste',
   pdfMetinYok:'This PDF has no embedded text, the pages are images (scanned). Open it, copy the text and use Paste',
-  pdfSifreli:'The PDF is encrypted — open it, copy the text and use Paste'}
+  pdfSifreli:'The PDF is encrypted — open it, copy the text and use Paste',
+  pozNo:'This camera refused manual exposure — the control is gone, automatic exposure continues',
+  wbNo:'This camera refused manual white balance — the control is gone, automatic continues'}
 };

@@ -167,7 +167,11 @@ const I18N={
   gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma',
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
   cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
-  cbBaslat:'Başlat'},
+  cbBaslat:'Başlat',
+  /* Elle pozlama ve beyaz ayarı — yalnız cihaz destekliyorsa görünür */
+  pozLabel:'Pozlama (parlaklık)',pozHint:'Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.',
+  wbLabel:'Beyaz ayarı (renk sıcaklığı)',wbAuto:'Otomatik',
+  wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
@@ -320,5 +324,8 @@ const I18N={
   gDenetim:'Text checks',
   gDahaFazla:'More',gNasil:'Saving and trimming',
   cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
-  cbBaslat:'Start'}
+  cbBaslat:'Start',
+  pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
+  wbLabel:'White balance (colour temperature)',wbAuto:'Auto',
+  wbHint:'Your skin tone stays the same even when the light colour changes. A low value matches warm (yellow) light, a high value cool (blue) light. Double tap the slider to go back to auto.'}
 };

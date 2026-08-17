@@ -23,7 +23,8 @@ rubriği koruyor ama SUFLE sütunundaki her puanı **kodda ölçüyor**.
 | Ölçülen (15 Ağustos, v9.11) | **63,0** | 4. (PromptSmart 56,0'ın üstünde, BIGVU 65,3'ün altında) |
 | Ölçülen (16 Ağustos, FAZ G sonrası, v9.14) | 64,3 | 4. — BIGVU 65,3'ün 1,0 puan altında |
 | Ölçülen (16 Ağustos, G.8 uygulandıktan sonra, v9.15) | 64,9 | 4. — BIGVU 65,3'ün 0,4 puan altında |
-| **Ölçülen (17 Ağustos, PDF okuyucu eklendikten sonra, v9.17)** | **65,3** | **3. ile eşit** — BIGVU ile AYNI puan |
+| Ölçülen (17 Ağustos, PDF okuyucu eklendikten sonra, v9.17) | 65,3 | BIGVU ile aynı puan |
+| **Ölçülen (17 Ağustos, elle pozlama eklendikten sonra, v9.17)** | **66,0** | **3.** — BIGVU'yu (65,3) GEÇTİ |
 
 İlk sıçrama (+9,4) tek satır yeni kod yazılmadan geldi: analiz, yayında olan
 özellikleri bilmiyordu. İkinci sıçrama (+1,3) FAZ G'nin on özelliğinden geldi ve
@@ -40,7 +41,7 @@ rubriği koruyor ama SUFLE sütunundaki her puanı **kodda ölçüyor**.
 | 4 | Uzaktan kumanda genişliği | ×4 | 3 | **4** | tuş öğretme (`learnKey`, `tests/138`, `tests/139`) — marka bağımsız · tanı paneli (`tests/76`) · telefon↔Mac yerel sunucu (`tests/29`, `tests/75`) |
 | 8 | İçe aktarma | ×2 | 1 | **4** | `.docx` (`cekirdek/docx.js`, `tests/128`) + `.txt` + **PDF** (`cekirdek/pdf.js`, `tests/167`). PDF okuyucu bilerek sınırlı: eşleme yoksa metin ÜRETMİYOR, sebebini söylüyor. **Drive/bulut yok** — 5 değil, 4 |
 | 11 | Kayıt kalitesi | ×4 | 3 | **4** | 4K (`data-q="4k"`) · MP4 · kare hızı seçimi · kompozit kayıt · uzun kayıt bellek sınaması (`tests/102`) |
-| 12 | Kamera denetimleri | ×3 | 2 | **3** | `focusMode`/`exposureMode` · fener + zum (`tests/71`) · cihaz seçimi (`tests/126`) · kayıtta kamera değiştirme (`tests/39`). Elle ISO/beyaz ayarı yok |
+| 12 | Kamera denetimleri | ×3 | 2 | **4** | `focusMode`/`exposureMode` · fener + zum (`tests/71`) · cihaz seçimi (`tests/126`) · kayıtta kamera değiştirme (`tests/39`) · **elle pozlama ve beyaz ayarı** (`tests/168`), YETENEĞE BAĞLI: cihaz vermiyorsa sürgü hiç görünmüyor. Gerçek tarayıcıda ölçüldü (`exposureMode:'manual' + exposureTime` 55→85). **iPhone'da destek ölçülmedi**, cihaz gerekiyor — 5 değil, 4 |
 | 14 | Altyazı & SRT | ×3 | 4 | **5** | Altyazı **konuşma tanımadan** üretiliyor: her kelimenin okuma çizgisini geçtiği an zaten biliniyor → kelime bazlı kusursuz senkron. Rakipler ASR kullanıyor, biz kullanmıyoruz · gömme (`tgBurn`) · kayma denetimi · platform paritesi (`tests/80·81·82·89·91·103`) |
 | 15 | Video düzenleme / kırpma | ×2 | 1 | **3** | budama (`openTrim`, `tests/127`) · kompozit kayıtla **gerçek** kırpma · yeşil ekran. Çoklu klip zaman çizelgesi yok |
 | 22 | Kararlılık | ×4 | 2 | **3** | 4720 test · 96 kanıtlı kasıtlı bozma · kalıcı hata günlüğü (`tests/110`) · disk dolu / ses ölümü / kamera kurtarma yolları sınanıyor. **Mağaza puanı yok** — 4 olamaz |
@@ -110,7 +111,7 @@ Ve altısının altısı da **sunucu, hesap ya da pazar konumu** gerektiriyor:
 | Takım & iş birliği (×2) | sunucu + hesap |
 
 **Bundan çıkan tavan:** sunucu işletmeden ulaşılabilecek en yüksek skor **81,9**.
-Bugün **65,3**'teyiz, yani **istemci tarafında hâlâ 16,6 puan kazanılabilir** —
+Bugün **66,0**'dayız, yani **istemci tarafında hâlâ 16,0 puan kazanılabilir** —
 bu, bugünkü liderin (80,6) hemen altına kadar çıkmak demek.
 
 Bu, `FIYATLANDIRMA.md`'nin bağımsız yoldan vardığı sonucun aynısı:
@@ -126,7 +127,7 @@ En yüksek "puan / iş yükü" oranına göre:
 | 1 | 20 · Platform kapsamı (×4) | 2 | 4 | **+8** | mağaza kabuğu (iOS engeli T51'de ölçüldü ve **çürüdü**) |
 | 2 | 25 · UI / görsel (×5) | 4 | 5 | **+5** | Tur 55 devam: gruplama, tipografik ritim |
 | 3 | 1 · Sufle motoru (×5) | 4 | 5 | **+5** | altın kaydırma testi var; kalan pürüz ölçülmeli |
-| 4 | 12 · Kamera denetimleri (×3) | 3 | 4 | **+3** | elle pozlama/beyaz ayarı |
+| 4 | 12 · Kamera denetimleri (×3) | 4 | 5 | **+3** | ~~elle pozlama/beyaz ayarı~~ (17 Ağustos'ta eklendi) — 5 için elle ISO ve odak mesafesi de gerekir |
 | 5 | 8 · İçe aktarma (×2) | 4 | 5 | **+2** | ~~PDF ayrıştırıcı~~ (17 Ağustos'ta eklendi) — kalan: Drive/bulut içe aktarma, o da sunucu/hesap ister |
 | 6 | 22 · Kararlılık (×4) | 3 | 4 | **+4** | mağaza puanı — yayına bağlı |
 | 7 | 28 · Çok dil ve RTL (×2) | 3 | 5 | **+4** | arayüz dili sayısı (bugün 2); RTL tarafı bitti |
@@ -174,7 +175,7 @@ denetleyemiyordu. Tablo artık tamamı ve her satır kendi **durumunu** söylüy
 | 9 | Bulut senkron ve çok cihaz | ×4 | 0 | sıfır doğrulandı |
 | 10 | Çevrimdışı ve gizlilik | ×3 | 5 | tahmin korundu |
 | 11 | Kayıt kalitesi (4K, format) | ×4 | 4 | ölçüldü |
-| 12 | Kamera kontrolleri | ×3 | 3 | ölçüldü |
+| 12 | Kamera kontrolleri | ×3 | 4 | ölçüldü |
 | 13 | Yeşil ekran / arka plan | ×2 | 4 | tahmin korundu |
 | 14 | Altyazı ve SRT | ×3 | 5 | ölçüldü |
 | 15 | Video düzenleme / kırpma | ×2 | 4 | ölçüldü |

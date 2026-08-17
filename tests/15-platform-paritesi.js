@@ -156,7 +156,20 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
 /* NOT: `restore` bir ara muafiyet listesine yazılmıştı; kapı "muafiyet
    listesi büyüdü" diye reddetti ve HAKLIYDI. Boşluk örtülmedi, KAPATILDI:
    Mac'e de otomatik yedek eklendi (C.2). */
-const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock']);
+/* TABAN BİLEREK 14→16 (2026-08-17). Muafiyet listesinin sessizce büyümesi
+   KIRMIZI olmalı ve öyle de oldu: kapı bu iki eklemeyi yakaladı. Büyüme
+   burada bilinçli ve ölçülü — Mac kabuğunda `getCapabilities`/
+   `applyConstraints` HİÇ YOK (ölçüldü: 0 geçiş), yani yetenek tabanlı kamera
+   denetimlerinin tamamı telefona özgü bir katman. Aynı gerekçe camLock için
+   zaten yazılıydı; poz/wb onun ikizi. Mac'e eklemek, hiçbir masaüstü
+   kamerasının vermediği bir yeteneğe bağlı ölü bir sürgü koymak olurdu. */
+/* poz/wb: ELLE POZLAMA VE BEYAZ AYARI DA camLock SINIFINDA (2026-08-17).
+   İkisi de MediaStreamTrack yeteneklerine dayanıyor (exposureCompensation,
+   exposureTime, colorTemperature) ve bu yetenekleri masaüstü kameraları
+   vermiyor — camLock muafiyetinde ölçülmüş olan aynı sınır. Mac'te bu
+   sürgüler HİÇ görünmeyeceği için hata yolu da yok; muafiyet eksikliği
+   değil, kavramın karşı platformda olmaması. */
+const SADECE_TELEFON = new Set(['persist','quota','mics','pickKey','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
 /* camLock: ODAK/POZLAMA KİLİDİ TELEFONA ÖZGÜ. Kilit MediaStreamTrack
    yeteneklerine dayanıyor (focusMode/exposureMode) ve bunları yalnız mobil
    kameralar sunuyor; Mac'te getCapabilities/zoom/torch da HİÇ YOK — ölçüldü,

@@ -3015,5 +3015,40 @@
   "kaynak": "telefon",
   "bul": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}",
   "koy": "font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}"
+ },
+ {
+  "ad": "pozlama sürgüsü desteksiz cihazda da görünüyor (ölü ayar)",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "  $('#pozRow').style.display = pozYet ? 'flex' : 'none';",
+  "koy": "  $('#pozRow').style.display = 'flex';"
+ },
+ {
+  "ad": "pozlamada kip gönderilmiyor (değer sessizce uygulanmaz)",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "    ? {exposureMode:'continuous', exposureCompensation:st.poz}\n    : {exposureMode:'manual', exposureTime:st.poz};",
+  "koy": "    ? {exposureCompensation:st.poz}\n    : {exposureTime:st.poz};"
+ },
+ {
+  "ad": "cihaz pozlamayı reddedince sessiz kalınıyor",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "    .catch(e=>{ logErr('poz',e); toast(m('pozNo')); $('#pozRow').style.display='none';",
+  "koy": "    .catch(e=>{ logErr('poz',e); $('#pozRow').style.display='none';"
+ },
+ {
+  "ad": "beyaz ayarı yalnız aralığa bakıyor (kip manual olmadan uygulanmaz)",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "  const wbVar = !!(wbKip && wbYet);",
+  "koy": "  const wbVar = !!wbYet;"
+ },
+ {
+  "ad": "beyaz ayarında otomatiğe dönüş yolu kapandı",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "$('#wb').ondblclick=()=>{ st.wb=0; yazWb(); applyWb(); save(); };",
+  "koy": ""
  }
 ]
