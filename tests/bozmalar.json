@@ -3673,5 +3673,26 @@
   "kaynak": "mac",
   "bul": "    loop();\n    cropCanliTut();",
   "koy": "    loop();"
+ },
+ {
+  "ad": "S7 ses susması dinlenmiyor (sessiz çekim, kimse söylemez)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    aIz.addEventListener('mute',()=>{",
+  "koy": "    ({}).x=(()=>{"
+ },
+ {
+  "ad": "S8 ses susması kayıt dışında da bağırıyor (yanlış alarm)",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "      if(rec && rec.state==='recording' && !sesSustuSoylendi){",
+  "koy": "      if(!sesSustuSoylendi){"
+ },
+ {
+  "ad": "S9 masaüstünde ses susması dinlenmiyor",
+  "test": "174-oynatma-ve-kompozit-donmasi.js",
+  "kaynak": "mac",
+  "bul": "      aIz.addEventListener('mute',()=>{",
+  "koy": "      ({}).x=(()=>{"
  }
 ]

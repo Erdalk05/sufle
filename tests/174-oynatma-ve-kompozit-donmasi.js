@@ -105,3 +105,39 @@ for (const [ad, kaynak, oge] of [['telefon',src,'#resultVid'], ['masaüstü',msr
      /compTakildi:'⚠️ Görüntü işleme bir an takıldı/.test(msrc) &&
      /compTakildi:'⚠️ The image pipeline stalled/.test(msrc));
 }
+
+/* ---------- 5) SESİN KARDEŞ KÖRLÜĞÜ (2026-08-17, aynı gözle bulundu) ----------
+   Görüntüde "iz ölmez, susar" kusuru onarıldıktan sonra ses tarafına aynı
+   soru soruldu ve cevap daha kötü çıktı: iPhone'da ses gözcüsü
+   (`startAudioMonitor`) BİLEREK KAPALI — mikrofonu Web Audio'ya bağlamak
+   çekimin sesini kesiyor. Yani asıl üründe ses tarafını izleyen tek şey
+   "iz öldü" olayıydı ve kesintide iz ölmüyor, SUSUYOR: kayıt sürer, görüntü
+   akar, o saniyeden sonrası SESSİZ kaydedilir.
+
+   Çözüm Web Audio GEREKTİRMİYOR: `mute`/`unmute` olayları yetiyor — yani
+   iPhone'da da çalışıyor. */
+for (const [ad, kaynak, kayitKosul] of [
+      ['telefon', oku(telefonYolu()), "rec && rec.state==='recording'"],
+      ['masaüstü', oku(macYolu()),   "recorder && recorder.state==='recording'"]]) {
+  ok(ad+': ses izinin SUSMASI dinleniyor',
+     /aIz\.addEventListener\('mute'/.test(kaynak));
+  ok(ad+': geri gelmesi de söyleniyor',
+     /aIz\.addEventListener\('unmute'/.test(kaynak) && /toast\(m\('sesGeri'\)\)/.test(kaynak));
+  ok(ad+': yalnız kayıt sürerken uyarıyor',
+     new RegExp(kayitKosul.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+" && !sesSustuSoylendi").test(kaynak));
+  ok(ad+': uyarı çekim başına bir kez',
+     /sesSustuSoylendi=true;/.test(kaynak) && /sesSustuSoylendi=false;/.test(kaynak));
+  ok(ad+': günlüğe yazılıyor', /ses izi sustu/.test(kaynak));
+  ok(ad+': "iz öldü" gözcüsü YERİNDE duruyor (susma onu değiştirmedi)',
+     /aIz\.addEventListener\('ended'/.test(kaynak));
+  ok(ad+': mesajlar iki dilde',
+     /sesSustu:'⛔ SES SUSTU/.test(kaynak) && /sesSustu:'⛔ THE SOUND STOPPED/.test(kaynak));
+}
+/* Ölçümün Web Audio'ya BAĞLI OLMAMASI kuralın kendisi: iPhone'da o yol
+   kapalı olduğu için bağlanırsa özellik asıl üründe ölü doğar. */
+{
+  const t2=oku(telefonYolu());
+  const blok=(t2.match(/aIz\.addEventListener\('mute'[\s\S]{0,700}?\}\);/)||[])[0]||'';
+  ok('ses susma ölçümü Web Audio kullanmıyor (iPhone\'da ölü doğmasın)',
+     !!blok && !/AudioContext|createMediaStreamSource|analyser/i.test(blok));
+}
