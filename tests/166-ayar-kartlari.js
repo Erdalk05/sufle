@@ -300,3 +300,34 @@ ok('kartların açılış durumu BAŞLANGIÇTA okunuyor',
    /\$\$\('\.sheet \.grup'\)\.forEach\(g=>\{\s*\n\s*g\.dataset\.acik\s*=\s*g\.open\s*\?\s*'1'\s*:\s*'0';/.test(kod));
 ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapatmasın)',
    /addEventListener\('toggle'[\s\S]{0,80}?g\.dataset\.acik=g\.open\?'1':'0'/.test(kod));
+
+/* ---------- TİPOGRAFİK RİTİM (2026-08-17) ----------
+   Rekabet belgesi 25. kategoriyi (UI/görsel) 5'e çıkarmak için iki şey
+   istiyor: GRUPLAMA ve TİPOGRAFİK RİTİM. Gruplama kartlarla yapıldı; ritim
+   ölçüldü ve dört yüzeyde 39 öge ölçek DIŞINDA çıktı (12 · 14 · 17 · 18 ·
+   21 · 30 px). Hepsi jetona bağlandı; ölçüm yeniden koştu: 0 ölçek dışı öge.
+
+   Kilitlenen kural: uygulama kabuğunda ÇIPLAK punto yazılmaz. Üç istisna
+   var ve üçünün de sebebi kodda yazılı:
+     ·  9/10 px — video ÜSTÜNDEKİ mikro etiketler (güvenli alan rozeti,
+                  hız rayı, göz hattı, çubuk etiketi): ölçek gövde metni
+                  içindir, kamera görüntüsünün üstündeki işaretler değil
+     ·  16 px   — senaryo yazı kutusu; iOS 16'nın altında odakta ZUMLUYOR */
+{
+  const kabuk = oku(telefonYolu());
+  const ciplak = [...kabuk.matchAll(/font-size:\s*([\d.]+)px/g)].map(m => +m[1]);
+  const izin = new Set([9, 10, 16]);
+  const disarida = ciplak.filter(v => !izin.has(v));
+  ok('kabukta ölçek dışı çıplak punto yok' + (disarida.length ? ' — ' + disarida.join(', ') : ''),
+     disarida.length === 0);
+  /* Ölçek gerçekten KULLANILIYOR mu: jetona bağlı bildirim sayısı çıplak
+     olanları açık ara geçmeli, yoksa "ölçek var ama kimse kullanmıyor"
+     durumuna geri döneriz (bu deponun ölü-ayar sınıfı). */
+  const jetonlu = (kabuk.match(/font-size:\s*var\(--tx-/g) || []).length;
+  ok('punto bildirimlerinin çoğu jetondan geliyor (' + jetonlu + ' jeton / ' + ciplak.length + ' çıplak)',
+     jetonlu >= 20 && jetonlu > ciplak.length * 4);
+  /* Giriş başlığı için ALTINCI adım eklendi: değer aynı kaldı ama artık
+     rastgele bir sayı değil, seçilmiş bir basamak. */
+  ok('marka başlığı ölçeğin bir adımı (--tx-hero)', /--tx-hero:\s*30px/.test(kabuk));
+  ok('giriş başlığı o adımı kullanıyor', /#intro h1\{font-size:var\(--tx-hero\)/.test(kabuk));
+}
