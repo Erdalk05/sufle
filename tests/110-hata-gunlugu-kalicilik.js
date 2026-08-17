@@ -57,8 +57,16 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
 
 /* ---------- KALICILIK: İKİ PLATFORMDA DA ---------- */
 for(const [ad,k] of [['telefon',telKod],['Mac',macKod]]){
+  /* İDDİA FONKSİYONA BAĞLI (2026-08-17). Eskiden dosyanın HERHANGİ bir
+     yerinde yazma satırını görmek yetiyordu. Önizleme nöbetçisi için eklenen
+     `logNot` da aynı satırı içeriyor; `logErr`in yazması silinince test yine
+     geçti — yani gerçek bir hata yolunun kalıcılığı sessizce korumasız kaldı.
+     Ölçüm artık HATA YOLUNUN kendi gövdesine bakıyor. */
+  const gLogErr=(k.match(/function logErr\(where,e\)\{[\s\S]*?\n  \}/)||
+                 k.match(/function logErr\(where,e\)\{[\s\S]*?\n\}/)||[])[0];
+  ok(ad+': logErr gövdesi çıkarılabildi', !!gLogErr);
   ok(ad+': son hatalar diske yazılıyor',
-     /localStorage\.setItem\(LS\+'_err',JSON\.stringify\(ERRLOG\.slice\(-10\)\)\)/.test(k));
+     !!gLogErr && /localStorage\.setItem\(LS\+'_err',JSON\.stringify\(ERRLOG\.slice\(-10\)\)\)/.test(gLogErr));
   ok(ad+': açılışta geri OKUNUYOR (yazma ölü değil)',
      /localStorage\.getItem\(LS\+'_err'\)/.test(k));
   ok(ad+': geri yükleme adlı bir işlev', /function eskiHatalariGeriYukle\(\)\{/.test(k));

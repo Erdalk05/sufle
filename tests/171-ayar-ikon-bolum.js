@@ -118,6 +118,57 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
      /o\.textContent=parca\.join\(' · '\);\s*\n\s*\}\);\s*\n\s*bolumleriTazele\(\);/.test(kod));
 }
 
+/* ---------- 2b. SENARYOLAR PANELİ DE BÖLÜMLENDİ (2026-08-17) ----------
+   Ölçülen kusur: kullanıcı buraya senaryo YAZMAYA gelir ama metin alanına
+   ulaşmadan önce üç denetim satırı, liste ve İKİ kart geçiyordu — "Yeni
+   senaryo ekle" ile "Yedek ve geri alma" başlığın ve metnin ÜSTÜNDEYDİ.
+   Sıra artık liste → başlık → metin → araçlar. */
+{
+  const mBolum=kod.match(/const KART_BOLUM=\{[\s\S]*?\n\};/);
+  const bolum = mBolum ? eval('('+mBolum[0].replace(/^const KART_BOLUM=/,'').replace(/;$/,'')+')') : {};
+  const sc=bolum['scriptsSheet']||[];
+  ok('senaryolar paneli de bölümlenmiş ('+sc.length+' kutu)', sc.length===2);
+  const kitap=(sc.find(x=>x[0]==='bKitaplik')||[])[1]||[];
+  const metin=(sc.find(x=>x[0]==='bBuMetin')||[])[1]||[];
+  /* İKİ AYRI İŞ: kitaplığını yönetmek ile elindeki metin üzerinde çalışmak
+     aynı şey değil; tek kutuya doldurmak eski "yönetim paneli" hissini
+     geri getirirdi. */
+  ok('kitaplık kutusunda yeni ve yedek var', kitap.includes('gYeni') && kitap.includes('gYedek'));
+  ok('bu metin kutusunda araçlar ve denetim var', metin.includes('gAraclar') && metin.includes('gDenetim'));
+
+  /* KUTU SİL/UYGULA SATIRININ ÜSTÜNE GİRER. Panelin sonuna eklemek kutuyu
+     kaydetme satırının ALTINA düşürürdü; kaydet/sil her zaman en altta. */
+  ok('kutunun yeri işaret ögesiyle belirtilmiş',
+     /const KART_KUTU_YERI=\{ 'scriptsSheet':'#scKutuYeri' \};/.test(kod) &&
+     /<div id="scKutuYeri"><\/div>/.test(tel));
+  ok('işaret ögesi Sil\\/Uygula satırından ÖNCE',
+     tel.indexOf('id="scKutuYeri"') < tel.indexOf('id="delScript"'));
+  ok('kutu işaret ögesinin yerine ekleniyor (sona değil)',
+     /if\(yer\) yer\.parentNode\.insertBefore\(kutu,yer\); else pane\.appendChild\(kutu\);/.test(kod));
+
+  /* Bölüm tazeleme iki paneli birden görmeli: `#sheet` ile sınırlı kalsaydı
+     senaryolar panelinde boş kutu gizlenmez, ilk kartın ayracı kalkmazdı. */
+  ok('bölüm tazelemesi iki paneli de kapsıyor', /\$\$\('\.sheet \.kutu'\)\.forEach/.test(kod));
+
+  /* HİÇBİR ŞEY YAPMAYAN DENETİM GÖSTERİLMEZ. Tek senaryosu olan biri için
+     "Ada göre sırala" hiçbir şey yapmaz. Eşik 3. */
+  ok('arama ve sıralama az senaryoda gizleniyor',
+     /const cok=\(st\.scripts\|\|\[\]\)\.length>=3;/.test(kod) &&
+     /srt\.classList\.toggle\('hidden', !cok\)/.test(kod));
+  /* ⚠️ Kullanıcı YAZDIYSA arama kutusu kaybolmaz: sonuç listeyi 3'ün altına
+     indirince kutu gizlenir ve yazdığı da kaybolurdu. */
+  ok('arama kutusu yazı varken gizlenmiyor',
+     /fnd\.classList\.toggle\('hidden', !cok && !fnd\.value\)/.test(kod));
+
+  /* Alan etiketleri kutu başlıklarıyla AYNI dilde: iki ayrı tipografi dili
+     aynı ekranda "web formu" hissi veriyordu. */
+  ok('başlık ve metin alanları ALL-CAPS etiketli',
+     /<label class="alanEt" data-i18n="title">/.test(tel) &&
+     /<label class="alanEt" data-i18n="text">/.test(tel));
+  ok('alan etiketi bölüm başlığıyla aynı ölçekte',
+     /\.alanEt\{font-size:var\(--tx-xs\)!important;[\s\S]{0,90}?text-transform:uppercase/.test(tel));
+}
+
 /* ---------- 3. SAYFA AÇILINCA ÖZET ÇİZİLİR ---------- */
 {
   const mAc=kod.match(/function openSheet\(id\)\{[\s\S]*?\n\}/);

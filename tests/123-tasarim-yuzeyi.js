@@ -64,7 +64,13 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
      satırda açılıp kapanıyor, o yüzden ilk satır-başı </div> güvenli).
      İlk yazımda "hud'a kadar" demiştim; hud intro'dan ÖNCE duruyor ve
      desen hiç eşleşmedi — 0 düğme sayıp yanlış yere kırmızı bastı. */
-  const intro = (tel.match(/<div id="intro">[\s\S]*?\n<\/div>/) || [''])[0];
+  /* YORUM DÜĞME DEĞİLDİR (2026-08-17 ölçüldü). Sayım ham HTML üzerinde
+     yapılıyordu ve bir açıklama yorumunun içinde geçen `<button>` kelimesi
+     yedinci düğme olarak sayıldı — ekranda hiçbir şey değişmemişken kapı
+     kırmızı verdi. Kuralın kendisi doğru; ölçtüğü metin yanlıştı. Kullanıcı
+     yorumu görmez, o yüzden sayımdan da çıkıyor. */
+  const introHam = (tel.match(/<div id="intro">[\s\S]*?\n<\/div>/) || [''])[0];
+  const intro = introHam.replace(/<!--[\s\S]*?-->/g, '');
   ok('intro bölümü bulunabildi', intro.length > 100);
   const dugmeler = [...intro.matchAll(/<button\b[^>]*>/g)];
   ok('ilk açılışta en fazla 6 düğme (ölçülen 5 + pay 1) — şimdi: ' + dugmeler.length,

@@ -224,7 +224,10 @@ for(const [ad,ham,kod,kutu] of [
     ['telefon',telHam,tel,'#klipBox'],
     ['masaüstü',macHam,mac,'#rrKlipBox']]){
   ok(ad+': klip kutusu sonuç ekranında', new RegExp('id="'+kutu.slice(1)+'"').test(ham));
-  ok(ad+': çekirdek hesabı çağrılıyor', /klipOnerileri\(cekimAltyazi/.test(kod));
+  /* 2026-08-17: telefonda kaynak genişledi — arşivden açılan çekimde kelime
+     zamanları O KAYITTAN geliyor (bellekteki `cekimAltyazi` başka bir çekime
+     ait olabilirdi). İddia aynı: hesap çekirdekte, kabuk yalnız veriyi veriyor. */
+  ok(ad+': çekirdek hesabı çağrılıyor', /klipOnerileri\((cekimAltyazi|kelimeler)/.test(kod));
   ok(ad+': bölüm başlıkları toplanıyor', /function klipBasliklari\(\)/.test(kod));
   /* BÖLÜM BAŞLIĞIN ARDINDAN başlar: başlık satırı okunan metin değil ayraç. */
   ok(ad+': bölüm başlığın ardındaki satıra bağlanıyor', /harita\[i\+1\]=t/.test(kod));

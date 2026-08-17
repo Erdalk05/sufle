@@ -39,6 +39,7 @@ KAYNAK = {
     # PDF okuyucu: kabul sınavı (eşleme yoksa metin verme) buradadır ve
     # gevşetilirse kullanıcıya SESSİZCE çöp sufle metni gider.
     'pdf': (os.path.join(REPO, 'cekirdek', 'pdf.js'), 'SUFLE_PDF'),
+    'oniz': (os.path.join(REPO, 'cekirdek', 'oniz.js'), 'SUFLE_ONIZ'),
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),
@@ -99,6 +100,10 @@ KAYNAK = {
     # kararının dayandığı sayılar burada yaşıyor ve bir denetim belgesinin
     # en tehlikeli hâli, ölçmediğini ölçmüş gibi sunmasıdır.
     'rekabet': (os.path.join(REPO, 'belgeler', 'REKABET_30_OLCULDU.md'), 'SUFLE_REKABET'),
+    # Sabah raporu da bozulabilir bir kaynak (2026-08-17): rapor kapısı
+    # "rapor gerçekte ne olduysa onu söylüyor mu" diye ölçüyor ve bu iddianın
+    # kendisi kanıtlanmalı. Kanıtsız kapı, kapı değildir.
+    'rapor': (os.path.join(REPO, 'SABAH_RAPORU.md'), 'SUFLE_RAPOR'),
     # Vitrin sayfası da: kullanıcının uygulamayı açmadan ÖNCE okuduğu
     # sözler burada; abartma engeli ancak abartarak kanıtlanır.
     'vitrin': (os.path.join(REPO, 'tanitim.html'), 'SUFLE_VITRIN'),

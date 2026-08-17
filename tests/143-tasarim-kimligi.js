@@ -41,8 +41,12 @@ const telCss = tel.replace(/\/\*[\s\S]*?\*\//g, '');   // yorumdaki örnek renk 
 
   /* Basış geri bildirimi ölçülen kusurdu: dokunulan şey tepki vermiyordu. */
   ok('basış küçülmesi jetonu var', /--bas:\s*\.?\d/.test(jet));
+  /* 2026-08-17: "herhangi bir :active kuralı" ölçmek zayıftı — kural iki
+     yerde geçtiği için birini silmek testi kırmıyordu, yani kasıtlı bozma
+     turunda kanıtlanamıyordu. İddia artık ADLI: en çok dokunulan denetimler
+     tepki veriyor mu? (segment/sekme/sayfa düğmeleri ve liste satırı) */
   ok('telefonda basış gerçekten bağlanmış',
-     /:active[^{]*\{[^}]*transform:scale\(var\(--bas\)\)/.test(telCss));
+     /\.seg button:active,\.tabs button:active,\.sheetbtns button:active,\.listitem:active\{\s*transform:scale\(var\(--bas\)\)/.test(telCss));
 
   /* Sayı: tek bir bileşene gölge eklemek "derinlik" değildir. Çizilmiş
      arayüzde 196 öğe ölçüldü; eşik düşük tutuldu ki biçim değişikliği

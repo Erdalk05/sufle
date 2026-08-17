@@ -319,7 +319,23 @@ TR_HARF = 'çğışöüÇĞİŞÖÜ'
 # KULLANICININ KENDİ METNİ — çevrilmemesi DOĞRU. Bunlar senaryo içeriğini
 # çizen ögeler: sufle satırı, kelime span'ı, senaryo başlığı ve Mac'in
 # düzenleyicisi. Liste dar tutuluyor; genişletmek kusur saklamak olur.
-KULLANICI_METNI = {'div.ln', 'span.w', 'div.t', '#editor', '#text', '#title'}
+# `#introSenAd` 2026-08-17'de eklendi: giriş ekranındaki çip KULLANICININ
+# senaryo adını yazıyor. Dil TR iken kurulmuş bir senaryo İngilizce arayüzde
+# de kendi adıyla görünür — bu doğrudur, kullanıcının verisi çevrilmez. Araç
+# bunu "çevrilmemiş arayüz" sayınca kapı kırmızıya döndü; yani Türkçe adlı
+# senaryosu olan HER İngilizce kullanıcı kapıyı kırmızı yapardı. Muafiyetin
+# bedeli: adı olmayan senaryonun yerine yazılan metin (Başlıksız senaryo /
+# Untitled script) artık burada ölçülmüyor — onu tests/169 kilitliyor.
+# `button.bolumJeton` 2026-08-17'de eklendi: senaryolar panelindeki bölüm
+# jetonu KULLANICININ kendi `# başlık` satırını yazıyor ("Kayıt", "Giriş").
+# İngilizce arayüzde de aynı kalması doğrudur. Jetona sınıf verilmesinin
+# sebebi de bu: sınıfsızken anahtarı `button.` oluyordu ve o anahtarı
+# sınıfsız BÜTÜN düğmeler paylaşıyordu — araç raporda başka bir düğmenin
+# metnini gösteriyordu. Muafiyet böylece DAR: yalnız bu jeton.
+# Jetonun yanındaki "↺ işaretleri sıfırla" düğmesi muaf DEĞİL, çünkü o
+# gerçek arayüz metni ve çevrilmesi gerekiyor.
+KULLANICI_METNI = {'div.ln', 'span.w', 'div.t', '#editor', '#text', '#title',
+                   '#introSenAd', 'button.bolumJeton'}
 
 # GEÇİCİ BİLDİRİM MUAF. Toast 2,2 saniye yaşıyor ve bir sonraki tetiklenmede
 # ZATEN güncel dilde yazılıyor; uçuştaki bir bildirimi dil değişiminde yeniden

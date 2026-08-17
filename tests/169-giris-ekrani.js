@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,macYolu}=require('./kaynak');
+const {telefonYolu,oku,macYolu,repoOku}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
 
@@ -69,4 +69,32 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
   const giris=tel.slice(tel.indexOf('<div id="introRozet">'), tel.indexOf('<div id="introAlt">'));
   ok('rozet sayısı üç (her rozetin kanıtı bu dosyada)',
      (giris.match(/<span data-i18n="/g)||[]).length===3);
+}
+
+/* Senaryo adı çipi KULLANICI VERİSİ çizdiği için kontrast aracında muaf
+   (2026-08-17). Muafiyetin açtığı boşluğu burada kapatıyoruz: adı olmayan
+   senaryo için yazılan YEDEK metin arayüz metnidir ve çevrilmelidir. */
+{
+  const kaynak = oku(telefonYolu());
+  /* Çipi YAZAN fonksiyon adıyla anılıyor: kapsam kapısı "hiçbir testin
+     anmadığı fonksiyon" sayıyor ve bu yüzey ölçülmeden kalmıştı. */
+  ok('senaryo adını yazan fonksiyon var (introSenaryoYaz)',
+     /function introSenaryoYaz\(\)\{/.test(kaynak) && /introSenaryoYaz\(\);/.test(kaynak));
+  ok('adsız senaryo için yedek metin iki dilde',
+     /\$\('#introSenAd'\)\.textContent = ad \|\| \(L==='tr'\?'Başlıksız senaryo':'Untitled script'\)/.test(kaynak));
+  /* ENV DESTEKLİ OKUMA ŞART (kapı 115): kasıtlı bozma turu kaynağın geçici
+     bir kopyasını bozup testi ona karşı koşturuyor. `fs` ile doğrudan depoyu
+     okuyan test, bozmayı HİÇ ölçmez ama "geçti" der. */
+  const py = repoOku('kontrast.py','SUFLE_KONTRAST');
+  /* MUAFİYET DAR MI — desen SATIRIN BİÇİMİNE değil KÜMENİN İÇERİĞİNE bakar.
+     Eski hâli `'#title', '#introSenAd'}` dizesini birebir arıyordu; kümeye
+     meşru bir giriş daha eklenip satır iki satıra sarınca DAVRANIŞ HİÇ
+     DEĞİŞMEDEN kırmızı verdi. Asıl korunan şey şu: muafiyet listesi kısa
+     kalsın ve içine yalnız KULLANICININ KENDİ metnini çizen ögeler girsin —
+     genişlemesi kusur saklamak olur. */
+  const kume=(py.match(/KULLANICI_METNI = \{([\s\S]*?)\}/)||[])[1]||'';
+  const girdiler=[...kume.matchAll(/'([^']+)'/g)].map(m=>m[1]);
+  ok('senaryo adı çipi muaf', girdiler.includes('#introSenAd'));
+  ok('muafiyet listesi kısa ('+girdiler.length+' giriş)',
+     girdiler.length>0 && girdiler.length<=9);
 }

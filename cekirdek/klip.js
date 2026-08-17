@@ -53,6 +53,7 @@ function klipOnerileri(kelimeler, ayar){
   const a=ayar||{};
   const enAz=+a.enAz||KLIP_EN_AZ, enCok=+a.enCok||KLIP_EN_COK, sayi=+a.sayi||KLIP_SAYI;
   const basliklar=a.basliklar||{};
+  const vidSure=(+a.sure>0 && isFinite(+a.sure)) ? +a.sure : 0;
   const k=(kelimeler||[]).filter(w=>w && typeof w.t==='number' && isFinite(w.t));
   if(k.length<2) return [];
 
@@ -80,6 +81,13 @@ function klipOnerileri(kelimeler, ayar){
       if(sure>=enAz && klipCumleSonu(k[j].s)){ bit=j; break; }
     }
     if(bit<0) continue;
+    /* KLİP VİDEONUN İÇİNDE KALMALI (2026-08-17). `sure` belgelenmiş bir
+       ayardı ama HİÇ KULLANILMIYORDU. Kelime zamanları sufle akışından
+       geliyor; kayıt erken biterse (kullanıcı durdurur, ya da kayıt yarıda
+       kesilir — bu depoda ölçülmüş bir durum) sufle birkaç kelime daha
+       ilerlemiş olur ve önerilen klip VİDEONUN SONUNDAN SONRASINI gösterir.
+       "Kes ve uygula" o zaman boş ya da yarım klip üretirdi. */
+    if(vidSure>0 && k[bit].t>vidSure) continue;
     const sure=k[bit].t-t0;
     let vurgu=0;
     for(let j=bas;j<=bit;j++) if(klipVurguMu(k[j].s)) vurgu++;

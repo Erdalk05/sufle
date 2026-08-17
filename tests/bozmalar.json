@@ -129,8 +129,8 @@
   "ad": "L7 Mac günlüğü yazmıyor",
   "test": "110-hata-gunlugu-kalicilik.js",
   "kaynak": "mac",
-  "bul": "    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}\n",
-  "koy": ""
+  "bul": "    ERRLOG.push({t:Date.now(),where,msg});\n    if(ERRLOG.length>30) ERRLOG.shift();\n    try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
+  "koy": "    ERRLOG.push({t:Date.now(),where,msg});\n    if(ERRLOG.length>30) ERRLOG.shift();"
  },
  {
   "ad": "L9 sunucu cevapsızken ölü adres",
@@ -682,8 +682,8 @@
   "ad": "T55 basış geri bildirimi söküldü (dokunulan şey tepki vermez)",
   "test": "143-tasarim-kimligi.js",
   "kaynak": "telefon",
-  "bul": "transform:scale(var(--bas));box-shadow:none}",
-  "koy": "box-shadow:none}"
+  "bul": ".seg button:active,.tabs button:active,.sheetbtns button:active,.listitem:active{\n    transform:scale(var(--bas));box-shadow:none}",
+  "koy": ".seg button:active,.tabs button:active,.sheetbtns button:active,.listitem:active{\n    box-shadow:none}"
  },
  {
   "ad": "T55 kaydırıcı dolgusu ham değerden hesaplanıyor (min sıfır değilse hiç boşalmaz)",
@@ -2068,8 +2068,8 @@
   "ad": "kayıt sürerken openCam boğaz noktası açıldı (çekimin sesi ölür)",
   "test": "39-kayitta-kamera-degistirme.js",
   "kaynak": "telefon",
-  "bul": "  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }\n  try{\n    if(stream) stream.getTracks().forEach(x=>x.stop());",
-  "koy": "  try{\n    if(stream) stream.getTracks().forEach(x=>x.stop());"
+  "bul": "  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }\n  try{",
+  "koy": "  try{"
  },
  {
   "ad": "yumuşak tire temizlenmiyor (kelime sesle takipte eşleşmez)",
@@ -2233,11 +2233,11 @@
   "koy": "    catch(e){ logErr('cekimSay',e); }"
  },
  {
-  "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
+  "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
-  "kaynak": "telefon",
-  "bul": "VER='9.",
-  "koy": "VER='8."
+  "kaynak": "rapor",
+  "bul": "**v9.20 hazır, yayın kararı sende:**",
+  "koy": "**Bazı işler yapıldı:**"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2334,8 +2334,8 @@
   "ad": "hata günlüğü sınırsız büyüyor (depo şişer, eski hatalar taşar)",
   "test": "02-hata-gunlugu-ve-kayit.js",
   "kaynak": "telefon",
-  "bul": "  if(ERRLOG.length>30) ERRLOG.shift();",
-  "koy": ""
+  "bul": "  ERRLOG.push({t:Date.now(),where,msg});\n  if(ERRLOG.length>30) ERRLOG.shift();",
+  "koy": "  ERRLOG.push({t:Date.now(),where,msg});"
  },
  {
   "ad": "izin kurtarma yolu tarayıcıyı ayırt etmiyor (yanlış yol tarif edilir)",
@@ -2355,8 +2355,8 @@
   "ad": "hata günlüğü diske hiç yazılmıyor (sonraki oturumda hiçbir iz yok)",
   "test": "02-hata-gunlugu-ve-kayit.js",
   "kaynak": "telefon",
-  "bul": "  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
-  "koy": "  // gunluk diske yazilmiyor"
+  "bul": "  ERRLOG.push({t:Date.now(),where,msg});\n  if(ERRLOG.length>30) ERRLOG.shift();\n  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
+  "koy": "  ERRLOG.push({t:Date.now(),where,msg});\n  if(ERRLOG.length>30) ERRLOG.shift();"
  },
  {
   "ad": "arka plan görseli oranı korumadan yükleniyor (yatay foto eziliyor)",
@@ -2929,15 +2929,15 @@
   "ad": "etiket kuralı kayıt noktasını eziyor (kırmızı nokta düğmenin altına düşer)",
   "test": "134-kumanda-cubugu-sigiyor.js",
   "kaynak": "telefon",
-  "bul": "  .cbtn::after{content:attr(data-etiket);position:absolute;",
+  "bul": "  .cbtn::after,#recBtn::before{content:attr(data-etiket);position:absolute;",
   "koy": "  .cbtn::after,#recBtn::after{content:attr(data-etiket);position:absolute;"
  },
  {
   "ad": "odak kipinde etiketler ekranda kalıyor",
   "test": "134-kumanda-cubugu-sigiyor.js",
   "kaynak": "telefon",
-  "bul": "  body.hideUI .cbtn::after{content:''}",
-  "koy": "  body.hideUI .cbtn::after{opacity:.9}"
+  "bul": "  body.hideUI .cbtn::after,body.hideUI #recBtn::before{content:''}",
+  "koy": "  body.hideUI .cbtn::after,body.hideUI #recBtn::before{opacity:.9}"
  },
  {
   "ad": "PDF okuyucu eşlemesiz CID yazı tipinde de metin üretiyor (çöp metin sufleye girer)",
@@ -3307,8 +3307,8 @@
   "ad": "A3 senaryo çekimle birlikte saklanmıyor",
   "test": "172-arsiv-paket-kaynagi.js",
   "kaynak": "telefon",
-  "bul": "    senaryo:cekimSenaryo||null});",
-  "koy": "    });"
+  "bul": "    senaryo:cekimSenaryo||null,",
+  "koy": "    "
  },
  {
   "ad": "A4 arşivden açarken kaynak kurulmuyor",
@@ -3344,5 +3344,180 @@
   "kaynak": "mac",
   "bul": "        (kelime && sureOlculdu>=2 ? ' · Tempo: '+wpm+' wpm' : ''),",
   "koy": "        (kelime?' · Tempo: '+wpm+' wpm':''),"
+ },
+ {
+  "ad": "D1 önizleme nöbetçisi hiç başlamıyor",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    onizIzleBaslat();\n    return true;",
+  "koy": "    return true;"
+ },
+ {
+  "ad": "D2 nöbetçi kayıt sürerken de akışa karışıyor",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(rec && rec.state==='recording') return;          // kayıt yolunun kuralları ayrı",
+  "koy": "  if(false) return;          // kayıt yolunun kuralları ayrı"
+ },
+ {
+  "ad": "D3 arka planda da yanlış alarm veriyor",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(document.visibilityState!=='visible'){           // arka planda donması NORMAL",
+  "koy": "  if(false){           // arka planda donması NORMAL"
+ },
+ {
+  "ad": "D4 donma çökme uyarısı gibi bildiriliyor (genel hata bildirimi)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  logNot('oniz','önizleme donmuş adım '",
+  "koy": "  logErr('oniz','önizleme donmuş adım '"
+ },
+ {
+  "ad": "D5 iz susması olayı dinlenmiyor (iOS donmayı geç görür)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "      vTrack.addEventListener('mute',()=>{",
+  "koy": "      ({}).addEventListener=null; vTrack.x=(()=>{"
+ },
+ {
+  "ad": "K1 kayıt düğmesi yine adsız (altı düğmeden biri isimsiz kalır)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": " data-i18n-etiket=\"cbCek\" data-etiket=\"Çek\"",
+  "koy": ""
+ },
+ {
+  "ad": "K2 kayıt düğmesi yine disabled (dokunuş yutulur, sebep söylenmez)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "<button id=\"recBtn\" class=\"kapali\" aria-disabled=\"true\"",
+  "koy": "<button id=\"recBtn\" class=\"kapali\" disabled aria-disabled=\"true\""
+ },
+ {
+  "ad": "K3 kapalıyken dokunuş sessiz kalıyor (ne olduğu söylenmiyor)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "    toast(m('recNeedsCam'));\n",
+  "koy": ""
+ },
+ {
+  "ad": "K4 sönüklük yine etiketi de söndürüyor (ad okunmaz olur)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  #recBtn:disabled,#recBtn.kapali{background:rgba(255,255,255,.30);",
+  "koy": "  #recBtn:disabled,#recBtn.kapali{opacity:.35;background:rgba(255,255,255,.30);"
+ },
+ {
+  "ad": "K5 kayıt sürerken düğmede hâlâ 'Çek' yazıyor (yapılacak iş durdurmak)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  body.rec #recBtn::before{content:''}",
+  "koy": ""
+ },
+ {
+  "ad": "K6 odak kipinde kaydın adı ekranda kalıyor",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": ",body.hideUI #recBtn::before{content:''}",
+  "koy": "{content:''}"
+ },
+ {
+  "ad": "K7 kamera açılınca kapali sınıfı düşmüyor (düğme sönük kalır)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "    $('#recBtn').classList.remove('kapali');\n",
+  "koy": ""
+ },
+ {
+  "ad": "K8 duraklat düğmesi adsız (kayıtta ekrandaki tek isimsiz düğme)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": " data-i18n-etiket=\"cbDurakla\" data-etiket=\"Duraklat\"",
+  "koy": ""
+ },
+ {
+  "ad": "D6 masaüstünde önizleme nöbetçisi yok (parite kaybı)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "mac",
+  "bul": "      onizIzleBaslat();",
+  "koy": "      "
+ },
+ {
+  "ad": "D7 masaüstü nöbetçisi kamera kapanınca durmuyor",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "mac",
+  "bul": "  function stopCam(){\n    onizIzleDurdur();",
+  "koy": "  function stopCam(){"
+ },
+ {
+  "ad": "S1 senaryolar paneli yine tek yığın (kartlar bölümsüz)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  'scriptsSheet':[['bKitaplik',['gYeni','gYedek']],\n                  ['bBuMetin',['gAraclar','gDenetim']]]",
+  "koy": "  'scriptsSheet':[['bKitaplik',['gYeni','gYedek','gAraclar','gDenetim']]]"
+ },
+ {
+  "ad": "S2 kutu panelin sonuna ekleniyor (Sil/Uygula satırının altına düşer)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "      if(yer) yer.parentNode.insertBefore(kutu,yer); else pane.appendChild(kutu);",
+  "koy": "      pane.appendChild(kutu);"
+ },
+ {
+  "ad": "S3 bölüm tazelemesi yine yalnız ayarlar panelini görüyor",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  $$('.sheet .kutu').forEach(kutu=>{",
+  "koy": "  $$('#sheet .kutu').forEach(kutu=>{"
+ },
+ {
+  "ad": "S4 sıralama jetonları tek senaryoda da duruyor (hiçbir şey yapmayan denetim)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  const srt=$('#scSort'); if(srt) srt.classList.toggle('hidden', !cok);",
+  "koy": ""
+ },
+ {
+  "ad": "S5 arama kutusu yazı varken de gizleniyor (yazdığın kaybolur)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  if(fnd) fnd.classList.toggle('hidden', !cok && !fnd.value);",
+  "koy": "  if(fnd) fnd.classList.toggle('hidden', !cok);"
+ },
+ {
+  "ad": "S6 alan etiketleri yine web formu dilinde (iki ayrı tipografi)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "<label class=\"alanEt\" data-i18n=\"title\">",
+  "koy": "<label data-i18n=\"title\">"
+ },
+ {
+  "ad": "S7 alan etiketi ölçeği bölüm başlığından ayrıştı",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  .alanEt{font-size:var(--tx-xs)!important;font-weight:800;letter-spacing:.14em;\n    text-transform:uppercase;color:var(--t-low)}",
+  "koy": "  .alanEt{font-weight:800;color:var(--t-low)}"
+ },
+ {
+  "ad": "S8 kutu yeri işareti silindi (kutu yine sona düşer)",
+  "test": "171-ayar-ikon-bolum.js",
+  "kaynak": "telefon",
+  "bul": "  <div id=\"scKutuYeri\"></div>\n",
+  "koy": ""
+ },
+ {
+  "ad": "D8 nöbetçi nabzı sıklaştı (pil ve ısı)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "oniz",
+  "bul": "setInterval(onizNabiz,2000)",
+  "koy": "setInterval(onizNabiz,50)"
+ },
+ {
+  "ad": "D9 sessiz kayıt diske yazmıyor (teşhis kaybolur)",
+  "test": "173-onizleme-donmasi.js",
+  "kaynak": "oniz",
+  "bul": "  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}",
+  "koy": "  "
  }
 ]

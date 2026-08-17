@@ -31,6 +31,9 @@ function kos(kayitta){
     /* Korumadan sonrasına hiç gelinmemeli; gelinirse burada patlar ve
        testin çökmesi de bir sinyaldir. */
     const stopMeter=()=>__iz.push('devam-etti');
+    /* Önizleme nöbetçisi (2026-08-17) kamera değişiminde durduruluyor:
+       kareler MEŞRU olarak duruyor, donma sanılmasın. Simülasyonda sahte. */
+    const onizIzleDurdur=()=>__iz.push('nöbetçi-durdu');
     ${openCam.replace(/\n {4}stopMeter\(\);[\s\S]*$/, '\n    stopMeter();\n    return true;\n  }catch(e){ return false; }\n}')}
     return openCam;
   `);
@@ -45,6 +48,9 @@ function kos(kayitta){
      !iz.includes('IZLER DURDURULDU'));
   ok('kayıt sürerken sebebi söyleniyor', iz.some(x=>/toast:camBusyRec/.test(x)));
   ok('kayıt sürerken hiç ilerlemiyor', !iz.includes('devam-etti'));
+  /* Nöbetçi bile boğaz noktasının ARDINDA: kayıt sürerken hiçbir şeye
+     dokunulmuyor. */
+  ok('kayıt sürerken önizleme nöbetçisine de dokunulmuyor', !iz.includes('nöbetçi-durdu'));
 }
 {
   const {iz,sonuc} = await kos(false);

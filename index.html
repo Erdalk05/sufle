@@ -433,16 +433,24 @@
   /* ⚠️ #recBtn::after KULLANILAMAZ: o sözde-öge zaten KIRMIZI KAYIT NOKTASI
      (aşağıda tanımlı). İlk yazımda etiketi ona da bağladım ve noktayı
      düğmenin altına ittim — çekim ekranının en tanınır ögesi bozuldu.
-     Kayıt düğmesinin etiketi zaten gereksiz: kırmızı yuvarlak evrensel ve
-     ekran okuyucu için aria-label duruyor. */
-  .cbtn::after{content:attr(data-etiket);position:absolute;
+     ESKİ GEREKÇE ("kayıt düğmesinin etiketi zaten gereksiz, kırmızı yuvarlak
+     evrensel") 2026-08-17'de ÖLÇÜLEREK ÇÜRÜDÜ: kamerasız kipte düğme %35
+     saydamlıkta, adsız ve dokununca hiçbir şey söylemiyordu — altı düğmeden
+     yalnız bunun etiketi yoktu. Kırmızı yuvarlak "kayıt" demek, ama SÖNÜK bir
+     kırmızı yuvarlak hiçbir şey demiyor. Çözüm `::before`: kayıt noktası
+     `::after`ta duruyor, etiket boştaki sözde-ögeye bağlandı. */
+  .cbtn::after,#recBtn::before{content:attr(data-etiket);position:absolute;
     top:calc(100% + 3px);left:50%;transform:translateX(-50%);
     font-size:10px;font-weight:650;letter-spacing:.01em;line-height:1;
     color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
     text-shadow:0 1px 3px rgba(0,0,0,.8)}
   .cbtn.on::after{color:var(--r-action-t)}
   /* Odak kipinde (kayıtta düğmeleri gizle) etiket de gitmeli. */
-  body.hideUI .cbtn::after{content:''}
+  body.hideUI .cbtn::after,body.hideUI #recBtn::before{content:''}
+  /* Kayıt sürerken "Çek" yazmak yanlış olurdu — o an yapılacak iş DURDURMAK.
+     Etiket kayıt boyunca hiç yazılmıyor: kırmızı kare zaten "durdur" diyor
+     ve yanında süre sayacı çalışıyor. */
+  body.rec #recBtn::before{content:''}
   .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
     color:#fff;font-size:var(--tx-lg);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);flex:none}
   .cbtn:active{filter:brightness(1.4)}
@@ -456,7 +464,16 @@
      Oranlar korunuyor: 52/74 ve 28/74. */
   #recBtn::after{content:"";width:calc(var(--cb,54px) * .963);height:calc(var(--cb,54px) * .963);border-radius:50%;background:#ff3b30;transition:.18s;display:block;margin:auto}
   #recBtn.rec::after{width:calc(var(--cb,54px) * .518);height:calc(var(--cb,54px) * .518);border-radius:8px}
-  #recBtn:disabled{opacity:.35}
+  /* `:disabled` kuralı DURUYOR: düğme bir gün yeniden gerçekten devre dışı
+     bırakılırsa sönük görünmeye devam etsin. Yeni yol `.kapali` — dokunuşu
+     yutmadan aynı görünümü verir.
+     SÖNÜKLÜK DÜĞMEYE UYGULANIR, ETİKETE DEĞİL. Düğmenin tamamına `opacity`
+     vermek etiketi de %35'e indiriyordu ve ekranda çizdirilince okunmuyordu —
+     oysa düğmenin neden kapalı olduğunu anlatan tek şey o yazı. Kapalı
+     görünüm artık dolgudan ve kayıt noktasından geliyor; yazı tam kontrast. */
+  #recBtn:disabled,#recBtn.kapali{background:rgba(255,255,255,.30);
+    border-color:rgba(255,255,255,.13)}
+  #recBtn:disabled::after,#recBtn.kapali::after{opacity:.42}
   #playBtn.playing{background:var(--accent);color:var(--accent-d)}
 
   /* kilit */
@@ -473,6 +490,22 @@
   #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-8);
     background:radial-gradient(circle at 50% 32%,#10231a,#000);padding:28px;text-align:center}
   #introUst{display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)}
+  /* Marka işareti: sahnedeki okuma çizgisinin küçültülmüş hâli. Ölçüsü
+     başlıkla birlikte büyüsün diye em cinsinden. */
+  #markaIm{width:3.1em;height:2.07em;display:block;color:var(--t-hi);margin-bottom:4px}
+  /* OKUYACAĞIN METİN KARTI. Tonal yüzey — dolu eylem DEĞİL: ekranda tek dolu
+     eylem kuralı (tests/169) korunuyor. Üç satır: ne olduğu, adı, ölçüsü. */
+  #introSenaryo{display:flex;flex-direction:column;align-items:flex-start;gap:3px;
+    width:min(100%,330px);min-height:var(--tap);text-align:left;
+    background:var(--s-raised);border:1px solid var(--s-line);
+    border-radius:var(--rad-lg);padding:13px 16px;box-shadow:var(--el-1);
+    color:var(--t-hi)}
+  #introSenaryo .et{font-size:var(--tx-xs);font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--t-low)}
+  #introSenaryo .ad{font-size:var(--tx-md);font-weight:750;letter-spacing:-.01em;
+    max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #introSenaryo .olcu{font-size:var(--tx-sm);font-weight:600;color:var(--r-action-t);
+    font-variant-numeric:tabular-nums}
   #introEylem{display:flex;flex-direction:column;align-items:stretch;gap:var(--sp-3);width:min(100%,330px)}
   #introEylem .big{justify-content:center}
   /* Üç rozet: ürünün gerçek vaatleri. Süs değil — üçü de koddan doğrulanabilir
@@ -583,6 +616,13 @@
      ölçüyor (ikonsuz kalan kart, bu deponun "yarım kalmış düzeltme" sınıfı). */
   .kutu{margin:var(--sp-6) 0 0}
   .kutu:first-of-type{margin-top:var(--sp-4)}
+  /* ALAN ETİKETİ: bölüm başlıklarıyla AYNI dil. "Başlık" ve "Metin" cümle
+     düzeninde, gövde puntosunda duruyordu ve bir web formunun etiketleri gibi
+     okunuyordu; kutuların ALL-CAPS başlıklarıyla aynı ekranda iki ayrı
+     tipografi dili oluşuyordu. */
+  .alanSat{margin-bottom:var(--sp-1)}
+  .alanEt{font-size:var(--tx-xs)!important;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--t-low)}
   .bolum{font-size:var(--tx-xs);font-weight:800;letter-spacing:.14em;
     text-transform:uppercase;color:var(--t-low);padding:0 var(--sp-3) var(--sp-2)}
   .kutuIc{background:var(--s-raised);border:1px solid var(--s-line);
@@ -889,8 +929,16 @@
   <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" data-i18n-title="settings" title="Ayarlar" data-i18n-etiket="cbAyar" data-etiket="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
   <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" data-i18n-title="scripts" title="Senaryolar" data-i18n-etiket="cbSenaryo" data-etiket="Senaryo"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
   <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" data-i18n-title="mTReady" title="Çekime hazır mıyım?" data-i18n-etiket="cbHazir" data-etiket="Hazır mıyım"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
-  <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn">⏸</button>
-  <button id="recBtn" aria-label="Kayıt başlat/durdur" data-aria="recBtn" disabled></button>
+  <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn" data-i18n-etiket="cbDurakla" data-etiket="Duraklat">⏸</button>
+  <!-- KAYIT DÜĞMESİ `disabled` DEĞİL `aria-disabled` (2026-08-17, ölçülerek).
+       `disabled` bir düğme dokunuşu YUTAR: kamerasız kipte ekranın en büyük,
+       en ortadaki denetimi sönük duruyor, adı yazmıyor (alt çubuktaki altı
+       düğmeden yalnız bunun etiketi yoktu), dokununca hiçbir şey olmuyor ve
+       SEBEBİ hiçbir yerde yazmıyordu. Deponun 3 numaralı hata sınıfı:
+       ön koşulu olan denetim ya koşulu kendi sağlar ya da sebebini söyler —
+       sessiz kalamaz. Artık dokunuş geliyor ve önce kamerayı açmayı DENİYOR. -->
+  <button id="recBtn" class="kapali" aria-disabled="true" aria-label="Kayıt başlat/durdur" data-aria="recBtn"
+          data-i18n-etiket="cbCek" data-etiket="Çek"></button>
   <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" data-i18n-title="mTVoice" title="Sesle takip" data-i18n-etiket="cbSes" data-etiket="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
   <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" data-i18n-title="tPlay" title="Başlat" data-i18n-etiket="cbBaslat" data-etiket="Başlat">▶︎</button>
 </div>
@@ -907,8 +955,43 @@
   <div id="langSwitch"><button data-lang="tr">TR</button><button data-lang="en">EN</button></div>
   <div id="browserWarn" class="hidden"></div>
   <div id="introUst">
+    <!-- MARKA İŞARETİ (2026-08-17). Giriş ekranında hiçbir görsel kimlik
+         yoktu: sistem yazı tipiyle iki kelime. İşaret süs değil, ürünün KENDİ
+         imzası — sahnedeki okuma çizgisinin (#eyeline) aynısı: telefon
+         çerçevesi ve ortasından geçen, iki ucunda ok bulunan vurgu çizgisi.
+         Uygulamanın içinde zaten gördüğün şey, küçültülmüş hâli. -->
+    <!-- GEOMETRİ ÇİZDİRİLEREK AYARLANDI: ilk hâlde oklar telefon çerçevesine
+         yapışıyordu (aralarında 8 birim vardı ve ok 4,6 birim genişti), 60 px
+         ölçekte tek bir bulanık leke gibi okunuyordu. Kutu genişledi, oklar
+         dışarı çıktı ve çizgi ölçüsü büyüdü. -->
+    <svg id="markaIm" viewBox="0 0 60 40" aria-hidden="true" focusable="false">
+      <rect x="20" y="2" width="20" height="36" rx="5" fill="none"
+            stroke="currentColor" stroke-width="2.2" opacity=".5"/>
+      <path d="M3 20h54" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M3 14.6 8.4 20 3 25.4M57 14.6 51.6 20 57 25.4" fill="none"
+            stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     <h1>Sufle <b>·</b> Pro</h1>
     <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
+  </div>
+  <!-- OKUYACAĞIN METİN (2026-08-17). Ekranın yarısı boştu ve sayfa ürün
+       hakkında hiçbir şey söylemiyordu: marka, bir cümle, iki düğme. Oysa
+       uygulamanın bütün işi SENİN METNİN ve o bilgi zaten elimizde. Kart
+       senaryonun adını, kelime sayısını ve tahmini süresini gösteriyor;
+       dokununca Senaryolar sayfası açılıyor. Böylece giriş ekranı bir tanıtım
+       sayfası değil, çalışma ekranı oluyor.
+       DÜĞME DEĞİL, BİLGİ. İlk yazımda dokununca Senaryolar sayfasını açan
+       bir düğmeydi ve tests/123 haklı olarak kırmızı verdi: "ilk açılışta en
+       fazla 6 düğme". O kuralın gerekçesi, giriş ekranının TEK KARAR sorması.
+       Kartı düğme yapmak yedinci bir seçenek eklerdi; oysa değeri bilgi olmak
+       — ne okuyacağını söylemek. Senaryo değiştirme yolu zaten alt çubukta ve
+       bu kart eklenmeden önce de giriş ekranında yoktu, yani kaybedilen bir
+       şey yok. Kuralı taban büyüterek susturmak yerine tasarım değişti.
+       Metin yoksa hiç görünmüyor; bilinmeyen şeyi yazmıyoruz. -->
+  <div id="introSenaryo" class="hidden">
+    <span class="et" data-i18n="introSenEt">Okuyacağın metin</span>
+    <span class="ad" id="introSenAd"></span>
+    <span class="olcu" id="introSenOlcu"></span>
   </div>
   <div id="introEylem">
     <button class="big" id="startCam"><span data-i18n="startCam">Kamerayı Aç &amp; Başla</span></button>
@@ -1381,8 +1464,12 @@
   <div id="scHead">
   <h2><span data-i18n="scripts">Senaryolar</span><button class="iconbtn" id="scriptsX" aria-label="Kapat" data-aria="scriptsX">✕</button></h2>
   <div id="secWrap" class="hidden">
-    <div class="row" style="margin:6px 0"><label data-i18n="sections">Bölümler — dokun, oraya atla</label></div>
+    <div class="row alanSat" style="margin:6px 0"><label class="alanEt" data-i18n="sections">Bölümler</label></div>
     <div class="seg" id="secList"></div>
+    <!-- Yönerge jetonların ALTINDA: başlık ne olduğunu, ipucu ne
+         yapacağını söyler. Tek satırda birleşince ALL-CAPS başlık iki
+         satıra düşüyordu ve bölüm ritmi bozuluyordu. -->
+    <div class="hint" data-i18n="sectionsHint">Dokun, o bölüme atla.</div>
   </div>
   <input type="text" id="scriptFind" placeholder="Senaryolarda ara…" data-i18n-ph="findPh">
   </div>
@@ -1421,11 +1508,11 @@
   </div></details>
   <input type="file" id="bkFile" accept=".json,application/json" class="hidden">
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
-  <div class="row" style="margin-top:18px"><label data-i18n="title">Başlık</label></div>
+  <div class="row alanSat" style="margin-top:18px"><label class="alanEt" data-i18n="title">Başlık</label></div>
   <input type="text" id="title" data-i18n-ph="mPhTitle" placeholder="Senaryo başlığı">
   <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
        değil sürüm numarası — uygulama metnin hangi dilde olduğunu bilmiyor. -->
-  <div class="row" style="margin-top:14px"><label data-i18n="text">Metin</label>
+  <div class="row alanSat" style="margin-top:14px"><label class="alanEt" data-i18n="text">Metin</label>
     <span><button class="iconbtn" id="verBtn" aria-label="Sürüm değiştir">⇄ 1</button>
     <span class="v" id="stats">—</span></span></div>
   <textarea id="text" data-i18n-ph="phScript" placeholder="Okuyacağın metni buraya yaz veya yapıştır…" dir="auto"></textarea>
@@ -1451,6 +1538,12 @@
   <div id="checkOut"></div>
   <div id="diffOut"></div>
   </div></details>
+  <!-- BÖLÜM KUTULARININ YERİ. Kartlar buraya taşınıyor (KART_BOLUM haritası).
+       Boş bir işaret ögesi KASITLI: kutuyu "panelin sonuna ekle" demek onu
+       Sil/Uygula satırının ALTINA düşürürdü — kaydedip silme satırı her zaman
+       en altta kalmalı. Yeri koda gömmek yerine burada duruyor ki taşındığında
+       görülsün. -->
+  <div id="scKutuYeri"></div>
   <div class="sheetbtns">
     <button class="danger" id="delScript" data-i18n="delete">Sil</button>
     <button class="save" id="saveScript" data-i18n="apply">Uygula</button>
@@ -1841,7 +1934,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.19';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.20';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -1861,7 +1954,7 @@ const cam=$('#cam'), scroller=$('#scroller'), VER='9.19';
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
+  introSenEt:'Okuyacağın metin',startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -1869,6 +1962,7 @@ const I18N={
   bCekim:'Çekim ve tempo',bMetin:'Metni okurken',bGorunum:'Yazının görünüşü',
   bGoruntu:'Görüntü',bSes:'Ses',bAltyazi:'Altyazı ve sesle takip',
   bCihazB:'Cihaz',bVeri:'Verilerin',
+  bKitaplik:'Senaryo kitaplığın',bBuMetin:'Bu metin üzerinde',
   speedHint:'Doğal konuşma 120–160 WPM. Metnin tahmini süresi aşağıda.',eyeLine:'Okuma çizgisi konumu (kameraya yaklaştır)',
   fontSize:'Yazı boyutu',lineH:'Satır aralığı',margin:'Kenar boşluğu',tgEye:'Okuma çizgisi',tgDim:'Odak karartma',
   tgHl:'Kelime vurgusu',tgFade:'Okunanı soluklaştır',tgPause:'Paragraf sonunda nefes durağı',tgCount:'⏱ 3-2-1 geri sayım',
@@ -1918,11 +2012,11 @@ const I18N={
   voiceLang:'Sesle takip dili',tgLock:'Kayıtta ekranı kilitle',tgKeepAwake:'Ekranı uyanık tut',tgHideUI:'Kayıtta düğmeleri gizle',
   resetAll:'↺ Ayarları varsayılana döndür',resetHint:'Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.',
   devBtn:'Cihaz uyumluluğu',backup:'Yedekle / Geri yükle',export:'⬆︎ Dışa aktar',import:'⬇︎ İçe aktar',takes:'Çekimlerim',scripts:'Senaryolar',
-  newScript:'＋ Yeni',paste:'Yapıştır',fromFile:'Dosya',sections:'Bölümler — dokun, oraya atla',
+  newScript:'＋ Yeni',paste:'Yapıştır',fromFile:'Dosya',sections:'Bölümler',sectionsHint:'Dokun, o bölüme atla.',
   title:'Başlık',text:'Metin',
   markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz',delete:'Sil',apply:'Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
-  takeReady:'Çekim hazır',deleteRedo:'Sil',deleteSure:'Emin misin? Bu çekim geri gelmez',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
+  takeReady:'Çekim hazır',secTemizle:'↺ işaretleri sıfırla',deleteRedo:'Sil',deleteSure:'Emin misin? Bu çekim geri gelmez',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
   editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
   trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',scCekim:'{n} çekim',scSonDeg:'son değişiklik {t}',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
@@ -2022,7 +2116,7 @@ const I18N={
   /* Sonuç ekranının kartları */
   gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma',
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
-  cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
+  cbCek:'Çek',cbDurakla:'Duraklat',cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
   cbBaslat:'Başlat',
   /* Giriş ekranı rozetleri — üçü de koddan doğrulanabilir vaatler */
   rozHesap:'Hesap yok',rozNet:'İnternet gerekmez',rozUcret:'Ücretsiz',
@@ -2032,11 +2126,12 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
+  introSenEt:'What you will read',startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
   bCihazB:'Device',bVeri:'Your data',
+  bKitaplik:'Your script library',bBuMetin:'On this text',
   speedHint:'Natural speech is 120–160 WPM. Estimated duration below.',eyeLine:'Reading line position (closer to lens)',
   fontSize:'Font size',lineH:'Line height',margin:'Side margin',tgEye:'Reading line',tgDim:'Focus dimming',
   tgHl:'Word highlight',tgFade:'Fade read words',tgPause:'Breath pause at paragraphs',tgCount:'⏱ 3-2-1 countdown',
@@ -2086,11 +2181,11 @@ const I18N={
   voiceLang:'Voice-follow language',tgLock:'Lock screen while recording',tgKeepAwake:'Keep screen awake',tgHideUI:'Hide buttons while recording',
   resetAll:'↺ Reset settings to defaults',resetHint:'Only settings are reset — your scripts and takes stay.',
   devBtn:'Device compatibility',backup:'Backup / Restore',export:'⬆︎ Export',import:'⬇︎ Import',takes:'My takes',scripts:'Scripts',
-  newScript:'＋ New',paste:'Paste',fromFile:'File',sections:'Sections — tap to jump',
+  newScript:'＋ New',paste:'Paste',fromFile:'File',sections:'Sections',sectionsHint:'Tap to jump to a section.',
   title:'Title',text:'Script',
   markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait · word{pro-nun} hint',delete:'Delete',apply:'Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
-  takeReady:'Take ready',deleteRedo:'Delete',deleteSure:'Are you sure? This take is gone for good',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
+  takeReady:'Take ready',secTemizle:'↺ clear marks',deleteRedo:'Delete',deleteSure:'Are you sure? This take is gone for good',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
   editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
   trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',scCekim:'{n} takes',scSonDeg:'edited {t}',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
@@ -2184,7 +2279,7 @@ const I18N={
   gYeni:'Add a script',gYedek:'Backup and undo',gAraclar:'Text tools',
   gDenetim:'Text checks',
   gDahaFazla:'More',gNasil:'Saving and trimming',
-  cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
+  cbCek:'Record',cbDurakla:'Pause',cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
   cbBaslat:'Start',
   rozHesap:'No account',rozNet:'Works offline',rozUcret:'Free',
   pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
@@ -2232,6 +2327,7 @@ const MSG={
   exported:'Yedek indirildi',imported:'📄 Dosyadan alındı',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
   tDone:'Metin güncellendi',tUndone:'↺ Geri alındı',toolNoop:'Değişiklik gerekmedi',
   emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',mapReset:'Varsayılan eşleme geri geldi',
+  recNeedsCam:'Kayıt için kamera gerekli — kamerayı açıyorum.',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
   micIosOff:'iPhone\'da kapalı (kaydı sessizleştiriyordu)',audTesting:'Deneniyor… (15 sn)',audTestWin:'✓ Sesli kaydeden biçim bulundu ve seçildi',audTestNone:'⚠️ Hiçbir biçimde ses yazılamadı',micRefresh:'🔊 Mikrofon tazeleniyor…',micFixed:'🔊 Mikrofon yenilendi — tekrar çek',
@@ -2256,7 +2352,7 @@ const MSG={
   toFilesDone:'📁 Dosyalar\'a indi — Dosyalar uygulamasında aç, oradan Fotoğraflar\'a taşıyabilirsin',
   savedFiles:'Dosyalar\'a indirildi → Dosyalar uygulamasında videoyu aç → Paylaş → Videoyu Kaydet',trimShort:'Seçim çok kısa',trimming:'Kesiliyor…',trimDone:'✂️ Klip kaydedildi — tam çekim arşivde duruyor, başka klip de kesebilirsin',kaynakGeri:'↩ Tam çekime dönüldü — sıradaki klibi seçebilirsin',trimFail:'Kesme başarısız — Fotoğraflar\'da kırpmayı dene',
   audioFallback:'Ham ses açılamadı, normal sese geçildi',
-  capArsivYok:'Bu çekimde altyazı saklanmamış — altyazı, çekimle birlikte kaydedilmeye sonradan başlandı. Yeni bir çekimde altyazı dosyası çıkar.',noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
+  klipArsivYok:'Bu çekim, kelime zamanları saklanmaya başlamadan önce alınmış — klip önerisi üretilemiyor. Yeni bir çekimde öneriler çıkar.',capArsivYok:'Bu çekimde altyazı saklanmamış — altyazı, çekimle birlikte kaydedilmeye sonradan başlandı. Yeni bir çekimde altyazı dosyası çıkar.',noCaps:'Altyazı üretilemedi — kayıt sırasında sufle akmamış',capsMade:'altyazı satırı',
   needsComp:'Kompozit açıldı — bu özellik ancak kompozit görüntü üstünde çalışır',
   camDenied:'📷 Kamera izni verilmemiş — ',
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
@@ -2274,7 +2370,7 @@ const MSG={
   glLostRec:'⛔ Kompozit kayıt sırasında koptu — çekim burada bitirildi, o ana kadarki kısım arşivde',
   glLost:'⚠️ Kompozit koptu (bellek) — kompoziti kapatıp aç',
   glBack:'✅ Kompozit geri geldi',
-  camBack:'✅ Kamera yeniden bağlandı',
+  onizNefesKapandi:'Nefesle akış kapatıldı — bu telefonda mikrofonu tutması görüntüyü donduruyordu. Sufle sabit hızda akmaya devam ediyor.',onizDondu:'📷 Önizleme dondu — görüntü yeniden bağlanıyor. Kayda basmadan önce görüntünün aktığını doğrula.',camBack:'✅ Kamera yeniden bağlandı',
   voiceDied:'⛔ Sesle takip bağlantısı koptu — 🎤 ile tekrar aç',
   compAudioWarn:'⚠️ iPhone\'da kompozit açıkken ses kaydedilmeyebilir — sesli çekimde kapalı tut',
   compNo:'Bu cihaz/tarayıcı kompozit kaydı desteklemiyor',compFallback:'Kompozit kayıt kurulamadı, ham kamerayla kaydediliyor',
@@ -2318,6 +2414,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   exported:'Backup downloaded',imported:'📄 Imported from file',impErr:'Could not read file',noTakes:'No takes yet',
   tDone:'Script updated',tUndone:'↺ Undone',toolNoop:'Nothing to change',
   emptyText:'Script is empty',takeKept:'Saved to My takes',mapReset:'Default key map restored',
+  recNeedsCam:'Recording needs the camera — opening it now.',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
   recOn:'RECORDING',recPaused:'PAUSED',recPausedInfo:'⏸ Paused — press ⏺ to continue the same video',
   recResumed:'⏺ Recording again',pauseNo:'This device cannot pause recording',
@@ -2342,7 +2439,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   dlgBusy:'⛔ Cannot open this dialog while recording — the prompter and video would freeze',
   audClipShort:'clipping',audLowShort:'too quiet',audOkShort:'audio ok',
   audioFallback:'Raw audio unavailable, switched to normal audio',
-  capArsivYok:'No captions were stored with this take — captions began being saved with takes later. A new take will produce a caption file.',noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
+  klipArsivYok:'This take was recorded before word timings were saved with takes, so no clip suggestions can be made. A new take will have them.',capArsivYok:'No captions were stored with this take — captions began being saved with takes later. A new take will produce a caption file.',noCaps:'No captions — the prompter did not run while recording',capsMade:'caption lines',
   needsComp:'Composite turned on — this feature only works on the composite image',
   camDenied:'📷 Camera permission denied — ',
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
@@ -2360,7 +2457,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   glLostRec:'⛔ Composite dropped mid-recording — the take was ended here; everything up to that point is archived',
   glLost:'⚠️ Composite dropped (memory) — turn composite off and on',
   glBack:'✅ Composite restored',
-  camBack:'✅ Camera reconnected',
+  onizNefesKapandi:'Breath-paced scrolling was switched off — on this phone holding the microphone froze the picture. The prompter keeps scrolling at a fixed pace.',onizDondu:'📷 The preview froze — reconnecting the picture. Check that the image is moving again before you record.',camBack:'✅ Camera reconnected',
   voiceDied:'⛔ Voice follow lost its connection — turn it on again with 🎤',
   compAudioWarn:'⚠️ iOS may drop audio while composite is on — keep it off for spoken takes',
   compNo:'This device/browser does not support composite recording',compFallback:'Composite recording failed, using the raw camera',
@@ -3204,6 +3301,26 @@ function countWords(txt){
 function statLine(n){ return n+(L==='tr'?' kelime · ~':' words · ~')+clock(n/st.wpm*60); }
 function updateStats(){
   const el=$('#stats'); if(el) el.textContent=statLine(countWords($('#text').value||active().text||''));
+  introSenaryoYaz();
+}
+/* GİRİŞ EKRANINDAKİ "OKUYACAĞIN METİN" KARTI.
+   BİLİNMEYEN YAZILMAZ: senaryo yoksa ya da metni boşsa kart HİÇ görünmüyor —
+   "Adsız · 0 kelime" yazan bir kart, boş bir ekrandan daha kötüdür. Ölçü
+   `statLine` ile üretiliyor, yani senaryolar sayfasındaki sayıyla aynı
+   matematiği kullanıyor ve ayrışamaz (iki yerde iki farklı sayı, bu deponun
+   "yanlış sayı gösteren yüzey" sınıfı).
+   Kart giriş ekranı kapandıktan sonra da tazeleniyor; kullanıcı senaryoyu
+   değiştirip geri dönebilir. */
+function introSenaryoYaz(){
+  const k=$('#introSenaryo'); if(!k) return;
+  const s=active();
+  const metin=(s && s.text || '').trim();
+  const n=metin? countWords(metin) : 0;
+  if(!n){ k.classList.add('hidden'); return; }
+  const ad=(s.title||'').trim();
+  $('#introSenAd').textContent = ad || (L==='tr'?'Başlıksız senaryo':'Untitled script');
+  $('#introSenOlcu').textContent = statLine(n);
+  k.classList.remove('hidden');
 }
 
 /* ============ KAYDIRMA MOTORU ============ */
@@ -3500,6 +3617,11 @@ async function openCam(){
      güvenli ses anahtarları — hepsi buradan geçiyor. */
   if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }
   try{
+    /* NÖBETÇİYİ ÖNCE DURDUR: kamera değişirken kareler MEŞRU olarak
+       duruyor; nöbetçi açık kalırsa bunu donma sanıp yanlış alarm verir ve
+       kullanıcıya olmayan bir kusuru anlatır. openCam sonunda yeniden
+       başlıyor. */
+    onizIzleDurdur();
     if(stream) stream.getTracks().forEach(x=>x.stop());
     stopMeter();
     stopAudioFx();   // zincir eski mikrofon izine bağlıydı; yeni akışta baştan kurulur
@@ -3542,12 +3664,30 @@ async function openCam(){
     aTrack=stream.getAudioTracks()[0]||null;
     body.classList.toggle('noaudio', !aTrack);
     if(!aTrack) setTimeout(()=>toast(m('noMic')),1200);
+    /* Kamera akmaya başladı: kayıt düğmesi artık gerçekten çalışabilir.
+       Üç işaret birlikte kalkar — biri kalırsa düğme ya sönük görünür ya
+       ekran okuyucuya "devre dışı" der. */
     $('#recBtn').disabled=false;
+    $('#recBtn').classList.remove('kapali');
+    $('#recBtn').setAttribute('aria-disabled','false');
     setupCaps(); setupMics();
     if(fxOn()) sesBaglamiIsit();   // kayıt anında 'askıda' yakalanmayalım
     if(st.vad) setTimeout(vadBaslat,300);   // yeni akışla yeniden kur
     if($('#tab-cam').classList.contains('on') && $('#sheet').classList.contains('open')){ startMeter(); startLight(); }
     autoLightCheck();
+    /* İZİN SUSMASI ANINDA DUYULSUN: nabız 2 saniyede bir bakıyor, olay ise
+       anında geliyor. iOS kesintilerinde iz ölmüyor, SUSUYOR. */
+    if(vTrack){
+      vTrack.addEventListener('mute',()=>{
+        logNot('oniz','video izi sustu');
+        if(!(rec&&rec.state==='recording') && !onizSoylendi){ onizSoylendi=true; toast(m('onizDondu')); }
+      });
+      vTrack.addEventListener('unmute',()=>{
+        logNot('oniz','video izi geri geldi');
+        if(!(rec&&rec.state==='recording')) cam.play().catch(e=>logErr('oniz',e));
+      });
+    }
+    onizIzleBaslat();
     return true;
   }catch(e){
     // Eskiden her hata aynı mesajı veriyordu ("kamera açılamadı: NotAllowedError").
@@ -3562,6 +3702,116 @@ async function openCam(){
     return false;
   }
 }
+
+/* ============ ÖNİZLEME DONMA NÖBETÇİSİ (2026-08-17, GERÇEK CİHAZ RAPORU) ============
+   Erdal iPhone'da ölçtü: kayda BASMADAN önizleme yaparken bir süre sonra
+   GÖRÜNTÜ DONUYOR, ses akmaya devam ediyor.
+
+   Neden bugüne dek görülmedi: bu depoda kamera korumalarının hepsi KAYIT
+   yoluna yazılmıştı (iz öldü → çekimi bitir, görüntü kesildi → uyar). Önizleme
+   yolunda hiçbir nöbetçi yoktu. Deponun 1 numaralı hata sınıfı: düzeltme bir
+   yola konur, kardeş yol açıkta kalır.
+
+   İkinci sebep: var olan tek kurtarma `readyState==='ended'`e bakıyordu.
+   iOS'ta kesinti çoğunlukla izi ÖLDÜRMEZ, SUSTURUR (`track.muted=true`):
+   kare akışı durur, iz "live" görünmeye devam eder. Yani ölçen kontrol
+   yanlış şeye bakıyordu — kusur "yok" sanılıyordu.
+
+   Nöbetçi ne yapıyor: kamera açıkken ve KAYIT SÜRMÜYORKEN her 2 saniyede
+   karelerin ilerleyip ilerlemediğine bakıyor. İlerlemiyorsa merdiven:
+     1) öge duraklamışsa      → play()
+     2) iz susmuşsa           → unmute'u bekle, sonra play()
+     3) hâlâ donuksa          → akışı ögeye YENİDEN bağla
+     4) yine donuksa          → kamerayı baştan aç (openCam)
+   Her adım hata günlüğüne yazılıyor; kullanıcıya BİR KEZ ne olduğu söyleniyor
+   (sessizce toparlanmak da yanlış olurdu: kullanıcı çekime güvenemez).
+
+   Kayıt sürerken akışa DOKUNULMUYOR — o yolun kendi kuralları var. */
+let onizT=null, onizKare=0, onizZaman=0, onizAdim=0, onizSoylendi=false;
+/* ==CEKIRDEK:oniz.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/oniz.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* Önizleme donma nöbetçisinin ORTAK PARÇASI — iki kabukta da aynı.
+
+   NEDEN ÇEKİRDEKTE: nöbetçi önce telefona yazıldı, sonra parite kapısı
+   masaüstünde de gerektiğini gösterdi ve kod birebir kopyalandı. Depo
+   kuralı: iki kabukta AYNI olan şey tek kaynaktan gelir. Kopya sürüm,
+   biri düzeltilip diğeri unutulduğunda sessizce ayrışır — bu depoda
+   ölçülmüş bir hata sınıfı (Mac'in metin araçları aylarca geride kaldı).
+
+   Kabuğa özgü olan burada DEĞİL: kayıt durumu, kurtarma merdiveninin son
+   basamağı (telefonda openCam, masaüstünde stopCam+toggleCam) ve iOS'a
+   özgü mikrofon bırakma. Onlar kabukta kalıyor. */
+
+/* KARE İLERLİYOR MU. Safari `webkitDecodedFrameCount`, Chrome
+   `getVideoPlaybackQuality` veriyor; ikisi de yoksa `currentTime` ilerlemesi
+   ölçülüyor — MediaStream oynatılırken kare geldikçe artar, donunca durur. */
+function onizKareSayisi(){
+  if(cam.getVideoPlaybackQuality){
+    const q=cam.getVideoPlaybackQuality();
+    if(q && typeof q.totalVideoFrames==='number') return q.totalVideoFrames;
+  }
+  if(typeof cam.webkitDecodedFrameCount==='number') return cam.webkitDecodedFrameCount;
+  return Math.round((cam.currentTime||0)*1000);
+}
+function onizIzleBaslat(){
+  onizIzleDurdur();
+  onizKare=onizKareSayisi(); onizZaman=Date.now(); onizAdim=0;
+  onizT=setInterval(onizNabiz,2000);
+}
+function onizIzleDurdur(){ if(onizT){ clearInterval(onizT); onizT=null; } }
+/* SESSİZ KAYIT — ELE ALINMIŞ DURUM İÇİN. `logErr` kullanıcıya genel bir
+   hata uyarısı da gösteriyor (telefonda bildirim, masaüstünde durum şeridi
+   rozeti). Uygulamanın fark edip toparladığı bir donmada bu, çökme olmuş
+   gibi görünürdü. Kayıt aynı yere düşüyor — teşhis için şart — yalnız
+   genel uyarı yok. */
+function logNot(where,msg){
+  ERRLOG.push({t:Date.now(),where,msg:(msg+'').slice(0,180)});
+  if(ERRLOG.length>30) ERRLOG.shift();
+  try{ localStorage.setItem(LS+'_err',JSON.stringify(ERRLOG.slice(-10))); }catch(_){}
+}
+/* ==/CEKIRDEK:oniz.js== */
+async function onizNabiz(){
+  if(!stream || !body.classList.contains('cam')) return;
+  if(rec && rec.state==='recording') return;          // kayıt yolunun kuralları ayrı
+  if(document.visibilityState!=='visible'){           // arka planda donması NORMAL
+    onizKare=onizKareSayisi(); onizAdim=0; return;
+  }
+  const simdi=onizKareSayisi();
+  if(simdi!==onizKare){ onizKare=simdi; onizZaman=Date.now(); onizAdim=0; return; }
+  /* Aynı kare sayısı: en az 4 saniye ilerlememiş olsun ki tek bir yavaş
+     ölçüm yanlış alarm vermesin. */
+  if(Date.now()-onizZaman < 4000) return;
+  onizAdim++;
+  const iz=stream.getVideoTracks()[0]||null;
+  /* GÜNLÜK SEBEBİ TAHMİN ETMİYOR, DURUMU YAZIYOR. Bir daha olduğunda hangi
+     yolun sorumlu olduğunu kayıt söylesin: iOS'ta ses oturumu TEKTİR —
+     konuşma tanıma ya da nefes takibi (Web Audio) mikrofonu alınca yakalama
+     oturumu yeniden kuruluyor ve GÖRÜNTÜ donarken SES akmaya devam ediyor.
+     Erdal'ın tarifi birebir bu. Hangisi olduğunu ölçmeden kapatmıyoruz. */
+  logNot('oniz','önizleme donmuş adım '+onizAdim+
+         ' · duraklamış:'+(!!cam.paused)+' · iz:'+(iz?(iz.muted?'susmuş':iz.readyState):'yok')+
+         ' · sesle takip:'+(!!voiceOn)+' · nefes:'+(!!(vad&&vad.ctx))+
+         ' · wk:'+(!!IS_WK)+' · geçen:'+Math.round((Date.now()-onizZaman)/1000)+'s');
+  if(!onizSoylendi){ onizSoylendi=true; toast(m('onizDondu')); }
+  if(onizAdim===1 && (cam.paused || (iz && iz.muted))){
+    try{ await cam.play(); }catch(e){ logErr('oniz',e); }
+  } else if(onizAdim===2){
+    /* iOS'ta ses oturumunu tutan taraf serbest bırakılmadan görüntü çoğu
+       zaman geri gelmiyor. Nefes takibi Web Audio ile mikrofonu tutuyor;
+       donma sürüyorsa onu BIRAKIYORUZ ve kullanıcıya sebebini söylüyoruz —
+       sessizce kapatmak, ayarın kendiliğinden değiştiğini gizlerdi. */
+    if(IS_WK && vad && vad.ctx){ vadDurdur(); toast(m('onizNefesKapandi')); }
+    try{ cam.srcObject=null; cam.srcObject=stream; await cam.play(); }
+    catch(e){ logErr('oniz',e); }
+  } else if(onizAdim>=3){
+    onizAdim=0; onizZaman=Date.now();
+    if(await openCam()) toast(m('camBack'));
+  }
+  onizZaman=Date.now();
+}
+
 /* İstenen çözünürlük sessizce düşebiliyor (4K seçip 1080p almak gibi).
    Gerçekte ne alındığını göster — "4K seçtim ama 4K değil" şaşkınlığı bitsin. */
 function realRes(){
@@ -5040,7 +5290,9 @@ let cekimSenaryo=null, cekimAltyazi=null;
    `(x||'')` biçiminde okunuyor: eski kayıtlarda bu alanlar hiç yok. */
 let arsivKaynak=null;
 function arsivdenAc(kayit){
-  arsivKaynak={ srt:(kayit&&kayit.srt)||'', senaryo:(kayit&&kayit.senaryo)||null };
+  arsivKaynak={ srt:(kayit&&kayit.srt)||'', senaryo:(kayit&&kayit.senaryo)||null,
+                kelimeler:(kayit&&kayit.kelimeler)||null,
+                basliklar:(kayit&&kayit.basliklar)||{} };
 }
 function arsivKaynakSil(){ arsivKaynak=null; }
 /* E.4 — RAPORUN DÜRÜSTLÜĞÜ BUNA BAĞLI. `capTimes` damgaları kelimenin okuma
@@ -5581,7 +5833,20 @@ function klipleriGoster(){
   const kutu=$('#klipBox'); if(!kutu) return;
   kutu.innerHTML=''; kutu.classList.add('hidden');
   if(!canTrim()) return;                    // kesilemeyen cihazda öneri anlamsız
-  const oneriler=klipOnerileri(cekimAltyazi, {basliklar:klipBasliklari(), sure:trimDur()});
+  /* Kaynak: arşivden açıldıysa O KAYIT, taze çekimde bellek. Ekrandaki
+     metne düşmek, başka bir videonun anlarını önermek olurdu. */
+  const kelimeler = arsivKaynak ? arsivKaynak.kelimeler : cekimAltyazi;
+  const basliklar = arsivKaynak ? arsivKaynak.basliklar : klipBasliklari();
+  /* Kelime zamanı saklanmadan önceki eski kayıtlarda öneri ÜRETİLEMEZ.
+     Sessizce boş bırakmak "bu çekimde önerilecek bir şey yok" demek olurdu;
+     sebebini söylüyoruz (ön koşulu olan özellik = ölü özellik kuralı). */
+  if(arsivKaynak && !kelimeler){
+    kutu.classList.remove('hidden');
+    const n=document.createElement('div');
+    n.className='hint'; n.textContent=m('klipArsivYok');
+    kutu.appendChild(n); return;
+  }
+  const oneriler=klipOnerileri(kelimeler, {basliklar, sure:trimDur()});
   if(!oneriler.length) return;
   const bas=document.createElement('div');
   bas.className='row'; bas.innerHTML='<label>'+t('klipTitle')+'</label>';
@@ -6228,7 +6493,12 @@ async function autoSaveTake(){
      sınıfı). Anlık görüntü çekim anındaki hâli: sürüm ve dil dahil. */
   const ok=await dbPut({id:curTakeId,blob:lastBlob,type:lastBlob.type,size:lastBlob.size,dur:lastDur,
     created:Date.now(),title:active().title||'',srt:srtText(),ses:sesKodu(),
-    senaryo:cekimSenaryo||null});
+    senaryo:cekimSenaryo||null,
+    /* KLİP ÖNERİLERİ İÇİN GEREKEN VERİ DE ÇEKİMLE BİRLİKTE. Öneriler kelime
+       zamanlarından ve bölüm başlıklarından üretiliyor; arşivden açılan
+       çekimde bunlar bellekte YOK ya da başka bir çekime ait. Kaydetmezsek
+       özellik ya ölür ya da yanlış anı önerir. */
+    kelimeler:cekimAltyazi||null, basliklar:klipBasliklari()});
   arsivHatasi=!ok;
   if(ok) cekimSayaci=null;      // yeni çekim geldi: sayım bayat, pano açılınca yenilenir
   // Sebebe göre söyle: depo kapalıysa "yer aç" demek çıkışsız bir yol.
@@ -6841,6 +7111,17 @@ function renderSections(){
   box.innerHTML='';
   sections.forEach(s=>{
     const b=document.createElement('button');
+    /* KULLANICININ KENDİ BÖLÜM ADI — sınıf ŞART (2026-08-17, kontrast kapısı
+       yanlış alarm verince bulundu). Bu jeton senaryodaki `# Kayıt` başlığını
+       yazıyor; İngilizce arayüzde de aynı kalması DOĞRU. Ama sınıfsız bir
+       <button> olduğu için kontrast aracının anahtarı `button.` oluyordu ve o
+       anahtarı sınıfsız BÜTÜN düğmeler paylaşıyordu: araç Türkçe harf taşıyan
+       bölüm adını "çevrilmemiş arayüz" sayıp raporda BAŞKA bir düğmenin
+       metnini gösterdi ("↺ işaretleri sıfırla" — o düğme aslında düzgün
+       çevriliyor, ölçüldü). Kendi sınıfı olan öge kendi anahtarını alır ve
+       muafiyet DAR tutulabilir; sınıfsız bırakmak muafiyeti bütün sınıfsız
+       düğmelere açmak olurdu. */
+    b.className='bolumJeton';
     b.textContent=(shot[s.i]?'✓ ':'')+s.title;
     if(shot[s.i]) b.classList.add('on');
     b.onclick=()=>{ setPos(s.startPos); curSec=s.i;
@@ -6848,7 +7129,12 @@ function renderSections(){
     box.appendChild(b);
   });
   const clr=document.createElement('button');
-  clr.textContent=L==='tr'?'↺ işaretleri sıfırla':'↺ clear marks';
+  /* DİL DEĞİŞİNCE GÜNCELLENSİN (2026-08-17, kontrast kapısı yakaladı).
+     Metin bir kez yazılınca dil düğmesine basıldığında Türkçe kalıyordu —
+     bu depoda adı konmuş bir sınıf: "bir kez yazılıp dilde donan metin".
+     `data-i18n` ile yazılan her etiketi applyLang yeniden çiziyor. */
+  clr.dataset.i18n='secTemizle';
+  clr.textContent=t('secTemizle');
   clr.onclick=()=>{ active().shot={}; save(); renderSections(); };
   box.appendChild(clr);
 }
@@ -6876,6 +7162,18 @@ function renderScripts(){
   const box=$('#scriptList'); if(!box) return;
   box.innerHTML='';
   const ub=$('#undoDel'); if(ub) ub.classList.toggle('hidden',!(st.trash&&st.trash.length));
+  /* ARAMA VE SIRALAMA TEK SENARYODA GÜRÜLTÜDÜR (2026-08-17, çizilmiş ekranda
+     ölçüldü). Panelin üstünde üç denetim satırı üst üste duruyordu — bölüm
+     jetonları, arama kutusu, üç sıralama jetonu — ve kullanıcı metin alanına
+     ulaşmadan önce hepsini geçiyordu. Oysa TEK senaryosu olan biri için
+     "Ada göre sırala" hiçbir şey yapmaz: bu deponun "hiçbir şey yapmayan
+     denetim" sınıfı. Eşik 3: iki senaryoyu gözle ayırt edersin.
+     ⚠️ ARAMA AÇIKKEN GİZLENMEZ: kullanıcı yazdıysa ve sonuç listeyi 3'ün
+     altına indirdiyse kutu kaybolur, yazdığı da kaybolurdu. */
+  const cok=(st.scripts||[]).length>=3;
+  const fnd=$('#scriptFind');
+  if(fnd) fnd.classList.toggle('hidden', !cok && !fnd.value);
+  const srt=$('#scSort'); if(srt) srt.classList.toggle('hidden', !cok);
   // Arama: liste uzayınca senaryo bulunamıyordu. Türkçe katlama norm() ile aynı kural.
   const q=norm(($('#scriptFind')&&$('#scriptFind').value)||'');
   // İKİNCİ SÜRÜMDE DE ARA: aradığın cümle o an KAPALI olan sürümdeyse senaryo
@@ -7207,6 +7505,12 @@ function startVoice(){
     if(saglikli) srFails=0;
     if(voiceOn) restartVoice(saglikli); };
   try{ sr.start(); srBasladi=performance.now(); srSonuc=false; }catch(e){ logErr('voice',e); restartVoice(); }
+  /* iOS'ta tanıma başlayınca ses oturumu yeniden kuruluyor ve kamera
+     ÖNİZLEMESİ donabiliyor (görüntü durur, ses akar). Ucuz ve zararsız
+     önlem: tanıma başladıktan kısa süre sonra ögeye bir kez play() diyoruz.
+     Donma yaşanmadıysa bu çağrı hiçbir şey değiştirmez. */
+  if(IS_WK && stream && !(rec && rec.state==='recording'))
+    setTimeout(()=>{ if(cam.paused) cam.play().catch(e=>logErr('oniz',e)); },600);
   /* SESSİZ ÖLÜM NÖBETÇİSİ. Tanıma "başladı" der, hata da atmaz, ama hiç sonuç
      göndermez — kullanıcı 🎤 basar, metin akmaz ve EKRANDA HİÇBİR ŞEY YAZMAZ.
      Erdal tam bunu bildirdi ("önceden çalışıyordu, şimdi çalışmıyor") ve
@@ -7796,8 +8100,20 @@ const KART_BOLUM={
               ['bSes',['gSesTest','gMikSec','micLevel','muzikTitle','fxTitle']]],
   'tab-more':[['bAltyazi',['gAltyaziZ','gSesTakip']],
               ['bCihazB',['gEkran','gCihaz']],
-              ['bVeri',['backup','gSifirla']]]
+              ['bVeri',['backup','gSifirla']]],
+  /* SENARYOLAR PANELİ (2026-08-17). Ölçülen kusur: kullanıcı buraya senaryo
+     YAZMAYA gelir ama metin alanına ulaşmadan önce üç denetim satırı, liste ve
+     İKİ kart geçiyordu — "Yeni senaryo ekle" ile "Yedek ve geri alma" başlık
+     ve metin alanının ÜSTÜNDE duruyordu. Kartlar aşağıya, tek yere toplandı;
+     sıra artık liste → başlık → metin → araçlar oldu.
+     İKİ KUTU, ÇÜNKÜ İKİ FARKLI İŞ: kitaplığını yönetmek (yeni, yedek) ile
+     elindeki metin üzerinde çalışmak (araçlar, denetim) aynı şey değil. */
+  'scriptsSheet':[['bKitaplik',['gYeni','gYedek']],
+                  ['bBuMetin',['gAraclar','gDenetim']]]
 };
+/* Kutunun panelin neresine gireceği. Yoksa panelin sonuna eklenir; senaryolar
+   panelinde Sil/Uygula satırı en altta kalmalı, o yüzden işaret ögesi var. */
+const KART_KUTU_YERI={ 'scriptsSheet':'#scKutuYeri' };
 function kartAnahtari(g){
   const s=g.querySelector(':scope > summary > span[data-i18n]');
   return s ? s.dataset.i18n : '';
@@ -7823,7 +8139,9 @@ function kartlariDuzenle(){
       const bas=document.createElement('h3');
       bas.className='bolum'; bas.dataset.i18n=etiket; bas.textContent=etiket;
       const ic=document.createElement('div'); ic.className='kutuIc';
-      kutu.appendChild(bas); kutu.appendChild(ic); pane.appendChild(kutu);
+      kutu.appendChild(bas); kutu.appendChild(ic);
+      const yer=KART_KUTU_YERI[paneId] ? pane.querySelector(KART_KUTU_YERI[paneId]) : null;
+      if(yer) yer.parentNode.insertBefore(kutu,yer); else pane.appendChild(kutu);
       anahtarlar.forEach(k=>{
         const g=[...pane.querySelectorAll('.grup')].find(x=>kartAnahtari(x)===k);
         if(g) ic.appendChild(g);   // taşır: düğüm, durumu ve bağlarıyla gider
@@ -7840,7 +8158,10 @@ function kartlariDuzenle(){
    birlikte gizlenir. Başlığı duran ama içi boş bir bölüm, bu deponun
    "aç, içi boş" kusurunun bölüm ölçeğindeki hâli olurdu. */
 function bolumleriTazele(){
-  $$('#sheet .kutu').forEach(kutu=>{
+  /* Ayarlar VE senaryolar panelindeki kutular: senaryolar paneli de
+     bölümlendi (2026-08-17), seçici `#sheet` ile sınırlı kalsaydı orada
+     boş kutu gizlenmez ve ilk görünür kartın ayracı kalkmazdı. */
+  $$('.sheet .kutu').forEach(kutu=>{
     const kartlar=[...kutu.querySelectorAll(':scope > .kutuIc > .grup')];
     let ilk=null;
     kartlar.forEach(g=>{
@@ -8308,6 +8629,7 @@ function klipOnerileri(kelimeler, ayar){
   const a=ayar||{};
   const enAz=+a.enAz||KLIP_EN_AZ, enCok=+a.enCok||KLIP_EN_COK, sayi=+a.sayi||KLIP_SAYI;
   const basliklar=a.basliklar||{};
+  const vidSure=(+a.sure>0 && isFinite(+a.sure)) ? +a.sure : 0;
   const k=(kelimeler||[]).filter(w=>w && typeof w.t==='number' && isFinite(w.t));
   if(k.length<2) return [];
 
@@ -8335,6 +8657,13 @@ function klipOnerileri(kelimeler, ayar){
       if(sure>=enAz && klipCumleSonu(k[j].s)){ bit=j; break; }
     }
     if(bit<0) continue;
+    /* KLİP VİDEONUN İÇİNDE KALMALI (2026-08-17). `sure` belgelenmiş bir
+       ayardı ama HİÇ KULLANILMIYORDU. Kelime zamanları sufle akışından
+       geliyor; kayıt erken biterse (kullanıcı durdurur, ya da kayıt yarıda
+       kesilir — bu depoda ölçülmüş bir durum) sufle birkaç kelime daha
+       ilerlemiş olur ve önerilen klip VİDEONUN SONUNDAN SONRASINI gösterir.
+       "Kes ve uygula" o zaman boş ya da yarım klip üretirdi. */
+    if(vidSure>0 && k[bit].t>vidSure) continue;
     const sure=k[bit].t-t0;
     let vurgu=0;
     for(let j=bas;j<=bit;j++) if(klipVurguMu(k[j].s)) vurgu++;
@@ -9060,10 +9389,12 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.19':{tr:'<b>Ayarlar artık ikonlu ve konu bloklarına ayrılmış.</b> Yirmi altı kart birbirinin aynı gri çubuğuydu; ikonsuz bir liste taranmaz, satır satır okunur. Her kartın kendi simgesi var ve kartlar konu bloklarına girdi: Kamera sekmesinde ses ile görüntü ilk kez ayrı duruyor, Diğer sekmesindeki çekmece üç bloğa bölündü.<br><b>Ayarları açtığın anda kartlar değerlerini söylüyor.</b> Bu bilgi vardı ama sayfa ilk açıldığında hiç çizilmiyordu: Okuma sekmesinin beş kartı da boş görünüyor, ancak sekme değiştirip geri gelince doluyordu. Yani ilk gördüğün ekran hep boştu.<br><b>Uzun kart başlığı artık ikiye bölünmüyor.</b> Simge satırdan yer alınca en uzun başlık alt satıra taşıyordu; başlık artık hiç küçülmüyor, gerekirse yanındaki özet kısalıyor.<br><b>Arşivden açtığın çekimin yayın paketi kendi senaryosunu taşıyor.</b> Uygulama kapanınca çekimin senaryosu bellekten siliniyordu ve paket o an açık olan senaryoyu koyuyordu — başka bir videonun metnini, sessizce. Altyazı da aynı şekilde başka bir videonun zamanlamasını alıyordu. Senaryosu saklanmamış eski çekimlerde artık yanlış metin yazmak yerine sebebi söyleniyor.',
-       en:'<b>Settings now have icons and are grouped by topic.</b> Twenty-six cards were identical grey bars, and a list without icons is not scanned but read line by line. Every card has its own symbol, and the cards moved into topic blocks: on the Camera tab audio and video finally sit apart, and the drawer on the More tab is split into three blocks.<br><b>Cards state their value the moment you open Settings.</b> The information was there but nothing drew it on first open: all five cards on the Reading tab looked empty and only filled in after you switched tabs and came back. So the first screen you saw was always blank.<br><b>A long card title no longer breaks into two lines.</b> The symbol took room from the row and the longest title wrapped; the title now never shrinks, and the summary beside it gives way instead.<br><b>The publish bundle of a take opened from the archive carries its own script.</b> Closing the app cleared the take script from memory and the bundle fell back to whatever script was open — the text of another video, silently. Captions took another video timing the same way. For older takes with no stored script the reason is now given instead of writing the wrong text.'},
- '9.18':{tr:'<b>Giriş ekranı yenilendi.</b> Eskiden dört düğme alt alta duruyordu ve hepsi aynı ağırlıktaydı; uygulamayı ilk açan kişi daha hiçbir şey görmeden dört yol arasından seçim yapmak zorunda kalıyordu. Artık tek bir asıl eylem var (<b>Kamerayı Aç &amp; Başla</b>), hemen altında kamerasız yol, en altta ise yardım ve sürüm tek satırda. Ortada üç rozet duruyor — <b>hesap yok</b>, <b>internet gerekmez</b>, <b>ücretsiz</b> — ve üçü de süs değil: her biri koda karşı sınanıyor, ürüne hesap, ağ çağrısı ya da ödeme girerse kapı kırmızı veriyor.<br><b>Telefonu yan çevirince talimat yazısı hız hapının üstüne biniyordu.</b> Yazının yeri ekran yüksekliğinin yüzdesiyle hesaplanıyordu; yatayda o yüzde küçülünce iki katman iç içe geçiyordu. Artık yeri alt kumanda yığınından türüyor, yer kalmayan dar ekranlarda ise hiç gösterilmiyor.<br><b>Bir çekimi silmek artık iki dokunuş istiyor.</b> Toplu silme ve senaryo silme korumalıydı ama TEK çekim tek dokunuşta gidiyordu — üstelik paylaş düğmesinin komşusu olarak. Videonun başka kopyası yok; ilk dokunuş soruyor, dört saniyede kendiliğinden vazgeçiyor, sayfa kapanınca da iptal oluyor.',
-       en:'<b>A new start screen.</b> Four buttons used to sit on top of each other with equal weight, so the first thing the app asked of you was to choose between four paths. There is now one main action (<b>Open camera &amp; start</b>), the camera-free path right under it, and help plus the version on a single line at the bottom. Three badges sit in the middle — <b>no account</b>, <b>works offline</b>, <b>free</b> — and none of them is decoration: each is tested against the code, so the gate turns red if an account, a network call or a payment ever enters the product.<br><b>Turning the phone sideways put the hint on top of the speed pill.</b> The hint was placed with a percentage of screen height, and in landscape that percentage shrank until the two overlapped. It now derives its place from the bottom control stack, and is not shown where there is no room.<br><b>Deleting a take now takes two taps.</b> Bulk delete and script delete were protected, but a SINGLE take went in one tap, right next to the share button. There is no other copy of that video; the first tap asks, it cancels itself after four seconds, and closing the sheet cancels it too.'},
+ '9.20':{tr:'<b>Kayıt düğmesi artık adını söylüyor ve kapalıyken sebebini yazıyor.</b> Kamerasız kipte ekranın en büyük düğmesi sönük duruyor, adı yazmıyor ve dokununca hiçbir şey olmuyordu — alt çubuktaki altı düğmeden yalnız bunun etiketi yoktu. Artık altında <b>Çek</b> yazıyor, dokununca kamerayı açmayı deniyor ve neden gerektiğini söylüyor. Kayıt sürerken etiket kalkıyor, çünkü o an yapılacak iş durdurmak.<br><b>Giriş ekranı ne okuyacağını gösteriyor.</b> Ekranın yarısı boştu ve sayfa senin metnin hakkında hiçbir şey söylemiyordu. Artık senaryonun adı, kelime sayısı ve tahmini süresi başlangıçta görünüyor. Senaryo yoksa kart hiç çıkmıyor.<br><b>Giriş ekranına marka işareti geldi</b> — sahnedeki okuma çizgisinin küçültülmüş hâli.<br><b>Önizleme donması artık fark ediliyor ve kendiliğinden düzeltiliyor.</b> Kayda basmadan önizleme yaparken bir süre sonra görüntü donup ses akmaya devam edebiliyordu (iPhone). Bugüne dek kamera korumalarının hepsi KAYIT yoluna yazılmıştı; önizlemede tek bir nöbetçi yoktu. Üstelik var olan kurtarma yalnız izin ÖLMESİNE bakıyordu, oysa telefon kesintide izi öldürmüyor SUSTURUYOR — görüntü durur, iz canlı görünür. Artık kareler ilerlemiyorsa sırayla oynatma, akışı yeniden bağlama ve kamerayı baştan açma deneniyor; ne olduğu ekranda yazıyor ve teşhis için cihazın günlüğüne durum kaydediliyor.',
+       en:'<b>The record button now has a name and says why it is off.</b> In prompter-only mode the largest button on screen sat dimmed, unnamed, and did nothing when tapped — the only one of the six bottom buttons without a label. It now reads <b>Record</b>, tries to open the camera when tapped and says why the camera is needed. The label goes away while recording, because the thing to do then is stop.<br><b>The start screen shows what you are about to read.</b> Half the screen was empty and the page said nothing about your text. The script name, word count and estimated duration now appear at the start. With no script, the card does not appear at all.<br><b>The start screen gained a brand mark</b> — the reading line from the stage, made small.<br><b>A frozen preview is now noticed and repaired on its own.</b> Before you press record the picture could freeze while sound kept flowing (iPhone). Every camera guard so far had been written for the RECORDING path; the preview had none. The one recovery that existed only looked for the track ENDING, yet on an interruption the phone does not end the track, it mutes it — frames stop while the track still looks live. If frames stop advancing the app now tries playing, re-attaching the stream and reopening the camera, in that order, says what happened, and records the state on the device for diagnosis.'},
+ '9.19':{tr:'<b>Ayarlar artık ikonlu ve konu bloklarına ayrılmış.</b> Yirmi altı kart birbirinin aynı gri çubuğuydu; ikonsuz bir liste taranmaz, satır satır okunur. Her kartın kendi simgesi var ve kartlar konu bloklarına girdi: Kamera sekmesinde ses ile görüntü ilk kez ayrı duruyor, Diğer sekmesindeki çekmece üç bloğa bölündü.<br><b>Ayarları açtığın anda kartlar değerlerini söylüyor.</b> Bu bilgi vardı ama sayfa ilk açıldığında hiç çizilmiyordu: Okuma sekmesinin beş kartı da boş görünüyor, ancak sekme değiştirip geri gelince doluyordu. Yani ilk gördüğün ekran hep boştu.<br><b>Uzun kart başlığı artık ikiye bölünmüyor.</b> Simge satırdan yer alınca en uzun başlık alt satıra taşıyordu; başlık artık hiç küçülmüyor, gerekirse yanındaki özet kısalıyor.<br><b>Arşivden açtığın çekimin yayın paketi kendi senaryosunu taşıyor.</b> Uygulama kapanınca çekimin senaryosu bellekten siliniyordu ve paket o an açık olan senaryoyu koyuyordu — başka bir videonun metnini, sessizce. Altyazı da aynı şekilde başka bir videonun zamanlamasını alıyordu. Senaryosu saklanmamış eski çekimlerde artık yanlış metin yazmak yerine sebebi söyleniyor.<br><b>Telefonu yan çevirince talimat yazısı hız hapının üstüne biniyordu.</b> Yazının yeri ekran yüksekliğinin yüzdesiyle hesaplanıyordu; yatayda o yüzde küçülünce iki katman iç içe geçiyordu. Artık yeri alt kumanda yığınından türüyor, yer kalmayan dar ekranlarda ise hiç gösterilmiyor.<br><b>Bir çekimi silmek artık iki dokunuş istiyor.</b> Toplu silme ve senaryo silme korumalıydı ama TEK çekim tek dokunuşta gidiyordu — üstelik paylaş düğmesinin komşusu olarak. Videonun başka kopyası yok; ilk dokunuş soruyor, dört saniyede kendiliğinden vazgeçiyor, sayfa kapanınca da iptal oluyor.',
+       en:'<b>Settings now have icons and are grouped by topic.</b> Twenty-six cards were identical grey bars, and a list without icons is not scanned but read line by line. Every card has its own symbol, and the cards moved into topic blocks: on the Camera tab audio and video finally sit apart, and the drawer on the More tab is split into three blocks.<br><b>Cards state their value the moment you open Settings.</b> The information was there but nothing drew it on first open: all five cards on the Reading tab looked empty and only filled in after you switched tabs and came back. So the first screen you saw was always blank.<br><b>A long card title no longer breaks into two lines.</b> The symbol took room from the row and the longest title wrapped; the title now never shrinks, and the summary beside it gives way instead.<br><b>The publish bundle of a take opened from the archive carries its own script.</b> Closing the app cleared the take script from memory and the bundle fell back to whatever script was open — the text of another video, silently. Captions took another video timing the same way. For older takes with no stored script the reason is now given instead of writing the wrong text.<br><b>Turning the phone sideways put the hint on top of the speed pill.</b> The hint was placed with a percentage of screen height, and in landscape that percentage shrank until the two overlapped. It now derives its place from the bottom control stack, and is not shown where there is no room.<br><b>Deleting a take now takes two taps.</b> Bulk delete and script delete were protected, but a SINGLE take went in one tap, right next to the share button. There is no other copy of that video; the first tap asks, it cancels itself after four seconds, and closing the sheet cancels it too.'},
+ '9.18':{tr:'<b>Giriş ekranı yenilendi.</b> Eskiden dört düğme alt alta duruyordu ve hepsi aynı ağırlıktaydı; uygulamayı ilk açan kişi daha hiçbir şey görmeden dört yol arasından seçim yapmak zorunda kalıyordu. Artık tek bir asıl eylem var (<b>Kamerayı Aç &amp; Başla</b>), hemen altında kamerasız yol, en altta ise yardım ve sürüm tek satırda. Ortada üç rozet duruyor — <b>hesap yok</b>, <b>internet gerekmez</b>, <b>ücretsiz</b> — ve üçü de süs değil: her biri koda karşı sınanıyor, ürüne hesap, ağ çağrısı ya da ödeme girerse kapı kırmızı veriyor.',
+       en:'<b>A new start screen.</b> Four buttons used to sit on top of each other with equal weight, so the first thing the app asked of you was to choose between four paths. There is now one main action (<b>Open camera &amp; start</b>), the camera-free path right under it, and help plus the version on a single line at the bottom. Three badges sit in the middle — <b>no account</b>, <b>works offline</b>, <b>free</b> — and none of them is decoration: each is tested against the code, so the gate turns red if an account, a network call or a payment ever enters the product.'},
  '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.<br><b>Çekim başlarken çıkan yanlış uyarı kalktı.</b> Kayıt başladıktan 2,5 saniye sonra ilk veri parçası gelmemişse uygulama "veri gelmiyor, durdurup tekrar başlat" diyordu. Ölçüldü: gerçek tarayıcıda ilk parça 4,6 saniyede geldi ve çekim tümüyle sağlamdı — yani iyi bir çekim durdurtuluyordu. Uyarı artık ikinci bir bakıştan sonra çıkıyor; gerçekten boş kalan kayıt hâlâ bildiriliyor.<br><b>PDF dosyasından senaryo alabiliyorsun.</b> Word ve düz metnin yanına PDF eklendi. Okuyucu bilerek sınırlı: metni doğru okuyabildiğinden emin olamazsa (taranmış sayfa, eşlemesiz yazı tipi, şifreli dosya) <b>metin vermiyor</b> ve sebebini söyleyip kopyala-yapıştır yoluna gönderiyor. Bir suflede yanlış metin, metin olmamasından kötüdür.<br><b>Elle pozlama ve beyaz ayarı geldi</b> — ama yalnız kameran destekliyorsa. Arkadan ışık alan çekimde yüzün kararmasın diye parlaklığı sen seçiyorsun; ışığın rengi değişse bile ten rengin aynı kalıyor. Cihazın bu ayarı vermiyorsa sürgü <b>hiç görünmüyor</b>: çekip hiçbir şey olmayan bir ayar bırakmıyoruz.',
        en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.<br><b>The false warning at the start of a take is gone.</b> If no data chunk had arrived 2.5 seconds into a recording the app said the recorder was producing nothing and told you to stop. Measured in a real browser: the first chunk arrived at 4.6 seconds and the take was perfectly fine, so a good take was being thrown away. The warning now waits for a second look; a recording that truly stays empty is still reported.<br><b>You can import a script from a PDF.</b> PDF joins Word and plain text. The reader is deliberately limited: when it cannot be sure it read the text correctly (a scanned page, a font without a mapping, an encrypted file) it <b>gives no text</b> and says why, sending you to copy and paste instead. In a prompter, wrong text is worse than no text.<br><b>Manual exposure and white balance arrived</b> — but only if your camera supports them. You choose the brightness so your face does not go dark with light behind you, and your skin tone stays the same when the light colour changes. If your device does not offer the control, the slider <b>never appears</b>: we do not leave a setting that does nothing when you drag it.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de <b>Son hatalar</b> listesine korkutucu bir satır düşüyordu. Artık düşmüyor — liste yalnız gerçekten ilgilenmen gereken şeyleri gösteriyor.<br><b>Nasıl bulundu:</b> kapıya yeni bir adım eklendi ve uygulama her değişiklikte gerçek tarayıcıda baştan sona çalıştırılıyor: kamera açılıyor, kayıt yapılıyor, altyazı üretiliyor, çekim arşive yazılıyor ve <b>altyazının videoya gerçekten gömüldüğü</b> ölçülüyor.',
@@ -9267,7 +9598,24 @@ function spRelease(){ clearInterval(spRep); spRep=null; }
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,e=>{ e.stopPropagation(); spRelease(); }));
 });
 $('#playBtn').onclick=e=>{ e.stopPropagation(); toggle(); };
-$('#recBtn').onclick=e=>{ e.stopPropagation(); toggleRec(); };
+/* KAPALIYKEN DE CEVAP VERİR. Kural: ön koşulu olan denetim ya koşulu KENDİ
+   sağlar ya da sebebini söyler. Burada ikisi de var — önce kamerayı açmayı
+   deniyor (kullanıcının istediği zaten bu), açamazsa neden açamadığını
+   söylüyor. Eskiden `disabled` olduğu için dokunuş hiç ulaşmıyordu: kamerasız
+   kipte ekranın en büyük düğmesi sönük duruyor ve dokununca HİÇBİR ŞEY
+   olmuyordu — ne oluyor ne olmuyor, kullanıcı bilemiyordu. */
+$('#recBtn').onclick=async e=>{
+  e.stopPropagation();
+  const b=$('#recBtn');
+  if(b.classList.contains('kapali')){
+    toast(m('recNeedsCam'));
+    /* openCam() kendi hata mesajını zaten veriyor (izin reddi, cihaz yok);
+       burada ikinci bir mesaj yazmak aynı şeyi iki kez söylemek olurdu. */
+    await openCam();
+    return;
+  }
+  toggleRec();
+};
 $('#pauseBtn').onclick=e=>{ e.stopPropagation(); togglePauseRec(); };
 /* Mod rozeti tazelemesi BURADA, stopVoice/startVoice'un İÇİNDE değil.
    O iki fonksiyon testlerde YALITILMIŞ koşturuluyor (tests/36 kaynaktan
@@ -9496,6 +9844,7 @@ $('#fixAudio').onclick=async()=>{
      çekimin sesi ve görüntüsü ölürdü. Kapı burada, en başta. */
   if(!kameraDegisebilir()) return;
   stopMeter(); stopAudioMonitor(); micTouched=false;
+  onizIzleDurdur();                       // izler duracak: donma sanılmasın
   if(stream) stream.getTracks().forEach(t=>t.stop());
   stream=null; aTrack=null; vTrack=null;
   const ok=await openCam();

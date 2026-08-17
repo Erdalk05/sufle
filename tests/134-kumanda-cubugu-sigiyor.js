@@ -163,9 +163,15 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   }
   ok('etiketler dil değişiminde yenileniyor',
      /\$\$\('\[data-i18n-etiket\]'\)\.forEach/.test(kod2));
-  ok('etiket düğmenin KUTUSUNU değiştirmiyor (::after ile çiziliyor)',
-     /\.cbtn::after\{content:attr\(data-etiket\)/.test(src2));
-  ok('etiket dokunuşu yutmuyor', /\.cbtn::after\{[^}]*pointer-events:none/.test(src2));
+  /* DESEN SEÇİCİNİN TAMAMINA DEĞİL İDDİAYA BAĞLI. Kayıt düğmesi de etiket
+     alınca kural `.cbtn::after,#recBtn::before{…}` oldu; birebir eşleşme
+     arayan eski desen DAVRANIŞ HİÇ DEĞİŞMEDEN kırmızı verdi (CLAUDE.mddeki
+     beş vakayla ölçülmüş ders). İddia şu: etiket bir sözde-ögeyle çiziliyor,
+     yani düğmenin kutusu ve dokunma hedefi değişmiyor. */
+  ok('etiket düğmenin KUTUSUNU değiştirmiyor (sözde-öge ile çiziliyor)',
+     /\.cbtn::after[^{]*\{content:attr\(data-etiket\)/.test(src2));
+  ok('etiket dokunuşu yutmuyor',
+     /\.cbtn::after[^{]*\{[^}]*pointer-events:none/.test(src2));
   /* Kayıt noktası korunuyor: etiket kuralı ona DOKUNMAMALI. */
   ok('kırmızı kayıt noktası hâlâ #recBtn::after ile çiziliyor',
      /#recBtn::after\{content:"";[^}]*background:#ff3b30/.test(src2));
@@ -173,7 +179,46 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
      !/#recBtn::after\{content:attr\(data-etiket\)/.test(src2));
   /* Odak kipi (kayıtta düğmeleri gizle) etiketleri de gizlemeli. */
   ok('odak kipinde etiketler de gizleniyor',
-     /body\.hideUI \.cbtn::after\{content:''\}/.test(src2));
+     /body\.hideUI \.cbtn::after[^{]*\{content:''\}/.test(src2));
+
+  /* ---- KAYIT DÜĞMESİNİN ADI (2026-08-17) ----
+     Alt çubuktaki altı düğmeden yalnız kaydınkinin etiketi yoktu. Eski
+     gerekçe "kırmızı yuvarlak evrensel"di; ölçüldü ve çürüdü: kamerasız
+     kipte düğme SÖNÜK, adsız ve dokununca hiçbir şey söylemiyordu — sönük
+     bir kırmızı yuvarlak hiçbir şey demiyor. */
+  ok('kayıt düğmesinin de adı var', /id="recBtn"[^>]*data-i18n-etiket="cbCek"/.test(src2));
+  ok('adı ::before ile çiziliyor (::after kayıt noktası)',
+     /#recBtn::before/.test(src2) && /\.cbtn::after,#recBtn::before\{content:attr\(data-etiket\)/.test(src2));
+  ok('kayıt sürerken ad yazılmıyor (o an yapılacak iş DURDURMAK)',
+     /body\.rec #recBtn::before\{content:''\}/.test(src2));
+  ok('odak kipinde kaydın adı da gizleniyor',
+     /body\.hideUI #recBtn::before\{content:''\}/.test(src2));
+  /* ⚠️ Sönüklük DÜĞMEYE uygulanır, ETİKETE değil: düğmenin tamamına opacity
+     vermek adı da %35'e indiriyordu ve çizilmiş ekranda okunmuyordu — oysa
+     düğmenin neden kapalı olduğunu anlatan tek şey o yazı. */
+  ok('kapalı görünüm opacity ile DEĞİL dolguyla veriliyor',
+     !/#recBtn:disabled,#recBtn\.kapali\{opacity:/.test(src2) &&
+     /#recBtn:disabled,#recBtn\.kapali\{background:/.test(src2));
+  /* Kapalıyken de dokunuş ALIR: `disabled` bir düğme dokunuşu yutar ve
+     sebebini söyleyemez. Deponun 3 numaralı sınıfı. */
+  ok('kayıt düğmesi disabled DEĞİL, aria-disabled',
+     /id="recBtn"[^>]*aria-disabled="true"/.test(src2) &&
+     !/id="recBtn"[^>]*\sdisabled(\s|>)/.test(src2));
+  /* GEVŞEK DESEN TUZAĞI (kasıtlı bozma turunda yakalandı): yalnız
+     `recNeedsCam` aramak yetmiyor — anahtar MSG sözlüğünde de duruyor, yani
+     `toast` çağrısını tümden silsen bile desen eşleşiyor ve bozma sessizce
+     geçiyordu. Aranan şey ÇAĞRININ KENDİSİ. */
+  ok('kapalıyken dokununca sebebi söylüyor ve kamerayı açmayı deniyor',
+     /toast\(m\('recNeedsCam'\)\);/.test(kod2) &&
+     /if\(b\.classList\.contains\('kapali'\)\)/.test(kod2) &&
+     /await openCam\(\);/.test(kod2));
+  ok('kamera akınca üç işaret birden kalkıyor',
+     /\$\('#recBtn'\)\.classList\.remove\('kapali'\)/.test(kod2) &&
+     /\$\('#recBtn'\)\.setAttribute\('aria-disabled','false'\)/.test(kod2) &&
+     /\$\('#recBtn'\)\.disabled=false/.test(kod2));
+  /* Duraklat düğmesi kayıt sırasında görünüyor; adsız kalırsa o an ekrandaki
+     TEK adsız düğme olurdu — aynı kusurun ikizi. */
+  ok('duraklat düğmesinin de adı var', /id="pauseBtn"[^>]*data-i18n-etiket="cbDurakla"/.test(src2));
 }
 
 /* ---------- ÇUBUK YÜKSEKLİĞİ TEK KAYNAKTAN (2026-08-17) ----------

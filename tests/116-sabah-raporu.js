@@ -1,7 +1,11 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path'), {execFileSync}=require('child_process');
 const REPO=path.join(__dirname,'..');
-const RAPOR=path.join(REPO,'SABAH_RAPORU.md');
+/* Rapor ORTAM DEĞİŞKENİNE saygılı okunuyor (2026-08-17): kasıtlı bozma turu
+   raporun geçici bir kopyasını bozup testi ona karşı koşturabilsin. Doğrudan
+   depodan okuyan bir test, raporu bozan bozmayı HİÇ ölçmez ama geçti der —
+   yani rapor kapısının kendisi kanıtsız kalır. */
+const RAPOR=process.env.SUFLE_RAPOR||path.join(REPO,'SABAH_RAPORU.md');
 
 /* M10 — SABAH RAPORU: ne yapıldı, ne çürüdü, ne bekliyor.
    Rapor gece boyunca her turda güncellendi. Ama bir raporun en tehlikeli
@@ -14,7 +18,7 @@ const RAPOR=path.join(REPO,'SABAH_RAPORU.md');
    yazmayan bir rapor yazmak serbest; YANLIŞ sayı yazmak değil. */
 
 ok('rapor dosyası var', fs.existsSync(RAPOR));
-const r=fs.readFileSync(RAPOR,'utf8');
+const r=require('./kaynak.js').repoOku('SABAH_RAPORU.md','SUFLE_RAPOR');
 
 /* ---------- ZORUNLU BÖLÜMLER ---------- */
 for(const b of ['Tek cümlede','Ne bozuktu','Çürüyen hipotezler','Kendi hatalarım','Sayılar'])
@@ -124,12 +128,28 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
   console.log('   .son-yayin: "'+icerik+'" · şu anki sürüm: '+ver+
               ' · bekleyen yayın: '+(yayinlandi?'yok':'VAR'));
   ok('sürüm okunabildi', !!ver);
+  /* İDDİA RAPORUN BAŞINA BAKAR (2026-08-17). Eskiden "dosyanın herhangi bir
+     yerinde YAYINLANDI geçiyor mu" diye ölçülüyordu; rapor aylık bir günlük
+     olduğu için o kelime onlarca eski turda da geçiyor ve iddia HİÇBİR ŞEYİ
+     ayırt etmiyordu (kasıtlı bozma turunda kanıtlanamadı: üstteki durum
+     cümlesini bozmak testi kırmıyordu). Erdal raporun BAŞINDAKİ duruma
+     bakıp karar veriyor; ölçülmesi gereken de orası. */
+  const bas=r.split('\n').slice(0,40).join('\n');
   if(yayinlandi){
-    ok('yayın yapılmışsa rapor bunu söylüyor', /YAYINLANDI|canlıda/.test(r));
-    ok('yayın canlıdan doğrulandığı yazıyor', /canlıdan doğruland|md5 birebir/i.test(r));
+    /* Yayınlanmış durumda da iddia sürüm adıyla: "YAYINLANDI" kelimesi eski
+       turlarda da geçiyor, ayırt etmiyor. */
+    const yayinli=new RegExp('v?'+ver.replace(/\./g,'\\.')+"[^\n]{0,90}(YAYINLANDI|canlıda)",'i');
+    ok('yayın yapılmışsa rapor bunu BAŞTA sürüm adıyla söylüyor', yayinli.test(bas));
+    ok('yayın canlıdan doğrulandığı yazıyor', /canlıdan doğruland|md5 birebir/i.test(bas));
   } else {
-    ok('bekleyen yayın varsa rapor bunu söylüyor',
-       /yayınlanmadı|yayınlanmamış|yayın kararı sende|hazır/i.test(r));
+    /* İDDİA SÜRÜM ADIYLA (2026-08-17). "hazır/bekliyor" gibi bir kelimeyi
+       raporun herhangi bir cümlesinde aramak ayırt etmiyordu: rapor uzun bir
+       günlük, o kelimeler her turda geçiyor. Erdal'ın karar için ihtiyacı
+       olan şey NET: hangi sürüm bekliyor. Bu yüzden bekleyen sürümün NUMARASI
+       ile bekleme ifadesi AYNI cümlede aranıyor. */
+    const bekleyen=new RegExp('v?'+ver.replace(/\./g,'\\.')+
+      "[^\n]{0,90}(hazır|bekl|yayın kararı|yayınlanmadı|yayınlanmamış)",'i');
+    ok('bekleyen yayın raporun başında SÜRÜM ADIYLA yazılı ('+ver+')', bekleyen.test(bas));
     /* İDDİA SAYISI DURUMA GÖRE DEĞİŞMEMELİ. Eskiden yayınlanmış durumda 2,
        bekleyen durumda 1 iddia koşuyordu; koşturucunun "sayı düşerse kırmızı"
        kuralı bu yüzden HER YAYIN TURUNDA boşuna kırmızı veriyordu (bu gece
