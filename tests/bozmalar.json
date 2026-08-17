@@ -3757,5 +3757,26 @@
   "kaynak": "telefon",
   "bul": "    title:(baslikUstu||(cekimSenaryo&&cekimSenaryo.title)||active().title||''),",
   "koy": "    title:active().title||'',"
+ },
+ {
+  "ad": "A1s çekim satırı sarmıyor (başlık 320 pxte 28 pxe düşer)",
+  "test": "176-arsiv-satiri-okunur.js",
+  "kaynak": "telefon",
+  "bul": "  #takeList .listitem{flex-wrap:wrap}",
+  "koy": "  #takeList .listitem{flex-wrap:nowrap}"
+ },
+ {
+  "ad": "A2s metin tam genişlik almıyor",
+  "test": "176-arsiv-satiri-okunur.js",
+  "kaynak": "telefon",
+  "bul": "  #takeList .listitem .meta{flex:1 1 100%}",
+  "koy": "  #takeList .listitem .meta{flex:1 1 auto}"
+ },
+ {
+  "ad": "A3s üç nokta kırpması kalktı (uzun başlık satırı taşırır)",
+  "test": "176-arsiv-satiri-okunur.js",
+  "kaynak": "telefon",
+  "bul": "  .listitem .t{font-size:var(--tx-md);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+  "koy": "  .listitem .t{font-size:var(--tx-md);font-weight:700}"
  }
 ]

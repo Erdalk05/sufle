@@ -835,6 +835,18 @@
   .listitem.on{border-color:var(--accent)}
   .listitem .meta{flex:1;min-width:0}
   .listitem .t{font-size:var(--tx-md);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* ⚠️ ÇEKİM SATIRINDA METİN KENDİ SATIRINDA (2026-08-17, ÖLÇÜLDÜ).
+     Arşivi 25 kayıtla doldurup ölçtüm: satırdaki beş simge düğmesi 179 px
+     tutuyor ve metin sütununa 390 px telefonda 98 px, 320 px'te 28 px
+     kalıyordu — başlık 239 px istiyor. Yani kullanıcı çekimlerini
+     BİRBİRİNDEN AYIRAMIYOR; üstelik yeniden adlandırma ve not özellikleri
+     tam da bunun için eklenmişti (ölü özellik sınıfı: özellik var, ama
+     sonucu görünmüyor).
+     Çözüm sarma: metin tam genişlik alıyor, düğmeler alt satıra geçip sağa
+     yaslanıyor. Senaryo listesi bundan etkilenmiyor (kapsam #takeList). */
+  #takeList .listitem{flex-wrap:wrap}
+  #takeList .listitem .meta{flex:1 1 100%}
+  #takeList .listitem>button:first-of-type{margin-left:auto}
   .listitem .s{font-size:var(--tx-xs);color:var(--muted);margin-top:3px}
   .iconbtn.arm{background:var(--dan,#c0392b);color:#fff;border-color:var(--dan,#c0392b)}
   .iconbtn{background:transparent;border:none;color:#9aa0a6;font-size:var(--tx-lg);padding:7px 8px;flex:none;
