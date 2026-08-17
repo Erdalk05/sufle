@@ -126,7 +126,7 @@ En yüksek "puan / iş yükü" oranına göre:
 |---|---|---|---|---|---|
 | 1 | 20 · Platform kapsamı (×4) | 2 | 4 | **+8** | mağaza kabuğu (iOS engeli T51'de ölçüldü ve **çürüdü**) |
 | 2 | 25 · UI / görsel (×5) | 4 | 5 | **+5** | Tur 55 devam: gruplama, tipografik ritim |
-| 3 | 1 · Sufle motoru (×5) | 4 | 5 | **+5** | altın kaydırma testi var; kalan pürüz ölçülmeli |
+| 3 | 1 · Sufle motoru (×5) | 4 | 5 | **+5** | 17 Ağustos'ta ÖLÇÜLDÜ (başsız tarayıcı, 6 sn, ~720 kare): **geri sıçrama 0**, adım değişkenliği (jitter) %3–6, kare süresi medyan 8,3 ms / p95 9,2 ms. Yani kaba pürüz YOK. Puan yine de 4: başsız tarayıcıda rAF ve CSS geçişleri gerçek ekrana bağlı değil (deponun kendi test ortamı sınırı), bu yüzden 5 için **gerçek cihazda** ölçüm gerekiyor — cihaz Erdal'da |
 | 4 | 12 · Kamera denetimleri (×3) | 4 | 5 | **+3** | ~~elle pozlama/beyaz ayarı~~ (17 Ağustos'ta eklendi) — 5 için elle ISO ve odak mesafesi de gerekir |
 | 5 | 8 · İçe aktarma (×2) | 4 | 5 | **+2** | ~~PDF ayrıştırıcı~~ (17 Ağustos'ta eklendi) — kalan: Drive/bulut içe aktarma, o da sunucu/hesap ister |
 | 6 | 22 · Kararlılık (×4) | 3 | 4 | **+4** | mağaza puanı — yayına bağlı |

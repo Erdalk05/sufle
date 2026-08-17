@@ -57,6 +57,25 @@ rozeti ve altta tek satır.
 3. **"Metin var" ölçütü** varsayılan örneği "içe aktarıldı" sanıyordu; ölçüt
    öncesi/sonrası karşılaştırmasına çevrildi.
 
+### Sabah sen uyandıktan sonra yapılanlar (17 Ağustos sabahı)
+
+- **v9.17 YAYINLANDI** (senin "git push"un): kapı yeşil → push → `canli.py`
+  üç genişlikte temiz → dosya diske çekilip md5 karşılaştırıldı (canlı = depo)
+  → `.son-yayin` ancak ondan sonra yazıldı.
+- **Giriş ekranı yenilendi (v9.18, hazır)**: dört eşit düğme yerine tek asıl
+  eylem, altında kamerasız yol, üç doğrulanabilir rozet (**hesap yok ·
+  internet gerekmez · ücretsiz**) ve altta tek satır (yardım + sürüm).
+  Rozetlerin üçü de `tests/169`'da KODA KARŞI sınanıyor.
+- **Çakışma gerilemesi bulundu ve düzeltildi**: çubuğa etiket eklerken alt iç
+  kenarı büyüttüm ama yükseklik jetonunu güncellemedim; durum şeridi çubuğun
+  içine girmişti (mağaza kare aracı 5 çakışan çift saydı). İç kenar ve
+  yükseklik artık aynı jetondan okunuyor.
+- **Kaydırma akıcılığı ilk kez ölçüldü**: 6 saniye, ~720 kare — **geri
+  sıçrama 0**, adım değişkenliği %3–6, kare süresi medyan 8,3 ms. Kaba pürüz
+  yok; motor puanı yine de 4'te bırakıldı, çünkü 5 için gerçek cihazda ölçüm
+  gerekiyor (başsız tarayıcı rAF'ı gerçek ekrana bağlı değil).
+- **Mağaza kareleri yeniden üretildi** (yeni arayüzle, çakışma 0).
+
 ### Sabah senden bekleyenler
 
 1. **Yayın.** v9.17 kapıdan geçti, yayınlanmadı. "Yayınla" dersen `sw.js`
