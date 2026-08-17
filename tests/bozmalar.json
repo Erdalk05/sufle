@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "(v9.23 hazır, yayın kararı sende)",
-  "koy": "(bazı işler yapıldı)"
+  "bul": "v9.23 YAYINLANDI ve canlıdan doğrulandı",
+  "koy": "bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4121,5 +4121,54 @@
   "kaynak": "telefon",
   "bul": "  if(sesleKayittaYasak()){ toast(m('voiceRecBlock')); buzz(40); return; }\n  if(running) stop();",
   "koy": "  if(running) stop();"
+ },
+ {
+  "ad": "N1 masaüstü ses gözcüsü iPhonea da açıldı (kayıt sessizleşir)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "  if(!IS_WK){ micTouched=true; startAudioMonitor(); } else setAudBadge('off');",
+  "koy": "  { micTouched=true; startAudioMonitor(); }"
+ },
+ {
+  "ad": "N2 nefesle akış kayıt koşulunu yitirdi (iOSta çekim sırasında kurulur)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "function vadCalisir(){ return !!st.vad && !(IS_WK && rec && rec.state==='recording'); }",
+  "koy": "function vadCalisir(){ return !!st.vad; }"
+ },
+ {
+  "ad": "N3 müzik yatağının iOS kapısı söküldü (Web Audio kayıtta devreye girer)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "  if(iosMu) return {calisir:false, sebep:'ios'};",
+  "koy": "  "
+ },
+ {
+  "ad": "N4 kamera kayıt sürerken yeniden açılabiliyor (getUserMedia çekimi öldürür)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "function kameraDegisebilir(){\n  if(rec && rec.state==='recording'){ toast(m('camBusyRec')); return false; }",
+  "koy": "function kameraDegisebilir(){"
+ },
+ {
+  "ad": "N5 yeni bir AudioContext eklendi (korumasız ses oturumu dokunuşu)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "    const ctx=new AC(); const buf=await blob.arrayBuffer();",
+  "koy": "    const ctx=new AC(); const ctx2=new AC(); const buf=await blob.arrayBuffer();"
+ },
+ {
+  "ad": "N6 mikrofon ölçerin iPhone kapısı söküldü",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "  if(IS_WK){ // iPhone: mikrofonu Web Audio'ya bağlamak kaydı sessizleştiriyor",
+  "koy": "  if(false){ // iPhone: mikrofonu Web Audio'ya bağlamak kaydı sessizleştiriyor"
+ },
+ {
+  "ad": "N7 Ses Stüdyosu iPhonea açıldı (kayıt sessizleşir + oturum kurulur)",
+  "test": "180-ios-ses-oturumu-nobeti.js",
+  "kaynak": "telefon",
+  "bul": "function fxOn(){ return !IS_WK && !st.rawAudio",
+  "koy": "function fxOn(){ return !st.rawAudio"
  }
 ]

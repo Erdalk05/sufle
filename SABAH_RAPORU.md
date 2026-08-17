@@ -2,7 +2,29 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 17 Ağustos akşamı — **iPHONE DONMASININ SEBEBİ BULUNDU** (v9.23 hazır, yayın kararı sende)
+## 🔴 17 Ağustos akşamı — **iPHONE DONMASININ SEBEBİ BULUNDU · v9.23 YAYINLANDI ve canlıdan doğrulandı**
+
+**v9.23 canlı** (`sufle-v95`; index.html ve sw.js md5 birebir, duman testi
+430/360/1440 pxte temiz; canlıda izler sayıldı: `sesleKayittaYasak` 4,
+`voiceOffRec` 3, `vidDonduSes` 3, `srKayittaSon` 5).
+
+**Düzeltmeden SONRA aynı sınıf için bütün dosya tarandı** — bu depoda ses
+oturumu kusuru daha önce iki ayrı özellikte tekrarlamıştı, tek vakayı
+düzeltip geçmek yeterli değil. iOSta ses oturumuna dokunan **yedi** yol çıktı
+ve altısı zaten korunuyordu (mikrofon ölçer · kayıt ses gözcüsü · Ses Stüdyosu ·
+ses bağlamı ısıtması · nefesle akış · müzik yatağı · kamera yeniden açma).
+Yani v9.23 düzeltmesi bu sınıf için **eksiksiz**.
+
+Bulgu kalıcı dedektöre çevrildi: **`tests/180`** iki şeyi birden ölçüyor —
+**envanter** (yedi korumanın her biri adıyla) ve **sayım** (riskli çağrı
+sayısı: `sr.start` 2 · `new AC()` 6 · `createMediaStreamSource` 4 ·
+`getUserMedia` 3 = 15). Yalnız envanter yazsaydım yarın eklenen bir özellik
+donmayı sessizce geri getirirdi; yalnız sayım yazsaydım bir koruma sökülünce
+sayı değişmez ve kapı susardı. Taban büyüterek susturmanın yasak olduğu
+dosyanın içine yazıldı. **7 yeni kasıtlı bozma**, yedisi de yakalandı.
+Kapsam tabanı yine sıkıştı (42 → 41).
+
+## 🔴 17 Ağustos akşamı — iPhone donmasının teşhisi (v9.23 içeriği)
 
 Erdal: "en büyük sorun devam ediyor, iPhoneda çektiğim videolar belirli bir süre
 sonra donuyor, bu sorun hiç çözülmedi." Üç ayrı tur bu soruna dokunmuş ve üçü de
@@ -1649,7 +1671,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7074 test** (gece başında 732) · yeni test dosyası: 39–179
+- **7092 test** (gece başında 732) · yeni test dosyası: 39–180
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
