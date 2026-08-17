@@ -1148,6 +1148,8 @@ const I18N={
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
   cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
   cbBaslat:'Başlat',
+  /* Giriş ekranı rozetleri — üçü de koddan doğrulanabilir vaatler */
+  rozHesap:'Hesap yok',rozNet:'İnternet gerekmez',rozUcret:'Ücretsiz',
   /* Elle pozlama ve beyaz ayarı — yalnız cihaz destekliyorsa görünür */
   pozLabel:'Pozlama (parlaklık)',pozHint:'Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.',
   wbLabel:'Beyaz ayarı (renk sıcaklığı)',wbAuto:'Otomatik',
@@ -1305,6 +1307,7 @@ const I18N={
   gDahaFazla:'More',gNasil:'Saving and trimming',
   cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
   cbBaslat:'Start',
+  rozHesap:'No account',rozNet:'Works offline',rozUcret:'Free',
   pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
   wbLabel:'White balance (colour temperature)',wbAuto:'Auto',
   wbHint:'Your skin tone stays the same even when the light colour changes. A low value matches warm (yellow) light, a high value cool (blue) light. Double tap the slider to go back to auto.'}
@@ -1739,7 +1742,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.17';   // telefon sürümüyle aynı numaralama
+  const VER='9.18';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -4187,6 +4190,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+ '9.18':{tr:'<b>Bu sürümün işi telefon giriş ekranındaydı:</b> dört eşit düğme yerine tek asıl eylem, altında kamerasız yol ve en altta yardım ile sürüm. Masaüstü arayüzünde değişiklik yok; sürüm numarası iki kabuk aynı kalsın diye yükseldi.',
+       en:'<b>This version was phone start-screen work:</b> one main action instead of four equal buttons, the camera-free path under it, help and the version at the bottom. Nothing changed in the desktop interface; the version moved so both shells stay in step.'},
  '9.17':{tr:'<b>Alt durum çubuğu okunur hâle geldi.</b> Kısayolları, WPM değerini, cihaz özetini ve dil seçicisini taşıyan çubuk pencere ne kadar geniş olursa olsun 608 piksellik dar bir sütunda kalıyor ve 151 piksel yüksekliğe kırılıyordu: her etiket kendi içinde bölünüyor, cihaz özeti altı satıra iniyor ve görüntünün altını kaplıyordu. Artık etiketler bölünmüyor, çubuk pencerenin genişliğini kullanıyor ve yüksekliği 66 piksele indi.<br><b>Telefon tarafında:</b> ayarlar tek uzun liste olmaktan çıkıp konu konu katlanır kartlara bölündü; kart kapalıyken o anki değerini söylüyor ve arama kartların içine bakıyor. Masaüstünde bu düzenin karşılığı henüz yok, sağ panel olduğu gibi duruyor.<br><b>PDF dosyasından senaryo alabiliyorsun</b> — masaüstünde de. Okuyucu emin olamazsa metin vermiyor, sebebini söylüyor.',
        en:'<b>The bottom status bar is readable again.</b> The bar holding the shortcuts, the WPM value, the device summary and the language switch stayed in a narrow 608 pixel column no matter how wide the window was, and wrapped to 151 pixels tall: every label broke inside itself, the device summary ran to six lines and it covered the bottom of the picture. Labels no longer break, the bar uses the width of the window, and its height came down to 66 pixels.<br><b>On the phone side:</b> settings are no longer one long list but collapsible cards by topic; a closed card states its current value and search looks inside the cards. The desktop has no equivalent of that layout yet — the right panel is unchanged.<br><b>You can import a script from a PDF</b> on the desktop too. If the reader cannot be sure, it gives no text and says why.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de Son hatalar listesine korkutucu bir satır düşüyordu. Artık düşmüyor.',

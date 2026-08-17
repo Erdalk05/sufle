@@ -168,6 +168,8 @@ const I18N={
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
   cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
   cbBaslat:'Başlat',
+  /* Giriş ekranı rozetleri — üçü de koddan doğrulanabilir vaatler */
+  rozHesap:'Hesap yok',rozNet:'İnternet gerekmez',rozUcret:'Ücretsiz',
   /* Elle pozlama ve beyaz ayarı — yalnız cihaz destekliyorsa görünür */
   pozLabel:'Pozlama (parlaklık)',pozHint:'Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.',
   wbLabel:'Beyaz ayarı (renk sıcaklığı)',wbAuto:'Otomatik',
@@ -325,6 +327,7 @@ const I18N={
   gDahaFazla:'More',gNasil:'Saving and trimming',
   cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
   cbBaslat:'Start',
+  rozHesap:'No account',rozNet:'Works offline',rozUcret:'Free',
   pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
   wbLabel:'White balance (colour temperature)',wbAuto:'Auto',
   wbHint:'Your skin tone stays the same even when the light colour changes. A low value matches warm (yellow) light, a high value cool (blue) light. Double tap the slider to go back to auto.'}

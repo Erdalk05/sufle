@@ -458,15 +458,41 @@
     padding:10px 18px;border-radius:22px;backdrop-filter:blur(8px)}
 
   /* ===== BAŞLANGIÇ ===== */
-  #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-4);
+  /* GİRİŞ EKRANI — TEK ASIL EYLEM. Dikey ritim üç bölgeye ayrıldı:
+     kimlik (marka + tek cümle) · eylem (asıl + ikincil) · güven ve
+     üçüncül işler. Aradaki boşluklar ölçek jetonlarından geliyor. */
+  #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-8);
     background:radial-gradient(circle at 50% 32%,#10231a,#000);padding:28px;text-align:center}
+  #introUst{display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)}
+  #introEylem{display:flex;flex-direction:column;align-items:stretch;gap:var(--sp-3);width:min(100%,330px)}
+  #introEylem .big{justify-content:center}
+  /* Üç rozet: ürünün gerçek vaatleri. Süs değil — üçü de koddan doğrulanabilir
+     (hesap yok, ağ çağrısı yok, ücret yok) ve `tests/169` bunu kilitliyor. */
+  #introRozet{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--sp-2)}
+  #introRozet span{display:inline-flex;align-items:center;gap:5px;
+    font-size:var(--tx-xs);font-weight:650;color:var(--t-mid);
+    background:rgba(255,255,255,.05);border:1px solid var(--s-line);
+    border-radius:var(--rad-full);padding:6px 11px}
+  #introRozet span::before{content:"";width:5px;height:5px;border-radius:50%;
+    background:var(--r-action-t);flex:none}
+  /* Üçüncül satır: metin düğmeleri. Dokunma hedefi 44 px'e görünmez örtüyle
+     tamamlanıyor (çubuk düğmelerindeki kuralın aynısı). */
+  #introAlt{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--sp-3)}
+  .metinBtn{position:relative;background:none;border:none;color:var(--t-mid);
+    font-size:var(--tx-sm);font-weight:650;padding:6px 4px;text-decoration:underline;
+    text-underline-offset:3px;text-decoration-color:var(--s-line)}
+  .metinBtn::after{content:'';position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);width:max(100%,44px);height:44px}
+  .metinBtn:active{color:var(--t-hi)}
   #intro.hidden{display:none}
   #intro h1{font-size:var(--tx-hero);font-weight:800;letter-spacing:-.5px}#intro h1 b{color:var(--accent)}
   #intro p{color:var(--muted);font-size:var(--tx-md);line-height:1.6;max-width:320px}
   #browserWarn{background:rgba(255,59,48,.16);border:1px solid rgba(255,59,48,.55);color:#ffd7d4;
     font-size:var(--tx-sm);font-weight:700;line-height:1.5;padding:var(--sp-3) 16px;border-radius:14px;max-width:330px;text-align:center}
-  #verChip{font-size:var(--tx-xs);font-weight:800;color:var(--accent);letter-spacing:.08em;
-    background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);padding:var(--sp-1) 12px;border-radius:20px;margin-top:-12px}
+  /* Sürüm rozeti artık üçüncül satırda, marka yazısının altında değil:
+     kullanıcı için sürüm numarası ilk okunacak şey değil. */
+  #verChip{font-size:var(--tx-xs);font-weight:800;color:var(--t-low);letter-spacing:.08em;
+    background:none;border:none;padding:0}
   .big{background:var(--accent);color:var(--accent-d);border:none;border-radius:18px;font-size:var(--tx-lg);font-weight:800;
     padding:18px 28px;display:flex;align-items:center;gap:10px}
   .ghostbig{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);
@@ -800,16 +826,34 @@
 </div>
 
 <!-- BAŞLANGIÇ -->
+<!-- GİRİŞ EKRANI (2026-08-17 yenilendi). Eski hâlde dört düğme alt alta ve
+     hepsi aynı ağırlıktaydı: "Başla", "Kamerasız", "Ana ekrana ekle",
+     "Nasıl kullanılır" — kullanıcı hangisiyle başlayacağını seçmek zorunda
+     kalıyordu. Yeni düzen tek bir asıl eylem gösteriyor; ikinci yol onun
+     altında sade, üçüncül işler en altta tek satırda. Ortadaki üç rozet
+     ürünün GERÇEK ve ölçülebilir vaatleri (hesap yok, internet gerekmez,
+     ücretsiz) — hiçbiri süs değil, üçü de kodda doğrulanabilir. -->
 <div id="intro">
   <div id="langSwitch"><button data-lang="tr">TR</button><button data-lang="en">EN</button></div>
   <div id="browserWarn" class="hidden"></div>
-  <h1>Sufle <b>·</b> Pro</h1>
-  <div id="verChip">v3.9</div>
-  <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
-  <button class="big" id="startCam"><span data-i18n="startCam">Kamerayı Aç &amp; Başla</span></button>
-  <button class="ghostbig" id="startNoCam" data-i18n="startNoCam">Kamerasız sadece sufle</button>
-  <button class="ghostbig hidden" id="installBtn" data-i18n="install">Ana ekrana ekle</button>
-  <button class="ghostbig" id="helpBtn" data-i18n="help">Nasıl kullanılır?</button>
+  <div id="introUst">
+    <h1>Sufle <b>·</b> Pro</h1>
+    <p data-i18n="introP">Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.</p>
+  </div>
+  <div id="introEylem">
+    <button class="big" id="startCam"><span data-i18n="startCam">Kamerayı Aç &amp; Başla</span></button>
+    <button class="ghostbig" id="startNoCam" data-i18n="startNoCam">Kamerasız sadece sufle</button>
+  </div>
+  <div id="introRozet">
+    <span data-i18n="rozHesap">Hesap yok</span>
+    <span data-i18n="rozNet">İnternet gerekmez</span>
+    <span data-i18n="rozUcret">Ücretsiz</span>
+  </div>
+  <div id="introAlt">
+    <button class="metinBtn hidden" id="installBtn" data-i18n="install">Ana ekrana ekle</button>
+    <button class="metinBtn" id="helpBtn" data-i18n="help">Nasıl kullanılır?</button>
+    <span id="verChip">v3.9</span>
+  </div>
 </div>
 
 <!-- AYARLAR -->
@@ -1568,7 +1612,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.17';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.18';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -1745,6 +1789,8 @@ const I18N={
   /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
   cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
   cbBaslat:'Başlat',
+  /* Giriş ekranı rozetleri — üçü de koddan doğrulanabilir vaatler */
+  rozHesap:'Hesap yok',rozNet:'İnternet gerekmez',rozUcret:'Ücretsiz',
   /* Elle pozlama ve beyaz ayarı — yalnız cihaz destekliyorsa görünür */
   pozLabel:'Pozlama (parlaklık)',pozHint:'Kamera otomatik pozlamayı bırakır, parlaklığı sen seçersin. Arkadan ışık alan çekimde yüzün kararmaz.',
   wbLabel:'Beyaz ayarı (renk sıcaklığı)',wbAuto:'Otomatik',
@@ -1902,6 +1948,7 @@ const I18N={
   gDahaFazla:'More',gNasil:'Saving and trimming',
   cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
   cbBaslat:'Start',
+  rozHesap:'No account',rozNet:'Works offline',rozUcret:'Free',
   pozLabel:'Exposure (brightness)',pozHint:'The camera stops setting brightness by itself and you choose it. With light behind you, your face no longer goes dark.',
   wbLabel:'White balance (colour temperature)',wbAuto:'Auto',
   wbHint:'Your skin tone stays the same even when the light colour changes. A low value matches warm (yellow) light, a high value cool (blue) light. Double tap the slider to go back to auto.'}
@@ -8582,6 +8629,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.18':{tr:'<b>Giriş ekranı yenilendi.</b> Eskiden dört düğme alt alta duruyordu ve hepsi aynı ağırlıktaydı; uygulamayı ilk açan kişi daha hiçbir şey görmeden dört yol arasından seçim yapmak zorunda kalıyordu. Artık tek bir asıl eylem var (<b>Kamerayı Aç &amp; Başla</b>), hemen altında kamerasız yol, en altta ise yardım ve sürüm tek satırda. Ortada üç rozet duruyor — <b>hesap yok</b>, <b>internet gerekmez</b>, <b>ücretsiz</b> — ve üçü de süs değil: her biri koda karşı sınanıyor, ürüne hesap, ağ çağrısı ya da ödeme girerse kapı kırmızı veriyor.',
+       en:'<b>A new start screen.</b> Four buttons used to sit on top of each other with equal weight, so the first thing the app asked of you was to choose between four paths. There is now one main action (<b>Open camera &amp; start</b>), the camera-free path right under it, and help plus the version on a single line at the bottom. Three badges sit in the middle — <b>no account</b>, <b>works offline</b>, <b>free</b> — and none of them is decoration: each is tested against the code, so the gate turns red if an account, a network call or a payment ever enters the product.'},
  '9.17':{tr:'<b>Ayarlar artık uzun bir liste değil, konu konu kartlar.</b> Dört sekmenin içindeki yetmişten fazla ayar yirmi altı karta bölündü: Çekim modu, Hız ve tempo, Göz teması, Yazı ölçüleri, Kayıt kalitesi, Kompozit ve yeşil ekran, Ses, Müzik yatağı ve diğerleri. Sayfa açıldığında konuların listesini görüyorsun; yalnız ilgilendiğin kartı açıyorsun.<br><b>Kart kapalıyken o anki değeri söylüyor</b> — "1080p", "Hız 140", "3/4 açık" gibi. Bu bilgi tutulmuyor, karttaki denetimlerden okunuyor; yani bayatlayamaz. Kapalı bir özelliğin ayarı özete girmiyor, içeriği tümüyle gizli olan kart hiç görünmüyor.<br><b>Arama kartların içine bakıyor</b>: aradığın ayar kapalı bir kartta olsa bile kart kendiliğinden açılıyor. Kart adıyla arayınca o konunun tamamı açılıyor.<br><b>Senaryolar sayfası da sadeleşti</b>: liste, başlık ve metin alanı dışarıda; yedekleme, metin araçları ve denetimler kartın içinde.<br><b>Çekim sonrası ekranda tek asıl eylem var</b>: Paylaş ve Kaydet. Düzenle ve Kapat yanında; altyazı dosyası, yayın paketi, Dosyalara kaydetme ve silme <b>Daha fazla</b> kartında. Silme düğmesi artık paylaşma düğmesinin yanında durmuyor.<br><b>Çekim başlarken çıkan yanlış uyarı kalktı.</b> Kayıt başladıktan 2,5 saniye sonra ilk veri parçası gelmemişse uygulama "veri gelmiyor, durdurup tekrar başlat" diyordu. Ölçüldü: gerçek tarayıcıda ilk parça 4,6 saniyede geldi ve çekim tümüyle sağlamdı — yani iyi bir çekim durdurtuluyordu. Uyarı artık ikinci bir bakıştan sonra çıkıyor; gerçekten boş kalan kayıt hâlâ bildiriliyor.<br><b>PDF dosyasından senaryo alabiliyorsun.</b> Word ve düz metnin yanına PDF eklendi. Okuyucu bilerek sınırlı: metni doğru okuyabildiğinden emin olamazsa (taranmış sayfa, eşlemesiz yazı tipi, şifreli dosya) <b>metin vermiyor</b> ve sebebini söyleyip kopyala-yapıştır yoluna gönderiyor. Bir suflede yanlış metin, metin olmamasından kötüdür.<br><b>Elle pozlama ve beyaz ayarı geldi</b> — ama yalnız kameran destekliyorsa. Arkadan ışık alan çekimde yüzün kararmasın diye parlaklığı sen seçiyorsun; ışığın rengi değişse bile ten rengin aynı kalıyor. Cihazın bu ayarı vermiyorsa sürgü <b>hiç görünmüyor</b>: çekip hiçbir şey olmayan bir ayar bırakmıyoruz.',
        en:'<b>Settings are no longer one long list but cards, one per topic.</b> The seventy-plus settings across four tabs are now grouped into twenty-six cards: Shot mode, Speed and pacing, Eye contact, Text size, Recording quality, Composite and green screen, Audio, Music bed and the rest. Opening the sheet shows the list of topics; you open only the card you need.<br><b>A closed card states its current value</b> — "1080p", "Speed 140", "3/4 on". Nothing is stored: the summary is read from the controls in the card, so it cannot go stale. A setting that belongs to a switched-off feature never reaches the summary, and a card whose content is entirely hidden does not show at all.<br><b>Search looks inside the cards</b>: if the setting you look for sits in a closed card, that card opens by itself. Searching a card name opens that whole topic.<br><b>The scripts sheet is calmer too</b>: the list, the title and the text area stay in the open; backup, text tools and checks moved into cards.<br><b>The result screen has a single main action</b>: Share and Save. Edit and Close sit next to it; the caption file, the publish bundle, saving to Files and deleting moved into a <b>More</b> card. The delete button no longer sits next to the share button.<br><b>The false warning at the start of a take is gone.</b> If no data chunk had arrived 2.5 seconds into a recording the app said the recorder was producing nothing and told you to stop. Measured in a real browser: the first chunk arrived at 4.6 seconds and the take was perfectly fine, so a good take was being thrown away. The warning now waits for a second look; a recording that truly stays empty is still reported.<br><b>You can import a script from a PDF.</b> PDF joins Word and plain text. The reader is deliberately limited: when it cannot be sure it read the text correctly (a scanned page, a font without a mapping, an encrypted file) it <b>gives no text</b> and says why, sending you to copy and paste instead. In a prompter, wrong text is worse than no text.<br><b>Manual exposure and white balance arrived</b> — but only if your camera supports them. You choose the brightness so your face does not go dark with light behind you, and your skin tone stays the same when the light colour changes. If your device does not offer the control, the slider <b>never appears</b>: we do not leave a setting that does nothing when you drag it.'},
  '9.16':{tr:'<b>Çekimden sonra görünen anlamsız hata satırı kalktı.</b> Uygulama çekimin sesini incelerken tarayıcı bazen sesi çözemiyor; bu zaten ele alınmış bir durumdu ama yine de <b>Son hatalar</b> listesine korkutucu bir satır düşüyordu. Artık düşmüyor — liste yalnız gerçekten ilgilenmen gereken şeyleri gösteriyor.<br><b>Nasıl bulundu:</b> kapıya yeni bir adım eklendi ve uygulama her değişiklikte gerçek tarayıcıda baştan sona çalıştırılıyor: kamera açılıyor, kayıt yapılıyor, altyazı üretiliyor, çekim arşive yazılıyor ve <b>altyazının videoya gerçekten gömüldüğü</b> ölçülüyor.',

@@ -2236,8 +2236,8 @@
   "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
   "test": "116-sabah-raporu.js",
   "kaynak": "telefon",
-  "bul": "VER='9.17'",
-  "koy": "VER='9.18'"
+  "bul": "VER='9.18'",
+  "koy": "VER='9.19'"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2663,7 +2663,7 @@
   "ad": "kılavuz sürümü koddan ayrıştı (yanlış sürüm dağıtılır)",
   "test": "163-deneme-kilavuzu.js",
   "kaynak": "deneme",
-  "bul": "**Sürüm 9.17",
+  "bul": "**Sürüm 9.18",
   "koy": "**Sürüm 9.11"
  },
  {
@@ -2684,7 +2684,7 @@
   "ad": "mağaza kabuğu sürümü uygulamadan ayrıştı (yanlış sürüm mağazaya çıkar)",
   "test": "164-magaza-kabugu.js",
   "kaynak": "kabuk_plist",
-  "bul": "<key>CFBundleShortVersionString</key><string>9.17</string>",
+  "bul": "<key>CFBundleShortVersionString</key><string>9.18</string>",
   "koy": "<key>CFBundleShortVersionString</key><string>9.11</string>"
  },
  {
@@ -3092,5 +3092,33 @@
   "kaynak": "kayit_olcum",
   "bul": "            if gecen >= 3:\n                break",
   "koy": "            if True:\n                break"
+ },
+ {
+  "ad": "giriş ekranında ikinci dolu eylem (hangisiyle başlanacağı belirsiz)",
+  "test": "169-giris-ekrani.js",
+  "kaynak": "telefon",
+  "bul": "    <button class=\"ghostbig\" id=\"startNoCam\" data-i18n=\"startNoCam\">Kamerasız sadece sufle</button>",
+  "koy": "    <button class=\"big\" id=\"startNoCam\" data-i18n=\"startNoCam\">Kamerasız sadece sufle</button>"
+ },
+ {
+  "ad": "üçüncül işler yine büyük düğme oldu (giriş ekranı dört yol gösterir)",
+  "test": "169-giris-ekrani.js",
+  "kaynak": "telefon",
+  "bul": "    <button class=\"metinBtn\" id=\"helpBtn\" data-i18n=\"help\">Nasıl kullanılır?</button>",
+  "koy": "    <button class=\"ghostbig\" id=\"helpBtn\" data-i18n=\"help\">Nasıl kullanılır?</button>"
+ },
+ {
+  "ad": "metin düğmesinin dokunma hedefi küçüldü",
+  "test": "169-giris-ekrani.js",
+  "kaynak": "telefon",
+  "bul": "    transform:translate(-50%,-50%);width:max(100%,44px);height:44px}",
+  "koy": "    transform:translate(-50%,-50%);width:100%;height:100%}"
+ },
+ {
+  "ad": "giriş ekranına doğrulanmamış vaat rozeti eklendi",
+  "test": "169-giris-ekrani.js",
+  "kaynak": "telefon",
+  "bul": "    <span data-i18n=\"rozUcret\">Ücretsiz</span>",
+  "koy": "    <span data-i18n=\"rozUcret\">Ücretsiz</span>\n    <span data-i18n=\"rozHesap\">Bulut senkron</span>"
  }
 ]

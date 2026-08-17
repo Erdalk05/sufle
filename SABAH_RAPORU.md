@@ -4,10 +4,13 @@
 
 ## 🌙 17 Ağustos GECESİ — dokuz tur, dokuz commit, kapı 10/10 yeşil
 
-**Tek cümlede:** v9.17 yayına hazır ve yayınlanmadı (kural gereği `git push`
-senin onayınla); gece boyunca uygulama **kullanılarak** denetlendi, dört
-gerçek kusur bulunup düzeltildi, iki yeni özellik eklendi ve rekabet ölçümü
-**64,9 → 66,0** ile BIGVU'yu (65,3) geçti.
+**Tek cümlede:** **v9.17 YAYINLANDI ve canlıdan doğrulandı** (senin
+onayınla, md5 birebir, canlı duman testi üç genişlikte temiz); gece boyunca
+uygulama **kullanılarak** denetlendi, dört gerçek kusur bulunup düzeltildi,
+iki yeni özellik eklendi ve rekabet ölçümü **64,9 → 66,0** ile BIGVU'yu
+(65,3) geçti. Ardından **giriş ekranı yenilendi (v9.18 hazır, yayın kararı
+sende)**: dört eşit düğme yerine tek asıl eylem, üç doğrulanabilir vaat
+rozeti ve altta tek satır.
 
 ### Ne değişti (kullanıcının göreceği sırayla)
 
@@ -1447,7 +1450,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **13 commit yayınlanmamış** (`main` dalında, v9.17). Canlı sürüm v9.16 ile depo
   arasındaki fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
-- **6543 test** (gece başında 732) · yeni test dosyası: 39–168
+- **6543 test** (gece başında 732) · yeni test dosyası: 39–169
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **394 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
