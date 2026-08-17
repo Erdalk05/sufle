@@ -1774,8 +1774,8 @@
   "ad": "kesme kaynak çekimi siliyor (üç klip önerisi tek kesimde tükeniyor)",
   "test": "160-klip-kaynak-korunuyor.js",
   "kaynak": "telefon",
-  "bul": "    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId};\n    lastBlob=nb; lastDur=sel;\n    await autoSaveTake();",
-  "koy": "    lastBlob=nb; lastDur=sel;\n    if(curTakeId) await dbDel(curTakeId);\n    await autoSaveTake();"
+  "bul": "    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi};",
+  "koy": "    "
  },
  {
   "ad": "telefonda dönüş kaynağı boşaltmıyor (ikinci basış tam çekimi tekrar yükler)",
@@ -1795,7 +1795,7 @@
   "ad": "masaüstünde kaynak çekim üstüne yazılıyor",
   "test": "160-klip-kaynak-korunuyor.js",
   "kaynak": "mac",
-  "bul": "      kesKaynak={blob:lastBlob};\n      lastBlob=nb;",
+  "bul": "      kesKaynak={blob:lastBlob, altyazi:cekimAltyazi};\n      lastBlob=nb;",
   "koy": "      lastBlob=nb;"
  },
  {
@@ -3694,5 +3694,54 @@
   "kaynak": "mac",
   "bul": "      aIz.addEventListener('mute',()=>{",
   "koy": "      ({}).x=(()=>{"
+ },
+ {
+  "ad": "T1 kesilen klipte altyazı kaydırılmıyor (srt kesim kadar kayar)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "telefon",
+  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake();",
+  "koy": "    await autoSaveTake();"
+ },
+ {
+  "ad": "T2 kırpma arşive yazdıktan SONRA yapılıyor (kusur arşivde kalıcılaşır)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "telefon",
+  "bul": "    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);\n    await autoSaveTake();",
+  "koy": "    await autoSaveTake();\n    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);"
+ },
+ {
+  "ad": "T3 tam çekime dönünce altyazı klibin zamanlarında kalıyor",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "telefon",
+  "bul": "  if(kesKaynak.altyazi!==undefined) cekimAltyazi=kesKaynak.altyazi;",
+  "koy": "  "
+ },
+ {
+  "ad": "T4 aralık dışı kelimeler atılmıyor (kesilen bölüm dosyada kalır)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "altyazi",
+  "bul": "    if(w.t<b || w.t>s) continue;                 // aralık dışı: klipte yok",
+  "koy": "    "
+ },
+ {
+  "ad": "T5 zamanlar kaydırılmıyor (yalnız süzülüyor)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "altyazi",
+  "bul": "    out.push({s:w.s, ln:w.ln, t:Math.max(0, +(w.t-b).toFixed(3))});",
+  "koy": "    out.push({s:w.s, ln:w.ln, t:w.t});"
+ },
+ {
+  "ad": "T6 boş sonuç null yerine dizi dönüyor (ekrandaki metne düşer)",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "altyazi",
+  "bul": "  return out.some(w=>w.t!=null) ? out : null;",
+  "koy": "  return out;"
+ },
+ {
+  "ad": "T7 masaüstünde altyazı kırpılmıyor",
+  "test": "175-kesilen-klibin-altyazisi.js",
+  "kaynak": "mac",
+  "bul": "      cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);",
+  "koy": "      "
  }
 ]

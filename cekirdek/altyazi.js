@@ -131,3 +131,34 @@ function temaEtiketMetni(ad){
   }
   return ad;
 }
+
+/* ---- KESİLEN KLİBİN ALTYAZISI (2026-08-17) ----------------------------
+   ÖLÇÜLEN KUSUR: budama klibi YENİ bir çekim olarak arşivliyor, ama çekimin
+   kelime zamanları (`cekimAltyazi`) TAM ÇEKİME göreydi ve hiç kaydırılmıyordu.
+   30. saniyeden kesilen bir klipte altyazı dosyası 30 saniye kayıyor, üstelik
+   kesilip atılan bölümün satırları da dosyada duruyordu. Kimse uyarmıyordu:
+   .srt "çalışıyor" görünür, editörde altyazılar tutmaz. Yayın paketi de aynı
+   dosyayı taşıdığı için hata kullanıcının yayınına kadar gidiyordu.
+
+   Aynı veri klip önerilerini de besliyor; kaydırılmazsa klipteki öneriler
+   videonun dışını gösterir.
+
+   Kural: aralığın DIŞINDAKİ kelimeler atılır, içindekiler başlangıca göre
+   kaydırılır. Zamanı olmayan kelime (okuma çizgisinden hiç geçmemiş) zaten
+   altyazı üretmiyor — olduğu gibi bırakılıyor ki metin bütünlüğü bozulmasın. */
+function kirpAltyazi(kelimeler, bas, bit){
+  if(!Array.isArray(kelimeler)) return kelimeler;
+  const b=+bas||0, s=(+bit||0)>b ? +bit : Infinity;
+  const out=[];
+  for(const w of kelimeler){
+    if(!w) continue;
+    if(typeof w.t!=='number' || !isFinite(w.t)){ out.push({s:w.s, ln:w.ln, t:null}); continue; }
+    if(w.t<b || w.t>s) continue;                 // aralık dışı: klipte yok
+    out.push({s:w.s, ln:w.ln, t:Math.max(0, +(w.t-b).toFixed(3))});
+  }
+  /* Aralıkta hiç zamanlı kelime yoksa altyazı YOK demektir; boş dizi
+     döndürmek `cekimAltyazi` boş sanılmasına yol açardı (o zaman kod
+     ekrandaki metne düşer ve YİNE yanlış zamanları kullanır). null dönmek
+     "bu klipte altyazı yok" demenin tek dürüst yolu. */
+  return out.some(w=>w.t!=null) ? out : null;
+}

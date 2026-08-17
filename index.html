@@ -6172,8 +6172,14 @@ async function doTrim(){
        sınıfı: tam da gerektiği anda çalışmayan özellik.
        Artık klip YENİ çekim olarak arşivleniyor, kaynak duruyor ve
        "↩ Tam çekim" ile geri dönülüyor. Silme kullanıcının kararı kalır. */
-    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId};
+    kesKaynak={blob:lastBlob, dur:lastDur, id:curTakeId, altyazi:cekimAltyazi};
     lastBlob=nb; lastDur=sel;
+    /* ALTYAZI DA KESİLİYOR. Klip yeni bir çekim olarak arşivleniyor;
+       kelime zamanları tam çekime göre kalırsa .srt dosyası kliple
+       tutmaz (kesim noktası kadar kayar) ve kesilen bölümün satırları
+       dosyada kalır. Arşive YAZMADAN ÖNCE kırpılıyor — autoSaveTake
+       srtText() ve kelime zamanlarını kaydın içine yazıyor. */
+    cekimAltyazi=kirpAltyazi(cekimAltyazi, trimA, trimB);
     await autoSaveTake();
     $('#trimBox').classList.add('hidden');
     showResult(lastBlob);
@@ -9332,6 +9338,37 @@ function temaEtiketMetni(ad){
   }
   return ad;
 }
+
+/* ---- KESİLEN KLİBİN ALTYAZISI (2026-08-17) ----------------------------
+   ÖLÇÜLEN KUSUR: budama klibi YENİ bir çekim olarak arşivliyor, ama çekimin
+   kelime zamanları (`cekimAltyazi`) TAM ÇEKİME göreydi ve hiç kaydırılmıyordu.
+   30. saniyeden kesilen bir klipte altyazı dosyası 30 saniye kayıyor, üstelik
+   kesilip atılan bölümün satırları da dosyada duruyordu. Kimse uyarmıyordu:
+   .srt "çalışıyor" görünür, editörde altyazılar tutmaz. Yayın paketi de aynı
+   dosyayı taşıdığı için hata kullanıcının yayınına kadar gidiyordu.
+
+   Aynı veri klip önerilerini de besliyor; kaydırılmazsa klipteki öneriler
+   videonun dışını gösterir.
+
+   Kural: aralığın DIŞINDAKİ kelimeler atılır, içindekiler başlangıca göre
+   kaydırılır. Zamanı olmayan kelime (okuma çizgisinden hiç geçmemiş) zaten
+   altyazı üretmiyor — olduğu gibi bırakılıyor ki metin bütünlüğü bozulmasın. */
+function kirpAltyazi(kelimeler, bas, bit){
+  if(!Array.isArray(kelimeler)) return kelimeler;
+  const b=+bas||0, s=(+bit||0)>b ? +bit : Infinity;
+  const out=[];
+  for(const w of kelimeler){
+    if(!w) continue;
+    if(typeof w.t!=='number' || !isFinite(w.t)){ out.push({s:w.s, ln:w.ln, t:null}); continue; }
+    if(w.t<b || w.t>s) continue;                 // aralık dışı: klipte yok
+    out.push({s:w.s, ln:w.ln, t:Math.max(0, +(w.t-b).toFixed(3))});
+  }
+  /* Aralıkta hiç zamanlı kelime yoksa altyazı YOK demektir; boş dizi
+     döndürmek `cekimAltyazi` boş sanılmasına yol açardı (o zaman kod
+     ekrandaki metne düşer ve YİNE yanlış zamanları kullanır). null dönmek
+     "bu klipte altyazı yok" demenin tek dürüst yolu. */
+  return out.some(w=>w.t!=null) ? out : null;
+}
 /* ==/CEKIRDEK:altyazi.js== */
 /* ==CEKIRDEK:zorlanma.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/zorlanma.js
@@ -10798,6 +10835,9 @@ $('#trimGo').onclick=doTrim;
 $('#kaynakBtn').onclick=()=>{
   if(!kesKaynak) return;
   lastBlob=kesKaynak.blob; lastDur=kesKaynak.dur||0; curTakeId=kesKaynak.id||null;
+  /* Tam çekime dönünce ALTYAZI DA dönmeli: klip için kırpılmış zamanlar
+     tam çekimde yanlış olur (kesim noktasından öncesi hiç görünmez). */
+  if(kesKaynak.altyazi!==undefined) cekimAltyazi=kesKaynak.altyazi;
   kesKaynak=null;
   showResult(lastBlob); toast(m('kaynakGeri'));
 };

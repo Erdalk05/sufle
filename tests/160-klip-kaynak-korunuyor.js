@@ -44,7 +44,10 @@ const tel=yorumsuz(telHam), mac=yorumsuz(macHam);
   const govde=blokKes(mac,'async function trimUygula()');
   ok('trimUygula çıkarılabildi', !!govde);
   if(govde){
-    ok('masaüstü: kaynak çekim saklanıyor', /kesKaynak=\{blob:lastBlob\}/.test(govde));
+    /* 2026-08-17: kesim artık altyazıyı da kırptığı için kaynak nesnesi
+       ALTYAZIYI DA saklıyor (tam çekime dönünce eski zamanlar geri gelsin).
+       İddia biçimi değil KAYNAĞIN KORUNDUĞUNU ölçüyor. */
+    ok('masaüstü: kaynak çekim saklanıyor', /kesKaynak=\{blob:lastBlob[^}]*\}/.test(govde));
     ok('masaüstü: kaynak, üstüne yazılmadan önce saklanıyor',
        govde.indexOf('kesKaynak={blob:lastBlob}') < govde.indexOf('lastBlob=nb'));
     ok('masaüstü: boş çıktı korumasi duruyor', /nb\.size<1000/.test(govde));
