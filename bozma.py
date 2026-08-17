@@ -40,6 +40,10 @@ KAYNAK = {
     # gevşetilirse kullanıcıya SESSİZCE çöp sufle metni gider.
     'pdf': (os.path.join(REPO, 'cekirdek', 'pdf.js'), 'SUFLE_PDF'),
     'oniz': (os.path.join(REPO, 'cekirdek', 'oniz.js'), 'SUFLE_ONIZ'),
+    # Işık denetçisinin eşikleri: gevşerse kullanıcı KÖTÜ IŞIKTA çekmeye
+    # "iyi görünüyor ✓" onayıyla devam eder — sessiz yanlış sonuç sınıfı.
+    # İki kabukta da gömülü olduğu için tek bozma iki platformu birden vurur.
+    'isik': (os.path.join(REPO, 'cekirdek', 'isik.js'), 'SUFLE_ISIK'),
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),

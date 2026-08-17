@@ -1,6 +1,12 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cikar,cekirdekOku}=require('./kaynak');
 const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+
+/* HESAP ARTIK ÇEKİRDEKTE (cekirdek/isik.js) — masaüstü de aynı denetçiyi
+   kullanıyor. Modülü ORTAM DEĞİŞKENİNE SAYGIYLA okuyoruz: test doğrudan depo
+   dosyasını okusaydı kasıtlı bozma turu bu dosyada SESSİZCE etkisiz kalırdı
+   (bu depoda dört kez yaşanmış hata sınıfı). */
+const cek=cekirdekOku('isik.js','SUFLE_ISIK').replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* IŞIK DENETÇİSİ — İKİ SORU
    1) Boş/siyah karede NaN üretiyor mu?  → HAYIR, hipotez çürüdü.
@@ -35,6 +41,7 @@ function kos({ton=0, desen=null, tilt=null, kameraAcik=true}={}){
   return new Function('cam','__ctx','L','tiltDeg', `
     let lightCv={getContext:()=>__ctx,width:32,height:48};
     const document={createElement:()=>lightCv};
+    ${cek}
     ${sf}
     ${lc}
     return {s:sampleFrame(), out:lightCheck()};
@@ -55,7 +62,9 @@ for(const [ad,ton] of [['tam siyah',0],['orta gri',128],['tam beyaz',255]]){
   ok('yüzdeler 0–100 aralığında',
      r.s.hotPct>=0 && r.s.hotPct<=100 && r.s.darkPct>=0 && r.s.darkPct<=100);
 }
-ok('örnekleme ızgarası sabit (bölen sıfır olamaz)', /for\(let y=0;y<48;y\+\+\) for\(let x=0;x<32;x\+\+\)/.test(sf));
+ok('örnekleme ızgarası sabit (bölen sıfır olamaz)',
+   /ISIK_W\s*=\s*32/.test(cek) && /ISIK_H\s*=\s*48/.test(cek) &&
+   /for\(let y=0;y<ISIK_H;y\+\+\) for\(let x=0;x<ISIK_W;x\+\+\)/.test(cek));
 
 /* ---------- 2) SİYAH KARE AYRI TEŞHİS ---------- */
 {
@@ -89,8 +98,45 @@ ok('örnekleme ızgarası sabit (bölen sıfır olamaz)', /for\(let y=0;y<48;y\+
      !basliklar(r).some(t=>/siyah kare/i.test(t)));
   ok('gölgeli karede olağan değerlendirme sürüyor', r.out.length>=1);
 }
-ok('siyah kare eşiği darkPct üzerinden', /s\.darkPct>90/.test(lc));
+ok('siyah kare eşiği darkPct üzerinden', /s\.darkPct>90/.test(cek));
 ok('darkPct artık ölü ölçüm değil', (kod.match(/darkPct/g)||[]).length >= 2);
+
+/* ---------- ÜÇ PLATFORM TEK HESAP (2026-08-17) ----------
+   Denetçi yalnız telefondaydı; masaüstünün sözlüğünde `lightBtn` DURUYOR ama
+   karşılığı yoktu (ortak sözlükte ölü anahtar). Kopyalamak yerine hesap
+   çekirdeğe alındı. Bu iddialar, hesabın ileride yeniden KOPYALANMASINI
+   engelliyor: eşik iki yerde yaşarsa biri düzeltilip diğeri unutulur. */
+{
+  const macKod=oku(macYolu());
+  ok('masaüstü ışık çekirdeğini gömüyor', macKod.includes('==CEKIRDEK:isik.js=='));
+  ok('masaüstünde de ışık paneli var (ölü sözlük anahtarı kalmadı)',
+     /id=["']lightOut["']/.test(macKod) && /id=["']lightBtn["']/.test(macKod));
+  /* ÖLÇÜT AKIŞ, KARE DEĞİL. Kamera kapatıldıktan sonra video ögesi bir süre
+     eski genişliğini bildirmeye devam ediyor; yalnız kareye bakan bir panel
+     "kamera kapalı" demek yerine SON ÖLÇÜMÜ asılı bırakır ve kullanıcı
+     olmayan bir ışık durumunu okur. Bu iddiayı yorumda bırakmak yetmez —
+     bozma turu (IŞ8) tam olarak bunu deniyor. */
+  ok('masaüstünde ışık ölçütü akışa bağlı (kapalı kamerada son ölçüm asılı kalmıyor)',
+     /const s=stream \? macIsikOrnek\(\) : null;/.test(macKod));
+  ok('masaüstü nabzı kamera kapanınca duruyor',
+     /function stopCam\(\)\{[\s\S]{0,600}?macIsikDurdur\(\);/.test(macKod));
+  /* Eşikler ÇEKİRDEKTE yaşamalı: kabukta yeniden yazılmış bir eşik, iki
+     platformun aynı kareye farklı not vermesi demek. */
+  for(const [ad,desen] of [['siyah kare',/darkPct>90/],['yüz karanlık',/center<55/],
+                           ['arkadan ışık',/edge>s\.center\*1\.55/],['patlama',/hotPct>8/],
+                           ['yassı görüntü',/sd<16/]])
+    ok('“'+ad+'” eşiği kabukta değil çekirdekte',
+       desen.test(cek) && !desen.test(macKod.replace(/==CEKIRDEK:isik\.js==[\s\S]*?==\/CEKIRDEK:isik\.js==/,'')));
+}
+{
+  /* MASAÜSTÜNDE EĞİM YOK — ve bu bir eksik değil, kasıtlı sınır.
+     `deviceorientation` dizüstünde ya hiç yok ya da ekran kapağının açısını
+     verir; kamerayı eğmez. Eğim PARAMETRE olduğu için veren kabuk verir,
+     vermeyen null geçer ve satır hiç çıkmaz — "ölü ayar" üretmiyoruz. */
+  const r=kos({ton:128, tilt:null});
+  ok('eğim verilmeyince eğim satırı hiç çıkmıyor',
+     !basliklar(r).some(t=>/eğik/i.test(t)));
+}
 
 /* ---------- ESKİ DAVRANIŞ BOZULMADI ---------- */
 {

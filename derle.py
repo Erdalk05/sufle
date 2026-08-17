@@ -62,6 +62,11 @@ PLAN = [
     # yazıldı, parite kapısı masaüstünde de gerektiğini gösterdi; kopya
     # sürüm bırakmak yerine tek kaynağa alındı.
     ('oniz.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Işık/çerçeve denetçisinin hesabı (2026-08-17). Denetçi yalnız telefonda
+    # vardı; masaüstünün sözlüğünde `lightBtn`/`lightHint` DURUYOR ama
+    # karşılığı yoktu — ortak sözlükte ölü anahtar. Kopyalamak yerine hesap
+    # buraya alındı: eşik değiştiğinde iki platform birlikte değişir.
+    ('isik.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip
     # Mac'te unutulan bir eşik, iki platformun farklı sayı göstermesi demek.
     ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),

@@ -1,7 +1,11 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku,cekirdekOku}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
+/* Bütçenin İKİ parçası artık iki yerde yaşıyor: ÖLÇÜ (32×48, piksel döngüsü)
+   çekirdekte, GERİ OKUMA (tuval, willReadFrequently) kabukta. Test ikisini de
+   tutmak zorunda — yoksa bütçe yarısı ölçülmeden değişebilir. */
+const cek=cekirdekOku('isik.js','SUFLE_ISIK').replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* F1 — IŞIK DENETÇİSİ 32x48 ÖRNEKLEMESİ KAYIT SIRASINDA PAHALI MI:
    DEĞİL (hipotez çürüdü). Ölçülen:
@@ -30,10 +34,15 @@ ok('sampleFrame çıkarılabildi', !!mSample);
 if(!mSample) return;
 const sf=mSample[0];
 
-ok('tuval 32x48 kuruluyor', /lightCv\.width=32; lightCv\.height=48;/.test(sf));
+/* ÖLÇÜ ÇEKİRDEKTE SABİT. Sayıyı kabukta aramak artık yanlış olurdu: iki
+   kabuk da aynı sabiti kullanıyor, tek yerde tanımlı. Bütçe kilidi
+   sabitin DEĞERİNE bağlı, adına değil. */
+ok('örnek boyu çekirdekte sabit 32×48 (1536 piksel)',
+   /ISIK_W\s*=\s*32/.test(cek) && /ISIK_H\s*=\s*48/.test(cek));
+ok('tuval bu ölçüde kuruluyor', /lightCv\.width=ISIK_W; lightCv\.height=ISIK_H;/.test(sf));
 ok('kare bu boyuta KÜÇÜLTÜLEREK çiziliyor (4K de olsa 1536 piksel)',
-   /drawImage\(cam,0,0,32,48\)/.test(sf));
-ok('okuma da yalnız bu alandan', /getImageData\(0,0,32,48\)/.test(sf));
+   /drawImage\(cam,0,0,ISIK_W,ISIK_H\)/.test(sf));
+ok('okuma da yalnız bu alandan', /getImageData\(0,0,ISIK_W,ISIK_H\)/.test(sf));
 /* Geri okuma maliyetini asıl belirleyen karar: bayrak düşerse her çağrı
    GPU senkronu olur ve maliyet ölçülemez şekilde artar. */
 ok('bağlam willReadFrequently ile alınıyor',
@@ -43,11 +52,38 @@ ok('bağlam willReadFrequently ile alınıyor',
 ok('tuval yeniden kullanılıyor (her seferinde yeni tuval yok)',
    /if\(!lightCv\)\{ lightCv=document\.createElement\('canvas'\)/.test(sf));
 
+/* MASAÜSTÜ AYNI BÜTÇEYE TABİ (2026-08-17). Denetçi masaüstüne de geldi;
+   orada başka bir ölçü ya da bayrak kullanılsaydı aynı özellik iki
+   platformda farklı maliyet çıkarırdı ve bu test onu hiç görmezdi. */
+{
+  const mac=oku(macYolu());
+  const mSf=mac.match(/function macIsikOrnek\(\)\{[\s\S]*?\n  \}/);
+  ok('masaüstü örnekleyicisi çıkarılabildi', !!mSf);
+  if(mSf){
+    ok('masaüstü de 32×48 sabitini kullanıyor',
+       /lightCv\.width=ISIK_W; lightCv\.height=ISIK_H;/.test(mSf[0]) &&
+       /drawImage\(cam,0,0,ISIK_W,ISIK_H\)/.test(mSf[0]));
+    ok('masaüstünde de willReadFrequently açık',
+       /getContext\('2d',\{willReadFrequently:true\}\)/.test(mSf[0]));
+    ok('masaüstünde de tuval yeniden kullanılıyor',
+       /if\(!lightCv\)\{ lightCv=document\.createElement\('canvas'\)/.test(mSf[0]));
+  }
+}
+
 /* ---------- GERÇEK DÖNGÜ: KAÇ PİKSEL, NE KADAR SÜRÜYOR ---------- */
-const mGovde=sf.match(/let all=0[\s\S]*?return \{mean[^}]*\};/);
+/* Döngü artık çekirdekte; ÖLÇÜLEN kod da oradan çıkarılıyor ki ölçüm
+   gerçek kaynağı sınasın (kopya test, kod değişince sessizce yalan söyler). */
+const mGovde=cek.match(/let all=0[\s\S]*?return \{mean[^}]*\};/);
 ok('piksel döngüsü çıkarılabildi', !!mGovde);
 if(!mGovde) return;
-const olc=new Function('d', mGovde[0]);
+/* SABİTLER DE KAYNAKTAN ÇIKARILIYOR, teste elle yazılmıyor. Elle yazsaydım
+   çekirdekteki ölçü değiştiğinde test ESKİ değerle koşup "bütçe duruyor"
+   derdi — ölçmeyen kapı sınıfı. */
+const mSabit=cek.match(/const ISIK_W[\s\S]*?ISIK_MERKEZ\s*=\s*\{[^}]*\};/);
+ok('örnekleme sabitleri kaynaktan çıkarılabildi', !!mSabit);
+if(!mSabit) return;
+const sabitler=mSabit[0]+'\n';
+const olc=new Function('d', sabitler + mGovde[0]);
 
 /* Sentetik kare sistemin KENDİ luma formülüyle doğrulanıyor:
    0.2126R+0.7152G+0.0722B — gri pikselde (R=G=B=v) sonuç tam v olmalı.
@@ -71,7 +107,7 @@ function kare(merkez, kenar){
 }
 {
   /* İşin SABİT olduğu buradan görünüyor: `n` her zaman 1536. */
-  const say=new Function('d', mGovde[0].replace('return {mean','return {n, mean'));
+  const say=new Function('d', sabitler + mGovde[0].replace('return {mean','return {n, mean'));
   ok('her örnekte tam 1536 piksel geziliyor', say(kare(84,84)).n===32*48);
 }
 {

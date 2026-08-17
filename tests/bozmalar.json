@@ -2060,9 +2060,9 @@
  {
   "ad": "ışık ölçüm ızgarası değişti (bölen sıfır olabilir)",
   "test": "51-isik-denetcisi.js",
-  "kaynak": "telefon",
-  "bul": "  for(let y=0;y<48;y++) for(let x=0;x<32;x++){",
-  "koy": "  for(let y=0;y<0;y++) for(let x=0;x<32;x++){"
+  "kaynak": "isik",
+  "bul": "  for(let y=0;y<ISIK_H;y++) for(let x=0;x<ISIK_W;x++){",
+  "koy": "  for(let y=0;y<0;y++) for(let x=0;x<ISIK_W;x++){"
  },
  {
   "ad": "kayıt sürerken openCam boğaz noktası açıldı (çekimin sesi ölür)",
@@ -3778,5 +3778,61 @@
   "kaynak": "telefon",
   "bul": "  .listitem .t{font-size:var(--tx-md);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
   "koy": "  .listitem .t{font-size:var(--tx-md);font-weight:700}"
+ },
+ {
+  "ad": "IŞ1 siyah kare ayrı teşhisi kalktı (yanıltıcı ışık öğüdü geri gelir)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "if(s.darkPct>90) return [{lv:'bad',",
+  "koy": "if(false) return [{lv:'bad',"
+ },
+ {
+  "ad": "IŞ2 karanlık yüz eşiği düştü (loş oda 'iyi' sayılır)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "if(s.center<55)",
+  "koy": "if(s.center<1)"
+ },
+ {
+  "ad": "IŞ3 arkadan ışık ölçütü gevşedi (sırtı pencereye dönük çekim onaylanır)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "if(s.edge>s.center*1.55)",
+  "koy": "if(s.edge>s.center*99)"
+ },
+ {
+  "ad": "IŞ4 patlama eşiği gevşedi (bembeyaz kare 'iyi' sayılır)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "if(s.hotPct>8)",
+  "koy": "if(s.hotPct>999)"
+ },
+ {
+  "ad": "IŞ5 örnekleme ızgarası değişti (maliyet bütçesi kilidi kaçar)",
+  "test": "96-isik-ornekleme-maliyeti.js",
+  "kaynak": "isik",
+  "bul": "const ISIK_W = 32, ISIK_H = 48;",
+  "koy": "const ISIK_W = 64, ISIK_H = 96;"
+ },
+ {
+  "ad": "IŞ6 eğim satırı platformdan bağımsız çıkıyor (masaüstünde ölü uyarı)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "if(tiltDeg!=null && Math.abs(tiltDeg)>4)",
+  "koy": "if(Math.abs(tiltDeg||9)>4)"
+ },
+ {
+  "ad": "IŞ7 masaüstü ışık paneli kaldırıldı (sözlükte ölü anahtar geri döner)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "mac",
+  "bul": "<div id=\"lightOut\" style=\"margin-top:8px\"></div>",
+  "koy": "<div id=\"lightYok\"></div>"
+ },
+ {
+  "ad": "IŞ8 masaüstünde ölçüt akış değil kare (kamera kapanınca son ölçüm asılı kalır)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "mac",
+  "bul": "const s=stream ? macIsikOrnek() : null;",
+  "koy": "const s=macIsikOrnek();"
  }
 ]
