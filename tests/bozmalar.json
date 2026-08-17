@@ -3050,5 +3050,19 @@
   "kaynak": "telefon",
   "bul": "$('#wb').ondblclick=()=>{ st.wb=0; yazWb(); applyWb(); save(); };",
   "koy": ""
+ },
+ {
+  "ad": "pozlama kullanıcı istemeden kameraya uygulanıyor (çekimi bozar)",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "    if(st.pozElle) applyPoz();",
+  "koy": "    applyPoz();"
+ },
+ {
+  "ad": "beyaz ayarı otomatikken de kameraya istek gönderiyor",
+  "test": "168-elle-pozlama.js",
+  "kaynak": "telefon",
+  "bul": "    if(st.wb) applyWb();",
+  "koy": "    applyWb();"
  }
 ]

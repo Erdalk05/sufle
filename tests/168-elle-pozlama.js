@@ -23,7 +23,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ---------- YETENEĞE BAĞLI GÖSTERİM ---------- */
 {
-  const m=kod.match(/const sapma = caps && caps\.exposureCompensation;[\s\S]*?\} else \{ st\.poz=undefined; \}/);
+  const m=kod.match(/const sapma = caps && caps\.exposureCompensation;[\s\S]*?\} else \{ st\.poz=undefined; st\.pozElle=false; \}/);
   ok('pozlama kurulumu çıkarılabildi', !!m);
   if(m){
     ok('iki yol da aranıyor (sapma ve süre)',
@@ -31,7 +31,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
        /caps\.exposureTime/.test(m[0]));
     ok('desteklenmiyorsa satır gizleniyor', /\$\('#pozRow'\)\.style\.display = pozYet \? 'flex' : 'none'/.test(m[0]));
     ok('desteklenmiyorsa durum da sıfırlanıyor (ölü ayar kalmasın)',
-       /else \{ st\.poz=undefined; \}/.test(m[0]));
+       /else \{ st\.poz=undefined; st\.pozElle=false; \}/.test(m[0]));
     ok('sınırlar cihazdan okunuyor (sabit değer değil)',
        /yet\.min/.test(m[0]) && /yet\.max/.test(m[0]));
   }
@@ -80,7 +80,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 /* ---------- KULLANICI YOLU ---------- */
 {
   ok('sürgü anında uygulanıyor (sonuç gözle bulunuyor)',
-     /\$\('#poz'\)\.oninput=e=>\{ st\.poz=\+e\.target\.value; yazPoz\(\); applyPoz\(\); save\(\); \};/.test(kod));
+     /\$\('#poz'\)\.oninput=e=>\{ st\.poz=\+e\.target\.value; st\.pozElle=true; yazPoz\(\); applyPoz\(\); save\(\); \};/.test(kod));
   ok('beyaz ayarı da anında uygulanıyor',
      /\$\('#wb'\)\.oninput=e=>\{ st\.wb=\+e\.target\.value; yazWb\(\); applyWb\(\); save\(\); \};/.test(kod));
   /* Otomatiğe dönüş kolay olmalı: yanlış renkte kalan kullanıcı sıkışmasın. */
@@ -96,4 +96,25 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
      bilmeyen kullanıcı ayarı hiç açmaz. */
   ok('pozlama açıklaması ne işe yaradığını söylüyor', /pozHint:'[^']*arkadan ışık|pozHint:'[^']*Arkadan ışık/i.test(tel));
   ok('beyaz ayarı açıklaması ten rengini anlatıyor', /wbHint:'[^']*ten rengin/i.test(tel));
+}
+
+/* ---------- KULLANICI İSTEMEDEN KAMERAYA DOKUNULMAZ (kapı yakaladı) ----------
+   İlk hâlim açılışta `applyPoz()` çağırıyordu: kullanıcı sürgüye hiç
+   dokunmadığı hâlde kamera 'manual' kipe alınıyordu. Çekim akışı ölçümünde
+   iki hata birden düştü (`poz` ve onun bozduğu `camLock`) ve ALTYAZI ÜRETİMİ
+   bozuldu — yani yeni bir ayar, çekirdek özelliği kırıyordu. Otomatik
+   pozlama iyidir; elle kip ancak kullanıcı SEÇERSE anlamlıdır. */
+{
+  ok('açılışta pozlama yalnız kullanıcı seçtiyse uygulanıyor',
+     /if\(st\.pozElle\) applyPoz\(\);/.test(kod));
+  ok('seçim bayrağı sürgüye dokununca kalkıyor',
+     /st\.poz=\+e\.target\.value; st\.pozElle=true;/.test(kod));
+  ok('desteklenmeyen cihazda seçim bayrağı da sıfırlanıyor',
+     /st\.poz=undefined; st\.pozElle=false;/.test(kod));
+  /* Beyaz ayarı da aynı kural: otomatikken kameraya istek göndermek
+     gereksiz ve reddedilirse boşuna hata kaydı bırakır. */
+  ok('beyaz ayarı otomatikken kameraya dokunulmuyor', /if\(st\.wb\) applyWb\(\);/.test(kod));
+  /* Varsayılan durumda yeni alan olmalı: eski kayıtlarda yoktur ve
+     `undefined` falsy olduğu için davranış doğru kalır. */
+  ok('pozElle varsayılan durumda tanımlı', /pozElle:false/.test(kod));
 }

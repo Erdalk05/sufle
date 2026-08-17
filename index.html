@@ -2533,7 +2533,7 @@ const DEF={
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
   hideUI:true,
-  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, pozElle:false, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   /* G.1: karaoke vurgusu VARSAYILAN AÇIK. Eski kullanıcının kaydında bu alan
      yok ama Object.assign varsayılanın üstüne yazdığı için EKSİK ALAN
@@ -3397,8 +3397,16 @@ function setupCaps(){
                                          : Math.round((mn+mx)/2);
     if(st.poz===undefined || st.poz<mn || st.poz>mx) st.poz=varsayilan;
     $('#poz').value=st.poz; yazPoz();
-    applyPoz();
-  } else { st.poz=undefined; }
+    /* KULLANICI İSTEMEDEN KAMERAYA DOKUNULMAZ (kapı yakaladı, 2026-08-17).
+       İlk hâli açılışta applyPoz() çağırıyordu: kullanıcı sürgüye hiç
+       dokunmadığı hâlde kamera 'manual' kipe alınıyordu. Sahte kamerada
+       istek reddedildi ve çekim akışı ölçümünde İKİ hata birden düştü
+       (`poz` ve onun bozduğu `camLock`), üstelik altyazı üretimi de bozuldu.
+       Otomatik pozlama iyidir; elle kip ancak kullanıcı SEÇERSE anlamlıdır.
+       Seçim yapılmışsa (pozElle) kamera yeniden açıldığında geri uygulanır —
+       yoksa çözünürlük değişiminde ayar sessizce kaybolurdu. */
+    if(st.pozElle) applyPoz();
+  } else { st.poz=undefined; st.pozElle=false; }
 
   /* BEYAZ AYARI. Kip 'manual'a alınmadan renk sıcaklığı uygulanmıyor —
      ikisi BİRLİKTE gerekiyor; yalnız birini istemek sessizce hiçbir şey
@@ -3415,7 +3423,9 @@ function setupCaps(){
     if(st.wb && (st.wb<mn || st.wb>mx)) st.wb=0;
     $('#wb').value=st.wb||Math.round((mn+mx)/2);
     yazWb();
-    applyWb();
+    /* Aynı kural: st.wb 0 iken kamera zaten otomatik; ona 'continuous'
+       göndermek gereksiz bir istek ve reddedilirse boşuna hata kaydı. */
+    if(st.wb) applyWb();
   } else { st.wb=0; }
 }
 /* Pozlama iki yoldan biriyle uygulanıyor; hangisi olduğunu setupCaps seçti.
@@ -8942,7 +8952,7 @@ $('#zoom').oninput=e=>{ st.zoom=+e.target.value; applyZoom(); save(); };
 /* Pozlama ve beyaz ayarı: değer ANINDA kameraya gidiyor ki kullanıcı
    sürgüyü çekerken sonucu görsün — sonradan uygulanan bir ayar burada
    işe yaramaz, doğru değeri gözle bulunuyor. */
-$('#poz').oninput=e=>{ st.poz=+e.target.value; yazPoz(); applyPoz(); save(); };
+$('#poz').oninput=e=>{ st.poz=+e.target.value; st.pozElle=true; yazPoz(); applyPoz(); save(); };
 $('#wb').oninput=e=>{ st.wb=+e.target.value; yazWb(); applyWb(); save(); };
 /* Çift dokunuş = otomatiğe dön. Elle beyaz ayarını AÇMAK kolay, geri
    dönmek zor olmamalı; aksi hâlde kullanıcı yanlış renkte kalır. */
