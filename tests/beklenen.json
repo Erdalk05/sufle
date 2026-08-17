@@ -11,7 +11,7 @@
  "10-shader-ve-bithizi.js": 28,
  "11-ses-studyosu-ve-filtre.js": 74,
  "12-arama-profil-altyazi.js": 55,
- "13-kayit-yolu-ve-durum.js": 74,
+ "13-kayit-yolu-ve-durum.js": 76,
  "14-nefesle-akis-ve-yuzen.js": 45,
  "15-platform-paritesi.js": 101,
  "16-olcum-butunlugu.js": 37,
@@ -34,7 +34,7 @@
  "33-iki-surumlu-senaryo.js": 36,
  "34-altyazi-kuyruklari.js": 33,
  "35-arsiv-askida-kalma.js": 23,
- "36-sesle-takip-yeniden-baslatma.js": 20,
+ "36-sesle-takip-yeniden-baslatma.js": 24,
  "37-kamera-kurtarma.js": 22,
  "38-kompozit-baglam-kaybi.js": 18,
  "39-kayitta-kamera-degistirme.js": 17,
@@ -176,5 +176,6 @@
  "175-kesilen-klibin-altyazisi.js": 20,
  "176-arsiv-satiri-okunur.js": 13,
  "177-perde-rengi-olcumu.js": 24,
- "178-karsilama-basligi-ve-kayit-bicimi.js": 29
+ "178-karsilama-basligi-ve-kayit-bicimi.js": 29,
+ "179-iphone-cekim-donmasi.js": 32
 }

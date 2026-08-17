@@ -141,7 +141,22 @@ ok('dosya süresi ölçülüyor', /const dosyaSure=vv\.duration;/.test(js));
 ok('ses süresiyle karşılaştırılıyor', /const fark=\(lastDur\|\|0\)-dosyaSure;/.test(js));
 ok('1,5 sn üstü fark bildiriliyor', /fark>1\.5/.test(js));
 ok('donma anı gösteriliyor', /GÖRÜNTÜ '\+clock\(nerede\)\+' SANİYEDE DONMUŞ/.test(js));
-ok('ne yapılacağı yazılı', /720p yap, kompoziti kapat/.test(js));
+/* ÖĞÜT DEĞİŞTİ ÇÜNKÜ YANLIŞTI (2026-08-17 akşamı). Eski metin donmayı
+   BELLEĞE bağlıyordu ("iPhone uzun çekimde belleği tüketebiliyor, 720p yap,
+   çekimi kısa tut"). v9.0 commitindeki ölçüm bunu çürütüyor: 41 saniyelik
+   çekimde görüntü 19. saniyede donmuş ve 19 saniye 1080pde ~20 MB eder.
+   Gerçek sebep iOSta ses oturumunun çekim ortasında yeniden kurulması; en sık
+   tetikleyicisi kayıt sırasında çalışan sesle takip (iPhone tanımayı her
+   sessizlikte kapatıp yeniden başlatıyor). Kullanıcıyı yanlış yere gönderen
+   bir öğüt, öğüt vermemekten kötüdür — bu yüzden kilit metne değil İDDİAYA
+   bağlandı: sebep olarak ses oturumu geçiyor mu. */
+ok('ne yapılacağı yazılı', /ses oturumunun yeniden kurulması|audio session/.test(js));
+ok('sesle takip açıkken sebep doğrudan söyleniyor', /cekimSesle && IS_WK\) \? m\('vidDonduSes'\)/.test(js));
+/* Ölçüm YORUMSUZ kaynakta yapılıyor: eski metni ANLATAN açıklama yorumu
+   dosyada duruyor ve ona bakan bir kontrol kendi kendini kırardı — ölçtüğü
+   şey kod değil belge olurdu. */
+ok('eski yanlış öğüt geri gelmedi',
+   !/belleği tüketebiliyor/.test(js.replace(/\/\*[\s\S]*?\*\//g,'')));
 // karar mantığı
 function donduMu(vidOldu, lastDur, dosyaSure){
   return vidOldu>0.5 || (isFinite(dosyaSure) && lastDur>3 && (lastDur-dosyaSure)>1.5);

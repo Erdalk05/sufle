@@ -2,7 +2,52 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔍 17 Ağustos akşamı — **v9.22 hazır, yayın kararı sende** (denetim turu)
+## 🔴 17 Ağustos akşamı — **iPHONE DONMASININ SEBEBİ BULUNDU** (v9.23 hazır, yayın kararı sende)
+
+Erdal: "en büyük sorun devam ediyor, iPhoneda çektiğim videolar belirli bir süre
+sonra donuyor, bu sorun hiç çözülmedi." Üç ayrı tur bu soruna dokunmuş ve üçü de
+yalnız GÖRÜNÜRLÜK eklemişti (kayıtta uyarı, sonuç ekranında "X saniyede donmuş",
+oynatma nabzı). Sebep hiç aranmamıştı.
+
+**Kanıt deponun içindeydi.** v9.0 commiti Erdalın ölçümünü saklamış:
+*"41 saniyelik çekim, ses tam, GÖRÜNTÜ 19. saniyede donuyor"* — ve o tur
+"en güçlü aday bellek baskısı" demiş. **Bu hipotez ölçüyle çürüyor:** 19 saniye,
+uygulamanın kendi bit hızı tablosuna göre (65 MB/dk) 1080pde ~20 MB eder.
+20 MB bellek baskısı yapmaz. Yani sonuç ekranının aylardır verdiği öğüt
+("720p yap, çekimi kısa tut") kullanıcıyı **yanlış yere gönderiyordu**.
+
+**Gerçek zincir kaynakta zaten yazılıydı, ama hiç kayıt yoluna bağlanmamıştı:**
+iOSta ses oturumu TEKTİR · iPhone tanımayı sürdürmez, her sessizlikte oturumu
+kapatır (v9.12de sanal saatle ölçülmüştü) · uygulama onu yeniden başlatır ·
+**her `sr.start()` iOS ses oturumunu yeniden kurar; yakalama oturumu yeniden
+kurulunca GÖRÜNTÜ donar, SES akmaya devam eder.** Yani donma "bir süre sonra"
+değil, **ilk konuşma arasından sonra** oluyordu — 19 saniye tam da birkaç
+cümlelik açılışın ardından gelen ilk duraklama. Kaynaktaki yorum bunu
+"Erdalın tarifi birebir bu" diye yazmış ama yalnız ÖNİZLEMEYİ onarmış;
+kayıt yolunda `cam.play()` kurtarması bilerek atlanıyordu.
+
+**Düzeltme deponun kendi kanıtlanmış kalıbı.** Nefesle akış (VAD) için aynı
+karar zaten alınmıştı: kayıt boyunca kapat, bitince geri aç (`vadOffRec`).
+Sesle takibe hiç uygulanmamıştı — **eksik simetri.** Artık:
+kayıt başlarken sesle takip duraklatılıyor ve sebebi ekranda yazıyor ·
+kayıt bitince aynı gecikmeyle (400 ms) kendiliğinden geri geliyor ·
+çekim sürerken elle de açılamıyor (sebep + ayarın yeri söyleniyor) ·
+bekleyen bir yeniden başlatma zamanlayıcısı için nöbetçi var ·
+**Ayarlar → Sesle takip → Kayıt sırasında sesle takip** anahtarı riski bilerek
+almak isteyene duruyor (varsayılan KAPALI, masaüstünde kapıda soluk + sebebi
+yazılı, çünkü orada bu kısıt yok) · anahtar açıkken donma olursa sonuç ekranı
+sebebi doğrudan söylüyor ve kayıttaki her yeniden başlatma saniyesiyle
+günlüğe damgalanıyor.
+
+Sonuç ekranındaki **çürüyen bellek öğüdü de değiştirildi**: artık ses oturumunun
+yeniden kurulmasını gösteriyor. Yanlış yere gönderen öğüt, öğüt vermemekten
+kötüdür.
+
+`tests/179` (32 iddia) + tests/36ya kayıt dalı · **15 yeni kasıtlı bozma**.
+Bozma turu kendi testimin bir kusurunu buldu: damga iddiası yalnız ATAMAYA
+bakıyordu, koşulu `if(false)` yapan bozmayı yakalamıyordu — sıkılaştırıldı.
+
+## 🔍 17 Ağustos akşamı — **v9.22 YAYINLANDI** (denetim turu)
 
 Uygulama gerçek tarayıcıda 390 ve 360 pxte, TR ve EN olarak AÇILDI; kapının
 ölçmediği sınıflar için yeni dedektörler yazıldı. Dört gerçek kusur çıktı,
@@ -1604,7 +1649,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7025 test** (gece başında 732) · yeni test dosyası: 39–178
+- **7074 test** (gece başında 732) · yeni test dosyası: 39–179
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

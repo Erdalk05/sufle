@@ -35,7 +35,12 @@ if(!mWatch || !mKey) return;
 {
   const i=tel.indexOf('id="remoteSheet"');
   ok('kumanda paneli bulundu', i>0);
-  const panel=tel.slice(i, i+4000);
+  /* DİLİM SABİT UZUNLUKTA OLMAMALI (2026-08-17). 4000 karakter, panele bir
+     ayar daha eklendiği anda kutuyu dilimin DIŞINDA bıraktı ve test ürün
+     doğruyken kırmızı verdi. Ölçüt panelin kendi sonu: bir sonraki üst düzey
+     panel başlangıcı. */
+  const sonraki=tel.indexOf('<div class="sheet"', i+10);
+  const panel=tel.slice(i, sonraki>i ? sonraki : i+12000);
   ok('tetik kelimesi kutusu kumanda panelinin İÇİNDE', /id="wakeWord"/.test(panel));
   ok('tanı alanı da aynı panelde', /id="remoteDiag"/.test(panel));
 }

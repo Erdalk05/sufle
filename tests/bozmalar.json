@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "**v9.22 hazır, yayın kararı sende**",
-  "koy": "**Bazı işler yapıldı**"
+  "bul": "(v9.23 hazır, yayın kararı sende)",
+  "koy": "(bazı işler yapıldı)"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4016,5 +4016,110 @@
   "kaynak": "telefon",
   "bul": "    const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);",
   "koy": "    if(parca.length===2 && parca.join(' · ').length>16) parca.length=1;\n    const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);"
+ },
+ {
+  "ad": "D1 kayıt başlarken sesle takip duraklatılmıyor (iPhone donması geri döner)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(IS_WK && !st.sesKayitta && voiceOn){\n    sesleGeriAl=true; stopVoice(); toast(m('voiceOffRec')); }",
+  "koy": "  "
+ },
+ {
+  "ad": "D2 duraklatma sessiz yapılıyor (kullanıcı sebebini bilmiyor)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    sesleGeriAl=true; stopVoice(); toast(m('voiceOffRec')); }",
+  "koy": "    sesleGeriAl=true; stopVoice(); }"
+ },
+ {
+  "ad": "D3 kayıt bitince sesle takip geri gelmiyor (özellik sessizce kayboldu)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(sesleGeriAl){ sesleGeriAl=false; setTimeout(()=>{ if(!voiceOn) startVoice(); },400); }",
+  "koy": "  "
+ },
+ {
+  "ad": "D4 yasak yalnız ayara bakıyor (masaüstünde de kapatır)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  return IS_WK && !st.sesKayitta && !!(rec && rec.state==='recording');",
+  "koy": "  return !st.sesKayitta && !!(rec && rec.state==='recording');"
+ },
+ {
+  "ad": "D5 yasak kayıt durumuna bakmıyor (sesle takip hiç açılmaz)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  return IS_WK && !st.sesKayitta && !!(rec && rec.state==='recording');",
+  "koy": "  return IS_WK && !st.sesKayitta;"
+ },
+ {
+  "ad": "D6 ayar yok sayılıyor (anahtar ölü olur)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  return IS_WK && !st.sesKayitta && !!(rec && rec.state==='recording');",
+  "koy": "  return IS_WK && !!(rec && rec.state==='recording');"
+ },
+ {
+  "ad": "D7 kayıt sürerken elle açma yine serbest",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(sesleKayittaYasak()){ toast(m('voiceRecBlock')); buzz(40); return; }",
+  "koy": "  "
+ },
+ {
+  "ad": "D8 bekleyen yeniden başlatma nöbetçisi kaldırıldı",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(sesleKayittaYasak()){ stopVoice(); return; }",
+  "koy": "  "
+ },
+ {
+  "ad": "D9 anahtar varsayılan AÇIK (koruma yeni kullanıcıda çalışmaz)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "voiceCmd:true, sesKayitta:false, trash:[]",
+  "koy": "voiceCmd:true, sesKayitta:true, trash:[]"
+ },
+ {
+  "ad": "D10 anahtar kapıdan çıkarıldı (masaüstünde ölü ayar)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "    ['sesKayitta', ()=>IS_WK,",
+  "koy": "    ['sesKayittaYok', ()=>IS_WK,"
+ },
+ {
+  "ad": "D11 donma sebebi sesle takiple ilişkilendirilmiyor",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "          ((cekimSesle && IS_WK) ? m('vidDonduSes') : (L==='tr'",
+  "koy": "          ((false) ? m('vidDonduSes') : (L==='tr'"
+ },
+ {
+  "ad": "D12 kayıttaki yeniden başlatma damgalanmıyor (bir daha olursa iz yok)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "      if(rec && rec.state==='recording'){ srKayittaSon=recElapsed();",
+  "koy": "      if(false){ srKayittaSon=recElapsed();"
+ },
+ {
+  "ad": "D13 çürüyen bellek öğüdü geri geldi (kullanıcı yanlış yere gider)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "            ? 'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses '\n              +'oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). '",
+  "koy": "            ? 'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor. '\n              +'720p yap. '"
+ },
+ {
+  "ad": "D14 geri getirme gecikmesi nefesle akıştan ayrıştı",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "if(!voiceOn) startVoice(); },400); }",
+  "koy": "if(!voiceOn) startVoice(); },50); }"
+ },
+ {
+  "ad": "D15 red tanıyıcı kurulduktan SONRAya kaydı (ses oturumu yine yeniden kurulur)",
+  "test": "179-iphone-cekim-donmasi.js",
+  "kaynak": "telefon",
+  "bul": "  if(sesleKayittaYasak()){ toast(m('voiceRecBlock')); buzz(40); return; }\n  if(running) stop();",
+  "koy": "  if(running) stop();"
  }
 ]

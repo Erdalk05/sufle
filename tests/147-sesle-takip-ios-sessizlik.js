@@ -82,7 +82,11 @@ function kos(restartSrc, onendSrc, oturumMs, sonucVeriyor, tur) {
     get srSeen(){return srSeen;}, set srSeen(v){srSeen=v;},
     SR_SAGLIKLI_MS:+((tel.match(/SR_SAGLIKLI_MS=(\d+)/)||[])[1]||3000),
     SR_HIZLI_MS:hizli, setTimeout, clearTimeout, performance,
-    toast:()=>{}, m:k=>k, logErr:()=>{},
+    toast:()=>{}, m:k=>k, logErr:()=>{}, logNot:()=>{},
+    /* 2026-08-17: restartVoice artık kayıt sürerken iOSta yeniden başlatmıyor.
+       Bu tezgâh KAYIT YOKKEN sessizlik davranışını ölçüyor, o yüzden yasak
+       kapalı; kayıt dalı tests/36da ayrıca kilitli. */
+    sesleKayittaYasak:()=>false, srKayittaSon:0, recElapsed:()=>0,
     stopVoice:()=>{ voiceOn=false; kapandi=true; },
   };
   const restartVoice=new Function('ctx',`with(ctx){ ${restartSrc}; return restartVoice; }`)(ctx);

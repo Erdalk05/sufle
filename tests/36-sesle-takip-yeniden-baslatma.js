@@ -36,6 +36,14 @@ function kos({hemenOlur=true, sonucGeliyor=false, yasaMs=0, tavan=400}={}){
   const iz={tur:0, durdu:false, uyari:false};
   new Function('__iz','__hemen','__sonuc','__yasa','__tavan', `
     let voiceOn=true, sr={}, srFails=0, srRetryT=null, srBasladi=0;
+    /* 2026-08-17: restartVoice artık kayıt sürerken iOSta tanımayı yeniden
+       başlatmıyor (ses oturumunu yeniden kurmak çekimin GÖRÜNTÜSÜNÜ
+       donduruyordu). Bu tezgâh kayıt YOKKEN davranışı ölçüyor; kayıt
+       dalı ayrıca aşağıda sınanıyor. */
+    let __kayitta=false;
+    const sesleKayittaYasak=()=>__kayitta;
+    let srKayittaSon=0; const rec=null; const logNot=()=>{};
+    const recElapsed=()=>0;
     /* T54'te eklenen sessiz olum nobetcisi stopVoice icinde temizleniyor;
        bu tezgah yeniden BASLATMAYI siniyor, nobetciyi degil. */
     let sesGeldi=false, sessizNobet=null;
@@ -134,6 +142,8 @@ function kapatAcTuru(){
     const cancelAnimationFrame=()=>{};
     const $=()=>({classList:{remove(){},add(){}}});
     const toast=()=>{}; const m=k=>k; const logErr=()=>{}; const performance={now:()=>0};
+    const sesleKayittaYasak=()=>false;   // bu tur kayıt YOKKEN koşuyor
+    let srKayittaSon=0; const rec=null; const logNot=()=>{}; const recElapsed=()=>0;
     ${restart}
     ${stopSrc}
     function startVoice(){ sr={ start(){ if(this.c) throw new Error('InvalidStateError'); this.c=true; } };
@@ -159,3 +169,65 @@ const kodStop = stopSrc.replace(/\/\*[\s\S]*?\*\//g,'');
 ok('stopVoice zamanlayıcıyı temizliyor', /clearTimeout\(srRetryT\)/.test(kodStop));
 ok('stopVoice olay işleyicilerini de bırakıyor',
    /sr\.onresult=null/.test(kodStop) && /sr\.onerror=null/.test(kodStop));
+
+
+/* ---------- KAYIT SÜRERKEN YENİDEN BAŞLATMA YOK (2026-08-17 akşamı) ----------
+   Erdalın aylardır bildirdiği "iPhoneda çekilen video bir süre sonra donuyor"
+   sorununun kök nedeni. v9.0 commitindeki ölçüm: 41 saniyelik çekimde görüntü
+   19. saniyede donuyor, ses tam. 19 saniye 1080pde ~20 MB eder, yani o turun
+   "bellek baskısı" hipotezi ölçüyle çürüyor.
+   Gerçek zincir: iOSta ses oturumu TEKTİR · iPhone tanımayı her sessizlikte
+   kapatır · uygulama yeniden başlatır · her başlatma ses oturumunu yeniden
+   kurar · yakalama oturumu yeniden kurulunca GÖRÜNTÜ donar, ses akar.
+   Yani donma "bir süre sonra" değil, İLK KONUŞMA ARASINDAN sonra.
+   Bekleyen bir zamanlayıcı kaydın ortasında ateşlerse tam bunu yapardı;
+   nöbetçi onu yakalayıp tanımayı KAPATIYOR, yeniden başlatmıyor. */
+{
+  const iz={baslatildi:0, durduruldu:false};
+  const f=new Function('__iz',`
+    let voiceOn=true, sr={}, srFails=0, srRetryT=null, srBasladi=0;
+    let sesGeldi=false, sessizNobet=null;
+    const SR_SAGLIKLI_MS=3000, SR_HIZLI_MS=150;
+    const performance={now:()=>0};
+    const clearTimeout=()=>{};
+    const setTimeout=(fn)=>{ fn(); return 1; };
+    const toast=()=>{}; const m=k=>k; const logErr=()=>{}; const logNot=()=>{};
+    let srKayittaSon=0; const recElapsed=()=>5;
+    const rec={state:'recording'};
+    const sesleKayittaYasak=()=>true;          // iOS + ayar kapalı + kayıt sürüyor
+    function stopVoice(){ voiceOn=false; __iz.durduruldu=true; }
+    sr.start=()=>{ __iz.baslatildi++; };
+    ${restart}
+    restartVoice(true);
+    return { voiceOn };
+  `);
+  const r=f(iz);
+  ok('kayıt sürerken tanıma YENİDEN BAŞLATILMIYOR', iz.baslatildi===0);
+  ok('bunun yerine sesle takip kapatılıyor', iz.durduruldu===true && r.voiceOn===false);
+}
+{
+  /* Aynı yol, ayar AÇIKKEN: kullanıcı riski bilerek kabul ettiyse davranış
+     eskisi gibi. Yasak koşulsuz olsaydı ayar ölü bir anahtar olurdu. */
+  const iz={baslatildi:0, durduruldu:false};
+  const f=new Function('__iz',`
+    let voiceOn=true, sr={}, srFails=0, srRetryT=null, srBasladi=0;
+    let sesGeldi=false, sessizNobet=null;
+    const SR_SAGLIKLI_MS=3000, SR_HIZLI_MS=150;
+    const performance={now:()=>0};
+    const clearTimeout=()=>{};
+    const setTimeout=(fn)=>{ fn(); return 1; };
+    const toast=()=>{}; const m=k=>k; const logErr=()=>{}; const logNot=()=>{};
+    let srKayittaSon=0; const recElapsed=()=>5;
+    const rec={state:'recording'};
+    const sesleKayittaYasak=()=>false;
+    function stopVoice(){ voiceOn=false; __iz.durduruldu=true; }
+    sr.start=()=>{ __iz.baslatildi++; };
+    ${restart}
+    restartVoice(true);
+    return { srKayittaSon };
+  `);
+  const r=f(iz);
+  ok('ayar açıkken yeniden başlatma sürüyor', iz.baslatildi===1 && !iz.durduruldu);
+  /* Damga şart: donma olursa sonuç ekranı bunu sebeple ilişkilendirebilsin. */
+  ok('kayıttaki yeniden başlatma damgalanıyor (teşhis için)', r.srKayittaSon===5);
+}

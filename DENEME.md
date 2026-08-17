@@ -1,6 +1,6 @@
 # Sufle — deneme kılavuzu (mağazadan önce)
 
-**Sürüm 9.22 · 17 Ağustos 2026 · adres: https://erdalk05.github.io/sufle/**
+**Sürüm 9.23 · 17 Ağustos 2026 · adres: https://erdalk05.github.io/sufle/**
 
 Bu sayfa, uygulamayı kendinde ve yakınlarında denetmek isteyen için yazıldı.
 Her platform için **tek doğru yol** var; başka yollar çalışır ama bir yerde

@@ -1653,6 +1653,15 @@
   <div class="row" style="margin-top:20px"><label data-i18n="mapList">Eşleme tablosu</label></div>
   <div id="mapList"></div>
 
+  <!-- ÇEKİMİN GÖRÜNTÜSÜNÜ DONDURAN ASIL SEBEP BURADA (2026-08-17 akşamı).
+       iPhone tanımayı sürdürmüyor: her sessizlikte oturum kapanıyor ve
+       uygulama onu yeniden başlatıyor. Her başlatma iOS ses oturumunu
+       yeniden kuruyor; yakalama oturumu yeniden kurulunca GÖRÜNTÜ donuyor,
+       ses akmaya devam ediyor. Aynı karar nefesle akış için zaten alınmıştı
+       (kayıt boyunca kapatılıyor) — sesle takibe hiç uygulanmamıştı. -->
+  <div class="tog"><span data-i18n="tgSesKayitta">Kayıt sırasında sesle takip</span><div class="sw" data-t="sesKayitta"></div></div>
+  <div class="hint" data-i18n="sesKayittaHint">iPhone tanımayı her sessizlikte kapatıp yeniden başlatıyor; her başlatma ses oturumunu yeniden kuruyor ve <b>çekimin görüntüsü o anda donabiliyor</b> (ses akmaya devam ettiği için kayıt sağlam görünür). Bu yüzden kayıt başlarken sesle takip duraklatılıyor ve kayıt bitince kendiliğinden geri geliyor. Masaüstünde bu sorun yok, ayar oradaki akışı hiç değiştirmiyor.</div>
+
   <div class="row" style="margin-top:22px"><label data-i18n="voiceCmdL">Sesli komut</label></div>
   <div class="tog"><span data-i18n="voiceCmdT">"sufle başla / dur / hızlan / yavaşla / başa dön / kaydet"</span><div class="sw on" data-t="voiceCmd"></div></div>
   <!-- Sesli komut KAPALIYKEN bu alan hiçbir şey yapmıyor: komut eşleştirmesi
@@ -2014,7 +2023,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.22';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.23';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2084,6 +2093,8 @@ const I18N={
   audTest:'Ses testi (cihaza yaptır)',
   audTestHint:'Telefonun hangi kayıt biçiminde ses yazdığını tek tek dener ve çalışanı kalıcı seçer. Yaklaşık 15 saniye sürer.',
   mimeNow:'Seçili kayıt biçimi',mimeClear:'Seçimi bırak (otomatik)',
+  tgSesKayitta:'Kayıt sırasında sesle takip',
+  sesKayittaHint:'iPhone tanımayı her sessizlikte kapatıp yeniden başlatıyor; her başlatma ses oturumunu yeniden kuruyor ve <b>çekimin görüntüsü o anda donabiliyor</b> (ses akmaya devam ettiği için kayıt sağlam görünür). Bu yüzden kayıt başlarken sesle takip duraklatılıyor ve kayıt bitince kendiliğinden geri geliyor. Masaüstünde bu sorun yok, ayar oradaki akışı hiç değiştirmiyor.',
   fixAudioHint:'Çekimde ses çıkmıyorsa buna bas: kamera ve mikrofon sıfırdan açılır.',
   tgSafeAudio:'Güvenli ses modu (iPhone için önerilir)',
   safeAudioHint:'Kamerayı en sade ayarlarla açar (çözünürlük isteği yok). iPhone\'da sessiz kayıt sorununu çözen ayar budur; kapatırsan yüksek çözünürlük istenir.',
@@ -2254,6 +2265,8 @@ const I18N={
   audTest:'Audio test (let the device decide)',
   audTestHint:'Tries every recording format and keeps the one that actually writes audio. Takes about 15 seconds.',
   mimeNow:'Chosen recording format',mimeClear:'Drop the choice (automatic)',
+  tgSesKayitta:'Voice follow while recording',
+  sesKayittaHint:'iPhone ends recognition at every pause and the app restarts it; each restart rebuilds the audio session and <b>the picture of the take can freeze right there</b> (audio keeps flowing, so the take looks fine). Voice follow is therefore paused when recording starts and comes back on its own when the take ends. Desktop is unaffected.',
   fixAudioHint:'If your takes come out silent, tap this: camera and mic are re-acquired.',
   tgSafeAudio:'Safe audio mode (recommended on iPhone)',
   safeAudioHint:'Opens the camera with the simplest request (no resolution ask). This is the setting that fixes silent recordings on iPhone.',
@@ -2440,7 +2453,7 @@ const MSG={
   camBusy:'📷 Kamera başka uygulamada açık — FaceTime/Zoom/Kamera\'yı kapat ve tekrar dene',
   camNone:'📷 Uygun kamera bulunamadı — çözünürlüğü 720p yapıp tekrar dene',
   delConfirm:'⚠️ Emin misin? Tekrar bas',deletedUndo:'Silindi — ↺ ile geri getirebilirsin',
-  restored:'↺ Senaryo geri geldi',compTakildi:'⚠️ Görüntü işleme bir an takıldı — kareler yedek yoldan akıtılıyor. Çekimde kısa bir kesiklik olabilir; donmuş görüntü kaydedilmiyor.',oynatDondu:'📼 Görüntü donunca video baştan çözülüyor — ses akmaya devam ediyordu. Geri gelmezse donma çekimin kendisinde demektir.',oynatDosya:'⛔ Bu çekimin görüntüsü şu saniyeden sonra DOSYANIN İÇİNDE donuk — oynatıcı kurtaramadı. Sesi sağlam. Çekimi kaydedip başka bir oynatıcıda aç: orada da aynı yerde donacaktır.',sesSustu:'⛔ SES SUSTU — görüntü akıyor ama mikrofondan ses gelmiyor (arama, başka bir uygulama ya da kulaklık değişimi olabilir). Bundan sonrası SESSİZ kaydediliyor; kaydı bitir.',sesGeri:'🎙 Ses geri geldi — sessiz kalan bölüm çekimde kalır, gerekiyorsa o kısmı tekrar al.',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPickBad:'Kameranın gördüğü köşe tek renk değil — orada perdeden başka bir şey var (duvar, omuz, gölge). Perde kareyi dolduracak şekilde kadrajı düzelt ve tekrar dene; yanlış rengi anahtar yapmaktansa hiç yapmıyoruz.',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
+  restored:'↺ Senaryo geri geldi',compTakildi:'⚠️ Görüntü işleme bir an takıldı — kareler yedek yoldan akıtılıyor. Çekimde kısa bir kesiklik olabilir; donmuş görüntü kaydedilmiyor.',oynatDondu:'📼 Görüntü donunca video baştan çözülüyor — ses akmaya devam ediyordu. Geri gelmezse donma çekimin kendisinde demektir.',oynatDosya:'⛔ Bu çekimin görüntüsü şu saniyeden sonra DOSYANIN İÇİNDE donuk — oynatıcı kurtaramadı. Sesi sağlam. Çekimi kaydedip başka bir oynatıcıda aç: orada da aynı yerde donacaktır.',sesSustu:'⛔ SES SUSTU — görüntü akıyor ama mikrofondan ses gelmiyor (arama, başka bir uygulama ya da kulaklık değişimi olabilir). Bundan sonrası SESSİZ kaydediliyor; kaydı bitir.',sesGeri:'🎙 Ses geri geldi — sessiz kalan bölüm çekimde kalır, gerekiyorsa o kısmı tekrar al.',vidDondu:'⛔ GÖRÜNTÜ DONDU — kayıt sürüyor ama yeni kare gelmiyor. Bundan sonrası donmuş kare olarak kaydediliyor; kaydı bitirip yeniden başlat.',vidGeri:'📷 Görüntü geri geldi — donan bölüm çekimde kalır, gerekiyorsa baştan al.',vidDied:'⛔ GÖRÜNTÜ KESİLDİ — ses sürüyor ama video durdu, kaydı bitir',audDied:'⛔ SES KESİLDİ — görüntü sürüyor ama mikrofon gitti, kaydı bitir',fxDead:'⛔ Ses işleme durdu — bundan sonrası SESSİZ kaydediliyor, kaydı bitir',fxBack:'🔊 Ses işleme geri geldi',marksReset:'Metin değişti — bölüm ✓ işaretleri ve zorlanma haritası sıfırlandı',vadOffRec:'🫁 Nefesle akış kayıt boyunca kapatıldı (iPhone sesi korunuyor)',voiceOffRec:'🎤 Sesle takip çekim boyunca duraklatıldı — iPhone tanımayı her sessizlikte yeniden başlatıyor ve bu ÇEKİMİN GÖRÜNTÜSÜNÜ dondurabiliyor. Kayıt bitince kendiliğinden geri gelecek. (Ayarlar → Sesle takip → Kayıt sırasında sesle takip)',voiceRecBlock:'🎤 Kayıt sürerken sesle takip açılmıyor — açılması çekimin görüntüsünü dondurabilir. Ayarlar → Sesle takip bölümünden açabilirsin.',vidDonduSes:'Bu çekimde sesle takip açıktı. iPhone tanımayı her sessizlikte yeniden başlatıyor ve her başlatma ses oturumunu yeniden kuruyor — donmanın en olası sebebi bu. Ayarlar → Sesle takip → Kayıt sırasında sesle takip anahtarını KAPALI bırak.',recBusy:'Kayıt sürerken senaryo değiştirilemez — önce kaydı durdur',micGone:'🎙 Seçili mikrofon bulunamadı (çıkarılmış olabilir) — dahili mikrofona dönüldü',noBackup:'Otomatik yedek yok (birkaç düzenleme sonra oluşur)',restoredBackup:'🛟 Yedekten dönüldü —',keyPickBad:'Kameranın gördüğü köşe tek renk değil — orada perdeden başka bir şey var (duvar, omuz, gölge). Perde kareyi dolduracak şekilde kadrajı düzelt ve tekrar dene; yanlış rengi anahtar yapmaktansa hiç yapmıyoruz.',keyPicked:'Perde rengi ölçüldü →',keyPickFail:'Renk ölçülemedi',longScript:'⚠️ Metin çok uzun — sufle takılabilir, bölümlere ayırmayı düşün',wiped:'yıldızsız çekim silindi',nothingWipe:'Silinecek yıldızsız çekim yok',noMatch:'Eşleşen senaryo yok',voiceSilentCam:'🎤 Tanıma açıldı ama hiç ses gelmiyor — kamera açıkken mikrofonu paylaşmak iPhone\'da tanımayı susturabiliyor. Kamerayı kapatıp "Kamerasız sadece sufle" ile dene.',voiceSilent:'🎤 Tanıma açıldı ama hiç ses gelmiyor — mikrofon izni verilmemiş ya da mikrofonu başka bir uygulama tutuyor olabilir. Ayarlar → 🎤 Mikrofonu ve tanımayı sına ile kesin sonucu gör.',mapIn:'🎮 Kumanda profili yüklendi —',mapInBad:'Bu dosya bir kumanda profili değil',mapInEmpty:'Dosyada tanınan tuş eşlemesi yok — profil değişmedi',mapInErr:'Dosya okunamadı',
   jsErr:'⚠️ Bir şey ters gitti — ayrıntı: Ayarlar → Diğer → Cihaz uyumluluğu',
   lsFull:'⚠️ Depo dolu — senaryo KAYDEDİLEMEDİ. Arka plan görselini kaldır ya da kullanmadığın senaryoları sil.',lsFreed:'🧹 Silinen senaryolar kalıcı olarak temizlendi ve senaryon kaydedildi',
   cfgBroken:'⚠️ Ayar dosyası bozuktu, varsayılana dönüldü (bozuk kopya saklandı)',
@@ -2527,7 +2540,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   camBusy:'📷 Camera is in use by another app — close FaceTime/Zoom/Camera and retry',
   camNone:'📷 No suitable camera — try 720p and retry',
   delConfirm:'⚠️ Sure? Tap again',deletedUndo:'Deleted — restore it with ↺',
-  restored:'↺ Script restored',compTakildi:'⚠️ The image pipeline stalled for a moment — frames are being driven by the backup path. The take may look slightly choppy there, but a frozen picture is not being recorded.',oynatDondu:'📼 The picture froze, so the video is being decoded again from that point — the sound had kept playing. If it does not come back, the freeze is in the take itself.',oynatDosya:'⛔ From this second on the picture is frozen INSIDE THE FILE — the player could not recover it. The audio is fine. Save the take and open it in another player: it will freeze at the same spot there too.',sesSustu:'⛔ THE SOUND STOPPED — video is still flowing but no audio is arriving (a call, another app or a headset switch). From here on the take is SILENT; end it.',sesGeri:'🎙 The sound is back — the silent part stays in the take, redo that part if you need to.',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPickBad:'The corner the camera sees is not a single colour — something other than the screen is there (a wall, a shoulder, a shadow). Reframe so the screen fills it and try again; rather than set a wrong key colour we set none.',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
+  restored:'↺ Script restored',compTakildi:'⚠️ The image pipeline stalled for a moment — frames are being driven by the backup path. The take may look slightly choppy there, but a frozen picture is not being recorded.',oynatDondu:'📼 The picture froze, so the video is being decoded again from that point — the sound had kept playing. If it does not come back, the freeze is in the take itself.',oynatDosya:'⛔ From this second on the picture is frozen INSIDE THE FILE — the player could not recover it. The audio is fine. Save the take and open it in another player: it will freeze at the same spot there too.',sesSustu:'⛔ THE SOUND STOPPED — video is still flowing but no audio is arriving (a call, another app or a headset switch). From here on the take is SILENT; end it.',sesGeri:'🎙 The sound is back — the silent part stays in the take, redo that part if you need to.',vidDondu:'⛔ THE PICTURE FROZE — recording continues but no new frames are arriving. From here on a frozen frame is being recorded; end the take and start again.',vidGeri:'📷 The picture is back — the frozen part stays in the take, redo it if you need to.',vidDied:'⛔ VIDEO STOPPED — audio continues but video died, end the take',audDied:'⛔ AUDIO STOPPED — video continues but the microphone is gone, end the take',fxDead:'⛔ Audio processing stopped — the rest is being recorded SILENT, end the take',fxBack:'🔊 Audio processing recovered',marksReset:'Script changed — section ✓ marks and struggle map were cleared',vadOffRec:'🫁 Breath flow paused during recording (protects iPhone audio)',voiceOffRec:'🎤 Voice follow is paused for this take — iPhone restarts recognition at every pause and that can FREEZE THE PICTURE of your take. It comes back on its own when you stop. (Settings, Voice follow, Voice follow while recording)',voiceRecBlock:'🎤 Voice follow will not start while recording — starting it can freeze the picture of the take. You can enable it under Settings, Voice follow.',vidDonduSes:'Voice follow was on during this take. iPhone restarts recognition at every pause and each restart rebuilds the audio session, which is the most likely cause of the freeze. Keep Settings, Voice follow, Voice follow while recording switched OFF.',recBusy:'Cannot switch scripts while recording — stop the recording first',micGone:'🎙 Selected microphone is gone — switched back to the built-in one',noBackup:'No auto-backup yet (created after a few edits)',restoredBackup:'🛟 Restored from backup —',keyPickBad:'The corner the camera sees is not a single colour — something other than the screen is there (a wall, a shoulder, a shadow). Reframe so the screen fills it and try again; rather than set a wrong key colour we set none.',keyPicked:'Screen colour sampled →',keyPickFail:'Could not sample colour',longScript:'⚠️ Script is very long — the prompter may stutter; consider splitting it',wiped:'unstarred takes deleted',nothingWipe:'No unstarred takes to delete',noMatch:'No matching script',voiceSilentCam:'🎤 Recognition started but no audio is arriving — sharing the mic with the camera can silence recognition on iPhone. Turn the camera off and try "Prompter only, no camera".',voiceSilent:'🎤 Recognition started but no audio is arriving — permission may be missing, or another app holds the mic. Use Settings → 🎤 Test mic and recognition for a definite answer.',mapIn:'🎮 Remote profile loaded —',mapInBad:'This file is not a remote profile',mapInEmpty:'No usable key mapping in the file — the profile is unchanged',mapInErr:'Could not read the file',
   jsErr:'⚠️ Something went wrong — details in Settings → More → Device compatibility',
   lsFull:'⚠️ Storage full — script was NOT saved. Remove the background image or delete scripts you no longer need.',lsFreed:'🧹 Deleted scripts were purged and your script was saved',
   cfgBroken:'⚠️ Settings file was corrupt, reset to defaults (broken copy kept)',
@@ -2997,7 +3010,7 @@ const DEF={
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
   hideUI:true,
-  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, pozElle:false, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, pozElle:false, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, sesKayitta:false, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   /* G.1: karaoke vurgusu VARSAYILAN AÇIK. Eski kullanıcının kaydında bu alan
      yok ama Object.assign varsayılanın üstüne yazdığı için EKSİK ALAN
@@ -5850,6 +5863,17 @@ function doStartRec(){
   // iOS'ta mikrofon izini kayıt sırasında Web Audio'ya bağlamak sesi düşürebiliyor.
   // Ses kırpma uyarısı iyi bir şey ama SESİN KENDİSİ daha önemli.
   if(IS_WK && st.vad && vad.ctx){ vadDurdur(); toast(m('vadOffRec')); }   // iOS: kaydı susturmasın
+  /* SESLE TAKİP DE AYNI SEBEPLE DURAKLIYOR — ama sebebi ses değil GÖRÜNTÜ.
+     iPhone tanımayı her sessizlikte kapatıp yeniden başlatıyor; her başlatma
+     iOS ses oturumunu yeniden kuruyor ve yakalama oturumu yeniden kurulunca
+     ÇEKİMİN GÖRÜNTÜSÜ donuyor (ses akmaya devam ettiği için kayıt sağlam
+     görünüyor). Erdalın aylardır bildirdiği donmanın ölçülen tarifi bu:
+     41 saniyelik çekimde 19. saniye — yani ilk konuşma arasından hemen sonra.
+     Kayıt bitince kendiliğinden geri geliyor; kullanıcı hiçbir şey kaybetmiyor.
+     `sesleKayittaYasak()` burada HENÜZ kullanılamaz: `rec.state` bu satırda
+     'recording' ama bayrak ayrı okunuyor olsun diye koşul açık yazıldı. */
+  if(IS_WK && !st.sesKayitta && voiceOn){
+    sesleGeriAl=true; stopVoice(); toast(m('voiceOffRec')); }
   if(!IS_WK){ micTouched=true; startAudioMonitor(); } else setAudBadge('off');
   $('#recLbl').textContent=m('recOn');
   if(canPauseRec()) $('#pauseBtn').classList.remove('hidden');
@@ -5873,6 +5897,10 @@ function stopRec(){
   clearInterval(fxWatch); fxWatch=0; fxWarned=false;
   if(fxTrack){ try{ fxTrack.stop(); }catch(e){ logErr('fxStop',e); } fxTrack=null; }
   if(st.vad) setTimeout(vadBaslat,400);           // kayıt bitti, nefesle akış geri gelsin
+  /* Sesle takip de geri gelsin. 400 ms VAD ile aynı gerekçe: kayıt kapanırken
+     ses oturumu daha yerine oturmamış oluyor, hemen açmak boş oturum üretiyor.
+     Bayrak burada sıfırlanıyor ki iki kez açılmasın. */
+  if(sesleGeriAl){ sesleGeriAl=false; setTimeout(()=>{ if(!voiceOn) startVoice(); },400); }
   setTimeout(stopAudioFx,300);          // son parçalar yazılsın diye kısa gecikme
   if(recSection>=0 && sections[recSection]){ shotSet()[recSection]=true; save(); renderSections(); }
   recSection=-1;
@@ -6102,10 +6130,21 @@ function showResult(blob){
         const nerede = vidOldu>0.5 ? vidOldu : dosyaSure;
         $('#audInfo').innerHTML='<b style="color:#ff5252">'+
           (L==='tr' ? 'GÖRÜNTÜ '+clock(nerede)+' SANİYEDE DONMUŞ' : 'VIDEO FROZE AT '+clock(nerede))+
-          '</b><br><small>'+(L==='tr'
-            ? 'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor: '
-              +'çözünürlüğü 720p yap, kompoziti kapat ve çekimi kısa tut.'
-            : 'Audio is complete but video stopped early. Try 720p and shorter takes.')+'</small>';
+          /* ÖĞÜT DEĞİŞTİ (2026-08-17 akşamı). Eskiden "iPhone uzun çekimde
+             belleği tüketebiliyor: 720p yap, çekimi kısa tut" yazıyordu.
+             Bu öğüt YANLIŞ YERE gönderiyordu: v9.0da ölçülen vaka 41 saniyelik
+             bir çekimde 19. saniyeydi ve 19 saniye 1080pde ~20 MB eder — bellek
+             olamaz. Gerçek sebep iOSta ses oturumunun yeniden kurulması; en sık
+             tetikleyicisi kayıt sırasında çalışan sesle takip. Artık önce O
+             söyleniyor, yalnız gerçekten o çekimde açıksa. */
+          '</b><br><small>'+
+          ((cekimSesle && IS_WK) ? m('vidDonduSes') : (L==='tr'
+            ? 'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses '
+              +'oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). '
+              +'Kompoziti kapatmak ve 720pye düşmek de yükü azaltır.'
+            : 'Audio is complete but video stopped early. The usual cause is the audio session '
+              +'being rebuilt mid-take (voice follow, an incoming call, a headset switch). '
+              +'Turning the composite off and dropping to 720p also reduces the load.'))+'</small>';
       }
       /* Sesin kesildiğini de SÖYLE. Kayıt sırasında uyarı çıkıyor ama kullanıcı
          suflenin akışına bakıyor olabilir; sonuç ekranı son şans. */
@@ -7868,8 +7907,42 @@ const SR_HIZLI_MS=150;
    saniye bile yaşasa. Sağlıklı bitiş sayacı artırmaz ve hemen yeniden başlar.
    Gerçek arıza (hiç sonuç vermeden peş peşe kapanma) eskisi gibi sayılıyor,
    altıncıda özellik görünür şekilde kapanıyor — o koruma KALDI. */
+/* ============ ÇEKİMİN GÖRÜNTÜSÜNÜ DONDURAN ASIL SEBEP ============
+   (2026-08-17 akşamı; deponun kendi kanıtıyla bulundu)
+
+   Erdal aylardır aynı şeyi bildiriyordu: iPhone ile çekilen video bir süre
+   sonra donuyor, SES tam. v9.0 commiti ölçümü de saklamış: **41 saniyelik
+   çekimde görüntü 19. saniyede donuyor.** O tur "en güçlü aday bellek
+   baskısı" demişti — 19 saniye 1080pde ~20 MB eder, bellek olamaz. Yani o
+   hipotez ölçüyle çürüyor ve o günden beri verilen öğüt (720p yap, çekimi
+   kısa tut) yanlış yere gönderiyordu.
+
+   Gerçek zincir, kaynakta zaten yazılıydı ama kimse kayıt yoluna bağlamamıştı:
+     · iOSta ses oturumu TEKTİR.
+     · iPhone `continuous` tanımayı sürdürmez: HER SESSİZLİKTE oturumu kapatır
+       (v9.12de sanal saatle ölçülmüştü) ve uygulama onu yeniden başlatır.
+     · Her `sr.start()` iOS ses oturumunu yeniden kurar; yakalama oturumu
+       yeniden kurulunca GÖRÜNTÜ donar, ses akmaya devam eder.
+   Yani donma "bir süre sonra" değil, İLK KONUŞMA ARASINDAN sonra oluyor —
+   19 saniye tam da birkaç cümlelik bir açılışın ardından gelen ilk duraklama.
+
+   Aynı karar nefesle akış (VAD) için ZATEN alınmıştı: kayıt boyunca kapatılıyor
+   ve bitince geri geliyor (`vadOffRec`). Sesle takibe hiç uygulanmamıştı.
+   Burada da aynısı yapılıyor; ayar isteyen kullanıcı için anahtar var ama
+   varsayılan güvenli taraf. Masaüstünde tek ses oturumu kısıtı yok, akış
+   hiç değişmiyor. */
+function sesleKayittaYasak(){
+  return IS_WK && !st.sesKayitta && !!(rec && rec.state==='recording');
+}
+let sesleGeriAl=false;      // kayıt bitince kendiliğinden geri açılsın
+let srKayittaSon=0;         // kayıt sırasındaki son tanıma başlatması (sn)
+
 function restartVoice(saglikli){
   if(!voiceOn||!sr) return;
+  /* NÖBETÇİ: buraya kadar gelinmemeli (kayıt başlarken durduruluyor), ama
+     yarış hâlinde bekleyen bir zamanlayıcı ateşlerse tam da kaydın ortasında
+     ses oturumunu yeniden kurardı — donmanın ta kendisi. */
+  if(sesleKayittaYasak()){ stopVoice(); return; }
   if(!saglikli && ++srFails>5){ toast(m('voiceDied')); stopVoice(); return; }
   clearTimeout(srRetryT);
   srRetryT=setTimeout(()=>{ if(!voiceOn||!sr) return;
@@ -7877,7 +7950,11 @@ function restartVoice(saglikli){
        oturumun 0. sonucu eskisiyle karşılaştırılıp "tanıyıcı metni yeniden
        yazdı" dalına düşüyor ve yalnız son üç kelime işleniyordu: duraklama
        sonrası ilk kelimeler sessizce atlanırdı. */
-    try{ sr.start(); srBasladi=performance.now(); srSonuc=false; srIdx=-1; srSeen=''; }
+    try{ sr.start(); srBasladi=performance.now(); srSonuc=false; srIdx=-1; srSeen='';
+      /* Kayıt sürerken bir yeniden başlatma olduysa DAMGALA: sonuç ekranı
+         donmayı bununla ilişkilendirebilsin. Ayar açıkken bu yol canlıdır. */
+      if(rec && rec.state==='recording'){ srKayittaSon=recElapsed();
+        logNot('voice','tanıma KAYITTA yeniden başladı @'+srKayittaSon.toFixed(1)+'s'); } }
     catch(e){ logErr('voice',e); restartVoice(); } }, saglikli?SR_HIZLI_MS:250*srFails);
 }
 let srIdx=-1, srSeen='', vPrev={i:-1,t:0};
@@ -7897,6 +7974,10 @@ function buildNorm(){
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ toast(m('voiceNo')); return; }
+  /* Kayıt sürerken tanıma AÇILMAZ: ses oturumunu yeniden kurmak çekimin
+     görüntüsünü dondurur. Sessizce reddetmek yasak — sebebi ve ayarın nerede
+     olduğu söyleniyor (deponun 3 numaralı kuralı). */
+  if(sesleKayittaYasak()){ toast(m('voiceRecBlock')); buzz(40); return; }
   if(running) stop();
   measure(); buildNorm(); vTarget=pos; voicePaused=false; recent.length=0; vLast=performance.now(); vPrev={i:-1,t:0};
   vptr=0; syncVoicePtr();
@@ -7941,6 +8022,8 @@ function startVoice(){
     if(saglikli) srFails=0;
     if(voiceOn) restartVoice(saglikli); };
   try{ sr.start(); srBasladi=performance.now(); srSonuc=false; }catch(e){ logErr('voice',e); restartVoice(); }
+  if(rec && rec.state==='recording'){ srKayittaSon=recElapsed();
+    logNot('voice','tanıma KAYITTA başladı @'+srKayittaSon.toFixed(1)+'s'); }
   /* iOS'ta tanıma başlayınca ses oturumu yeniden kuruluyor ve kamera
      ÖNİZLEMESİ donabiliyor (görüntü durur, ses akar). Ucuz ve zararsız
      önlem: tanıma başladıktan kısa süre sonra ögeye bir kez play() diyoruz.
@@ -9901,6 +9984,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.23':{tr:'<b>iPhone çekimlerinde görüntünün donması: sebep bulundu ve kapatıldı.</b> Aylardır bildirdiğin sorun buydu — video bir süre sonra donuyor, ses tam. Eski teşhis belleği suçluyordu ve yanlıştı: ölçülen vakada 41 saniyelik çekimde görüntü 19. saniyede donmuştu, 19 saniye ise 1080p kayıtta ancak 20 MB eder. Gerçek zincir şu: iPhone ses oturumunu TEK tutar; sesle takip için kullanılan tanıma her sessizlikte kapanır ve uygulama onu yeniden başlatır; her başlatma ses oturumunu yeniden kurar ve yakalama oturumu yeniden kurulunca GÖRÜNTÜ donar, ses akmaya devam eder. Yani donma bir süre sonra değil, İLK KONUŞMA ARASINDAN sonra oluyordu — 19 saniye tam da birkaç cümlelik açılışın ardından gelen ilk duraklama. Aynı önlem nefesle akış için zaten alınmıştı, sesle takibe hiç uygulanmamıştı. Artık kayıt başlarken sesle takip duraklatılıyor, sebebi ekranda yazıyor ve kayıt bitince kendiliğinden geri geliyor. Risk almak isteyen için Ayarlar → Sesle takip → Kayıt sırasında sesle takip anahtarı var; açıkken donma olursa sonuç ekranı sebebi doğrudan söylüyor. Masaüstünde bu kısıt yok, orada hiçbir şey değişmedi.<br><b>Çekim sonrası öğüt de düzeltildi.</b> Ekran aylardır 720p yap ve çekimi kısa tut diyordu; bu öğüt yanlış yere gönderiyordu. Artık ses oturumunun yeniden kurulmasını gösteriyor.',
+  en:'<b>iPhone takes freezing mid-recording: cause found and fixed.</b> The old diagnosis blamed memory and was wrong: in the measured case a 41 second take froze at second 19, and 19 seconds of 1080p is only about 20 MB. The real chain: iOS keeps a SINGLE audio session; recognition used by voice follow ends at every pause and the app restarts it; each restart rebuilds the audio session, and rebuilding it freezes the PICTURE while audio keeps flowing. So the freeze was not time based, it happened after the FIRST PAUSE IN SPEECH. The same guard already existed for breath flow but had never been applied to voice follow. Voice follow is now paused when recording starts, the reason is shown, and it comes back on its own when you stop. There is a switch under Settings, Voice follow for anyone who wants to take the risk. Desktop is unaffected.<br><b>The post take advice was corrected too</b> — it used to send you to 720p and shorter takes.'},
  '9.22':{tr:'<b>Ses testinin bulduğu kayıt biçimi artık gerçekten kullanılıyor.</b> Ses testi altı kayıt biçimini tek tek deneyip hangisinin GERÇEKTEN ses yazdığını ölçüyor, kazananı buluyor ve bunu sana söylüyordu; ama kayıt başlarken o seçim okunmuyordu. Yani MP4 biçiminde sessiz, webm biçiminde sesli kaydeden bir telefonda test doğru cevabı buluyor, çözüldüğünü söylüyor ve uygulama sessiz kaydetmeye devam ediyordu. Testin var oluş sebebi tam da bu durumdu. Seçilen biçim artık ayarlarda YAZILI duruyor ve tek dokunuşla bırakılabiliyor.<br><b>Görüntü filtresi kompozit kapalıyken sessizce ölüydü.</b> Filtre yalnız kompozit boru hattında çiziliyor, kompozit ise varsayılan olarak kapalı. Yani her yeni kullanıcıda kart Doğal yazıyor ve hiçbir şey olmuyordu. Artık filtre seçince kompozit kendiliğinden açılıyor; kamera yoksa sebebi yazıyor ve denetimler soluk duruyor.<br><b>İlk açılış ekranı artık Ne değişti demiyor.</b> Uygulamayı ilk kez açanlara gövdesinde Üç adımda başla yazan bir sayfa NEW rozetli sürüm notu başlığıyla açılıyordu. Artık hoş geldin diyor.<br><b>Ayar kartlarının özeti artık kesilmiyor.</b> Kart kapalıyken o anki değeri yazar; başlığı uzun iki kartta bu değer üç noktayla kesiliyor ve hiç okunamıyordu (Okuma çizgi… gibi). Bütçe artık karakterle değil gerçek genişlikle ölçülüyor: yer daralınca önce etiket kısalıyor, sayı her zaman görünüyor.',
   en:'<b>The recording format found by the audio test is finally used.</b> The test measures which format actually writes audio and picks a winner, but recording ignored that choice: on a phone that records silent MP4 and audible webm, the test found the right answer, said it was fixed, and the app kept recording silence. The chosen format is now shown in settings and can be dropped with one tap.<br><b>The video filter was silently dead with the composite pipeline off.</b> It is only drawn inside that pipeline, which is off by default, so every new user saw Natural on the card and nothing happening. Picking a filter now turns the pipeline on; without a camera the reason is shown and the controls stay dimmed.<br><b>The first-run screen no longer says What is new.</b><br><b>Settings card summaries are no longer clipped.</b> The budget is measured in real width instead of characters: when space runs short the label shrinks first and the value always stays.'},
  '9.21':{tr:'<b>Çekim sırasında görüntü donarsa artık haber veriliyor.</b> Kayıt yolundaki iki gözcü yalnız kameranın ölmesine bakıyordu; telefon kesintide kamerayı öldürmüyor SUSTURUYOR — kayıt sürer, ses akar, ekranda donmuş kare kaydedilir ve bunu ancak çekimi izlerken anlarsın. Artık kareler durduğunda bir kez uyarılıyor, geri geldiğinde de söyleniyor. Kaydın akışına dokunulmuyor: kurtarmaya çalışmak çekimin sesini öldürürdü.<br><b>Çekim sonrası ekranındaki tanı satırları tek kutuda toplandı.</b> Ses değerlendirmesi, paylaşım desteği ve altyazı sayısı ekranın altında ortalanmış üç ayrı paragraf hâlinde duruyordu; bir şey ters gittiğinde okunması gereken tek yer orası ama gözün tarayabileceği bir hiza yoktu. Aynı bilgi, sola hizalı tek kutuda. Satır yoksa gösterilmiyor, üçü de boşsa kutu hiç çıkmıyor.<br><b>Durum şeridindeki kum saati emojisi ikonla değişti.</b> Emoji her platformda başka çiziliyor. Metin etiket de denendi ve ölçüldü: şeridi iki satıra çıkarıp hız hapının üstüne bindiriyordu, o yüzden ikonda kalındı.',
@@ -10850,6 +10935,11 @@ function gateSettings(){
     ['stopAtSection', ()=>sections.length>0,
      L==='tr'?'senaryoda bölüm başlığı yok (# ile ekle)':'no section headings in the script'],
     ['vad', ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    /* Bu anahtar YALNIZ iOSta bir şey yapıyor: tek ses oturumu kısıtı orada
+       var. Masaüstünde açık bırakmak "açıyorum, hiçbir şey olmuyor" demek
+       olurdu — deponun 3 numaralı kuralı. */
+    ['sesKayitta', ()=>IS_WK, L==='tr'?'yalnız iPhone için (masaüstünde bu kısıt yok)'
+                                     :'iPhone only (no such limit on desktop)'],
     ['rawAudio', ()=>true, '']
   ];
   kural.forEach(([k,ok,sebep])=>{
