@@ -86,8 +86,15 @@ const belD = bel.replace(/\s+/g, ' ');
   ok('hesap/giriş yok', !/signIn|createAccount|oturum aç/i.test(temiz));
   ok('sanal kamera / NDI yok (30. kategori 5 değil 3)',
      !/virtual\s*cam|\bNDI\b/i.test(temiz));
-  ok('PDF ayrıştırıcı yok (8. kategori 5 değil 3)',
-     !/pdfMetni|application\/pdf/i.test(temiz));
+  /* 17 Ağustos: PDF ayrıştırıcı EKLENDİ (cekirdek/pdf.js) ve 8. kategori
+     3→4 oldu. 5 değil, çünkü Drive/bulut içe aktarma hâlâ yok ve okuyucu
+     bilerek sınırlı: eşleme yoksa metin ÜRETMİYOR. Kategorinin puanı
+     "okuyabildiğini doğru okuyor"a dayanıyor, "her dosyayı açar"a değil. */
+  ok('PDF ayrıştırıcı VAR (8. kategori 3 değil 4)', /pdfMetni/.test(temiz));
+  ok('PDF okuyucu emin olmadığında metin üretmiyor',
+     /pdf belirsiz/.test(temiz) && /pdf cid esleme yok/.test(temiz));
+  ok('bulut/Drive içe aktarma hâlâ yok (5 değil 4)',
+     !/drive\.google|dropbox|onedrive/i.test(temiz));
 }
 
 /* ---------- HESAP DOĞRU MU ---------- */
@@ -100,14 +107,16 @@ const belD = bel.replace(/\s+/g, ' ');
      (satır satır bidi, RTL noktalaması, karaoke vurgusu doğru uçta). */
   /* 16 Ağustos ikinci tur: 7. kategori 3→4 (G.8 türetilmiş bilgi + zaten
      var olan arama/sıralama/çöp/iki sürüm). Klasör-etiket yok → 5 değil. */
-  const PUAN    = [4,4,5,4,3,5,4,3,0,5,4,3,4,5,4,5,0,0,0,2,0,3,5,5,4,3,5,3,0,3];
+  /* 17 Ağustos: 8. kategori (İçe aktarma) 3→4 — PDF okuyucu eklendi. */
+  const PUAN    = [4,4,5,4,3,5,4,4,0,5,4,3,4,5,4,5,0,0,0,2,0,3,5,5,4,3,5,3,0,3];
   ok('30 kategori var', AGIRLIK.length === 30 && PUAN.length === 30);
 
   const top = AGIRLIK.reduce((a, w, i) => a + w * PUAN[i], 0);
   const mx  = AGIRLIK.reduce((a, w) => a + w * 5, 0);
   const skor = top / mx * 100;
-  ok('ölçülen skor 64,9 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 64.9) < 0.1);
-  ok('belge aynı skoru yazıyor', /\*\*64,9\*\*/.test(bel));
+  ok('ölçülen skor 65,3 (hesaplanan ' + skor.toFixed(1) + ')', Math.abs(skor - 65.3) < 0.1);
+  ok('belge aynı skoru yazıyor', /\*\*65,3\*\*/.test(bel));
+  ok('belge bir önceki ölçümü de saklıyor (64,9)', /64,9/.test(bel));
   ok('belge ilk ölçümü de saklıyor (63,0)', /63,0/.test(bel));
 
   /* Sunucusuz tavan: sıfır alan altı kategori hiç kazanılamazsa ulaşılabilecek

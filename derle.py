@@ -54,6 +54,10 @@ PLAN = [
     ('ikonlar.html', ['index.html', 'mac/Teleprompter Pro.html']),
     # .docx okuyucu iki kabukta da kullanılıyor (D.1).
     ('docx.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # PDF okuyucu (2026-08-17). docx ile aynı gerekçe: sıfır bağımlılık ve
+    # tarayıcının kendi DecompressionStream'i. İki kabukta da var — masaüstünde
+    # senaryo çoğu zaman PDF olarak geliyor.
+    ('pdf.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # E.4 prova raporu hesabı İKİ kabukta da aynı olmalı: telefonda düzeltilip
     # Mac'te unutulan bir eşik, iki platformun farklı sayı göstermesi demek.
     ('prova.js', ['index.html', 'mac/Teleprompter Pro.html']),

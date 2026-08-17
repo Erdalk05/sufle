@@ -142,7 +142,7 @@
  "141-fiyatlandirma.js": 25,
  "142-sesle-takip-nobetcisi.js": 21,
  "143-tasarim-kimligi.js": 48,
- "144-rekabet-olcumu.js": 50,
+ "144-rekabet-olcumu.js": 53,
  "145-erisilebilir-ad-ve-csp.js": 32,
  "146-vaat-kilidi.js": 45,
  "147-sesle-takip-ios-sessizlik.js": 32,
@@ -159,10 +159,11 @@
  "158-yazi-tipi-erisilebilirlik.js": 66,
  "159-kumanda-yollari.js": 67,
  "160-klip-kaynak-korunuyor.js": 41,
- "161-cekirdek-zinciri.js": 104,
+ "161-cekirdek-zinciri.js": 112,
  "162-senaryo-turetilmis-bilgi.js": 58,
  "163-deneme-kilavuzu.js": 46,
  "164-magaza-kabugu.js": 40,
  "165-masaustu-uctan-uca.js": 13,
- "166-ayar-kartlari.js": 42
+ "166-ayar-kartlari.js": 42,
+ "167-pdf-okuma.js": 29
 }

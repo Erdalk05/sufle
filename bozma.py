@@ -36,6 +36,9 @@ KAYNAK = {
     'mac_mesajlar': (os.path.join(REPO, 'cekirdek', 'mac-mesajlar.js'), 'SUFLE_MACMESAJ'),
     'ikonlar': (os.path.join(REPO, 'cekirdek', 'ikonlar.html'), 'SUFLE_IKON'),
     'docx': (os.path.join(REPO, 'cekirdek', 'docx.js'), 'SUFLE_DOCX'),
+    # PDF okuyucu: kabul sınavı (eşleme yoksa metin verme) buradadır ve
+    # gevşetilirse kullanıcıya SESSİZCE çöp sufle metni gider.
+    'pdf': (os.path.join(REPO, 'cekirdek', 'pdf.js'), 'SUFLE_PDF'),
     # Prova hesabı İKİ kabukta da gömülü: çekirdeği bozmak ikisini birden
     # vurur, yani en pahalı sınıf.
     'prova': (os.path.join(REPO, 'cekirdek', 'prova.js'), 'SUFLE_PROVA'),

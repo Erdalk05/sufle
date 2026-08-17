@@ -22,7 +22,8 @@ rubriği koruyor ama SUFLE sütunundaki her puanı **kodda ölçüyor**.
 | Analizin tahmini | **53,6** | 6. (Speakflow ile Video Teleprompter arasında) |
 | Ölçülen (15 Ağustos, v9.11) | **63,0** | 4. (PromptSmart 56,0'ın üstünde, BIGVU 65,3'ün altında) |
 | Ölçülen (16 Ağustos, FAZ G sonrası, v9.14) | 64,3 | 4. — BIGVU 65,3'ün 1,0 puan altında |
-| **Ölçülen (16 Ağustos, G.8 uygulandıktan sonra, v9.15)** | **64,9** | **4.** — BIGVU 65,3'ün **0,4 puan** altında |
+| Ölçülen (16 Ağustos, G.8 uygulandıktan sonra, v9.15) | 64,9 | 4. — BIGVU 65,3'ün 0,4 puan altında |
+| **Ölçülen (17 Ağustos, PDF okuyucu eklendikten sonra, v9.17)** | **65,3** | **3. ile eşit** — BIGVU ile AYNI puan |
 
 İlk sıçrama (+9,4) tek satır yeni kod yazılmadan geldi: analiz, yayında olan
 özellikleri bilmiyordu. İkinci sıçrama (+1,3) FAZ G'nin on özelliğinden geldi ve
@@ -37,7 +38,7 @@ rubriği koruyor ama SUFLE sütunundaki her puanı **kodda ölçüyor**.
 |---|---|---|---|---|---|
 | 2 | Sesle takip gücü | ×5 | 3 | **4** | iOS Safari **ve** elle derlenmiş WKWebView'da 10/10 yetenek yeşil (`ios-olcum/olc.sh`) · sessiz ölüm nöbetçisi + öz-test (`tests/142`) · kare başına yeniden ölçüm (`tests/69`) · uzun metin (`tests/65`) |
 | 4 | Uzaktan kumanda genişliği | ×4 | 3 | **4** | tuş öğretme (`learnKey`, `tests/138`, `tests/139`) — marka bağımsız · tanı paneli (`tests/76`) · telefon↔Mac yerel sunucu (`tests/29`, `tests/75`) |
-| 8 | İçe aktarma | ×2 | 1 | **3** | `.docx` ayrıştırıcı depoda (`cekirdek/docx.js`, `tests/128`) + `.txt`. **PDF ve Drive YOK** — 5 değil, 3 |
+| 8 | İçe aktarma | ×2 | 1 | **4** | `.docx` (`cekirdek/docx.js`, `tests/128`) + `.txt` + **PDF** (`cekirdek/pdf.js`, `tests/167`). PDF okuyucu bilerek sınırlı: eşleme yoksa metin ÜRETMİYOR, sebebini söylüyor. **Drive/bulut yok** — 5 değil, 4 |
 | 11 | Kayıt kalitesi | ×4 | 3 | **4** | 4K (`data-q="4k"`) · MP4 · kare hızı seçimi · kompozit kayıt · uzun kayıt bellek sınaması (`tests/102`) |
 | 12 | Kamera denetimleri | ×3 | 2 | **3** | `focusMode`/`exposureMode` · fener + zum (`tests/71`) · cihaz seçimi (`tests/126`) · kayıtta kamera değiştirme (`tests/39`). Elle ISO/beyaz ayarı yok |
 | 14 | Altyazı & SRT | ×3 | 4 | **5** | Altyazı **konuşma tanımadan** üretiliyor: her kelimenin okuma çizgisini geçtiği an zaten biliniyor → kelime bazlı kusursuz senkron. Rakipler ASR kullanıyor, biz kullanmıyoruz · gömme (`tgBurn`) · kayma denetimi · platform paritesi (`tests/80·81·82·89·91·103`) |
@@ -109,7 +110,7 @@ Ve altısının altısı da **sunucu, hesap ya da pazar konumu** gerektiriyor:
 | Takım & iş birliği (×2) | sunucu + hesap |
 
 **Bundan çıkan tavan:** sunucu işletmeden ulaşılabilecek en yüksek skor **81,9**.
-Bugün **64,9**'dayız, yani **istemci tarafında hâlâ 17,0 puan kazanılabilir** —
+Bugün **65,3**'teyiz, yani **istemci tarafında hâlâ 16,6 puan kazanılabilir** —
 bu, bugünkü liderin (80,6) hemen altına kadar çıkmak demek.
 
 Bu, `FIYATLANDIRMA.md`'nin bağımsız yoldan vardığı sonucun aynısı:
@@ -126,7 +127,7 @@ En yüksek "puan / iş yükü" oranına göre:
 | 2 | 25 · UI / görsel (×5) | 4 | 5 | **+5** | Tur 55 devam: gruplama, tipografik ritim |
 | 3 | 1 · Sufle motoru (×5) | 4 | 5 | **+5** | altın kaydırma testi var; kalan pürüz ölçülmeli |
 | 4 | 12 · Kamera denetimleri (×3) | 3 | 4 | **+3** | elle pozlama/beyaz ayarı |
-| 5 | 8 · İçe aktarma (×2) | 3 | 5 | **+4** | PDF ayrıştırıcı |
+| 5 | 8 · İçe aktarma (×2) | 4 | 5 | **+2** | ~~PDF ayrıştırıcı~~ (17 Ağustos'ta eklendi) — kalan: Drive/bulut içe aktarma, o da sunucu/hesap ister |
 | 6 | 22 · Kararlılık (×4) | 3 | 4 | **+4** | mağaza puanı — yayına bağlı |
 | 7 | 28 · Çok dil ve RTL (×2) | 3 | 5 | **+4** | arayüz dili sayısı (bugün 2); RTL tarafı bitti |
 
@@ -169,7 +170,7 @@ denetleyemiyordu. Tablo artık tamamı ve her satır kendi **durumunu** söylüy
 | 5 | Ayna / prompter donanım desteği | ×3 | 3 | tahmin korundu |
 | 6 | Göz teması araçları | ×3 | 5 | tahmin korundu |
 | 7 | Senaryo kütüphanesi ve organizasyon | ×3 | 4 | ölçüldü |
-| 8 | İçe aktarma (docx/pdf/Drive) | ×2 | 3 | ölçüldü |
+| 8 | İçe aktarma (docx/pdf/Drive) | ×2 | 4 | ölçüldü |
 | 9 | Bulut senkron ve çok cihaz | ×4 | 0 | sıfır doğrulandı |
 | 10 | Çevrimdışı ve gizlilik | ×3 | 5 | tahmin korundu |
 | 11 | Kayıt kalitesi (4K, format) | ×4 | 4 | ölçüldü |

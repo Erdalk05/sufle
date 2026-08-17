@@ -2938,5 +2938,54 @@
   "kaynak": "telefon",
   "bul": "  body.hideUI .cbtn::after{content:''}",
   "koy": "  body.hideUI .cbtn::after{opacity:.9}"
+ },
+ {
+  "ad": "PDF okuyucu eşlemesiz CID yazı tipinde de metin üretiyor (çöp metin sufleye girer)",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "pdf",
+  "bul": "  for(const [,f] of adHarita)\n    if(f.cid && !f.harita.size) throw new Error('pdf cid esleme yok');",
+  "koy": "  for(const [,f] of adHarita) if(false) throw new Error('pdf cid esleme yok');"
+ },
+ {
+  "ad": "PDF kabul eşiği kaldırıldı (yarısı okunamayan metin kabul edilir)",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "pdf",
+  "bul": "  if(sayac.eksik/sayac.toplam > 0.08) throw new Error('pdf belirsiz');",
+  "koy": "  if(false) throw new Error('pdf belirsiz');"
+ },
+ {
+  "ad": "taranmış PDF sessizce boş metin veriyor",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "pdf",
+  "bul": "  if(!sayac.toplam || !temiz) throw new Error('pdf metin yok');",
+  "koy": "  if(false) throw new Error('pdf metin yok');"
+ },
+ {
+  "ad": "şifreli PDF okunmaya kalkışılıyor",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "pdf",
+  "bul": "  if(/\\/Encrypt\\b/.test(ham)) throw new Error('pdf sifreli');",
+  "koy": "  if(false) throw new Error('pdf sifreli');"
+ },
+ {
+  "ad": "akış sonu /Length ile kesilmiyor (çözücü tüm akışı reddeder)",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "pdf",
+  "bul": "    if(uz && n.akis.bas+ +uz[1] <= n.akis.son) son=n.akis.bas + +uz[1];",
+  "koy": "    if(false) son=n.akis.bas;"
+ },
+ {
+  "ad": "PDF içe aktarma yolu yok (dosya metin sanılıp çöp okunur)",
+  "test": "167-pdf-okuma.js",
+  "kaynak": "telefon",
+  "bul": "  if(/\\.pdf$/i.test(f.name)){",
+  "koy": "  if(false){"
+ },
+ {
+  "ad": "dış kütüphane yasağı gevşetildi (tek dosya sözü kırılır)",
+  "test": "128-docx-ice-aktarma.js",
+  "kaynak": "telefon",
+  "bul": "<div id=\"backdrop\"></div>",
+  "koy": "<script src=\"https://cdn.example.com/mammoth.js\"></script>\n<div id=\"backdrop\"></div>"
  }
 ]

@@ -43,7 +43,11 @@ const cek = fs.readFileSync(cekYolu,'utf8');
      kırmızı verdi. Aranan şey YÜKLENEN kütüphane, geçen kelime değil. */
   const kutuphaneVar = (x) => {
     const temiz = x.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
-    return /<script[^>]+src=|\brequire\(|\bimport\s+.*\bfrom\b/.test(temiz);
+    /* ⚠️ DESEN GEVŞEKTİ: `import ... from` düz İngilizce cümlede de geçiyor
+       ("You can import a script from a PDF") ve sürüm notu yazılınca test
+       kod tertemizken kırmızı verdi. Aranan şey MODÜL YÜKLEME: tırnaklı bir
+       kaynak adı olmadan `import ... from` bir kütüphane çağrısı değildir. */
+    return /<script[^>]+src=|\brequire\(\s*['"]|\bimport\s[^;\n]*\bfrom\s*['"]/.test(temiz);
   };
   ok('dışarıdan yüklenen kütüphane yok', !kutuphaneVar(tel) && !kutuphaneVar(mac));
   ok('açma işi tarayıcının yerleşik API\'siyle', /new DecompressionStream\('deflate-raw'\)/.test(cek));
