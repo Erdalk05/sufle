@@ -77,6 +77,10 @@ def kullanilan_anahtarlar(path):
             | set(re.findall(r'data-i18n="([^"]+)"', html))
             | set(re.findall(r'data-i18n-ph="([^"]+)"', html))
             | set(re.findall(r'data-i18n-title="([^"]+)"', html))
+            # data-i18n-etiket: çekim çubuğu düğmelerinin görünen adı (2026-08-17).
+            # Bu satır eklenmeseydi beş anahtar "hiç kullanılmıyor" diye
+            # bağırırdı; A.2c'de data-i18n-title ile birebir aynı hata olmuştu.
+            | set(re.findall(r'data-i18n-etiket="([^"]+)"', html))
             | set(re.findall(r'data-aria="([^"]+)"', html)))
 
 

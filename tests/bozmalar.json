@@ -290,8 +290,8 @@
   "ad": "B kumanda çubuğu sabit piksele döndü (dar telefonda taşar)",
   "test": "134-kumanda-cubugu-sigiyor.js",
   "kaynak": "telefon",
-  "bul": "  .cbtn{width:var(--cb,54px);height:var(--cb,54px)",
-  "koy": "  .cbtn{width:54px;height:54px"
+  "bul": "  .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px)",
+  "koy": "  .cbtn{position:relative;width:54px;height:54px"
  },
  {
   "ad": "B çubuğa sekizinci düğme eklendi (hesap tutmaz)",
@@ -2910,5 +2910,33 @@
   "kaynak": "sunucu",
   "bul": "PORT = int(os.environ.get(\"SUFLE_PORT\") or 8080)",
   "koy": "PORT = 8080"
+ },
+ {
+  "ad": "çekim çubuğu düğmeleri yine adsız (ikon tek başına ne yaptığını söylemiyor)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": " data-i18n-etiket=\"cbAyar\" data-etiket=\"Ayarlar\"",
+  "koy": ""
+ },
+ {
+  "ad": "düğme adları dil değişiminde yenilenmiyor",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  $$('[data-i18n-etiket]').forEach(el=>{ const v=I18N[L][el.dataset.i18nEtiket];",
+  "koy": "  [].forEach(el=>{ const v=I18N[L][el.dataset.i18nEtiket];"
+ },
+ {
+  "ad": "etiket kuralı kayıt noktasını eziyor (kırmızı nokta düğmenin altına düşer)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  .cbtn::after{content:attr(data-etiket);position:absolute;",
+  "koy": "  .cbtn::after,#recBtn::after{content:attr(data-etiket);position:absolute;"
+ },
+ {
+  "ad": "odak kipinde etiketler ekranda kalıyor",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "  body.hideUI .cbtn::after{content:''}",
+  "koy": "  body.hideUI .cbtn::after{opacity:.9}"
  }
 ]

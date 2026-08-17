@@ -406,9 +406,31 @@
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
     gap:var(--sp-1);
-    padding:10px 10px calc(14px + env(safe-area-inset-bottom));
+    /* Alt boşluk etiketler için büyütüldü: yazı düğmenin ALTINDA duruyor. */
+    padding:10px 10px calc(30px + env(safe-area-inset-bottom));
     background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
-  .cbtn{width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
+  /* ===== ÇEKİM ÇUBUĞU ETİKETLERİ =====
+     Altı yuvarlak ikon vardı ve hiçbirinin yazısı yoktu: kullanıcı ne
+     yaptıklarını ancak tek tek basarak öğreniyordu. Deponun 4 numaralı hata
+     sınıfı (jargon = görünmezlik) ikon hâli — Erdal "str ne demek bilmiyorum"
+     dediğinde de aynı sınıf çıkmıştı.
+     Etiket `::after` ile çiziliyor: DÜĞMENİN KUTUSU, ÇAPI VE DOKUNMA HEDEFİ
+     DEĞİŞMİYOR, yani `tests/134`ün sığma aritmetiği aynen geçerli kalıyor.
+     `pointer-events:none` — yazı dokunuşu yutmasın. */
+  /* ⚠️ #recBtn::after KULLANILAMAZ: o sözde-öge zaten KIRMIZI KAYIT NOKTASI
+     (aşağıda tanımlı). İlk yazımda etiketi ona da bağladım ve noktayı
+     düğmenin altına ittim — çekim ekranının en tanınır ögesi bozuldu.
+     Kayıt düğmesinin etiketi zaten gereksiz: kırmızı yuvarlak evrensel ve
+     ekran okuyucu için aria-label duruyor. */
+  .cbtn::after{content:attr(data-etiket);position:absolute;
+    top:calc(100% + 3px);left:50%;transform:translateX(-50%);
+    font-size:10px;font-weight:650;letter-spacing:.01em;line-height:1;
+    color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  .cbtn.on::after{color:var(--r-action-t)}
+  /* Odak kipinde (kayıtta düğmeleri gizle) etiket de gitmeli. */
+  body.hideUI .cbtn::after{content:''}
+  .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
     color:#fff;font-size:21px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);flex:none}
   .cbtn:active{filter:brightness(1.4)}
   .cbtn.on{background:var(--accent);color:var(--accent-d)}
@@ -762,13 +784,13 @@
 
 <!-- ALT KONTROL -->
 <div id="bar" class="hidden">
-  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" data-i18n-title="settings" title="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
-  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" data-i18n-title="scripts" title="Senaryolar"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
-  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" data-i18n-title="mTReady" title="Çekime hazır mıyım?"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
+  <button class="cbtn" id="settingsBtn" aria-label="Ayarlar" data-aria="settingsBtn" data-i18n-title="settings" title="Ayarlar" data-i18n-etiket="cbAyar" data-etiket="Ayarlar"><svg class="ic" aria-hidden="true"><use href="#i-ayarlar"/></svg></button>
+  <button class="cbtn" id="scriptsBtn" aria-label="Senaryolar" data-aria="scriptsBtn" data-i18n-title="scripts" title="Senaryolar" data-i18n-etiket="cbSenaryo" data-etiket="Senaryo"><svg class="ic" aria-hidden="true"><use href="#i-senaryo"/></svg></button>
+  <button class="cbtn" id="readyBtn" aria-label="Çekime hazır mıyım" data-aria="readyBtn" data-i18n-title="mTReady" title="Çekime hazır mıyım?" data-i18n-etiket="cbHazir" data-etiket="Hazır mıyım"><svg class="ic" aria-hidden="true"><use href="#i-hazir"/></svg></button>
   <button class="cbtn hidden" id="pauseBtn" aria-label="Kaydı duraklat" data-aria="pauseBtn">⏸</button>
   <button id="recBtn" aria-label="Kayıt başlat/durdur" data-aria="recBtn" disabled></button>
-  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" data-i18n-title="mTVoice" title="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
-  <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" data-i18n-title="tPlay" title="Başlat">▶︎</button>
+  <button class="cbtn" id="voiceBtn" aria-label="Sesle takip" data-aria="voiceBtn" data-i18n-title="mTVoice" title="Sesle takip" data-i18n-etiket="cbSes" data-etiket="Sesle takip"><svg class="ic" aria-hidden="true"><use href="#i-mikrofon"/></svg></button>
+  <button class="cbtn" id="playBtn" aria-label="Başlat/duraklat" data-aria="playBtn" data-i18n-title="tPlay" title="Başlat" data-i18n-etiket="cbBaslat" data-etiket="Başlat">▶︎</button>
 </div>
 
 <!-- BAŞLANGIÇ -->
@@ -1703,7 +1725,10 @@ const I18N={
   gYeni:'Yeni senaryo ekle',gYedek:'Yedek ve geri alma',gAraclar:'Metin araçları',
   gDenetim:'Metin denetimleri',
   /* Sonuç ekranının kartları */
-  gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma'},
+  gDahaFazla:'Daha fazla',gNasil:'Kaydetme ve kırpma',
+  /* Çekim çubuğu etiketleri — ikon tek başına ne yaptığını söylemiyordu. */
+  cbAyar:'Ayarlar',cbSenaryo:'Senaryo',cbHazir:'Hazır mıyım',cbSes:'Sesle takip',
+  cbBaslat:'Başlat'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
   startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
@@ -1854,7 +1879,9 @@ const I18N={
   gMikSec:'Microphone choice',
   gYeni:'Add a script',gYedek:'Backup and undo',gAraclar:'Text tools',
   gDenetim:'Text checks',
-  gDahaFazla:'More',gNasil:'Saving and trimming'}
+  gDahaFazla:'More',gNasil:'Saving and trimming',
+  cbAyar:'Settings',cbSenaryo:'Script',cbHazir:'Ready?',cbSes:'Voice',
+  cbBaslat:'Start'}
 };
 /* ==/CEKIRDEK:sozluk.js== */
 
@@ -2163,6 +2190,14 @@ function applyLang(){
   /* title ipuçları: telefonda bu döngü HİÇ YOKTU (Mac'te vardı) ve 5 title'ın
      5'i de Türkçe kalıyordu — platformlar arası tutarsızlık. */
   $$('[data-i18n-title]').forEach(el=>{ const v=I18N[L][el.dataset.i18nTitle]; if(v) el.title=v; });
+  /* ÇEKİM ÇUBUĞUNUN ETİKETLERİ (2026-08-17). Alt çubukta altı yuvarlak ikon
+     vardı ve hiçbirinin yazısı yoktu; ne yaptıklarını ancak deneyerek
+     öğreniyordun. Bu deponun 4 numaralı hata sınıfı (jargon = görünmezlik)
+     ikon hâli. Etiket CSS'te `content:attr(data-etiket)` ile çiziliyor, yani
+     düğmenin kendi kutusu ve dokunma hedefi DEĞİŞMİYOR; burada yalnız
+     dile göre yazılıyor. */
+  $$('[data-i18n-etiket]').forEach(el=>{ const v=I18N[L][el.dataset.i18nEtiket];
+    if(v) el.setAttribute('data-etiket', v); });
   /* Anahtarların adı yanındaki <span>'de duruyor; ekran okuyucu <div> anahtarı
      adsız okuyordu. Etiket dille değiştiği için BURADA türetiliyor — dil
      değişince yenilenmezse İngilizceye geçen kullanıcı Türkçe etiket duyardı. */

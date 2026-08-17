@@ -69,8 +69,11 @@ ok('kayıt düğmesi de --cb ile ölçekleniyor (sabit piksel değil)',
    Number.isFinite(recOran) && recOran > 1);
 
 /* Sabit piksel boyu GERİ GELMESİN: eski kusur tam buydu. */
+/* Desen 2026-08-17'de gevşetildi: kuralın başına `position:relative` girdi
+   (etiket düğmenin altında konumlanıyor). Kilitlenen şey BİÇİM değil KURAL —
+   boy sabit piksel değil, `--cb` değişkeninden gelir. */
 ok('.cbtn boyu --cb değişkeninden geliyor',
-   /\.cbtn\{width:var\(--cb/.test(s));
+   /\.cbtn\{[^}]*width:var\(--cb/.test(s));
 
 /* ---------- EN DAR DURUM SIĞIYOR MU ---------- */
 function gereken(vp) {
@@ -133,4 +136,42 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   /* Cihaz özeti en uzun parça; taşarsa altı satır yerine üç nokta. */
   ok('cihaz özeti taşarsa kısalıyor (altı satıra inmiyor)',
      /#sbDev\{[^}]*text-overflow:ellipsis/.test(mac));
+}
+
+/* ---------- ÇUBUK DÜĞMELERİNİN ADI VAR MI (2026-08-17) ----------
+   Alt çubukta altı yuvarlak ikon vardı ve hiçbirinin yazısı yoktu; kullanıcı
+   ne yaptıklarını ancak tek tek basarak öğreniyordu. Bu deponun 4 numaralı
+   hata sınıfının (jargon = görünmezlik) ikon hâli.
+
+   Kilitlenen kural üç parçalı:
+   ① beş yardımcı düğmenin de görünür bir adı var ve adı SÖZLÜKTEN geliyor
+     (dil değişince etiket de değişmeli),
+   ② etiket `::after` ile çiziliyor — düğmenin kutusu ve dokunma hedefi
+     değişmiyor, yani yukarıdaki sığma aritmetiği geçerli kalıyor,
+   ③ `#recBtn::after` ETİKET İÇİN KULLANILAMAZ: o sözde-öge kırmızı kayıt
+     noktasıdır. İlk yazımda oraya bağladım ve noktayı düğmenin altına
+     ittim — çekim ekranının en tanınır ögesi bozuldu. */
+{
+  const src2 = oku(telefonYolu());
+  const kod2 = src2.replace(/\/\*[\s\S]*?\*\//g, '');
+  const dugmeler = ['settingsBtn', 'scriptsBtn', 'readyBtn', 'voiceBtn', 'playBtn'];
+  for (const id of dugmeler) {
+    const m = src2.match(new RegExp('<button[^>]*id="' + id + '"[^>]*>'));
+    ok(id + ' düğmesinin görünür adı var', !!m && /data-etiket="[^"]+"/.test(m[0]));
+    ok(id + ' adı sözlükten geliyor (dil değişince değişir)',
+       !!m && /data-i18n-etiket="\w+"/.test(m[0]));
+  }
+  ok('etiketler dil değişiminde yenileniyor',
+     /\$\$\('\[data-i18n-etiket\]'\)\.forEach/.test(kod2));
+  ok('etiket düğmenin KUTUSUNU değiştirmiyor (::after ile çiziliyor)',
+     /\.cbtn::after\{content:attr\(data-etiket\)/.test(src2));
+  ok('etiket dokunuşu yutmuyor', /\.cbtn::after\{[^}]*pointer-events:none/.test(src2));
+  /* Kayıt noktası korunuyor: etiket kuralı ona DOKUNMAMALI. */
+  ok('kırmızı kayıt noktası hâlâ #recBtn::after ile çiziliyor',
+     /#recBtn::after\{content:"";[^}]*background:#ff3b30/.test(src2));
+  ok('etiket kuralı kayıt düğmesini kapsamıyor',
+     !/#recBtn::after\{content:attr\(data-etiket\)/.test(src2));
+  /* Odak kipi (kayıtta düğmeleri gizle) etiketleri de gizlemeli. */
+  ok('odak kipinde etiketler de gizleniyor',
+     /body\.hideUI \.cbtn::after\{content:''\}/.test(src2));
 }
