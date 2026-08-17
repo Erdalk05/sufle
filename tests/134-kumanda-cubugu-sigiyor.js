@@ -175,3 +175,26 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   ok('odak kipinde etiketler de gizleniyor',
      /body\.hideUI \.cbtn::after\{content:''\}/.test(src2));
 }
+
+/* ---------- ÇUBUK YÜKSEKLİĞİ TEK KAYNAKTAN (2026-08-17) ----------
+   Üstteki katmanlar (durum şeridi, hız hapı) `--barH` jetonuna göre
+   konumlanıyor. Etiketler eklenirken çubuğun ALT İÇ KENARINI 14 → 30 px
+   yaptım ama `--barH`i güncellemedim: çubuk büyüdü, üstündeki katman yerinde
+   kaldı ve durum şeridi çubuğun İÇİNE girdi. Mağaza kare aracı bunu ölçtü
+   (5 çakışan kumanda çifti, 430 px'te 10 px örtüşme).
+
+   Kural: iç kenar ile yükseklik AYNI jetondan okunur, ikisi ayrışamaz.
+   Ölçüm sonrası 430/390/360 px'te çakışan çift 0. */
+{
+  const src3 = oku(telefonYolu());
+  ok('çubuğun alt iç kenarı jetondan geliyor',
+     /--barAlt:calc\(\d+px \+ env\(safe-area-inset-bottom\)\)/.test(src3));
+  /* Desen `[^)]*` ile yazılmıştı ve ifadenin içindeki `calc(...)`in kendi
+     parantezinde takılıyordu — ürün doğruyken kırmızı. */
+  ok('yükseklik aynı jetonu kullanıyor', /--barH:calc\([\s\S]{0,60}?var\(--barAlt\)/.test(src3));
+  ok('çubuk da aynı jetonu kullanıyor', /padding:10px 10px var\(--barAlt\)/.test(src3));
+  /* Ayrışmayı KANITLA: iki bildirimde de ham piksel kalmamalı, yoksa kural
+     yazılı ama uygulanmamış olur. */
+  ok('çubuk iç kenarında ham piksel yok',
+     !/#bar\{[^}]*padding:10px 10px calc\(\d+px \+ env/.test(src3));
+}

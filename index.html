@@ -405,13 +405,22 @@
      sayıldı. Yükseklik artık ÜRETİLİYOR: iç kenar + en yüksek düğme
      (kayıt = --cb × 1,37) + alt iç kenar + güvenli alan. Düğme boyu
      değişirse üstteki katmanlar KENDİLİĞİNDEN kayar. */
+  /* ⚠️ ALT İÇ KENAR TEK KAYNAKTAN (2026-08-17). Çubuğa düğme etiketleri
+     eklerken iç kenarı 14 → 30 px yaptım ama `--barH`i güncellemeyi unuttum:
+     çubuk büyüdü, üstündeki katman yerinde kaldı ve durum şeridi çubuğun
+     İÇİNE girdi — mağaza kare aracı 5 çakışan kumanda çifti saydı. Tam da
+     yukarıdaki yorumun uyardığı kusur, üstelik onu yazan turdan sonra.
+     Artık iki yer aynı jetonu okuyor; birini değiştirmek diğerini de
+     kendiliğinden taşır. */
   body{--cb:clamp(42px, calc((100vw - 48px) / 7.37), 54px);
-    --barH:calc(10px + var(--cb) * 1.37 + 14px + env(safe-area-inset-bottom))}
+    --barAlt:calc(30px + env(safe-area-inset-bottom));
+    --barH:calc(10px + var(--cb) * 1.37 + var(--barAlt))}
   #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
     gap:var(--sp-1);
-    /* Alt boşluk etiketler için büyütüldü: yazı düğmenin ALTINDA duruyor. */
-    padding:10px 10px calc(30px + env(safe-area-inset-bottom));
+    /* Alt boşluk etiketler için büyük; değeri `--barAlt` jetonundan geliyor
+       ki üstteki katmanları taşıyan `--barH` ile ASLA ayrışmasın. */
+    padding:10px 10px var(--barAlt);
     background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
   /* ===== ÇEKİM ÇUBUĞU ETİKETLERİ =====
      Altı yuvarlak ikon vardı ve hiçbirinin yazısı yoktu: kullanıcı ne

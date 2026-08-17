@@ -3120,5 +3120,19 @@
   "kaynak": "telefon",
   "bul": "    <span data-i18n=\"rozUcret\">Ücretsiz</span>",
   "koy": "    <span data-i18n=\"rozUcret\">Ücretsiz</span>\n    <span data-i18n=\"rozHesap\">Bulut senkron</span>"
+ },
+ {
+  "ad": "çubuk yüksekliği iç kenardan ayrıştı (durum şeridi çubuğun içine girer)",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "    --barH:calc(10px + var(--cb) * 1.37 + var(--barAlt))}",
+  "koy": "    --barH:calc(10px + var(--cb) * 1.37 + 14px + env(safe-area-inset-bottom))}"
+ },
+ {
+  "ad": "çubuk iç kenarı jetondan koptu",
+  "test": "134-kumanda-cubugu-sigiyor.js",
+  "kaynak": "telefon",
+  "bul": "    padding:10px 10px var(--barAlt);",
+  "koy": "    padding:10px 10px calc(30px + env(safe-area-inset-bottom));"
  }
 ]
