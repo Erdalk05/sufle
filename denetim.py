@@ -277,6 +277,21 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     if (it ^ ie) - {"camera"}: problems.append(("I18N TR/EN farkı", sorted((it ^ ie) - {"camera"})))
     mc = set(re.findall(r"\bm\('([A-Za-z0-9]+)'\)", js))
     tc = set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
+    # KOŞULLU ANAHTAR SEÇİMİ DE KULLANIMDIR (2026-08-17). Arşiv hatasının
+    # sebebine göre metin seçilirken `m(kapali?'archWarnKapali':'archWarnTxt')`
+    # yazıldı ve denetim ÜÇ anahtarı birden "hiç kullanılmıyor" saydı — oysa
+    # üçü de kaynakta harfi harfine duruyor. Ölçmeyen denetim, olmayan kusuru
+    # bildirir ve gerçek kusurun yanında güvenilirliğini yitirir.
+    # Yalnız SEÇENEK konumundaki (?: iki yanındaki) dizgeler sayılıyor.
+    # İlk yazımda çağrının içindeki BÜTÜN dizgeleri anahtar saymıştım ve
+    # koşulun kendisindeki karşılaştırma dizgesi ('kapali') de anahtar
+    # sanıldı; denetim olmayan bir anahtarı "sözlükte yok" diye bildirdi.
+    # Ayrıca m() ve t() ayrı sözlükler: birinin anahtarını diğerine yazmak
+    # yine sahte kusur üretiyordu.
+    for fn, kume in (('m', mc), ('t', tc)):
+        for cagri in re.findall(r"\b%s\(([^()]*\?[^()]*)\)" % fn, js):
+            for a, b in re.findall(r"\?\s*'([A-Za-z0-9]+)'\s*:\s*'([A-Za-z0-9]+)'", cagri):
+                kume.add(a); kume.add(b)
     # ANAHTARI SAKLAYAN YARDIMCILAR. Mac'in kip penceresi dil değişince
     # yeniden çizilebilsin diye anahtarları SAKLIYOR ve sonra t() ile
     # çözüyor: `bilgiGosterK('mDlgWelcome','mDlgWelcomeBody')`. Bu biçim

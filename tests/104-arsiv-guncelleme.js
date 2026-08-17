@@ -27,8 +27,11 @@ ok('çekim arşive doğrudan veriliyor (kopya çıkarılmıyor)',
 ok('blob için arrayBuffer/slice çağrılmıyor',
    !/lastBlob\.arrayBuffer\(\)/.test(kod) && !/lastBlob\.slice\(/.test(kod));
 ok('yazma askıda kalırsa süre koruması var', /\}, 15000, false, 'dbPut'\);/.test(kod));
-ok('arşivleme başarısızsa çekim yine elde kalıyor',
-   /if\(!ok\)\{ curTakeId=null; toast\(m\('archFail'\)\); \}/.test(kod));
+/* Uyarı 2026-08-17'de SEBEBE GÖRE seçilir oldu (depo dolu / depo kapalı);
+   sınanan iddia değişmedi: başarısızlıkta çekim elde kalır ve kullanıcıya
+   söylenir. */
+ok('arşivleme başarısızsa çekim yine elde kalıyor ve söyleniyor',
+   /if\(!ok\)\{ curTakeId=null; toast\(m\(depoSebep==='kapali'\?'archFailKapali':'archFail'\)\); \}/.test(kod));
 
 /* ---------- GÜNCELLEME TEK İŞLEMDE Mİ ---------- */
 const m=kod.match(/async function dbGuncelle\(id, degis\)\{[\s\S]*?\n\}/);

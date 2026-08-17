@@ -2875,5 +2875,40 @@
   "kaynak": "mac",
   "bul": "  #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}",
   "koy": "  #sbDev{max-width:min(46ch,52%)}"
+ },
+ {
+  "ad": "depo kapalıyken de 'yer aç' deniyor (çıkışsız yol)",
+  "test": "42-arsiv-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "  const w=$('#archWarn'); if(w) w.textContent=m(kapali?'archWarnKapali':'archWarnTxt');",
+  "koy": "  const w=$('#archWarn'); if(w) w.textContent=m('archWarnTxt');"
+ },
+ {
+  "ad": "depo kapalıyken çalışamayacak silme düğmesi görünür kalıyor",
+  "test": "42-arsiv-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "         b.style.display = kapali ? 'none' : ''; }",
+  "koy": "         b.style.display = ''; }"
+ },
+ {
+  "ad": "arşiv toast'ı sebebi ayırt etmiyor",
+  "test": "42-arsiv-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "  if(!ok){ curTakeId=null; toast(m(depoSebep==='kapali'?'archFailKapali':'archFail')); }",
+  "koy": "  if(!ok){ curTakeId=null; toast(m('archFail')); }"
+ },
+ {
+  "ad": "depo açılamadığında sebep işaretlenmiyor",
+  "test": "42-arsiv-kurtarma.js",
+  "kaynak": "telefon",
+  "bul": "  if(!d){ depoSebep='kapali'; return false; }",
+  "koy": "  if(!d){ return false; }"
+ },
+ {
+  "ad": "sunucu başlangıç portunu ortamdan okumuyor (port testi makine durumuna bağlı kalır)",
+  "test": "29-yerel-sunucu.js",
+  "kaynak": "sunucu",
+  "bul": "PORT = int(os.environ.get(\"SUFLE_PORT\") or 8080)",
+  "koy": "PORT = 8080"
  }
 ]

@@ -151,8 +151,11 @@ function kaynakDuzeyi(){
   ok('iptal düğme etiketlerini geri alıyor',
      /textContent=t\('wipeTakes'\)/.test(sIptal) && /textContent=m\('archWipeBtn'\)/.test(sIptal));
   /* Arşiv kutusundaki ikizi zaten kendini sıfırlıyordu — bozulmasın. */
+  /* Desen 2026-08-17'de gevşetildi: araya "depo kapalıysa düğmeyi gizle"
+     satırı girdi. Kilitlenen şey BİÇİM değil KURAL — kutu her çizildiğinde
+     önceki çekimden kalan onay düşer. */
   ok('arşiv kutusu yeniden çizilince de sıfırlanıyor',
-     /b\.disabled=false; \}\s*\n\s*arsivSilArm=0;/.test(kod));
+     /b\.disabled=false;[\s\S]{0,120}?\}\s*\n\s*arsivSilArm=0;/.test(kod));
   ok('arşiv silmesi de yıldızlıları koruyor',
      (kod.match(/const all=await dbListe\(\), kill=all\.filter\(x=>!x\.fav\);/g)||[]).length===2);
 }

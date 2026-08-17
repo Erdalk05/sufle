@@ -65,8 +65,11 @@ const D=KILAVUZ.replace(/\s+/g,' ');
      fs.existsSync('/Users/erdalkiziroglu/Desktop/Teleprompter-Windows/Teleprompter Baslat.bat'));
   /* Kılavuz localhost:8080 diyorsa sunucunun varsayılan portu da o olmalı. */
   const sunucu=fs.readFileSync(require('./kaynak.js').sunucuYolu(),'utf8');
+  /* Başlangıç portu artık ortamdan da verilebiliyor (testler makine
+     durumundan bağımsız olsun diye); KULLANICI için varsayılan değişmedi ve
+     kılavuz onu yazıyor. İddia o varsayılana bakıyor. */
   ok('sunucunun varsayılan portu kılavuzdakiyle aynı',
-     /^PORT = 8080$/m.test(sunucu) && /localhost:8080/.test(D));
+     /os\.environ\.get\("SUFLE_PORT"\) or 8080/.test(sunucu) && /localhost:8080/.test(D));
 }
 
 /* ---------- 4) İLK 5 DAKİKA LİSTESİNDEKİ HER ADIM GERÇEK ---------- */

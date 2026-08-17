@@ -12,7 +12,14 @@ import urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, "Teleprompter Pro.html")
-PORT = 8080
+# BAŞLANGIÇ PORTU DIŞARIDAN VERİLEBİLİR (2026-08-17).
+# Sebep ölçüldü: kapının port testi 8080/8081'i GERÇEKTEN açıyor ve makinede
+# o portları tutan başka bir uygulama olduğunda (bu gece 8081'i başka bir
+# geliştirme sunucusu tutuyordu) test kendini ATLIYOR — yani kapı o gece
+# yedek-port kuralını hiç ölçmüyor, üstelik kasıtlı bozma da yakalanmıyor.
+# Kullanıcı için hiçbir şey değişmiyor (varsayılan yine 8080); test artık
+# BOŞ bir port çifti seçip aynı kuralı makine durumundan bağımsız ölçebiliyor.
+PORT = int(os.environ.get("SUFLE_PORT") or 8080)
 
 clients = []          # SSE kuyrukları
 lock = threading.Lock()

@@ -15,14 +15,15 @@ const kod = tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ---------- KUTU YALNIZ GEREKTİĞİNDE GÖRÜNÜYOR ---------- */
 const kutu = cikar(kod, /function arsivKutusu\(\)\{[\s\S]*?\n\}/, 'arsivKutusu');
-function kutuKos(hata){
+function kutuKos(hata, sebep){
   const g={};
-  new Function('__g','__h', `
+  new Function('__g','__h','__s', `
     const arsivHatasi=__h;
+    const depoSebep=__s;
     let arsivSilArm=9;
     const el={ '#archBox':{style:{display:'BASLANGIC'}},
                '#archWarn':{textContent:''},
-               '#archWipe':{textContent:'',disabled:true} };
+               '#archWipe':{textContent:'',disabled:true,style:{display:'BASLANGIC'}} };
     const $=k=>el[k];
     const m=k=>k;
     ${kutu}
@@ -31,8 +32,9 @@ function kutuKos(hata){
     __g.uyari   = el['#archWarn'].textContent;
     __g.dugme   = el['#archWipe'].textContent;
     __g.kapali  = el['#archWipe'].disabled;
+    __g.dugmeGor= el['#archWipe'].style.display;
     __g.arm     = arsivSilArm;
-  `)(g,hata);
+  `)(g,hata,sebep||null);
   return g;
 }
 {
@@ -48,6 +50,37 @@ function kutuKos(hata){
   ok('arşivleme başarılıysa kutu GİZLİ (her çekimde duran uyarı görünmez olur)',
      g.gorunur === 'none');
   ok('başarılıyken metin de yazılmıyor', g.uyari === '');
+}
+
+/* ---------- İKİ FARKLI SEBEP, İKİ FARKLI ÇIKIŞ YOLU (2026-08-17) ----------
+   KULLANARAK denetimde ölçüldü: arşiv iki sebeple başarısız olabiliyor ve
+   uygulama ikisine de "depoda yer yok, yıldızsızları sil" diyordu.
+     · depo DOLU    → yer açmak çözer, düğme işe yarar
+     · depo KAPALI  → gizli/özel pencerede depo hiç yok; silme de aynı depoya
+                      yazacağı için ÇALIŞAMAZ. Eski hâl kullanıcıyı çekimlerini
+                      silmeye ikna edip yine sonuç alamamasına gönderiyordu.
+   Bu deponun "yanlış yeri gösteren uyarı" sınıfı. */
+{
+  const dolu=kutuKos(true,'dolu'), kapali=kutuKos(true,'kapali');
+  ok('depo doluyken yer açma metni gösteriliyor', dolu.uyari==='archWarnTxt');
+  ok('depo kapalıyken AYRI metin gösteriliyor', kapali.uyari==='archWarnKapali');
+  ok('iki metin birbirinden farklı', dolu.uyari!==kapali.uyari);
+  ok('depo doluyken çıkış düğmesi duruyor', dolu.dugmeGor==='');
+  ok('depo kapalıyken çalışamayacak düğme gizleniyor', kapali.dugmeGor==='none');
+}
+{
+  /* Toast da sebebe göre seçilmeli: kutuyu görmeden kapatan kullanıcı yalnız
+     onu okuyor. */
+  const kod2=kod;
+  ok('toast sebebe göre seçiliyor',
+     /toast\(m\(depoSebep==='kapali'\?'archFailKapali':'archFail'\)\)/.test(kod2));
+  ok('sebep depo açılamayınca kapali oluyor',
+     /if\(!d\)\{ depoSebep='kapali'; return false; \}/.test(kod2));
+  ok('depo açıldıysa sebep dolu oluyor', /depoSebep='dolu';/.test(kod2));
+  for(const k of ['archFailKapali','archWarnKapali'])
+    ok('"'+k+'" iki dilde tanımlı', (tel.match(new RegExp(k+":'","g"))||[]).length >= 2);
+  ok('kapalı-depo metni yer açmanın işe yaramayacağını söylüyor',
+     /archWarnKapali:'[^']*İŞE YARAMAZ/.test(tel));
 }
 
 /* ---------- KURTARMA AKIŞI ---------- */

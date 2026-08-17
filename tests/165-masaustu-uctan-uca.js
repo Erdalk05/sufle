@@ -48,13 +48,18 @@ function iste(url, {yontem='GET', govde=null, origin=null, ms=4000}={}){
 (async () => {
   const port=await bosPort();
   const dizin=fs.mkdtempSync(path.join(os.tmpdir(),'sufle-masaustu-'));
-  /* Sunucu KENDİ klasöründeki HTML'i sunuyor; ikisi de kopyalanıyor ve port
-     çakışmasın diye tek satır değiştiriliyor (davranış değil, adres). */
-  const kaynak=fs.readFileSync(sunucuYolu(),'utf8').replace('PORT = 8080','PORT = '+port);
-  fs.writeFileSync(path.join(dizin,'teleprompter_server.py'), kaynak);
+  /* Sunucu KENDİ klasöründeki HTML'i sunuyor; ikisi de kopyalanıyor.
+     PORT ARTIK KAYNAK DÜZENLEYEREK DEĞİL ORTAMDAN veriliyor (2026-08-17):
+     eski hâl `PORT = 8080` satırını metin olarak değiştiriyordu ve o satır
+     değişince (env desteği eklendi) DEĞİŞİKLİK SESSİZCE UYGULANMADI —
+     sunucu 8080'de kaldı, test kendi portunu bekleyip "ATLANDI" dedi ve
+     uçtan uca masaüstü ölçümü o koşuda HİÇ yapılmadı. Bu deponun 1 numaralı
+     hata sınıfı: deseni tutmayan metin düzenlemesi sessizce hiçbir şey yapmaz. */
+  fs.copyFileSync(sunucuYolu(), path.join(dizin,'teleprompter_server.py'));
   fs.copyFileSync(macYolu(), path.join(dizin,'Teleprompter Pro.html'));
 
-  const p=spawn(py,['-u','teleprompter_server.py'],{cwd:dizin, stdio:'ignore'});
+  const p=spawn(py,['-u','teleprompter_server.py'],
+                {cwd:dizin, stdio:'ignore', env:{...process.env, SUFLE_PORT:String(port)}});
   const bitir=()=>{ try{ p.kill(); }catch(_){ } fs.rmSync(dizin,{recursive:true,force:true}); };
   const kok='http://127.0.0.1:'+port;
   try{
