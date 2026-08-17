@@ -1445,7 +1445,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   index.html + sw.js **md5 birebir**, iki düzeltmenin izi canlıda sayıldı
   (`kelimeSigdir` 4 · `keep-all` 3 · budama üst sınırı 1 · birim çevirisi 1).
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
-  **9 commit yayınlanmamış** (`main` dalında, v9.17). Canlı sürüm v9.16 ile depo
+  **13 commit yayınlanmamış** (`main` dalında, v9.17). Canlı sürüm v9.16 ile depo
   arasındaki fark yayınlanmayı bekliyor — yayın Erdal onayına bağlı.
 - **6543 test** (gece başında 732) · yeni test dosyası: 39–168
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
