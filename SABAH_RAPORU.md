@@ -4,6 +4,10 @@
 
 ## 🎨 17 Ağustos — "UI hâlâ rakiplerin gerisinde": ayar listesi baştan çizildi
 
+**v9.19 yayına hazır** (kapı 10/10 yeşil, Erdal onayı alındı): ayar listesi
+ikonlandı ve konu bloklarına ayrıldı, ayarların ilk açılışta boş görünmesi
+düzeltildi, arşivden açılan çekimin yayın paketi kendi senaryosunu taşıyor.
+
 Kart düzeni (v9.17/9.18) yayına hazırken Erdal **"hâlâ çok zayıf, UI'ye kafayı
 taktım"** dedi. Kaynağa değil **çizilmiş ekrana** bakıldı (390×844, gerçek
 Chrome) ve teşhis somutlaştı.

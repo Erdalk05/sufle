@@ -2236,8 +2236,8 @@
   "ad": "rapor kapısı yayın durumuna göre iddia sayısını oynatıyor",
   "test": "116-sabah-raporu.js",
   "kaynak": "telefon",
-  "bul": "VER='9.18'",
-  "koy": "VER='9.19'"
+  "bul": "VER='9.",
+  "koy": "VER='8."
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -2663,8 +2663,8 @@
   "ad": "kılavuz sürümü koddan ayrıştı (yanlış sürüm dağıtılır)",
   "test": "163-deneme-kilavuzu.js",
   "kaynak": "deneme",
-  "bul": "**Sürüm 9.18",
-  "koy": "**Sürüm 9.11"
+  "bul": "**Sürüm 9.",
+  "koy": "**Sürüm 8."
  },
  {
   "ad": "canlı duman betiği panoları tıklamadan geçiyor",
@@ -2684,8 +2684,8 @@
   "ad": "mağaza kabuğu sürümü uygulamadan ayrıştı (yanlış sürüm mağazaya çıkar)",
   "test": "164-magaza-kabugu.js",
   "kaynak": "kabuk_plist",
-  "bul": "<key>CFBundleShortVersionString</key><string>9.18</string>",
-  "koy": "<key>CFBundleShortVersionString</key><string>9.11</string>"
+  "bul": "<key>CFBundleShortVersionString</key><string>9.",
+  "koy": "<key>CFBundleShortVersionString</key><string>8."
  },
  {
   "ad": "izin metni sebep söylemiyor (Apple reddi + kullanıcı güveni)",
