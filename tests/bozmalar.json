@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.31 hazır · henüz yayınlanmadı",
-  "koy": "v9.31 için bir şeyler yapıldı"
+  "bul": "v9.32 hazır · henüz yayınlanmadı",
+  "koy": "v9.32 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4485,5 +4485,75 @@
   "kaynak": "telefon",
   "bul": "  if(wi<0 || wordTops[wi]==null) return false;",
   "koy": "  if(wi<0) return true;"
+ },
+ {
+  "ad": "v9.32 yol-tarifi dedektörü hiç koşmuyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "    problems += yol_tarifi_denetimi(src, js)",
+  "koy": "    problems += []"
+ },
+ {
+  "ad": "v9.32 dedektör tek kelimelik kısa öneki yine kabul ediyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "                if n == 1 and len(onek) < 5:\n                    continue",
+  "koy": "                pass"
+ },
+ {
+  "ad": "v9.32 dedektör biçim etiketini temizlemiyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "        ham = re.sub(r\"<[^>]+>\", \" \", ham0)",
+  "koy": "        ham = ham0"
+ },
+ {
+  "ad": "v9.32 dedektör işletim sistemi tariflerini de kırmızı yapıyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "        if any(_ilk(p) in DIS_DUNYA for p in parcalar[1:]):\n            continue",
+  "koy": "        if False:\n            continue"
+ },
+ {
+  "ad": "v9.32 dedektör kısaltılmış etiketi kabul etmiyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "            if not (adaylar & etiketler) and not icerir and not kisaltilmis:",
+  "koy": "            if not (adaylar & etiketler) and not icerir:"
+ },
+ {
+  "ad": "v9.32 kompozit uyarısı yine var olmayan denetimi tarif ediyor",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "telefon",
+  "bul": "Ayarlar → Kamera → Kompozit ve yeşil ekran → \"Kompoziti aç\" anahtarını kapat ve tekrar çek",
+  "koy": "Ayarlar → Yardım → Kompoziti kapat ve tekrar çek"
+ },
+ {
+  "ad": "v9.32 iOS önek dedektörü hiç koşmuyor",
+  "test": "191-ios-css-onek.js",
+  "kaynak": "denetim",
+  "bul": "    problems += ios_onek_denetimi(src)",
+  "koy": "    problems += []"
+ },
+ {
+  "ad": "v9.32 dedektör yalnız backdrop-filter'a bakıyor",
+  "test": "191-ios-css-onek.js",
+  "kaynak": "denetim",
+  "bul": "IOS_ONEK_ISTER = (\"backdrop-filter\", \"mask-image\", \"user-select\", \"box-decoration-break\")",
+  "koy": "IOS_ONEK_ISTER = (\"backdrop-filter\",)"
+ },
+ {
+  "ad": "v9.32 cam ayar paneli iPhone'da yine öneksiz",
+  "test": "191-ios-css-onek.js",
+  "kaynak": "telefon",
+  "bul": "    backdrop-filter:blur(30px) saturate(1.12);\n    -webkit-backdrop-filter:blur(30px) saturate(1.12)",
+  "koy": "    backdrop-filter:blur(30px) saturate(1.12)"
+ },
+ {
+  "ad": "v9.32 Mac'te öneksiz cam yüzey",
+  "test": "191-ios-css-onek.js",
+  "kaynak": "mac",
+  "bul": "z-index:7;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)",
+  "koy": "z-index:7;backdrop-filter:blur(6px)"
  }
 ]

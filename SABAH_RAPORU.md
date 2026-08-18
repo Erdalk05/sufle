@@ -2,6 +2,45 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 18 Ağustos — **v9.32 hazır · henüz yayınlanmadı**
+
+### 🔴 iPHONE'DA CAM/ŞEFFAF YÜZEYLERİN HİÇBİRİ ÇALIŞMIYORMUŞ
+
+Erdal gerçek cihazda bildirdi: *"görüntünün üzerine cam şeffaf değişiklik
+hiçbirinde iOS'ta da Android'de de yok."* Ölçüldü: telefon kabuğunda **18
+`backdrop-filter` kuralının yalnız 4'ünde `-webkit-` öneki vardı** (Mac'te
+2'nin 0'ında). iOS Safari öneksiz kuralı **uygulamıyor ve hata da vermiyor**.
+Yani v9.29'da "kamera açıkken cam ayar paneli" diye yayınladığım şey onun
+telefonunda hiç cam olmadı — düz opak panel gördü.
+
+**Kapının kendi kör noktası:** çizilmiş arayüz adımı Chrome'da koşuyor ve
+Chrome öneksizi destekliyor, bu yüzden 11 ekran görüntüsünün hepsi doğru
+çizildi. Cihaz farkını yalnız KAYNAK ölçümü yakalayabiliyordu.
+Dedektöre çevrildi: `denetim.py` artık `backdrop-filter · mask-image ·
+user-select · box-decoration-break` için önek arıyor, eksikse kapı kırmızı.
+İlk yazışta düzeltme 2 yerde önek TEKRARI üretti; o da temizlendi.
+
+### 🧭 ARAYÜZ METNİ VAR OLMAYAN BİR YERE GÖNDERİYORDU
+
+Kompozit uyarısı *"Ayarlar → Kamera → Kompoziti kapat"* diyordu; öyle bir
+anahtar yok — adı **"Kompoziti aç"** ve *"Kompozit ve yeşil ekran"* kartının
+içinde. Bu sınıf depoda dördüncü kez çıktı (depo dolunca yanlış bölüm ·
+Android'de olmayan Safari · v9.31'in rozeti · şimdi bu), o yüzden tek tek
+düzeltmek yerine **yol-tarifi dedektörü** yazıldı: kendi ekranlarımızı tarif
+eden her `A → B → C` zincirinin her parçası gerçek bir etiket olmalı.
+İşletim sistemi tarifleri bilerek kapsam dışı. Dedektörün **kendi iki kusuru**
+da ölçümle çıktı: sabit karakter penceresi son parçayı kesiyordu (yalancı
+kırmızı) ve tek kelimelik kısa önek sahte bölümleri geçiriyordu.
+
+Yanında: `denetim.py` **bozma tablosuna eklendi** (`SUFLE_DENETIM`) — eklenmeseydi
+ona inen hiçbir bozma testlere ulaşmazdı; `tests/07` ve `tests/122` doğrudan
+depodan okuyordu, ikisi de env destekli hâle getirildi. `tests/186` CSS metnini
+birebir sabitlediği için önek eklenince ÜRÜN DOĞRUYKEN kırıldı, içerik ölçümüne
+çevrildi.
+
+Yeni test dosyası **190** (yol tarifi, 11 iddia) ve **191** (iOS öneki, 10
+iddia) · 10 yeni kasıtlı bozma.
+
 ## 🟢 18 Ağustos — **v9.31 YAYINLANDI ve canlıdan doğrulandı**
 
 İki bulgu, ikisi de "uygulama desteklemediği bir şeyi söylüyor" sınıfı.
@@ -1812,7 +1851,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7243 test** (gece başında 732) · yeni test dosyası: 39–189
+- **7261 test** (gece başında 732) · yeni test dosyası: 39–191
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

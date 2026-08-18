@@ -362,7 +362,171 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     olu_i18n = sorted(it - kullanim)
     if olu_i18n: problems.append(("I18N'de tanımlı ama hiç kullanılmayan anahtar", olu_i18n))
 
+    problems += yol_tarifi_denetimi(src, js)
+    problems += ios_onek_denetimi(src)
+
     return problems
+
+
+# ==========================================================================
+# iOS'UN ÖNEK İSTEDİĞİ CSS ÖZELLİKLERİ — ÖNEKSİZ YAZILAN KURAL SESSİZCE ÖLÜR
+#
+# ÖLÇÜLDÜ 2026-08-18: telefon kabuğunda 18 `backdrop-filter` kuralının yalnız
+# 4'ünde `-webkit-` öneki vardı. iOS Safari öneksiz kuralı UYGULAMIYOR ve hata
+# da vermiyor — v9.29'da yayınlanan "kamera açıkken cam ayar paneli" Erdal'ın
+# iPhone'unda hiç cam görünmedi, panel düz opak kaldı. Kusur ancak GERÇEK
+# CİHAZDA görülüyordu: Chrome'da (kapının çizilmiş arayüz adımı dahil) her şey
+# doğru çiziliyor, çünkü Chrome öneksizi destekliyor.
+#
+# Bu, deponun "sessiz ölü özellik" sınıfının CSS tarafı: ayar açılıyor,
+# hiçbir şey olmuyor, sebep hiçbir yerde yazmıyor.
+#
+# Kural: aşağıdaki özelliklerden biri yazıldıysa AYNI satırda (ya da hemen
+# üstünde) `-webkit-` önekli hâli de bulunmalı. Öneki fazladan yazmanın
+# bedeli yok; eksik yazmanın bedeli görünmeyen bir özellik.
+# ==========================================================================
+IOS_ONEK_ISTER = ("backdrop-filter", "mask-image", "user-select", "box-decoration-break")
+
+
+def ios_onek_denetimi(src):
+    css_bloklari = re.findall(r"<style>(.*?)</style>", src, re.S) or [src]
+    eksik = []
+    for css in css_bloklari:
+        satirlar = css.split("\n")
+        for i, satir in enumerate(satirlar):
+            for ozellik in IOS_ONEK_ISTER:
+                # `-webkit-backdrop-filter` kendisi eşleşmesin diye önüne bak.
+                if not re.search(r"(?<![-\w])" + ozellik + r"\s*:", satir):
+                    continue
+                komsu = " ".join(satirlar[max(0, i - 1):i + 2])
+                if "-webkit-" + ozellik not in komsu:
+                    eksik.append(ozellik + " @ " + satir.strip()[:90])
+    if eksik:
+        return [("iOS'ta sessizce çalışmayacak öneksiz CSS", eksik)]
+    return []
+
+
+# ==========================================================================
+# ARAYÜZ METNİNDEKİ YOL TARİFİ GERÇEKTEN VAR MI?
+#
+# Bu depoda AYNI SINIF ÜÇ KEZ ÇIKTI ve üçünde de kullanıcı var olmayan bir
+# yere gönderildi:
+#   · depo dolunca "Çekimlerim bölümünden eski çekimleri sil" deniyordu, oysa
+#     senaryolar başka bir depoda — bütün çekimleri silmek işe yaramıyordu;
+#   · kamera izni reddedilince "Ayarlar → Safari → Kamera" deniyordu, Android
+#     telefonda Safari diye bir şey yok;
+#   · v9.31'de rozet "okuduğun yeri parmakla göster" diyordu ve karşılığı yoktu.
+#
+# Ortak nokta: METİN BİR VAAT EDİYOR, kod onu tutmuyor. Tek tek düzeltmek
+# yerine dedektöre çeviriyoruz (deponun çalışma kuralı).
+#
+# Ölçüt DAR TUTULDU — bilerek. Yalnız KENDİ arayüzümüze ait yol tarifleri
+# denetleniyor: ilk parçası kendi üst yüzeylerimizden biri olan `A → B → C`
+# zincirleri. İşletim sistemi tarifleri ("iOS Ayarlar → Safari → Mikrofon")
+# kapsam dışı: onların doğruluğunu bu depo bilemez, kapsama alsak dedektör
+# sürekli yalancı kırmızı verir ve susturulurdu.
+# ==========================================================================
+
+# Kendi üst yüzeylerimiz. Bir tarif bunlardan biriyle başlıyorsa BİZİM
+# yolumuzdur ve her parçası arayüzde bir etiket olarak bulunmalıdır.
+KOKLER = {"Ayarlar", "Settings", "Senaryolar", "Scripts",
+          "Çekimlerim", "My takes"}
+# İşletim sistemi/tarayıcı adları: bu parça geçtiği anda tarif bizden çıkar.
+DIS_DUNYA = {"safari", "chrome", "edge", "firefox", "ios", "android",
+             "fotoğraflar", "photos", "dosyalar", "files", "finder",
+             "sistem", "system"}
+
+
+def _sozluk_degerleri(js):
+    """Sözlüklerdeki GÖRÜNEN metinler. Anahtar değil değer gerekiyor: tarifin
+    parçaları kullanıcının okuduğu etiketlerdir."""
+    return [m.group(1) for m in re.finditer(r"[A-Za-z_$][\w$]*:'((?:[^'\\]|\\.)*)'", js)]
+
+
+def _etiket_kumesi(i18n_metinleri):
+    """Arayüzde GÖRÜNEN bütün etiket metinleri, karşılaştırma için sadeleşmiş."""
+    k = set()
+    for v in i18n_metinleri:
+        s = re.sub(r"<[^>]+>", " ", v)          # <b> gibi biçim etiketleri
+        s = re.sub(r"[^\w\s]", " ", s, flags=re.U)   # emoji, ok, noktalama
+        s = re.sub(r"\s+", " ", s).strip().lower()
+        if s:
+            k.add(s)
+    return k
+
+
+def yol_tarifi_denetimi(src, js):
+    """`Ayarlar → Diğer → Cihaz uyumluluğu` gibi tariflerin her parçası var mı?"""
+    degerler = _sozluk_degerleri(js)
+    if not degerler:
+        return []
+    etiketler = _etiket_kumesi(degerler)
+    bulunmayan = []
+    # PENCERE DEĞİL TAM DİZE. İlk yazışta tarifi sabit karakter penceresiyle
+    # çekiyordum; son parça kesilince dedektör KENDİ kusuru yüzünden yalancı
+    # kırmızı veriyordu ("switch" diye bir etiket yok — çünkü cümlenin
+    # tamamı okunmamıştı). Aracın gösterdiği kusur, aracın kendi kusuruydu;
+    # bu deponun bilinen tuzağı. Artık her metin BÜTÜN hâlinde okunuyor. 
+    metinler = [m.group(1) for m in re.finditer(r"'((?:[^'\\\n]|\\.)*)'", src)]
+    metinler += [m.group(1) for m in re.finditer(r'"((?:[^"\\\n]|\\.)*)"', src)]
+    metinler += re.findall(r">([^<>\n]{3,300})<", src)
+    for ham0 in [x for x in metinler if "→" in x]:
+        # Biçim etiketleri (<b>…</b>) tarifin parçasını ikiye bölüyordu.
+        ham = re.sub(r"<[^>]+>", " ", ham0)
+        parcalar = [x.strip(" .,:;()") for x in ham.split("→")]
+        parcalar = [x for x in parcalar if x]
+        if len(parcalar) < 2:
+            continue
+        kok = parcalar[0].split()[-1] if parcalar[0].split() else ""
+        if kok not in KOKLER:
+            continue                      # bizim yolumuz değil
+        def _ilk(p):
+            k = re.sub(r"[^\w]", "", p.split()[0], flags=re.U).lower() if p.split() else ""
+            return k
+        if any(_ilk(p) in DIS_DUNYA for p in parcalar[1:]):
+            continue                      # tarif işletim sistemine çıkıyor
+        for p in parcalar[1:]:
+            sade = re.sub(r"[^\w\s]", " ", p, flags=re.U)
+            sade = re.sub(r"\s+", " ", sade).strip().lower()
+            if not sade:
+                continue
+            # Cümlenin devamı olabilir ("… bölümünden açabilirsin"): tarifin
+            # SON parçasında yalnız ilk birkaç kelime hedeftir.
+            # HEDEF CÜMLENİN İÇİNDE HERHANGİ BİR YERDE olabilir:
+            # "switch \"Enable composite\" off" tarifinde etiket ortada.
+            # Baştan-önek aramak bunu kaçırıyordu (dedektörün ikinci kendi
+            # kusuru). Kısa etiketler ("Sol", "Aa") tesadüfen eşleşmesin diye
+            # yalnız 4 harften uzun etiketler ve TAM KELİME sınırıyla.
+            kelimeler = sade.split()
+            adaylar = {sade}
+            for n in range(1, min(5, len(kelimeler)) + 1):
+                onek = " ".join(kelimeler[:n])
+                # TEK KELİMELİK KISA ÖNEK KABUL EDİLMİYOR. "Ses Ayarları"
+                # diye var olmayan bir bölüm yazıldığında ilk kelime "Ses"
+                # gerçek bir bölüm adı olduğu için tarif geçip gidiyordu —
+                # ölçüldü, kasıtlı bozma inmiyordu. Tek kelimelik önek en az
+                # 5 harf olmalı; daha kısası ancak çok kelimeli önekle geçer.
+                if n == 1 and len(onek) < 5:
+                    continue
+                adaylar.add(onek)
+            icerir = any(
+                len(e) >= 4 and re.search(r"(?<!\w)" + re.escape(e) + r"(?!\w)", sade)
+                for e in etiketler
+            )
+            # …ve TERSİ de geçerli: tarif etiketin kısaltılmış hâlini yazmış
+            # olabilir. "Güvenli ses modu" gerçek etiketin ("Güvenli ses modu
+            # (iPhone için önerilir)") başlangıcıdır — kullanıcı onu bulur.
+            kisaltilmis = any(
+                len(p2) >= 5 and any(e.startswith(p2) for e in etiketler)
+                for p2 in adaylar
+            )
+            if not (adaylar & etiketler) and not icerir and not kisaltilmis:
+                bulunmayan.append(ham.strip() + "  ⟶  bulunamayan parça: " + p)
+                break
+    if bulunmayan:
+        return [("arayüz metni var olmayan bir yere gönderiyor", bulunmayan)]
+    return []
+
 
 if __name__ == "__main__":
     bad = 0

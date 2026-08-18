@@ -223,7 +223,15 @@ if (taban === null || eksik.length < taban) {
    bulamadığı hatadan daha pahalıya patlar. */
 {
   const fs2=require('fs'), path2=require('path');
-  const dsrc=fs2.readFileSync(path2.join(__dirname,'..','denetim.py'),'utf8');
+/* denetim.py YOLU ORTAM DEĞİŞKENİNDEN. Bozma turu geçici kopyayı ölçmeli;
+     doğrudan depodan okuyan test, `denetim.py`ye inen bozmayı HİÇ GÖRMEZ ve
+     "geçti" der (deponun dört kez çıkan kör noktası). */
+  const _denetimYolu = () => {
+    const a = process.env.SUFLE_DENETIM;
+    if (a && !require('fs').existsSync(a)) throw new Error('Verilen denetim.py yolu yok: ' + a);
+    return a || require('path').join(__dirname, '..', 'denetim.py');
+  };
+    const dsrc=fs2.readFileSync(_denetimYolu(),'utf8');
   ok('Mac sözlük denetiminden muaf DEĞİL',
      !/if is_mac:\s*\n\s*return problems/.test(dsrc));
   ok('Mac için doğru sözlük değişkenleri kullanılıyor',
@@ -238,7 +246,7 @@ if (taban === null || eksik.length < taban) {
      bunu "MSGde olmayan m() anahtarı" diye bildirmeli. */
   const bozuk=mac.replace(/takeDelAsk:'[^']*',/,'');
   fs2.writeFileSync(gecici,bozuk);
-  const c=cp.spawnSync('python3',[path2.join(__dirname,'..','denetim.py'),gecici],{encoding:'utf8'});
+  const c=cp.spawnSync('python3',[_denetimYolu(),gecici],{encoding:'utf8'});
   ok('dedektör eksik sözlük anahtarını GERÇEKTEN yakalıyor',
      /MSG'de olmayan m\(\) anahtarı/.test(c.stdout) && /takeDelAsk/.test(c.stdout));
   try{ fs2.unlinkSync(gecici); }catch(e){}

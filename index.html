@@ -307,11 +307,11 @@
   @keyframes recpulse{50%{border-color:rgba(255,59,48,.45)}}
   #recDot{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:8;display:none;
     align-items:center;gap:var(--sp-2);background:rgba(0,0,0,.72);padding:9px 16px;border-radius:22px;
-    font-size:var(--tx-md);font-weight:800;letter-spacing:.02em;backdrop-filter:blur(6px)}
+    font-size:var(--tx-md);font-weight:800;letter-spacing:.02em;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   #recDot.on{display:flex}
   #audBadge{position:absolute;top:calc(max(10px,env(safe-area-inset-top)) + 46px);right:12px;z-index:8;
     display:none;align-items:center;background:rgba(0,0,0,.55);color:#fff;font-size:var(--tx-sm);font-weight:800;
-    padding:6px 12px;border-radius:20px;backdrop-filter:blur(6px)}
+    padding:6px 12px;border-radius:20px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   body.hideUI #audBadge{opacity:1}
   #micWrap{height:12px;border-radius:8px;background:#26262c;overflow:hidden;margin-top:8px}
   #micBar{height:100%;width:0;background:#3a3a44;border-radius:8px;transition:width .06s linear}
@@ -339,7 +339,7 @@
     pointer-events:none}
   #hud{z-index:7;display:flex;gap:6px;margin-left:12px;
     font-size:var(--tx-xs);font-weight:700;color:#cfd8dc;pointer-events:none;flex-wrap:wrap;max-width:70%}
-  #hud span{background:rgba(0,0,0,.45);padding:var(--sp-1) 9px;border-radius:20px;backdrop-filter:blur(6px)}
+  #hud span{background:rgba(0,0,0,.45);padding:var(--sp-1) 9px;border-radius:20px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   /* Şerit ikonu metinle aynı ölçekte ve aynı renkte: `currentColor` sayesinde
      uyarı durumunda (`.warn`) o da sararıyor. Genişlik emojinin yerini birebir
      alıyor, yani sığma aritmetiği değişmiyor. */
@@ -368,7 +368,7 @@
   #speedCtl{align-self:center;pointer-events:auto;
     z-index:8;display:none;align-items:center;gap:0;
     background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);border-radius:26px;
-    backdrop-filter:blur(10px);overflow:hidden}
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden}
   body.started #speedCtl{display:flex}
   #speedCtl button{width:52px;height:46px;background:none;border:none;color:#fff;font-size:var(--tx-xl);
     font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center}
@@ -468,7 +468,7 @@
   .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;
     border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);
     color:#fff;font-size:var(--tx-lg);display:flex;align-items:center;justify-content:center;
-    box-shadow:var(--el-1);backdrop-filter:blur(10px);flex:none;
+    box-shadow:var(--el-1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);flex:none;
     transition:transform var(--hiz-hizli) var(--egri),background var(--hiz-hizli) var(--egri),border-color var(--hiz-hizli) var(--egri)}
   .cbtn:active{filter:brightness(1.4)}
   .cbtn.on{background:var(--accent);color:var(--accent-d)}
@@ -498,7 +498,7 @@
   body.locked #lockOverlay{display:block}
   #lockPill{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
     background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:var(--tx-sm);font-weight:700;
-    padding:10px 18px;border-radius:22px;backdrop-filter:blur(8px)}
+    padding:10px 18px;border-radius:22px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 
   /* ===== BAŞLANGIÇ ===== */
   /* GİRİŞ EKRANI — TEK ASIL EYLEM. Dikey ritim üç bölgeye ayrıldı:
@@ -560,7 +560,7 @@
     padding:16px 28px;display:flex;align-items:center;gap:10px;box-shadow:0 14px 34px rgba(0,212,126,.24),var(--el-1)}
   .ghostbig{background:rgba(255,255,255,.065);color:var(--t-hi);border:1px solid rgba(255,255,255,.16);
     border-radius:16px;font-size:var(--tx-md);font-weight:700;min-height:48px;padding:13px 20px;
-    box-shadow:var(--el-1);backdrop-filter:blur(12px)}
+    box-shadow:var(--el-1);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
   #langSwitch{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;display:flex;gap:6px}
   #langSwitch button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;
     border-radius:10px;padding:7px 11px;font-size:var(--tx-sm);font-weight:700}
@@ -570,7 +570,7 @@
 
   /* ===== SHEET ===== */
   #backdrop{position:absolute;inset:0;z-index:29;background:rgba(0,0,0,.45);
-    opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+    opacity:0;pointer-events:none;transition:opacity .25s;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
   body.sheeting #backdrop{opacity:1;pointer-events:auto}
   .sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;
     background:linear-gradient(180deg,rgba(26,30,39,.98),rgba(18,21,28,.99));box-shadow:var(--el-3);
@@ -587,7 +587,7 @@
      24 px bulanıklık denetimleri sabit tutarken kişinin, kadrajın ve ışığın
      üst bölgede görünmesini sağlar. Yalnız Ayarlar etkilenir; arşiv, yardım,
      hazır olma ve diğer çalışma sayfaları eski güvenli opaklığını korur. */
-  body.ayarCanli #backdrop{background:rgba(0,0,0,.10);backdrop-filter:none}
+  body.ayarCanli #backdrop{background:rgba(0,0,0,.10);-webkit-backdrop-filter:none;backdrop-filter:none}
   body.ayarCanli #sheet.open{
     max-height:68%;
     max-height:min(68dvh,720px);
@@ -628,7 +628,7 @@
   .sheet.open{visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s}
   #peekTip{position:absolute;left:50%;top:14%;transform:translateX(-50%);z-index:33;display:none;
     background:rgba(0,0,0,.75);color:#fff;font-size:var(--tx-sm);font-weight:800;padding:var(--sp-2) 16px;border-radius:20px;
-    backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
   body.peek #peekTip{display:block}
   .grab{width:40px;height:5px;border-radius:3px;background:#3a3a44;margin:8px auto 12px}
   .sheet h2{font-size:var(--tx-lg);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
@@ -639,7 +639,7 @@
     box-shadow:0 0 0 3px rgba(0,212,126,.13)}
   body.ayarCanli #canliAyarRozet{display:inline-flex}
   .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;
-    background:rgba(18,21,28,.92);backdrop-filter:blur(14px);padding:6px;z-index:2;border-radius:14px}
+    background:rgba(18,21,28,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:6px;z-index:2;border-radius:14px}
   .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:#cfd0d4;border-radius:11px;
     box-shadow:var(--el-1);transition:transform var(--hiz-hizli) var(--egri),background var(--hiz-hizli) var(--egri);
     padding:11px 0;font-size:var(--tx-sm);font-weight:700}
@@ -764,7 +764,7 @@
   #vHud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);
     z-index:7;display:flex;gap:var(--sp-2);align-items:center;pointer-events:none;
     background:rgba(0,0,0,.72);border-radius:10px;padding:7px 11px;font-size:var(--tx-sm);
-    backdrop-filter:blur(6px)}
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   #vHud b{font-weight:800;white-space:nowrap}
   #vHud b.ok{color:var(--accent)} #vHud b.kayip{color:#ffb300} #vHud b.sessiz{color:#8a8f97}
   #vHud span{flex:1;color:#e8e8ee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
@@ -2101,7 +2101,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.31';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.32';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -6252,8 +6252,13 @@ function showResult(blob){
     $('#shareDiag').textContent=diag+tag;
     if(n===0 && lastPath && lastPath.comp)
       $('#audInfo').textContent=(L==='tr'
-        ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompoziti kapat ve tekrar çek'
-        : '⚠️ iOS drops audio when composite is on — turn Composite off in Settings → Camera');
+        /* TARİF ARAYÜZDE BULUNMAYAN BİR DENETİMİ ADLANDIRIYORDU (2026-08-18,
+           yeni yol-tarifi dedektörünün ilk bulgusu). Metin "Kompoziti kapat"
+           diyordu; anahtarın adı `tgComp` = "Kompoziti aç" ve hiç değişmiyor,
+           üstelik "Kompozit ve yeşil ekran" kartının İÇİNDE. Kullanıcı
+           Kamera sekmesinde yazılan adı arıyor ve bulamıyor. */
+        ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompozit ve yeşil ekran → "Kompoziti aç" anahtarını kapat ve tekrar çek'
+        : '⚠️ iOS drops audio when composite is on — Settings → Camera → Composite and green screen → switch "Enable composite" off, then reshoot');
   });
   // 10.6 Önce ne yapman gerektiği, sonra teknik ayrıntı.
   const sesVar=lastPath && lastPath.aud>0;
@@ -10115,6 +10120,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
  '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Prova raporu ve klip önerileri uzadığında oynatıcı sıfır yüksekliğe sıkışıyordu; MP4 ve ses kaydedilmiş olsa da ekranda görüntü alanı kalmıyordu. Oynatıcı artık sonuç ekranının üstünde her zaman görünür, rapor ve diğer işlemler aşağı kayar.',en:'<b>The invisible video player on the Android result screen is fixed.</b> When the rehearsal report and clip suggestions grew, the player could collapse to zero height even though the MP4 and audio had been recorded. The player now always remains visible at the top while the report and actions scroll below it.'},
  '9.29':{tr:'<b>Ayarlar artık kamera görüntüsünü kaybetmeden canlı önizleme üzerinde çalışıyor.</b> Kamera açıkken panel sahnenin alt bölümünde kontrollü cam yüzey olarak açılır; kişi, kadraj ve ışık üstte görünmeye devam eder. Okuma, Görünüm ve Kamera değişiklikleri anında izlenir. Yedek ve sıfırlama gibi işlemlerin bulunduğu Diğer sekmesi okunabilirlik için daha opaktır. Yüksek kontrast ve azaltılmış saydamlık tercihleri korunur.',en:'<b>Settings now works over a live preview without hiding the camera.</b> With the camera on, a controlled glass panel rises from the lower part of the stage while the person, framing and light remain visible above it. Reading, Look and Camera changes can be seen immediately. The Other tab is more opaque for backup and reset tasks. High contrast and reduced transparency preferences remain protected.'},

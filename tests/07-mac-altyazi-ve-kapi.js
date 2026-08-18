@@ -81,6 +81,14 @@ ok('kayıt sürerken senaryo değiştirilemiyor',
 
 // Denetimin kör noktası: parantezsiz olay işleyicisi ataması.
 // copGeriAl atanmıştı ama tanımlı değildi; ne denetim ne node --check gördü.
-const den=require('fs').readFileSync(require('path').join(__dirname,'..','denetim.py'),'utf8');
+/* denetim.py YOLU ORTAM DEĞİŞKENİNDEN. Bozma turu geçici kopyayı ölçmeli;
+   doğrudan depodan okuyan test, `denetim.py`ye inen bozmayı HİÇ GÖRMEZ ve
+   "geçti" der (deponun dört kez çıkan kör noktası). */
+const _denetimYolu = () => {
+  const a = process.env.SUFLE_DENETIM;
+  if (a && !require('fs').existsSync(a)) throw new Error('Verilen denetim.py yolu yok: ' + a);
+  return a || require('path').join(__dirname, '..', 'denetim.py');
+};
+const den=require('fs').readFileSync(_denetimYolu(),'utf8');
 ok('denetim artık işleyici atamasını da kontrol ediyor', /olay işleyicisi tanımsız/.test(den));
 ok('addEventListener biçimi de kapsanıyor', /addEventListener\\\(\[\^,\]\+/.test(den) || den.includes('addEventListener'));

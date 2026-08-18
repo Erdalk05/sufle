@@ -65,6 +65,10 @@ KAYNAK = {
     # Kapının kendi betiği de bozulabilmeli: kapsam kapısının etkisiz
     # kaldığı bir gece ancak böyle yakalanır.
     'kapsam': (os.path.join(REPO, 'kapsam.py'), 'SUFLE_KAPSAM'),
+    # Yol-tarifi dedektörü burada yaşıyor (v9.32). Tabloya EKLENMEZSE
+    # `denetim.py`ye inen hiçbir bozma testlere ulaşmaz — bu deponun dört kez
+    # çıkan kör noktası (env desteksiz okuma).
+    'denetim': (os.path.join(REPO, 'denetim.py'), 'SUFLE_DENETIM'),
     # Derleme sırası ve TEST TEZGÂHI da bozulabilmeli. Tezgâh yarım blok
     # çıkardığında test kırmızı vermez, YANLIŞ ÖLÇER — bu deponun en pahalı
     # sınıfı (2026-08-16da `duzMetin` üstünde ölçüldü).

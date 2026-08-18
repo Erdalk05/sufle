@@ -15,8 +15,11 @@ ok('rozet Türkçe', /liveSettings:'Canlı önizleme'/.test(src));
 ok('rozet İngilizce', /liveSettings:'Live preview'/.test(src));
 ok('rozet yalnız canlı ayar kipinde görünür',
    /body\.ayarCanli #canliAyarRozet\{display:inline-flex\}/.test(src));
+/* Kuralın İÇERİĞİ ölçülüyor, yazım SIRASI değil: `-webkit-` öneki eklenince
+   birebir metin iddiası ürün doğruyken kırıldı (v9.32). */
 ok('kamera arkasındaki perde hafif tutulur',
-   /body\.ayarCanli #backdrop\{background:rgba\(0,0,0,\.10\);backdrop-filter:none\}/.test(src));
+   /body\.ayarCanli #backdrop\{[^}]*background:rgba\(0,0,0,\.10\)[^}]*\}/.test(src) &&
+   /body\.ayarCanli #backdrop\{[^}]*(?<!-)backdrop-filter:none[^}]*\}/.test(src));
 ok('canlı panel yüksekliği sahnenin üstünü açık bırakır',
    /body\.ayarCanli #sheet\.open\{[\s\S]*?max-height:68%;[\s\S]*?max-height:min\(68dvh,720px\)/.test(src));
 ok('panel kontrollü cam yüzeydir',
