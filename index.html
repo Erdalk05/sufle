@@ -576,6 +576,35 @@
     max-height:90%;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;
     box-shadow:0 -12px 40px rgba(0,0,0,.6)}
   .sheet.open{transform:translateY(0)}
+  /* v9.29 CANLI AYAR ÖNİZLEMESİ.
+     Kamera çalışırken Ayarlar artık görüntüyü tamamen örten ikinci bir ekran
+     değil, sahnenin altından yükselen kontrollü bir cam yüzeydir. Tam saydam
+     yapılmadı: hareketli yüzün arkasında metin okunamaz. %88 koyu yüzey +
+     24 px bulanıklık denetimleri sabit tutarken kişinin, kadrajın ve ışığın
+     üst bölgede görünmesini sağlar. Yalnız Ayarlar etkilenir; arşiv, yardım,
+     hazır olma ve diğer çalışma sayfaları eski güvenli opaklığını korur. */
+  body.ayarCanli #backdrop{background:rgba(0,0,0,.10);backdrop-filter:none}
+  body.ayarCanli #sheet.open{
+    max-height:68%;
+    max-height:min(68dvh,720px);
+    background:linear-gradient(180deg,rgba(30,36,46,.84),rgba(15,18,24,.92));
+    border-color:rgba(255,255,255,.20);
+    box-shadow:0 -18px 56px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.10);
+    backdrop-filter:blur(24px) saturate(1.28);
+    -webkit-backdrop-filter:blur(24px) saturate(1.28)
+  }
+  /* Diğer sekmesinde yedek, sıfırlama ve veri işlemleri var. Hareketli kamera
+     bu metinlerin arkasında dikkat dağıtmasın; aynı yapı daha opak çalışır. */
+  body.ayarCanli.ayarDiger #backdrop{background:rgba(0,0,0,.26)}
+  body.ayarCanli.ayarDiger #sheet.open{
+    background:linear-gradient(180deg,rgba(26,30,39,.96),rgba(15,18,24,.985));
+    backdrop-filter:blur(30px) saturate(1.12);
+    -webkit-backdrop-filter:blur(30px) saturate(1.12)
+  }
+  @media (prefers-reduced-transparency: reduce){
+    body.ayarCanli #backdrop{background:rgba(0,0,0,.28)}
+    body.ayarCanli #sheet.open{background:rgb(20,24,31);backdrop-filter:none;-webkit-backdrop-filter:none}
+  }
   /* sürgü çekilirken sayfa saydamlaşır: yazı boyutu/aralık gibi ayarların etkisi görünür */
   body.peek .sheet.open{opacity:.12;transition:opacity .12s}
   body.peek #backdrop{opacity:0}
@@ -599,6 +628,12 @@
   body.peek #peekTip{display:block}
   .grab{width:40px;height:5px;border-radius:3px;background:#3a3a44;margin:8px auto 12px}
   .sheet h2{font-size:var(--tx-lg);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+  #canliAyarRozet{display:none;align-items:center;gap:6px;margin-left:auto;margin-right:8px;
+    color:#bfffd6;background:rgba(0,212,126,.13);border:1px solid rgba(0,212,126,.38);
+    border-radius:var(--rad-full);padding:5px 9px;font-size:var(--tx-xs);font-weight:800;letter-spacing:.02em}
+  #canliAyarRozet::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 3px rgba(0,212,126,.13)}
+  body.ayarCanli #canliAyarRozet{display:inline-flex}
   .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;
     background:rgba(18,21,28,.92);backdrop-filter:blur(14px);padding:6px;z-index:2;border-radius:14px}
   .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:#cfd0d4;border-radius:11px;
@@ -1066,7 +1101,7 @@
 <!-- AYARLAR -->
 <div class="sheet" id="sheet">
   <div class="grab"></div>
-  <h2><span data-i18n="settings">Ayarlar</span><span style="font-size:var(--tx-xs);color:var(--t-low);font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX" aria-label="Kapat" data-aria="sheetX">✕</button></h2>
+  <h2><span data-i18n="settings">Ayarlar</span><span id="canliAyarRozet" data-i18n="liveSettings">Canlı önizleme</span><span style="font-size:var(--tx-xs);color:var(--t-low);font-weight:700" id="verTop"></span><button class="iconbtn" id="sheetX" aria-label="Kapat" data-aria="sheetX">✕</button></h2>
   <div class="tabs">
     <button data-tab="read" class="on" data-i18n="tabRead">Okuma</button>
     <button data-tab="look" data-i18n="tabLook">Görünüm</button>
@@ -2053,7 +2088,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.28';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.29';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2073,7 +2108,7 @@ const cam=$('#cam'), scroller=$('#scroller'), VER='9.28';
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
+  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -2248,7 +2283,7 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',
+  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
@@ -8397,9 +8432,16 @@ function arkayiKilitle(){
     if(ustYuzey && sel!==ustYuzey) el.setAttribute('inert','');
     else el.removeAttribute('inert'); });
 }
+function ayarCanliDurum(id){
+  const acik=id==='#sheet' && body.classList.contains('cam');
+  body.classList.toggle('ayarCanli',acik);
+  const sekme=$('#sheet .tabs button.on');
+  body.classList.toggle('ayarDiger',acik && !!sekme && sekme.dataset.tab==='more');
+}
 function openSheet(id){
   closeSheets(); $(id).classList.add('open'); body.classList.add('sheeting');
   arkayiKilitle();
+  ayarCanliDurum(id);
   railHepsi();          // değerler programla da değişiyor; her açılışta tazele
   // Arama kalıntısı: kapatıp açınca filtre uygulanmış hâlde kalıyor, sekme düğmeleri
   // gizli olduğu için sayfa "bozuk" görünüyordu. Her açılışta sıfırla.
@@ -8437,7 +8479,7 @@ function silmeyiIptal(){
   if(takeSilArm){ takeSilArm=null; clearTimeout(takeSilT); takeSilT=null;
     if($('#takeList')) renderTakes(); }
 }
-function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); arkayiKilitle(); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); silmeyiIptal(); }
+function closeSheets(){ SHEETS.forEach(s=>$(s).classList.remove('open')); body.classList.remove('sheeting'); arkayiKilitle(); body.classList.remove('ayarCanli','ayarDiger'); learning=false; clearTimeout(remoteWatch); stopMeter(); stopLight(); silmeyiIptal(); }
 function anySheet(){ return SHEETS.some(s=>$(s).classList.contains('open')); }
 /* dışarı dokununca kapat — senaryo sayfası açıksa metni de uygula */
 function dismissSheets(){
@@ -10019,6 +10061,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.29':{tr:'<b>Ayarlar artık kamera görüntüsünü kaybetmeden canlı önizleme üzerinde çalışıyor.</b> Kamera açıkken panel sahnenin alt bölümünde kontrollü cam yüzey olarak açılır; kişi, kadraj ve ışık üstte görünmeye devam eder. Okuma, Görünüm ve Kamera değişiklikleri anında izlenir. Yedek ve sıfırlama gibi işlemlerin bulunduğu Diğer sekmesi okunabilirlik için daha opaktır. Yüksek kontrast ve azaltılmış saydamlık tercihleri korunur.',en:'<b>Settings now works over a live preview without hiding the camera.</b> With the camera on, a controlled glass panel rises from the lower part of the stage while the person, framing and light remain visible above it. Reading, Look and Camera changes can be seen immediately. The Other tab is more opaque for backup and reset tasks. High contrast and reduced transparency preferences remain protected.'},
  '9.28':{tr:'<b>Altı hazır kurulum tek dokunuşla doğru başlangıcı veriyor.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig profilleri; oran, hız, okuma şeridi, göz hattı, ses ve görüntü ayarlarını birlikte kuruyor. Sonrasında her ayarı değiştirmeye devam edebilirsin. YouTube profilinin Serbest moda düşmesine yol açan yanlış mod anahtarı da düzeltildi.',en:'<b>Six quick setups now give you a reliable starting point in one tap.</b> Education, Reels, YouTube, Sales, News and Beam splitter set aspect, pace, reading band, eye line, audio and image together. Every setting remains editable afterwards. The invalid mode key that made the YouTube setup fall back to Free was fixed as well.'},
  '9.27':{tr:'<b>Türkçe ve English seçimi artık uygulamanın içinde de bulunuyor.</b> Ayarlar açıldığında dil seçimi her sekmenin üstünde görünür; giriş ekranına dönmek gerekmez. İki dil düğmesi aynı tercihi kullanır, seçim cihazda saklanır ve ekran okuyucu seçili dili doğru bildirir.',en:'<b>Türkçe and English can now be selected from inside the app.</b> The language control stays visible above every Settings tab, so there is no need to return to the welcome screen. Both language controls share the same saved preference and expose the selected language correctly to screen readers.'},
  '9.26':{tr:'<b>Arayüz baştan sona daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Girişte katmanlı marka zemini, çekimde tek parça cam kontrol iskelesi, ayarlarda daha belirgin yüzeyler ve daha güçlü ana/ikincil eylem ayrımı var. Kontrol sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; 44 px dokunma hedefleri korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> The welcome screen uses layered brand lighting, recording controls sit on one glass dock, settings have clearer surfaces, and primary versus secondary actions are easier to distinguish. Control boundaries now pass the accessible 3:1 threshold in the normal theme while 44 px touch targets remain intact.'},
@@ -10366,6 +10409,7 @@ $$('#actSeg button').forEach(b=>b.onclick=()=>{
 $$('.tabs button').forEach(b=>b.onclick=()=>{
   $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   $$('.tab').forEach(x=>x.classList.remove('on')); $('#tab-'+b.dataset.tab).classList.add('on');
+  ayarCanliDurum('#sheet');
   // seviye ölçer yalnız Kamera sekmesi görünürken çalışsın (pil)
   if(b.dataset.tab==='cam'){ startMeter(); startLight(); } else { stopMeter(); stopLight(); }
   /* Yeni sekmenin kartları hesaplanmamıştı (görünmeyen sekme atlanıyor);

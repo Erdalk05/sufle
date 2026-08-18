@@ -2,6 +2,18 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟡 18 Ağustos — **v9.29 HAZIR · henüz yayınlanmadı · kapı yeşil**
+
+**Tek cümlede:** Kamera açıkken Ayarlar, görüntüyü örten opak sayfa yerine
+sahnenin alt yüzde 68inde açılan kontrollü cam panele dönüştü; kişi, kadraj ve
+ışık görünür kalıyor, Okuma/Görünüm/Kamera değişiklikleri anında izleniyor.
+Diğer sekmesi veri ve riskli işlemler için daha opak; yüksek kontrast ve
+azaltılmış saydamlık tercihleri korunuyor. Kamera açık çizilmiş yüzeyde 115
+öge ölçüldü: 0 kontrast ihlali, 0 çevrilmemiş metin, 0 adsız denetim. 28 iddia
+ve 5 kasıtlı bozma geçti. Sürüm `9.29`, cache `sufle-v101`. Tam kapı sonucu:
+**7191/7191 test**, **622/622 kasıtlı bozma**, **11 çizilmiş arayüz durumu** ve
+kamera → kayıt → sonuç → altyazı → arşiv uçtan uca akışı yeşil. Canlı CDN doğrulaması sırada.
+
 ## 🟢 18 Ağustos — **v9.28 YAYINLANDI ve canlıdan doğrulandı**
 
 **Tek cümlede:** Yol haritasındaki P2 hazır profiller üçten altıya tamamlandı:
@@ -1742,7 +1754,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7163 test** (gece başında 732) · yeni test dosyası: 39–185
+- **7191 test** (gece başında 732) · yeni test dosyası: 39–186
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

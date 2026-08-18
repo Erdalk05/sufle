@@ -43,6 +43,13 @@ DURUMLAR = [
     ('telefon-ayarlar',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#settingsBtn').click();"),
+    # v9.29 CANLI AYAR YÜZEYİ: kamerasız Ayarlar ölçümü cam paneli hiç
+    # çalıştırmaz. Gerçek kamera akışı açılır, ardından panelin çizilmiş
+    # metin/denetim kontrastı ayrıca ölçülür. Kamera karesi değişken olduğu
+    # için kamera üstündeki metinler aracın dürüstlük sınırı gereği atlanır;
+    # panelin kendi koyu yüzeyi ise gerçek alfa bileşimiyle ölçülür.
+    ('telefon-canli-ayarlar', TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startCam').click();"),
     ('telefon-senaryo',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#scriptsBtn').click();"),
@@ -88,6 +95,16 @@ DURUMLAR = [
 
 # Sonuç ekranı iki aşamalı: kamera akmadan kayıt başlatmak anlamsız.
 SONRA = {
+    'telefon-canli-ayarlar': (
+        "const bek=async(k,ms)=>{const t0=Date.now();"
+        " while(Date.now()-t0<ms){if(k())return true;"
+        " await new Promise(r=>setTimeout(r,150));}return false;};"
+        " if(!await bek(()=>!!(document.querySelector('#cam')||{}).srcObject"
+        "   && document.body.classList.contains('cam'),30000))"
+        "   throw new Error('kamera canlı ayarlar için hazır olmadı');"
+        " document.querySelector('#settingsBtn').click();"
+        " if(!await bek(()=>document.body.classList.contains('ayarCanli'),5000))"
+        "   throw new Error('canlı ayar kipi açılmadı');"),
     # ⚠️ SABİT SÜRE DEĞİL, DURUM BEKLENİYOR (2026-08-17). Eskiden "tıkla,
     # 4 sn bekle, tıkla" idi: makine yüklüyken kayıt o an henüz başlamamış
     # oluyor, ikinci tıklama kaydı BAŞLATIYOR ve sonuç ekranı hiç açılmıyor.
@@ -135,6 +152,9 @@ SONRA = {
 # Hangi durum hangi hedefe varmalı. Beklemesiz bir kurulum, ölçümü boş
 # ekranda yapma riski demek ("ölçmeyen denetim").
 BEKLE = {
+    'telefon-canli-ayarlar': (
+        "document.querySelector('#sheet').classList.contains('open') && "
+        "document.body.classList.contains('ayarCanli')"),
     'telefon-sonuc': "document.querySelector('#result').classList.contains('open')",
     # Kompozit kutusu gerçekten açıldı mı: kutu görünür VE tema kartları
     # çizilmiş olmalı. Yalnız "kutu var" demek, boş kart şeridini ölçmek olurdu.

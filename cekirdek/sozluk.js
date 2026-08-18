@@ -11,7 +11,7 @@
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
+  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -186,7 +186,7 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',
+  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
