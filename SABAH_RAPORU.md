@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟡 18 Ağustos — **v9.29 HAZIR · henüz yayınlanmadı · kapı yeşil**
+## 🟢 18 Ağustos — **v9.29 YAYINLANDI ve canlıdan doğrulandı**
 
 **Tek cümlede:** Kamera açıkken Ayarlar, görüntüyü örten opak sayfa yerine
 sahnenin alt yüzde 68inde açılan kontrollü cam panele dönüştü; kişi, kadraj ve
@@ -12,7 +12,10 @@ azaltılmış saydamlık tercihleri korunuyor. Kamera açık çizilmiş yüzeyde
 öge ölçüldü: 0 kontrast ihlali, 0 çevrilmemiş metin, 0 adsız denetim. 28 iddia
 ve 5 kasıtlı bozma geçti. Sürüm `9.29`, cache `sufle-v101`. Tam kapı sonucu:
 **7191/7191 test**, **622/622 kasıtlı bozma**, **11 çizilmiş arayüz durumu** ve
-kamera → kayıt → sonuç → altyazı → arşiv uçtan uca akışı yeşil. Canlı CDN doğrulaması sırada.
+kamera → kayıt → sonuç → altyazı → arşiv uçtan uca akışı yeşil. Canlı sürüm
+430 px, 360 px ve 1440 px genişliklerde açıldı; ana panolar çalıştı, taşma ve
+çalışma zamanı hatası görülmedi. CDN HTML ve service worker dosyaları yerel
+v9.29 / `sufle-v101` ile MD5 birebir doğrulandı.
 
 ## 🟢 18 Ağustos — **v9.28 YAYINLANDI ve canlıdan doğrulandı**
 
