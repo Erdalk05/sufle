@@ -98,12 +98,17 @@ SONRA = {
                       " const bek=async(k,ms)=>{const t0=Date.now();"
                       "   while(Date.now()-t0<ms){ if(k()) return true;"
                       "     await new Promise(r=>setTimeout(r,150)); } return false; };"
+                      " if(!await bek(()=>!!(document.querySelector('#cam')||{}).srcObject"
+                      "   && document.querySelector('#intro').classList.contains('hidden')"
+                      "   && !b.classList.contains('kapali'), 30000))"
+                      "   throw new Error('kamera kayıt için hazır olmadı');"
                       " b.click();"
-                      " await bek(()=>document.body.classList.contains('rec'), 15000);"
+                      " if(!await bek(()=>document.body.classList.contains('rec'), 30000))"
+                      "   throw new Error('kayıt başlamadı');"
                       " await new Promise(r=>setTimeout(r,3000));"
                       " b.click();"
-                      " await bek(()=>getComputedStyle(document.querySelector('#result'))"
-                      "   .display!=='none', 20000);"),
+                      " if(!await bek(()=>document.querySelector('#result').classList.contains('open'), 30000))"
+                      "   throw new Error('sonuç ekranı açılmadı');"),
     # Kompozit kutusu ancak kamera aktıktan sonra açılabiliyor (ensureComp
     # kamera ister). Sonra ayarlar → Kamera sekmesi → kompozit ve gömme.
     # NEDEN ANAHTARA BASMIYORUZ: kompozit WebGL istiyor, başsız tarayıcı ise
@@ -130,7 +135,7 @@ SONRA = {
 # Hangi durum hangi hedefe varmalı. Beklemesiz bir kurulum, ölçümü boş
 # ekranda yapma riski demek ("ölçmeyen denetim").
 BEKLE = {
-    'telefon-sonuc': "getComputedStyle(document.querySelector('#result')).display!=='none'",
+    'telefon-sonuc': "document.querySelector('#result').classList.contains('open')",
     # Kompozit kutusu gerçekten açıldı mı: kutu görünür VE tema kartları
     # çizilmiş olmalı. Yalnız "kutu var" demek, boş kart şeridini ölçmek olurdu.
     'telefon-kompozit': ("(()=>{const k=document.querySelector('#capTemaKart');"

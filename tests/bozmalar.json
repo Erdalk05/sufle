@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.23 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "bir şeyler yapıldı"
+  "bul": "v9.24 HAZIR · yayın bekliyor",
+  "koy": "v9.24 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",

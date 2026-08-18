@@ -2,6 +2,16 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟠 17 Ağustos gecesi — **v9.24 HAZIR · yayın bekliyor**
+
+v9.24, iPhone kayıt sırasında sesle takibin ses oturumunu yeniden başlatıp
+görüntüyü dondurmasını önleyen v9.23 düzeltmesini kalıcı güvenlik katmanıyla
+tamamlıyor. Kayıt boyunca bekleyen yeniden başlatmalar artık etkisiz; kayıt
+bitince özellik kontrollü biçimde geri geliyor. Eski ve yanlış bellek baskısı
+önerileri kaldırıldı, tanı metinleri gerçek ses oturumu zincirini gösteriyor.
+Tam kapı yeniden çalıştırıldıktan sonra commit, push ve canlı doğrulama yapılacak;
+`.son-yayin` yalnız canlı dosyalar doğrulanınca 9.24 olarak işaretlenecek.
+
 ## 🔴 17 Ağustos akşamı — **iPHONE DONMASININ SEBEBİ BULUNDU · v9.23 YAYINLANDI ve canlıdan doğrulandı**
 
 **v9.23 canlı** (`sufle-v95`; index.html ve sw.js md5 birebir, duman testi
