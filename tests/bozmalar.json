@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.27 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "v9.27 için bir şeyler yapıldı"
+  "bul": "v9.28 HAZIR · henüz yayınlanmadı",
+  "koy": "v9.28 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4289,5 +4289,33 @@
   "kaynak": "kapi",
   "bul": "if post:\n    print(\"  ✗ --yayin-sonrasi yalnız canlı sürüm ve cache aynıyken kullanılabilir.\"); sys.exit(1)",
   "koy": "if post:\n    print(\"  ✓ yayın sonrası\"); sys.exit(0)"
+ },
+ {
+  "ad": "P2 beam-splitter hazır profili görünmez oldu",
+  "test": "185-hazir-profiller.js",
+  "kaynak": "telefon",
+  "bul": "      <button data-pf=\"beam\" data-i18n=\"pfBeam\">Cam rig</button>",
+  "koy": "      <button data-pf=\"beam-gizli\" data-i18n=\"pfBeam\">Cam rig</button>"
+ },
+ {
+  "ad": "P2 YouTube profili yine var olmayan yt moduna düştü",
+  "test": "185-hazir-profiller.js",
+  "kaynak": "telefon",
+  "bul": "youtube:{mode:'video', asp:'16:9', wpm:135",
+  "koy": "youtube:{mode:'yt',    asp:'16:9', wpm:135"
+ },
+ {
+  "ad": "P2 beam-splitter profili yazıyı aynalamıyor",
+  "test": "185-hazir-profiller.js",
+  "kaynak": "telefon",
+  "bul": "capStyle:'clean',  mirrorText:true}",
+  "koy": "capStyle:'clean',  mirrorText:false}"
+ },
+ {
+  "ad": "P2 hazır profil değerleri kullanıcı durumuna uygulanmıyor",
+  "test": "185-hazir-profiller.js",
+  "kaynak": "telefon",
+  "bul": "  Object.assign(st,p);",
+  "koy": "  /* profil değerleri uygulanmadı */"
  }
 ]

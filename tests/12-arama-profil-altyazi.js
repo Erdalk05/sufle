@@ -17,14 +17,14 @@ ok('Türkçe karakter korunuyor', srtToText(SRT).includes('İkinci'));
 
 // ---------- 11.6 hazır kurulum profilleri ----------
 eval(cikar(src,/const PROF=\{[\s\S]*?\n\};/,'PROF').replace('const','var'));
-ok('üç profil var', Object.keys(PROF).length===3);
+ok('altı yol haritası profili var', Object.keys(PROF).length===6);
 ok('Reels dikey', PROF.reels.asp==='9:16');
 ok('YouTube yatay', PROF.youtube.asp==='16:9');
-ok('Reels en hızlı tempo', PROF.reels.wpm>PROF.youtube.wpm && PROF.youtube.wpm>PROF.sunum.wpm);
+ok('profil tempoları kullanım amacına göre sıralı', PROF.satis.wpm>PROF.reels.wpm && PROF.reels.wpm>PROF.haber.wpm && PROF.haber.wpm>PROF.youtube.wpm && PROF.youtube.wpm>PROF.egitim.wpm && PROF.egitim.wpm>PROF.beam.wpm);
 ok('Reels sosyal altyazı', PROF.reels.capStyle==='social');
-ok('Sunum sade altyazı', PROF.sunum.capStyle==='clean');
-ok('Sunum gürültülü ortam ayarında (salon)', PROF.sunum.audioFx==='noisy');
-ok('her profil tam takım (7 alan)', Object.values(PROF).every(p=>Object.keys(p).length===8));
+ok('Cam rig sade altyazı', PROF.beam.capStyle==='clean');
+ok('Cam rig yazıyı aynalıyor', PROF.beam.mirrorText===true);
+ok('her profil tam takım (9 alan)', Object.values(PROF).every(p=>Object.keys(p).length===9));
 ok('tempolar insan hızında (100-180)', Object.values(PROF).every(p=>p.wpm>=100&&p.wpm<=180));
 
 // ---------- 9.4 altyazı satır sınırı ayardan ----------

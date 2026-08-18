@@ -1312,7 +1312,7 @@ const I18N={
   fitHint:'Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
   capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
   kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
-  profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
+  profL:'Hazır kurulum',pfEdu:'Eğitim',pfReels:'Reels',pfYT:'YouTube',pfSales:'Satış',pfNews:'Haber',pfBeam:'Cam rig',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
@@ -1484,7 +1484,7 @@ const I18N={
   fitHint:'Set a target duration and tap this: the pace is set so the script ends exactly then. Pause marks are taken into account.',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
   capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
   kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
-  profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
+  profL:'Quick setup',pfEdu:'Education',pfReels:'Reels',pfYT:'YouTube',pfSales:'Sales',pfNews:'News',pfBeam:'Beam splitter',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
@@ -1984,7 +1984,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.27';   // telefon sürümüyle aynı numaralama
+  const VER='9.28';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -4886,6 +4886,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.28':{tr:'<b>Telefondaki hazır kurulumlar altı gerçek kullanım profiline tamamlandı.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig; tek dokunuşla güvenli başlangıç ayarlarını verir ve sonrasında tüm ayarlar değiştirilebilir. Masaüstünün mevcut çekim modları korunur.',en:'<b>Phone quick setups now cover six real production profiles.</b> Education, Reels, YouTube, Sales, News and Beam splitter provide safe one-tap starting values while every setting remains editable. Existing desktop shooting modes are unchanged.'},
    '9.27':{tr:'<b>Telefondaki dil seçimi artık uygulama içindeki Ayarlar ekranında da görünür.</b> Masaüstündeki sürekli görünür TR/EN denetimi korunuyor; iki kabuk aynı kaydedilen dil davranışını ve erişilebilir seçili durumu kullanıyor.',en:'<b>The phone language selector is now also visible inside Settings.</b> The always-visible desktop TR/EN control is unchanged, while both shells keep the same saved-language behaviour and accessible selected state.'},
    '9.26':{tr:'<b>Arayüz daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Yüzey sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; ortak renk, yükselti ve dokunma sistemi telefon ile masaüstünde korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> Surface boundaries now pass the accessible 3:1 threshold in the normal theme, with the shared colour, elevation and touch system preserved across phone and desktop.'},
    '9.25':{tr:'<b>Prova ve kayıt yolu artık ilk ekranda açıkça ayrılıyor.</b> Telefon girişindeki kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> On the phone, the recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},

@@ -2,6 +2,17 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟡 18 Ağustos — **v9.28 HAZIR · henüz yayınlanmadı**
+
+**Tek cümlede:** Yol haritasındaki P2 hazır profiller üçten altıya tamamlandı:
+Eğitim, Reels, YouTube, Satış, Haber ve Cam rig tek dokunuşla oran, hız, okuma
+şeridi, göz hattı, ses ve görüntü başlangıcını birlikte kuruyor; hiçbir ayarı
+kilitlemiyor. YouTube profilini var olmayan `yt` moduna düşüren sessiz kusur
+`video` anahtarına düzeltildi. 26 iddia ve 4 kasıtlı bozmayla ölçüldü. Sürüm
+`9.28`, cache `sufle-v100`. Tam kapı **7163/7163 test**, **617/617 kasıtlı
+bozma**, 10 çizilmiş arayüz durumu ve kamera → kayıt → sonuç → altyazı → arşiv
+uçtan uca akışıyla yeşil; yayın ve canlı doğrulama sırada.
+
 ## 🟢 18 Ağustos — **v9.27 YAYINLANDI ve canlıdan doğrulandı**
 
 Kullanıcı geri bildirimiyle bulunan dil keşfedilebilirliği açığı kapatıldı:
@@ -1729,7 +1740,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7137 test** (gece başında 732) · yeni test dosyası: 39–184
+- **7163 test** (gece başında 732) · yeni test dosyası: 39–185
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

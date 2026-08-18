@@ -1089,9 +1089,12 @@
     <div class="row"><label data-i18n="mode">Çekim modu</label><span class="v" id="vMode">—</span></div>
     <div class="row"><label data-i18n="profL">Hazır kurulum</label></div>
     <div class="seg" id="profSeg">
+      <button data-pf="egitim" data-i18n="pfEdu">Eğitim</button>
       <button data-pf="reels" data-i18n="pfReels">Reels</button>
       <button data-pf="youtube" data-i18n="pfYT">YouTube</button>
-      <button data-pf="sunum" data-i18n="pfTalk">Sunum</button>
+      <button data-pf="satis" data-i18n="pfSales">Satış</button>
+      <button data-pf="haber" data-i18n="pfNews">Haber</button>
+      <button data-pf="beam" data-i18n="pfBeam">Cam rig</button>
     </div>
     <div class="hint" data-i18n="profHint">Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.</div>
     <div class="seg" id="modeSeg">
@@ -2050,7 +2053,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.27';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.28';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2166,7 +2169,7 @@ const I18N={
   fitHint:'Hedef süre verip buna basınca hız, metni tam o sürede bitirecek şekilde ayarlanır. Duraklama işaretleri hesaba katılır.',ctSade:'Şerit',ctKutu:'Kutu',ctHap:'Hap',ctSeritsiz:'Şeritsiz',ctVurguHap:'Vurgu hapı',ctGolge:'Gölge',
   capAnim:'Vurgu animasyonu',kaYok:'Yok',kaYumusak:'Yumuşak',kaSicra:'Sıçra',cpTop:'Üst',
   kkHint:'Okuduğun kelime altyazıda renkli görünür. Sözü söylenmemiş kelime GÖSTERİLMEZ — altyazı hep konuştuğun kadarını yazar.',
-  profL:'Hazır kurulum',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Sunum',
+  profL:'Hazır kurulum',pfEdu:'Eğitim',pfReels:'Reels',pfYT:'YouTube',pfSales:'Satış',pfNews:'Haber',pfBeam:'Cam rig',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
@@ -2338,7 +2341,7 @@ const I18N={
   fitHint:'Set a target duration and tap this: the pace is set so the script ends exactly then. Pause marks are taken into account.',ctSade:'Band',ctKutu:'Box',ctHap:'Pill',ctSeritsiz:'No band',ctVurguHap:'Highlight pill',ctGolge:'Shadow',
   capAnim:'Highlight animation',kaYok:'None',kaYumusak:'Soft',kaSicra:'Pop',cpTop:'Top',
   kkHint:'The word you are reading appears in colour in the caption. A word you have not said yet is NEVER shown — the caption only ever writes what you have spoken.',
-  profL:'Quick setup',pfReels:'Reels',pfYT:'YouTube',pfTalk:'Talk',
+  profL:'Quick setup',pfEdu:'Education',pfReels:'Reels',pfYT:'YouTube',pfSales:'Sales',pfNews:'News',pfBeam:'Beam splitter',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
@@ -10016,6 +10019,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.28':{tr:'<b>Altı hazır kurulum tek dokunuşla doğru başlangıcı veriyor.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig profilleri; oran, hız, okuma şeridi, göz hattı, ses ve görüntü ayarlarını birlikte kuruyor. Sonrasında her ayarı değiştirmeye devam edebilirsin. YouTube profilinin Serbest moda düşmesine yol açan yanlış mod anahtarı da düzeltildi.',en:'<b>Six quick setups now give you a reliable starting point in one tap.</b> Education, Reels, YouTube, Sales, News and Beam splitter set aspect, pace, reading band, eye line, audio and image together. Every setting remains editable afterwards. The invalid mode key that made the YouTube setup fall back to Free was fixed as well.'},
  '9.27':{tr:'<b>Türkçe ve English seçimi artık uygulamanın içinde de bulunuyor.</b> Ayarlar açıldığında dil seçimi her sekmenin üstünde görünür; giriş ekranına dönmek gerekmez. İki dil düğmesi aynı tercihi kullanır, seçim cihazda saklanır ve ekran okuyucu seçili dili doğru bildirir.',en:'<b>Türkçe and English can now be selected from inside the app.</b> The language control stays visible above every Settings tab, so there is no need to return to the welcome screen. Both language controls share the same saved preference and expose the selected language correctly to screen readers.'},
  '9.26':{tr:'<b>Arayüz baştan sona daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Girişte katmanlı marka zemini, çekimde tek parça cam kontrol iskelesi, ayarlarda daha belirgin yüzeyler ve daha güçlü ana/ikincil eylem ayrımı var. Kontrol sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; 44 px dokunma hedefleri korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> The welcome screen uses layered brand lighting, recording controls sit on one glass dock, settings have clearer surfaces, and primary versus secondary actions are easier to distinguish. Control boundaries now pass the accessible 3:1 threshold in the normal theme while 44 px touch targets remain intact.'},
  '9.25':{tr:'<b>Prova ve kayıt artık ilk ekranda açıkça ayrılıyor.</b> Kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> The recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},
@@ -10942,9 +10946,12 @@ $('#capMaxW').oninput=e=>{ st.capMaxW=+e.target.value; $('#vCapW').textContent=s
 /* 11.6 Hazır kurulumlar: her biri denenmiş bir takım. Sihir yok — sadece
    o iş için doğru bilinen değerleri birlikte uyguluyor. */
 const PROF={
-  reels:  {mode:'reels', asp:'9:16', wpm:150, band:1, eyeLine:true,  audioFx:'voice', vidFx:'bright',  capStyle:'social'},
-  youtube:{mode:'yt',    asp:'16:9', wpm:135, band:2, eyeLine:true,  audioFx:'studio',vidFx:'natural', capStyle:'clean'},
-  sunum:  {mode:'free',  asp:'none', wpm:120, band:0, eyeLine:false, audioFx:'noisy', vidFx:'off',     capStyle:'clean'}
+  egitim: {mode:'video', asp:'16:9', wpm:125, band:2, eyeLine:true, audioFx:'voice',  vidFx:'natural', capStyle:'clean',  mirrorText:false},
+  reels:  {mode:'reels', asp:'9:16', wpm:150, band:1, eyeLine:true, audioFx:'voice',  vidFx:'bright',  capStyle:'social', mirrorText:false},
+  youtube:{mode:'video', asp:'16:9', wpm:135, band:2, eyeLine:true, audioFx:'studio', vidFx:'natural', capStyle:'clean',  mirrorText:false},
+  satis:  {mode:'reels', asp:'9:16', wpm:155, band:1, eyeLine:true, audioFx:'voice',  vidFx:'bright',  capStyle:'social', mirrorText:false},
+  haber:  {mode:'video', asp:'16:9', wpm:145, band:2, eyeLine:true, audioFx:'studio', vidFx:'natural', capStyle:'clean',  mirrorText:false},
+  beam:   {mode:'free',  asp:'none', wpm:120, band:2, eyeLine:true, audioFx:'voice',  vidFx:'off',     capStyle:'clean',  mirrorText:true}
 };
 $$('#profSeg button').forEach(b=>b.onclick=()=>{
   const p=PROF[b.dataset.pf]; if(!p) return;
