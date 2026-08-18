@@ -606,6 +606,11 @@
     padding:11px 0;font-size:var(--tx-sm);font-weight:700}
   /* Ayar sekmeleri de SEÇİLİ DURUM — .seg, #langSwitch ile aynı kural (B.1). */
   .tabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
+  #sheetLang{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 6px;
+    padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045)}
+  #sheetLang .langLabel{font-size:var(--tx-sm);font-weight:750;color:var(--t-hi)}
+  #sheetLang [role="group"]{margin:0;flex:0 0 auto;grid-template-columns:repeat(2,minmax(72px,1fr));padding:3px}
+  #sheetLang button{min-width:52px;min-height:44px;padding:8px 12px}
   .tab{display:none}.tab.on{display:block}
   /* ===== AYAR GRUP KARTLARI =====
      Erdal'ın teşhisi: "modüller dağınık, mobil uygulama değil web modülü
@@ -1001,7 +1006,7 @@
      ürünün GERÇEK ve ölçülebilir vaatleri (hesap yok, internet gerekmez,
      ücretsiz) — hiçbiri süs değil, üçü de kodda doğrulanabilir. -->
 <div id="intro">
-  <div id="langSwitch"><button data-lang="tr">TR</button><button data-lang="en">EN</button></div>
+  <div id="langSwitch" role="group" aria-label="Arayüz dili" data-i18n-aria="mLangLabel"><button data-lang="tr" aria-pressed="true">TR</button><button data-lang="en" aria-pressed="false">EN</button></div>
   <div id="browserWarn" class="hidden"></div>
   <div id="introUst">
     <!-- MARKA İŞARETİ (2026-08-17). Giriş ekranında hiçbir görsel kimlik
@@ -1067,6 +1072,13 @@
     <button data-tab="look" data-i18n="tabLook">Görünüm</button>
     <button data-tab="cam" data-i18n="tabCam">Kamera</button>
     <button data-tab="more" data-i18n="tabMore">Diğer</button>
+  </div>
+  <div id="sheetLang">
+    <span class="langLabel" data-i18n="mLangLabel">Arayüz dili</span>
+    <div class="seg" role="group" aria-label="Arayüz dili" data-i18n-aria="mLangLabel">
+      <button data-lang="tr" aria-pressed="true">Türkçe</button>
+      <button data-lang="en" aria-pressed="false">English</button>
+    </div>
   </div>
   <input type="text" id="setFind" placeholder="Ayarlarda ara…" data-i18n-ph="setFindPh">
   <div id="setFindOut" class="hint" style="display:none"></div>
@@ -2038,7 +2050,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.26';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.27';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2961,6 +2973,7 @@ const ARIA={tr:{vidAmt:'Filtre miktarı',spDown:'Yavaşlat',spUp:'Hızlandır',s
 function applyLang(){
   document.documentElement.lang=L;
   $$('[data-aria]').forEach(el=>{ const v=ARIA[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
+  $$('[data-i18n-aria]').forEach(el=>{ const v=I18N[L][el.dataset.i18nAria]; if(v) el.setAttribute('aria-label',v); });
   $$('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(!I18N[L][k]) return;
     const v=I18N[L][k];
     // içinde etiket varsa innerHTML: eskiden <b> ham metin olarak görünüyordu
@@ -2982,7 +2995,11 @@ function applyLang(){
      değişince yenilenmezse İngilizceye geçen kullanıcı Türkçe etiket duyardı. */
   $$('.sw').forEach(s=>{ const et=s.parentElement && s.parentElement.querySelector('span');
     if(et) s.setAttribute('aria-label',et.textContent.trim()); });
-  $$('#langSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.lang===L));
+  $$('[data-lang]').forEach(b=>{
+    const secili=b.dataset.lang===L;
+    b.classList.toggle('on',secili);
+    b.setAttribute('aria-pressed',String(secili));
+  });
   $('#helpBody').innerHTML=HELP[L];
   $('#privBody').innerHTML=PRIV[L];
   $('#verLine').textContent='Sufle v'+VER;
@@ -9999,6 +10016,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.27':{tr:'<b>Türkçe ve English seçimi artık uygulamanın içinde de bulunuyor.</b> Ayarlar açıldığında dil seçimi her sekmenin üstünde görünür; giriş ekranına dönmek gerekmez. İki dil düğmesi aynı tercihi kullanır, seçim cihazda saklanır ve ekran okuyucu seçili dili doğru bildirir.',en:'<b>Türkçe and English can now be selected from inside the app.</b> The language control stays visible above every Settings tab, so there is no need to return to the welcome screen. Both language controls share the same saved preference and expose the selected language correctly to screen readers.'},
  '9.26':{tr:'<b>Arayüz baştan sona daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Girişte katmanlı marka zemini, çekimde tek parça cam kontrol iskelesi, ayarlarda daha belirgin yüzeyler ve daha güçlü ana/ikincil eylem ayrımı var. Kontrol sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; 44 px dokunma hedefleri korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> The welcome screen uses layered brand lighting, recording controls sit on one glass dock, settings have clearer surfaces, and primary versus secondary actions are easier to distinguish. Control boundaries now pass the accessible 3:1 threshold in the normal theme while 44 px touch targets remain intact.'},
  '9.25':{tr:'<b>Prova ve kayıt artık ilk ekranda açıkça ayrılıyor.</b> Kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> The recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},
  '9.24':{tr:'<b>iPhone çekim güvenliği tamamlandı.</b> Kayıt sırasında sesle takip güvenli varsayılanla duraklatılıyor, bekleyen yeniden başlatmalar kaydı etkileyemiyor ve kayıt bitince takip kendiliğinden geri geliyor. Donma tekrar görülürse sonuç ekranı ses oturumu zincirini doğrudan gösteriyor; eski ve yanlış bellek öğüdü geri gelmiyor.',en:'<b>iPhone recording safety is complete.</b> Voice follow pauses with a safe default during recording, pending recognition restarts cannot disturb the take, and tracking returns automatically when recording ends. If a freeze recurs, the result screen points directly to the audio-session chain instead of the old memory advice.'},
@@ -10213,7 +10231,7 @@ $$('.sheet input[type=range]').forEach(r=>{
   r.addEventListener('pointerdown',()=>peek(lab()),{passive:true});
 });
 $('#helpX').onclick=closeSheets;
-$$('#langSwitch button').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });
+$$('[data-lang]').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });
 
 /* hız kontrolü: dokun = 5 wpm, basılı tut = hızlı tekrar */
 let spRep=null, spAcc=0;

@@ -2,6 +2,16 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟠 18 Ağustos — **v9.27 HAZIR · yayın bekliyor**
+
+Kullanıcı geri bildirimiyle bulunan dil keşfedilebilirliği açığı kapatıldı:
+Türkçe ve English seçimi artık yalnız giriş ekranında değil, Ayarlar açıldığında
+her sekmenin üstünde görünür. İki giriş aynı yerel tercihi kullanıyor; görsel
+seçili durum ve ekran okuyucunun `aria-pressed` bilgisi birlikte yenileniyor.
+Davranış 10 yeni iddia ve 4 kasıtlı bozmayla ayrıştırıldı. Tam kapı
+**7.116/7.116 test**, **606/606 kasıtlı bozma**, sıfır kontrast ihlali ve
+gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti.
+
 ## 🟢 18 Ağustos — **v9.26 YAYINLANDI ve canlıdan doğrulandı**
 
 Modern arayüz dilimi uygulandı: katmanlı giriş zemini, tek parça cam çekim
@@ -1703,7 +1713,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7106 test** (gece başında 732) · yeni test dosyası: 39–181
+- **7116 test** (gece başında 732) · yeni test dosyası: 39–182
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

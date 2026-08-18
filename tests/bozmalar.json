@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.26 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "v9.26 için bir şeyler yapıldı"
+  "bul": "v9.27 HAZIR · yayın bekliyor",
+  "koy": "v9.27 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4212,5 +4212,33 @@
   "kaynak": "telefon",
   "bul": "function fxOn(){ return !IS_WK && !st.rawAudio",
   "koy": "function fxOn(){ return !st.rawAudio"
+ },
+ {
+  "ad": "v9.27 uygulama içi dil seçimi kaldırıldı",
+  "test": "182-uygulama-ici-dil-secimi.js",
+  "kaynak": "telefon",
+  "bul": "  <div id=\"sheetLang\">",
+  "koy": "  <div id=\"sheetLanguage\">"
+ },
+ {
+  "ad": "v9.27 yalnız girişteki dil düğmeleri güncelleniyor",
+  "test": "182-uygulama-ici-dil-secimi.js",
+  "kaynak": "telefon",
+  "bul": "  $$('[data-lang]').forEach(b=>{",
+  "koy": "  $$('#langSwitch button').forEach(b=>{"
+ },
+ {
+  "ad": "v9.27 dil seçiminin erişilebilir basılı durumu kaldırıldı",
+  "test": "182-uygulama-ici-dil-secimi.js",
+  "kaynak": "telefon",
+  "bul": "    b.setAttribute('aria-pressed',String(secili));",
+  "koy": "    b.removeAttribute('aria-pressed');"
+ },
+ {
+  "ad": "v9.27 dil tercihi kalıcı duruma yazılmıyor",
+  "test": "182-uygulama-ici-dil-secimi.js",
+  "kaynak": "telefon",
+  "bul": "$$('[data-lang]').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });",
+  "koy": "$$('[data-lang]').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; applyLang(); });"
  }
 ]
