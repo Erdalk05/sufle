@@ -203,13 +203,27 @@ hiçbir şey anlatmaz:
 5. Çekim sonrası budama ekranı → *"Baştan sondan kes"*
 6. Masaüstü: sağ panel sekmeleri + telefonda uzak önizleme
 
-## Sürüm notu (mağaza "Yenilikler" alanı, v9.9)
+## Sürüm notu (mağaza "Yenilikler" alanı, v9.30)
 
-**TR:** Word dosyasından metin alma, senaryoları tek dosyaya yedekleme, odak ve
-pozlama kilidi ve ekranda hangi modda olduğunu gösteren durum satırı eklendi.
-Masaüstü sürümüne kamera seçimi, video budama, telefonda önizleme ve yayın
-kipi geldi.
+> Bu bölüm **ürün sürümüyle birlikte güncellenir**. v9.9'da kalmış hâli 18
+> Ağustos 2026'da yenilendi: mağaza notu ile uygulamanın kendi sürüm notu
+> ayrışırsa kullanıcı mağazada bir yıl önceki ürünü okur.
 
-**EN:** Import text from Word, back every script up into one file, lock focus
-and exposure, and see which mode you are in at a glance. The desktop version
-gains camera selection, trimming, a phone preview and a streaming mode.
+**TR:** iPhone'da çekimin bir süre sonra donması düzeltildi (sebep bellek değil,
+sesle takibin ses oturumunu yeniden kurmasıydı). Arayüz baştan çizildi: konu
+kutuları, ikonlu ayar kartları ve kamera açıkken görüntüyü kapatmayan cam ayar
+paneli. Altı hazır çekim profili (Eğitim, Reels, YouTube, Satış, Haber, Cam rig)
+oran, hız, okuma şeridi ve sesi tek dokunuşla kuruyor. Türkçe/English seçimi
+artık uygulamanın içinde. Okuma zamanlamasından üretilen karaoke altyazı, marka
+kiti, müzik yatağı, klip önerileri ve tek dosyalık yayın paketi eklendi.
+Android'de sonuç ekranındaki video oynatıcının görünmediği hata giderildi.
+
+**EN:** Fixed the iPhone recording freeze (the cause was not memory — voice
+follow was rebuilding the audio session). The interface was redrawn: grouped
+topic boxes, icon-led setting cards, and a glass settings panel that no longer
+hides the camera. Six ready shooting profiles (Teaching, Reels, YouTube, Sales,
+News, Glass rig) set aspect, speed, reading band and audio in one tap. Turkish /
+English can now be switched inside the app. Added karaoke captions derived from
+your own reading timing, a brand kit, a music bed, clip suggestions and a
+one-file publishing package. Fixed the invisible result-screen video player on
+Android.

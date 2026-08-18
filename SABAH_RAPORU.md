@@ -2,6 +2,38 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 18 Ağustos — **v9.31 hazır · henüz yayınlanmadı**
+
+İki bulgu, ikisi de "uygulama desteklemediği bir şeyi söylüyor" sınıfı.
+
+**① Sonuç ekranındaki "Kapat" yalan söylüyordu.** `autoSaveTake` başarısız
+olunca (depo dolu ya da tarayıcı deposu kapalı, `arsivHatasi=true`) çekim
+YALNIZCA bellektedir ve `closeResult` onu bırakır. Düğme yine de
+"Çekimlerim'e kaydedildi" diyordu: kullanıcı az önce çektiği videoyu
+KAYDETTİĞİNİ sanarak siliyordu. Kurtarma kutusu (`#archBox`) sebebi zaten
+yazıyordu — düğme onu okumuyordu, yani yarım kalmış düzeltme. Artık deponun
+kendi iki adımlı deseni: önce sebep, ikinci dokunuşta kapanış; ekran kapanınca
+onay düşüyor. Mac'te aynı kusur YOK (`keepTake` sonucu zaten doğru söylüyor).
+
+**② Sesli takip rozeti desteklenmeyen bir hareketi tarif ediyordu.**
+`setVoiceBadge('lost')` başlığı "Metni bulamıyorum — okuduğun yeri parmakla
+göster" / "tap where you are" diyor. Karşılığı yoktu: kelimeye dokunmak yalnız
+zamanlı akışı açıp kapatıyordu. Sürükleyerek sarma zaten `syncVoicePtr()`
+çağırıyordu, eksik olan TEK DOKUNUŞ yoluydu. Artık sesle takip açıkken kelimeye
+dokunmak oraya geçiyor, kelimeyi bir an çerçeveliyor ve takip oradan devam
+ediyor; kayıp sayacı, sıçrama yutma sayacı ve zorlanma haritası birlikte
+sıfırlanıyor (yoksa elle atlama "yavaş okudun" diye haritaya düşüyordu).
+**Mac'te de aynı boşluk vardı** ve aynı turda kapatıldı — deponun tekrarlayan
+"karşı kabuğa taşınmamış düzeltme" sınıfı.
+
+Yanında kapanan iki bakım maddesi: mağaza sürüm notu v9.9'da kalmıştı, v9.30
+içeriğiyle yenilendi (`MAGAZA.md`); `tests/187` sürümü SABİT yazdığı için her
+sürüm artışında ürün doğruyken kırılıyordu — `tests/28`in bilinen tuzağı, artık
+"9.30 ya da üstü" diye ölçüyor.
+
+Yeni test dosyası **188** (kapat dürüstlüğü, 16 iddia) ve **189** (sesle
+yeniden senkron, 20 iddia) · 13 yeni kasıtlı bozma.
+
 ## 🟢 18 Ağustos — **v9.30 YAYINLANDI ve canlıdan doğrulandı**
 
 Gerçek Samsung Android çekiminde 39,5 MB MP4 ve iki ses izi oluştuğu hâlde
@@ -1771,7 +1803,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7208 test** (gece başında 732) · yeni test dosyası: 39–187
+- **7243 test** (gece başında 732) · yeni test dosyası: 39–189
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

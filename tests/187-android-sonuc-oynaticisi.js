@@ -27,4 +27,10 @@ ok('video kaynağı sonuç açılmadan önce bağlanır',show.indexOf('v.src=res
 ok('oynatıcı kontrolleri HTML üzerinde duruyor',/<video id="resultVid" controls playsinline><\/video>/.test(src));
 ok('Android düzeltmesi sürüm notunda Türkçe anlatılır',/'9\.30':\{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi/.test(src));
 ok('Android düzeltmesi sürüm notunda İngilizce anlatılır',/The invisible video player on the Android result screen is fixed/.test(src));
-ok('sürüm 9.30',/VER='9\.30'/.test(src));
+/* SÜRÜM SABİT YAZILMAMALI (deponun bilinen tuzağı: `tests/28` önbellek adını
+   sabit yazdığı için sürüm artınca ÜRÜN DOĞRUYKEN kırılmıştı). Burada anlamlı
+   iddia "sürüm tam 9.30" değil, "düzeltme yayınlanmış bir sürümde ve geri
+   alınmamış": sürüm notu anahtarı 9.30'da duruyor ve VER ondan geri gitmiyor. */
+const ver=(src.match(/VER='([0-9]+)\.([0-9]+)'/)||[]);
+ok('sürüm okunabiliyor', ver.length===3);
+ok('sürüm 9.30 ya da üstü', (+ver[1]>9) || (+ver[1]===9 && +ver[2]>=30));

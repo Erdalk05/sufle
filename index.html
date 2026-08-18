@@ -239,6 +239,10 @@
     transform:translateX(-50%);font-size:.42em;font-weight:800;letter-spacing:.04em;color:#ffe14d;
     white-space:nowrap;opacity:.95;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.8)}
   body.nohl #scroller .w.active{color:inherit;text-shadow:inherit}
+  /* Dokunarak yeniden senkron: hangi kelimeyi işaretlediğin GÖRÜNSÜN.
+     Bildirim tek başına yetmiyor — kullanıcı ekranın ortasına bakıyor,
+     bildirim altta beliriyor ve yanlış kelimeye dokunduğunu göremiyor. */
+  #scroller .w.resync{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
   #scroller .w.done{opacity:.55}
   body.nofade #scroller .w.done{opacity:1}
   .pad{display:block}
@@ -2097,7 +2101,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.30';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.31';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2182,7 +2186,7 @@ const I18N={
   title:'Başlık',text:'Metin',
   markHint:'# başlık · [not] · *vurgu* · / kısa dur · // uzun dur · (2) bekle · kelime{o-ku-nuş} telaffuz',delete:'Sil',apply:'Uygula',
   takesHint:'Çekimler telefonun tarayıcı deposunda tutulur. Fotoğraflar\'a eklemek için "Kaydet / Paylaş"a bas.',
-  takeReady:'Çekim hazır',secTemizle:'↺ işaretleri sıfırla',deleteRedo:'Sil',deleteSure:'Emin misin? Bu çekim geri gelmez',keep:'Kapat',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
+  takeReady:'Çekim hazır',secTemizle:'↺ işaretleri sıfırla',deleteRedo:'Sil',deleteSure:'Emin misin? Bu çekim geri gelmez',keep:'Kapat',keepLost:'Yine de kapat — çekim gider',saveShare:'Paylaş / Kaydet',toFiles:" Dosyalar'a Kaydet",
   editBtn:'Düzenle',trimSteps:'Kırpmak istersen: önce <b>Fotoğraflara Kaydet</b> → <b>Fotoğraflar</b> uygulamasında videoyu aç → sağ üstten <b>Düzenle</b> → alttaki şeridin uçlarından çek. Orada kırpmak kalite kaybı da yapmaz.',trimStart:'Baştan kes',trimEnd:'Sondan kes',
   trimPrev:'▶︎ Seçimi oynat',trimGo:'Kes ve uygula',kaynakBtn:'↩ Tam çekim',scCekim:'{n} çekim',scSonDeg:'son değişiklik {t}',
   saveHint:'Açılan menüde <b>“Videoyu Kaydet”</b>e dokun — video Fotoğraflar\'a gider. Çekim zaten uygulamanın <b>Çekimlerim</b> arşivinde duruyor, oradan da ulaşabilirsin.',
@@ -2354,7 +2358,7 @@ const I18N={
   title:'Title',text:'Script',
   markHint:'# heading · [note] · *emphasis* · / short pause · // long pause · (2) wait · word{pro-nun} hint',delete:'Delete',apply:'Apply',
   takesHint:'Takes are kept in this browser\'s storage. Use "Save / Share" to add to Photos.',
-  takeReady:'Take ready',secTemizle:'↺ clear marks',deleteRedo:'Delete',deleteSure:'Are you sure? This take is gone for good',keep:'Close',saveShare:'Share / Save',toFiles:'Save to Files',
+  takeReady:'Take ready',secTemizle:'↺ clear marks',deleteRedo:'Delete',deleteSure:'Are you sure? This take is gone for good',keep:'Close',keepLost:'Close anyway — take is lost',saveShare:'Share / Save',toFiles:'Save to Files',
   editBtn:'Edit',trimSteps:'To trim: <b>Save to Photos</b> first → open it in <b>Photos</b> → <b>Edit</b> → drag the ends of the strip. Trimming there is lossless too.',trimStart:'Trim start',trimEnd:'Trim end',
   trimPrev:'▶︎ Play selection',trimGo:'Cut and apply',kaynakBtn:'↩ Full take',scCekim:'{n} takes',scSonDeg:'edited {t}',
   saveHint:'Tap <b>“Save Video”</b> in the sheet — it goes to Photos. The take is already kept in the app\'s <b>My takes</b> archive.',
@@ -2495,7 +2499,7 @@ const MSG={
   end:'Metin bitti',locked:'🔒 Ekran kilitlendi',unlocked:'Kilit açıldı',newVer:'Yeni sürüm hazır — yenile',
   exported:'Yedek indirildi',imported:'📄 Dosyadan alındı',impErr:'Dosya okunamadı',noTakes:'Henüz çekim yok',
   tDone:'Metin güncellendi',tUndone:'↺ Geri alındı',toolNoop:'Değişiklik gerekmedi',
-  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',mapReset:'Varsayılan eşleme geri geldi',
+  emptyText:'Metin boş',takeKept:'Çekimlerim\'e kaydedildi',keepNotSaved:'⚠️ Bu çekim arşive YAZILAMADI. Kapatırsan geri gelmez — önce paylaş ya da kaydet.',voiceResync:'🎤 Buradan devam — sesle takip yeniden hizalandı',mapReset:'Varsayılan eşleme geri geldi',
   recNeedsCam:'Kayıt için kamera gerekli — kamerayı açıyorum.',
   noMic:'🔇 Mikrofon yok — video sessiz kaydedilecek. Ayarlar → Kamera\'daki seviye çubuğuna bak.',
   noMicShort:'mikrofon yok',micOk:'ses geliyor ✓',micQuiet:'sessiz — konuş',
@@ -2582,7 +2586,7 @@ noCam:'Camera unavailable',camHelp:'Allow camera in Settings → Safari, or use 
   end:'End of script',locked:'🔒 Screen locked',unlocked:'Unlocked',newVer:'New version ready — reload',
   exported:'Backup downloaded',imported:'📄 Imported from file',impErr:'Could not read file',noTakes:'No takes yet',
   tDone:'Script updated',tUndone:'↺ Undone',toolNoop:'Nothing to change',
-  emptyText:'Script is empty',takeKept:'Saved to My takes',mapReset:'Default key map restored',
+  emptyText:'Script is empty',takeKept:'Saved to My takes',keepNotSaved:'⚠️ This take was NOT archived. Closing loses it for good — share or save it first.',voiceResync:'🎤 Resuming here — voice follow realigned',mapReset:'Default key map restored',
   recNeedsCam:'Recording needs the camera — opening it now.',
   noMic:'🔇 No microphone — the video will be silent. Check the level bar in Settings → Camera.',
   recOn:'RECORDING',recPaused:'PAUSED',recPausedInfo:'⏸ Paused — press ⏺ to continue the same video',
@@ -6293,6 +6297,7 @@ function closeResult(){
      demektir. Toplu silmede bunun tersi yaşandı ve geri dönen kullanıcı
      tek dokunuşla siliyordu. */
   if(typeof redoIptal==='function') redoIptal();
+  if(typeof keepIptal==='function') keepIptal();
   oynatIzleDurdur();
   arsivKaynakSil();
   $('#result').classList.remove('open'); arkayiKilitle(); reset();
@@ -8948,6 +8953,10 @@ stage.addEventListener('pointerdown',e=>{
   if(peekUI()) return;   /* ilk dokunuş: yalnız göster, eylem yapma */
   if(body.classList.contains('locked')) return;
   dragging=true; moved=false; sx=e.clientX; sy=e.clientY; startPos=pos; startWpm=st.wpm;
+  /* Sesli takipte "okuduğum yer burası" için dokunulan kelime saklanıyor.
+     Basış anında alınıyor: bırakış anında parmak birkaç piksel kaymış
+     olabiliyor ve elementFromPoint komşu kelimeyi döndürüyordu. */
+  dokunulanKelime = (e.target && e.target.closest) ? e.target.closest('.w') : null;
   dragMode = (window.innerWidth-e.clientX < 56) ? 'speed' : 'scrub';
   try{ stage.setPointerCapture(e.pointerId); }catch(_){}
 },{passive:true});
@@ -8964,6 +8973,39 @@ stage.addEventListener('pointermove',e=>{
     setPos(startPos - dy);
   }
 },{passive:true});
+/* ===== SESLİ TAKİPTE "OKUDUĞUM YERİ GÖSTER" =====
+   Rozetin ipucu bunu ZATEN vaat ediyordu — `setVoiceBadge('lost')` durumunda
+   başlık "Metni bulamıyorum — okuduğun yeri parmakla göster" / "tap where you
+   are" diyor. Karşılığı YOKTU: kelimeye dokunmak zamanlı akışı açıp kapatıyordu,
+   yani uygulama kullanıcıya desteklemediği bir hareketi tarif ediyordu.
+   Sürükleyerek sarma zaten `syncVoicePtr()` çağırıyordu (endDrag) — eksik olan
+   TEK DOKUNUŞ yoluydu; yarım kalmış düzeltme sınıfı.
+   Sesle takip KAPALIYKEN davranış hiç değişmiyor: tek dokunuş yine akışı
+   açar/kapatır. Kelimeye denk gelmeyen dokunuş da eski yoluna gider. */
+let dokunulanKelime=null;
+function voiceResyncAt(el){
+  if(!el || !voiceOn) return false;
+  const wi=words.indexOf(el);
+  if(wi<0 || wordTops[wi]==null) return false;
+  setPos(Math.max(0, Math.min(maxPos, wordTops[wi]-eyeOff())));
+  rememberPos();
+  syncVoicePtr();                 // vptr + vTarget + duyulan kelime kuyruğu
+  lastHitAt=performance.now();    // kullanıcı yerini gösterdi: "kayıp" değiliz
+  jumpSwallow=0;                  // eski sıçrama sayacı yeni konumda geçersiz
+  /* ZORLANMA HARİTASI UYDURMA YAVAŞLIK ÜRETMESİN. vPrev'de dokunuştan
+     ÖNCEKİ kelime ve zamanı duruyor; sıfırlamazsak ilk eşleşme "n kelimeyi
+     x saniyede okudun" diye ölçülüp haritaya yanlış bir 'yavaş' işareti
+     düşüyordu — oysa aradaki süre okuma değil, elle atlamaydı. */
+  vPrev={i:-1,t:0};
+  setVoiceBadge('ok');
+  el.classList.add('resync'); setTimeout(()=>el.classList.remove('resync'),700);
+  toast(m('voiceResync')); buzz(20);
+  return true;
+}
+function tekDokunus(){
+  if(voiceOn && voiceResyncAt(dokunulanKelime)) return;
+  toggle();
+}
 function endDrag(){
   if(!dragging) return; dragging=false;
   $('#speedRail').classList.remove('on');
@@ -8975,7 +9017,7 @@ function endDrag(){
     const now=Date.now();
     if(now-lastTap<320){ lastTap=0; setLock(!body.classList.contains('locked')); return; }
     lastTap=now;
-    setTimeout(()=>{ if(lastTap && Date.now()-lastTap>=300){ lastTap=0; if(!anySheet()) toggle(); } },330);
+    setTimeout(()=>{ if(lastTap && Date.now()-lastTap>=300){ lastTap=0; if(!anySheet()) tekDokunus(); } },330);
   }
 }
 stage.addEventListener('pointerup',endDrag,{passive:true});
@@ -10073,6 +10115,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
  '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Prova raporu ve klip önerileri uzadığında oynatıcı sıfır yüksekliğe sıkışıyordu; MP4 ve ses kaydedilmiş olsa da ekranda görüntü alanı kalmıyordu. Oynatıcı artık sonuç ekranının üstünde her zaman görünür, rapor ve diğer işlemler aşağı kayar.',en:'<b>The invisible video player on the Android result screen is fixed.</b> When the rehearsal report and clip suggestions grew, the player could collapse to zero height even though the MP4 and audio had been recorded. The player now always remains visible at the top while the report and actions scroll below it.'},
  '9.29':{tr:'<b>Ayarlar artık kamera görüntüsünü kaybetmeden canlı önizleme üzerinde çalışıyor.</b> Kamera açıkken panel sahnenin alt bölümünde kontrollü cam yüzey olarak açılır; kişi, kadraj ve ışık üstte görünmeye devam eder. Okuma, Görünüm ve Kamera değişiklikleri anında izlenir. Yedek ve sıfırlama gibi işlemlerin bulunduğu Diğer sekmesi okunabilirlik için daha opaktır. Yüksek kontrast ve azaltılmış saydamlık tercihleri korunur.',en:'<b>Settings now works over a live preview without hiding the camera.</b> With the camera on, a controlled glass panel rises from the lower part of the stage while the person, framing and light remain visible above it. Reading, Look and Camera changes can be seen immediately. The Other tab is more opaque for backup and reset tasks. High contrast and reduced transparency preferences remain protected.'},
  '9.28':{tr:'<b>Altı hazır kurulum tek dokunuşla doğru başlangıcı veriyor.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig profilleri; oran, hız, okuma şeridi, göz hattı, ses ve görüntü ayarlarını birlikte kuruyor. Sonrasında her ayarı değiştirmeye devam edebilirsin. YouTube profilinin Serbest moda düşmesine yol açan yanlış mod anahtarı da düzeltildi.',en:'<b>Six quick setups now give you a reliable starting point in one tap.</b> Education, Reels, YouTube, Sales, News and Beam splitter set aspect, pace, reading band, eye line, audio and image together. Every setting remains editable afterwards. The invalid mode key that made the YouTube setup fall back to Free was fixed as well.'},
@@ -11310,7 +11353,32 @@ $('#kaynakBtn').onclick=()=>{
   kesKaynak=null;
   showResult(lastBlob); toast(m('kaynakGeri'));
 };
-$('#keepBtn').onclick=()=>{ toast(m('takeKept')); closeResult(); };
+/* "KAPAT" ARŞİVE YAZILDIĞINI VARSAYIYORDU — UYGULAMANIN YALAN SÖYLEDİĞİ TEK YER.
+   `autoSaveTake` başarısız olursa (depo dolu ya da tarayıcı deposu kapalı,
+   `arsivHatasi=true`) çekim YALNIZCA bellektedir; `closeResult` onu bırakır.
+   Düğme yine de "Çekimlerim'e kaydedildi" diyordu, yani kullanıcı az önce
+   çektiği videoyu KAYDETTİĞİNİ sanarak siliyordu. Kurtarma kutusu (#archBox)
+   sebebi yazıyordu ama düğme onu okumuyordu — yarım kalmış düzeltme sınıfı.
+   Çözüm deponun kendi iki adımlı deseni (redoBtn ile aynı): önce sebebi söyle,
+   ikinci dokunuşta kapat. Ekran kapanınca onay düşer. */
+let keepArm=0, keepT=null;
+function keepIptal(){
+  keepArm=0; clearTimeout(keepT); keepT=null;
+  const b=$('#keepBtn'); if(b) b.textContent=t('keep');
+}
+$('#keepBtn').onclick=()=>{
+  if(arsivHatasi){
+    if(!keepArm){
+      keepArm=1; clearTimeout(keepT);
+      $('#keepBtn').textContent=t('keepLost');
+      keepT=setTimeout(keepIptal,4000);
+      toast(m('keepNotSaved'));
+      return;
+    }
+    keepIptal(); closeResult(); return;
+  }
+  toast(m('takeKept')); closeResult();
+};
 /* SONUÇ EKRANINDAKİ SİL DE TEK DOKUNUŞTU (2026-08-17, arşiv silmesiyle
    aynı tur). Burada risk daha da yüksek: düğme "Dosyalar'a Kaydet"in
    KOMŞUSU ve silinen şey henüz hiçbir yere kaydedilmemiş, az önce çekilmiş

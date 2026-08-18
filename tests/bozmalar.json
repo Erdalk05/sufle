@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.30 ACİL ANDROID DÜZELTMESİ · henüz yayınlanmadı",
-  "koy": "v9.30 için bir şeyler yapıldı"
+  "bul": "v9.31 hazır · henüz yayınlanmadı",
+  "koy": "v9.31 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4394,5 +4394,96 @@
   "kaynak": "kontrast",
   "bul": " && r.scrollTop===0 && v.getBoundingClientRect().height>=260;})()",
   "koy": " && true;})()"
+ },
+ {
+  "ad": "v9.31 kapat, arşiv yazılamamışken de 'kaydedildi' diyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "  if(arsivHatasi){\n    if(!keepArm){",
+  "koy": "  if(false){\n    if(!keepArm){"
+ },
+ {
+  "ad": "v9.31 kayıp uyarısı verilmiyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "      toast(m('keepNotSaved'));",
+  "koy": "      /* uyarı yok */"
+ },
+ {
+  "ad": "v9.31 tek dokunuşla kapanıyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "      keepT=setTimeout(keepIptal,4000);",
+  "koy": "      keepArm=1;"
+ },
+ {
+  "ad": "v9.31 düğme kaybı yazmıyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "$('#keepBtn').textContent=t('keepLost');",
+  "koy": "$('#keepBtn').textContent=t('keep');"
+ },
+ {
+  "ad": "v9.31 ekran kapanınca kapat onayı asılı kalıyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "  if(typeof keepIptal==='function') keepIptal();",
+  "koy": "  /* kapat onayı bırakıldı */"
+ },
+ {
+  "ad": "v9.31 Türkçe uyarı kaybı söylemiyor",
+  "test": "188-kapat-durustlugu.js",
+  "kaynak": "telefon",
+  "bul": "Kapatırsan geri gelmez",
+  "koy": "Kapatabilirsin"
+ },
+ {
+  "ad": "v9.31 dokunulan kelime hiç alınmıyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  dokunulanKelime = (e.target && e.target.closest) ? e.target.closest('.w') : null;",
+  "koy": "  dokunulanKelime = null;"
+ },
+ {
+  "ad": "v9.31 tek dokunuş yine yalnız akışı açıp kapatıyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  if(voiceOn && voiceResyncAt(dokunulanKelime)) return;\n  toggle();",
+  "koy": "  toggle();"
+ },
+ {
+  "ad": "v9.31 takip işaretçisi yeni konuma kurulmuyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  syncVoicePtr();                 // vptr + vTarget + duyulan kelime kuyruğu",
+  "koy": "  /* işaretçi eski konumda bırakıldı */"
+ },
+ {
+  "ad": "v9.31 kayıp sayacı sıfırlanmıyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  lastHitAt=performance.now();    // kullanıcı yerini gösterdi: \"kayıp\" değiliz",
+  "koy": "  /* kayıp sayacı bırakıldı */"
+ },
+ {
+  "ad": "v9.31 zorlanma haritası uydurma yavaşlık üretiyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  vPrev={i:-1,t:0};\n  setVoiceBadge('ok');",
+  "koy": "  setVoiceBadge('ok');"
+ },
+ {
+  "ad": "v9.31 işaretlenen kelime görünmüyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  #scroller .w.resync{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}",
+  "koy": "  #scroller .w.resync{}"
+ },
+ {
+  "ad": "v9.31 kelimeye denk gelmeyen dokunuş da yutuluyor",
+  "test": "189-sesle-yeniden-senkron.js",
+  "kaynak": "telefon",
+  "bul": "  if(wi<0 || wordTops[wi]==null) return false;",
+  "koy": "  if(wi<0) return true;"
  }
 ]
