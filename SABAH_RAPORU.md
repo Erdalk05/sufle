@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 18 Ağustos — **v9.31 hazır · henüz yayınlanmadı**
+## 🟢 18 Ağustos — **v9.31 YAYINLANDI ve canlıdan doğrulandı**
 
 İki bulgu, ikisi de "uygulama desteklemediği bir şeyi söylüyor" sınıfı.
 
@@ -33,6 +33,15 @@ sürüm artışında ürün doğruyken kırılıyordu — `tests/28`in bilinen t
 
 Yeni test dosyası **188** (kapat dürüstlüğü, 16 iddia) ve **189** (sesle
 yeniden senkron, 20 iddia) · 13 yeni kasıtlı bozma.
+
+**Canlı doğrulama:** `index.html` md5 birebir (`3694e5ac…`), `sw.js` md5 birebir
+(`507615a3…`), canlı `VER='9.31'` · `sufle-v103`. İki düzeltmenin izi canlıdan
+sayıldı: `keepNotSaved` 3 · `keepLost` 3 · `voiceResyncAt` 2 · `dokunulanKelime` 3 ·
+`.w.resync` 1 · `voiceResync` 5. `canli.py` **üç genişlikte temiz** (430/360/1440 px ·
+taşma yok · çalışma zamanı hatası 0 · üç ana pano açıldı). Kapı: **7245 test** ·
+**641/641 kasıtlı bozma** · 11 çizilmiş arayüz durumu · uçtan uca çekim akışı yeşil.
+`.son-yayin` doğrulamadan SONRA `9.31 103` yazıldı. Pages ~4 dakika sonra döndü
+(altı deneme 9.30 gördü; iş akışı süresi 3-4 dk, sabırsız doğrulama YANLIŞ alarm verir).
 
 ## 🟢 18 Ağustos — **v9.30 YAYINLANDI ve canlıdan doğrulandı**
 
