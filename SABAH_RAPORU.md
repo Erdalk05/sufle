@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟡 18 Ağustos — **v9.28 HAZIR · henüz yayınlanmadı**
+## 🟢 18 Ağustos — **v9.28 YAYINLANDI ve canlıdan doğrulandı**
 
 **Tek cümlede:** Yol haritasındaki P2 hazır profiller üçten altıya tamamlandı:
 Eğitim, Reels, YouTube, Satış, Haber ve Cam rig tek dokunuşla oran, hız, okuma
@@ -11,7 +11,9 @@ kilitlemiyor. YouTube profilini var olmayan `yt` moduna düşüren sessiz kusur
 `video` anahtarına düzeltildi. 26 iddia ve 4 kasıtlı bozmayla ölçüldü. Sürüm
 `9.28`, cache `sufle-v100`. Tam kapı **7163/7163 test**, **617/617 kasıtlı
 bozma**, 10 çizilmiş arayüz durumu ve kamera → kayıt → sonuç → altyazı → arşiv
-uçtan uca akışıyla yeşil; yayın ve canlı doğrulama sırada.
+uçtan uca akışıyla yeşil kapandı. Canlı duman testi 430/360/1440 pxte sürümü,
+açılan ana panoları, taşmayı ve çalışma zamanı hatalarını doğruladı; canlı
+`index.html` ve `sw.js` depo dosyalarıyla MD5 birebir, profil izi 6/6.
 
 ## 🟢 18 Ağustos — **v9.27 YAYINLANDI ve canlıdan doğrulandı**
 
