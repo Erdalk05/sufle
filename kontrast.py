@@ -155,7 +155,9 @@ BEKLE = {
     'telefon-canli-ayarlar': (
         "document.querySelector('#sheet').classList.contains('open') && "
         "document.body.classList.contains('ayarCanli')"),
-    'telefon-sonuc': "document.querySelector('#result').classList.contains('open')",
+    'telefon-sonuc': ("(()=>{const r=document.querySelector('#result'),"
+                        "v=document.querySelector('#resultVid');return r.classList.contains('open')"
+                        " && r.scrollTop===0 && v.getBoundingClientRect().height>=260;})()"),
     # Kompozit kutusu gerçekten açıldı mı: kutu görünür VE tema kartları
     # çizilmiş olmalı. Yalnız "kutu var" demek, boş kart şeridini ölçmek olurdu.
     'telefon-kompozit': ("(()=>{const k=document.querySelector('#capTemaKart');"

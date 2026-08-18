@@ -2,6 +2,18 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 18 Ağustos — **v9.30 ACİL ANDROID DÜZELTMESİ · henüz yayınlanmadı**
+
+Gerçek Samsung Android çekiminde 39,5 MB MP4 ve iki ses izi oluştuğu hâlde
+sonuç ekranında video görünmedi. Kök neden kayıt biçimi değildi: uzun prova
+raporu ve klip önerileri, `flex:1` / `min-height:0` oynatıcıyı sıfır piksele
+sıkıştırıyordu. v9.30 oynatıcıya 260 px güvenli alt sınır ve ekran boyuna göre
+kontrollü yükseklik veriyor; sonuç sayfası aşağı kayıyor ve her yeni çekim
+videonun başında açılıyor. Çizilmiş Android sonucunda oynatıcı yüksekliği de
+ölçülüyor. 17 yeni iddia ve 6 kasıtlı bozma eklendi. Tam kapı sonucu:
+**7208/7208 test**, **628/628 kasıtlı bozma**, **11 çizilmiş arayüz durumu**
+ve kamera → kayıt → görünür sonuç oynatıcısı → altyazı → arşiv akışı yeşil.
+
 ## 🟢 18 Ağustos — **v9.29 YAYINLANDI ve canlıdan doğrulandı**
 
 **Tek cümlede:** Kamera açıkken Ayarlar, görüntüyü örten opak sayfa yerine
@@ -1757,7 +1769,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7191 test** (gece başında 732) · yeni test dosyası: 39–186
+- **7208 test** (gece başında 732) · yeni test dosyası: 39–187
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

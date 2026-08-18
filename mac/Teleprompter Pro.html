@@ -1984,7 +1984,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.29';   // telefon sürümüyle aynı numaralama
+  const VER='9.30';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -4886,6 +4886,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Uzun prova raporu oynatıcıyı sıfır yüksekliğe sıkıştırabiliyordu. Telefonda video artık sonuç ekranının üstünde garanti edilmiş bir alanda görünür; rapor aşağı kayar. Masaüstü sonuç yerleşimi değişmedi.',en:'<b>The invisible video player on the Android result screen is fixed.</b> A long rehearsal report could collapse the player to zero height. On phones the video now has guaranteed space at the top and the report scrolls below it. The desktop result layout is unchanged.'},
    '9.29':{tr:'<b>Telefonda Ayarlar artık canlı kamera önizlemesi üzerinde kontrollü cam panel olarak açılıyor.</b> Kamera ve kadraj görünür kalırken değişiklikler anında izlenir; veri işlemlerinin bulunduğu Diğer sekmesi daha opaktır. Masaüstünün yerleşik üç sütunlu canlı çalışma alanı korunur.',en:'<b>On the phone, Settings now opens as a controlled glass panel over the live camera preview.</b> Camera framing remains visible while changes update immediately, and the data-heavy Other tab is more opaque. The desktop keeps its existing three-column live workspace.'},
    '9.28':{tr:'<b>Telefondaki hazır kurulumlar altı gerçek kullanım profiline tamamlandı.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig; tek dokunuşla güvenli başlangıç ayarlarını verir ve sonrasında tüm ayarlar değiştirilebilir. Masaüstünün mevcut çekim modları korunur.',en:'<b>Phone quick setups now cover six real production profiles.</b> Education, Reels, YouTube, Sales, News and Beam splitter provide safe one-tap starting values while every setting remains editable. Existing desktop shooting modes are unchanged.'},
    '9.27':{tr:'<b>Telefondaki dil seçimi artık uygulama içindeki Ayarlar ekranında da görünür.</b> Masaüstündeki sürekli görünür TR/EN denetimi korunuyor; iki kabuk aynı kaydedilen dil davranışını ve erişilebilir seçili durumu kullanıyor.',en:'<b>The phone language selector is now also visible inside Settings.</b> The always-visible desktop TR/EN control is unchanged, while both shells keep the same saved-language behaviour and accessible selected state.'},

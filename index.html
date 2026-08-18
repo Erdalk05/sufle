@@ -923,7 +923,8 @@
 
   /* ===== SONUÇ ===== */
   #result{position:absolute;inset:0;z-index:40;background:#000;display:none;flex-direction:column;
-    padding:max(16px,env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+    padding:max(16px,env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    overflow-y:auto;-webkit-overflow-scrolling:touch}
   #result.open{display:flex}
   #result h2{font-size:var(--tx-lg);text-align:center;margin-bottom:10px}
   /* ÇEKİM RAPORU. Ayarlardaki kutu dilinin aynısı: tek yüzey, ince ayraç,
@@ -941,7 +942,15 @@
      gizlendiği için `+` seçicisi yanlış yere çizgi koyardı. Sınıfı
      görünürlüğü bilen taraf koyuyor (ayar kutularındaki kuralın aynısı). */
   #cekimRapor > .hint.ustCizgi{border-top:1px solid var(--s-line)}
-  #resultVid{flex:1;width:100%;border-radius:16px;background:#111;object-fit:contain;min-height:0}
+  /* v9.30 ANDROID SONUÇ OYNATICISI.
+     Prova raporu ve klip önerileri uzayınca eski `flex:1 + min-height:0`
+     oynatıcıyı sıfır piksele kadar eziyordu. Dosya ve ses sağlam olduğu hâlde
+     sonuç ekranında görüntü için hiç yer kalmıyordu. Video artık sonuç
+     sayfasının sabit öncelikli ilk yüzeyi; geri kalan içerik aşağı kayar. */
+  #resultVid{display:block;flex:0 0 clamp(260px,56dvh,620px);width:100%;
+    height:clamp(260px,56dvh,620px);min-height:260px;border-radius:16px;
+    background:#111;object-fit:contain;border:1px solid var(--s-line);box-shadow:var(--el-1)}
+  @media (max-height:430px){#resultVid{flex-basis:55dvh;height:55dvh;min-height:180px}}
 
   .toast{position:absolute;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);
     background:rgba(20,20,24,.96);border:1px solid var(--line);color:#fff;font-size:var(--tx-sm);font-weight:600;
@@ -2088,7 +2097,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.29';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.30';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -6267,6 +6276,9 @@ function showResult(blob){
   $('#editBtn').style.display = ct ? '' : 'none';
   $('#trimSteps').style.display = ct ? 'none' : '';
   $('#result').classList.add('open'); arkayiKilitle();
+  /* Uzun rapor yüzünden önceki kaydırma konumu korunursa kullanıcı yine
+     videonun altına düşebilir. Her yeni sonuç oynatıcıdan başlar. */
+  $('#result').scrollTop=0;
   /* Kaynağa dönüş düğmesi YALNIZ kesimden sonra: hiç kesilmemişken
      dönülecek bir yer yok, düğmeyi göstermek yanıltırdı. */
   $('#kaynakBtn').style.display = kesKaynak ? '' : 'none';
@@ -10061,6 +10073,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Prova raporu ve klip önerileri uzadığında oynatıcı sıfır yüksekliğe sıkışıyordu; MP4 ve ses kaydedilmiş olsa da ekranda görüntü alanı kalmıyordu. Oynatıcı artık sonuç ekranının üstünde her zaman görünür, rapor ve diğer işlemler aşağı kayar.',en:'<b>The invisible video player on the Android result screen is fixed.</b> When the rehearsal report and clip suggestions grew, the player could collapse to zero height even though the MP4 and audio had been recorded. The player now always remains visible at the top while the report and actions scroll below it.'},
  '9.29':{tr:'<b>Ayarlar artık kamera görüntüsünü kaybetmeden canlı önizleme üzerinde çalışıyor.</b> Kamera açıkken panel sahnenin alt bölümünde kontrollü cam yüzey olarak açılır; kişi, kadraj ve ışık üstte görünmeye devam eder. Okuma, Görünüm ve Kamera değişiklikleri anında izlenir. Yedek ve sıfırlama gibi işlemlerin bulunduğu Diğer sekmesi okunabilirlik için daha opaktır. Yüksek kontrast ve azaltılmış saydamlık tercihleri korunur.',en:'<b>Settings now works over a live preview without hiding the camera.</b> With the camera on, a controlled glass panel rises from the lower part of the stage while the person, framing and light remain visible above it. Reading, Look and Camera changes can be seen immediately. The Other tab is more opaque for backup and reset tasks. High contrast and reduced transparency preferences remain protected.'},
  '9.28':{tr:'<b>Altı hazır kurulum tek dokunuşla doğru başlangıcı veriyor.</b> Eğitim, Reels, YouTube, Satış, Haber ve Cam rig profilleri; oran, hız, okuma şeridi, göz hattı, ses ve görüntü ayarlarını birlikte kuruyor. Sonrasında her ayarı değiştirmeye devam edebilirsin. YouTube profilinin Serbest moda düşmesine yol açan yanlış mod anahtarı da düzeltildi.',en:'<b>Six quick setups now give you a reliable starting point in one tap.</b> Education, Reels, YouTube, Sales, News and Beam splitter set aspect, pace, reading band, eye line, audio and image together. Every setting remains editable afterwards. The invalid mode key that made the YouTube setup fall back to Free was fixed as well.'},
  '9.27':{tr:'<b>Türkçe ve English seçimi artık uygulamanın içinde de bulunuyor.</b> Ayarlar açıldığında dil seçimi her sekmenin üstünde görünür; giriş ekranına dönmek gerekmez. İki dil düğmesi aynı tercihi kullanır, seçim cihazda saklanır ve ekran okuyucu seçili dili doğru bildirir.',en:'<b>Türkçe and English can now be selected from inside the app.</b> The language control stays visible above every Settings tab, so there is no need to return to the welcome screen. Both language controls share the same saved preference and expose the selected language correctly to screen readers.'},

@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.29 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "v9.29 için bir şeyler yapıldı"
+  "bul": "v9.30 ACİL ANDROID DÜZELTMESİ · henüz yayınlanmadı",
+  "koy": "v9.30 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -4352,5 +4352,47 @@
   "kaynak": "kontrast",
   "bul": "    ('telefon-canli-ayarlar', TELEFON, 430, 932, 3,",
   "koy": "    ('telefon-canli-panel-yok', TELEFON, 430, 932, 3,"
+ },
+ {
+  "ad": "v9.30 Android sonuç oynatıcısı yine sıfıra eziliyor",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "telefon",
+  "bul": "flex:0 0 clamp(260px,56dvh,620px)",
+  "koy": "flex:1"
+ },
+ {
+  "ad": "v9.30 sonuç sayfası uzun raporda kaymıyor",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "telefon",
+  "bul": "padding:max(16px,env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));\n    overflow-y:auto;-webkit-overflow-scrolling:touch",
+  "koy": "padding:max(16px,env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));\n    overflow-y:hidden"
+ },
+ {
+  "ad": "v9.30 Android oynatıcısının asgari yüksekliği kaldırıldı",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "telefon",
+  "bul": "height:clamp(260px,56dvh,620px);min-height:260px",
+  "koy": "height:auto;min-height:0"
+ },
+ {
+  "ad": "v9.30 yeni sonuç eski kaydırma konumunda açılıyor",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "telefon",
+  "bul": "  $('#result').scrollTop=0;",
+  "koy": "  /* sonuç kaydırma konumu korunuyor */"
+ },
+ {
+  "ad": "v9.30 video kadrajı sonuç ekranında kırpılıyor",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "telefon",
+  "bul": "background:#111;object-fit:contain;border:1px solid var(--s-line)",
+  "koy": "background:#111;object-fit:cover;border:1px solid var(--s-line)"
+ },
+ {
+  "ad": "v9.30 çizilmiş sonuç kapısı oynatıcı yüksekliğini ölçmüyor",
+  "test": "187-android-sonuc-oynaticisi.js",
+  "kaynak": "kontrast",
+  "bul": " && r.scrollTop===0 && v.getBoundingClientRect().height>=260;})()",
+  "koy": " && true;})()"
  }
 ]
