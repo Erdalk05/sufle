@@ -2,12 +2,14 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟠 18 Ağustos — **v9.25 HAZIR · yayın bekliyor**
+## 🟢 18 Ağustos — **v9.25 YAYINLANDI ve canlıdan doğrulandı**
 
 Strateji yol haritasının ilk P1 bilgi mimarisi dilimi tamamlandı: girişteki
 iki yol artık “Kayıt için kamerayı aç” ve “Kamerasız prova yap” diye açıkça
 ayrılıyor. Davranış ve veri yapısı değişmedi; Türkçe/İngilizce paritesi ve
-kasıtlı bozma kanıtları eklendi. Tam kapı ve canlı doğrulama sırada.
+kasıtlı bozma kanıtları eklendi. Tam kapı **7.096/7.096 test** ve
+**598/598 kasıtlı bozma** ile geçti; `8ba2869` origin/main'e gönderildi.
+Canlı duman testi 430/360/1440 pxte v9.25'i ve taşmasız görünümü doğruladı.
 
 ## 🟢 18 Ağustos — **v9.24 YAYINLANDI ve canlıdan doğrulandı**
 
