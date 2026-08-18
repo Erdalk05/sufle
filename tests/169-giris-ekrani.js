@@ -35,6 +35,11 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
   ok('marka ve tek cümle üstte',
      giris.indexOf('<h1>') < giris.indexOf('id="startCam"') &&
      giris.indexOf('data-i18n="introP"') < giris.indexOf('id="startCam"'));
+  ok('iki yol kayıt ve prova niyetini açıkça söylüyor',
+     /startCam:'Kayıt için kamerayı aç'/.test(tel) &&
+     /startNoCam:'Kamerasız prova yap'/.test(tel) &&
+     /startCam:'Open camera to record'/.test(tel) &&
+     /startNoCam:'Rehearse without camera'/.test(tel));
   /* Metin düğmesi küçük görünür ama dokunma hedefi 44 px olmalı (çubuk
      düğmelerindeki kuralın aynısı: görünmez örtü). */
   ok('metin düğmesinin dokunma hedefi 44 px', /\.metinBtn::after\{[^}]*height:44px/.test(tel));

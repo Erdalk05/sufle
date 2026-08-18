@@ -1216,7 +1216,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  introSenEt:'Okuyacağın metin',startCam:'Kamerayı Aç & Başla',startNoCam:'Kamerasız sadece sufle',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
+  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -1391,7 +1391,7 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  introSenEt:'What you will read',startCam:'Open Camera & Start',startNoCam:'Prompter only (no camera)',help:'How to use',install:'Add to home screen',settings:'Settings',
+  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
@@ -1984,7 +1984,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.24';   // telefon sürümüyle aynı numaralama
+  const VER='9.25';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -4886,6 +4886,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.25':{tr:'<b>Prova ve kayıt yolu artık ilk ekranda açıkça ayrılıyor.</b> Telefon girişindeki kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> On the phone, the recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},
  '9.24':{tr:'<b>iPhone çekim güvenliği tamamlandı.</b> Kayıt sırasında sesle takip güvenli varsayılanla duraklatılıyor, bekleyen yeniden başlatmalar kaydı etkileyemiyor ve kayıt bitince takip kendiliğinden geri geliyor. Donma tekrar görülürse sonuç ekranı ses oturumu zincirini doğrudan gösteriyor; eski ve yanlış bellek öğüdü geri gelmiyor.',en:'<b>iPhone recording safety is complete.</b> Voice follow pauses with a safe default during recording, pending recognition restarts cannot disturb the take, and tracking returns automatically when recording ends. If a freeze recurs, the result screen points directly to the audio-session chain instead of the old memory advice.'},
  '9.23':{tr:'<b>iPhone çekimlerinde görüntünün donması: sebep bulundu ve kapatıldı.</b> Aylardır bildirdiğin sorun buydu — video bir süre sonra donuyor, ses tam. Eski teşhis belleği suçluyordu ve yanlıştı: ölçülen vakada 41 saniyelik çekimde görüntü 19. saniyede donmuştu, 19 saniye ise 1080p kayıtta ancak 20 MB eder. Gerçek zincir şu: iPhone ses oturumunu TEK tutar; sesle takip için kullanılan tanıma her sessizlikte kapanır ve uygulama onu yeniden başlatır; her başlatma ses oturumunu yeniden kurar ve yakalama oturumu yeniden kurulunca GÖRÜNTÜ donar, ses akmaya devam eder. Yani donma bir süre sonra değil, İLK KONUŞMA ARASINDAN sonra oluyordu — 19 saniye tam da birkaç cümlelik açılışın ardından gelen ilk duraklama. Aynı önlem nefesle akış için zaten alınmıştı, sesle takibe hiç uygulanmamıştı. Artık kayıt başlarken sesle takip duraklatılıyor, sebebi ekranda yazıyor ve kayıt bitince kendiliğinden geri geliyor. Risk almak isteyen için Ayarlar → Sesle takip → Kayıt sırasında sesle takip anahtarı var; açıkken donma olursa sonuç ekranı sebebi doğrudan söylüyor. Masaüstünde bu kısıt yok, orada hiçbir şey değişmedi.<br><b>Çekim sonrası öğüt de düzeltildi.</b> Ekran aylardır 720p yap ve çekimi kısa tut diyordu; bu öğüt yanlış yere gönderiyordu. Artık ses oturumunun yeniden kurulmasını gösteriyor.',
   en:'<b>iPhone takes freezing mid-recording: cause found and fixed.</b> The old diagnosis blamed memory and was wrong: in the measured case a 41 second take froze at second 19, and 19 seconds of 1080p is only about 20 MB. The real chain: iOS keeps a SINGLE audio session; recognition used by voice follow ends at every pause and the app restarts it; each restart rebuilds the audio session, and rebuilding it freezes the PICTURE while audio keeps flowing. So the freeze was not time based, it happened after the FIRST PAUSE IN SPEECH. The same guard already existed for breath flow but had never been applied to voice follow. Voice follow is now paused when recording starts, the reason is shown, and it comes back on its own when you stop. There is a switch under Settings, Voice follow for anyone who wants to take the risk. Desktop is unaffected.<br><b>The post take advice was corrected too</b> — it used to send you to 720p and shorter takes.'},

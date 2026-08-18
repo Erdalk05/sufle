@@ -5,7 +5,7 @@
   <key>CFBundleDisplayName</key><string>Sufle</string>
   <key>CFBundleIdentifier</key><string>com.erdalkiziroglu.sufle</string>
   <key>CFBundleVersion</key><string>1</string>
-  <key>CFBundleShortVersionString</key><string>9.24</string>
+  <key>CFBundleShortVersionString</key><string>9.25</string>
   <key>CFBundleExecutable</key><string>Sufle</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>LSRequiresIPhoneOS</key><true/>

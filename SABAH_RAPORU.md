@@ -2,6 +2,13 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟠 18 Ağustos — **v9.25 HAZIR · yayın bekliyor**
+
+Strateji yol haritasının ilk P1 bilgi mimarisi dilimi tamamlandı: girişteki
+iki yol artık “Kayıt için kamerayı aç” ve “Kamerasız prova yap” diye açıkça
+ayrılıyor. Davranış ve veri yapısı değişmedi; Türkçe/İngilizce paritesi ve
+kasıtlı bozma kanıtları eklendi. Tam kapı ve canlı doğrulama sırada.
+
 ## 🟢 18 Ağustos — **v9.24 YAYINLANDI ve canlıdan doğrulandı**
 
 v9.24, iPhone kayıt sırasında sesle takibin ses oturumunu yeniden başlatıp
