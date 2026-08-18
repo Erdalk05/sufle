@@ -2,15 +2,17 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟠 17 Ağustos gecesi — **v9.24 HAZIR · yayın bekliyor**
+## 🟢 18 Ağustos — **v9.24 YAYINLANDI ve canlıdan doğrulandı**
 
 v9.24, iPhone kayıt sırasında sesle takibin ses oturumunu yeniden başlatıp
 görüntüyü dondurmasını önleyen v9.23 düzeltmesini kalıcı güvenlik katmanıyla
 tamamlıyor. Kayıt boyunca bekleyen yeniden başlatmalar artık etkisiz; kayıt
 bitince özellik kontrollü biçimde geri geliyor. Eski ve yanlış bellek baskısı
 önerileri kaldırıldı, tanı metinleri gerçek ses oturumu zincirini gösteriyor.
-Tam kapı yeniden çalıştırıldıktan sonra commit, push ve canlı doğrulama yapılacak;
-`.son-yayin` yalnız canlı dosyalar doğrulanınca 9.24 olarak işaretlenecek.
+Tam kapı **7.095/7.095 test**, **596/596 kasıtlı bozma**, sıfır kontrast ve
+gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti. `bb6efd3` origin/main'e
+gönderildi; canlı duman testi 430/360/1440 pxte v9.24'ü, açık panoları ve
+taşmasız görünümü doğruladı. Bu kanıttan sonra `.son-yayin` 9.24/96 yapıldı.
 
 ## 🔴 17 Ağustos akşamı — **iPHONE DONMASININ SEBEBİ BULUNDU · v9.23 YAYINLANDI ve canlıdan doğrulandı**
 
