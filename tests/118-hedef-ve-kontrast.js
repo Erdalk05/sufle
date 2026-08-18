@@ -14,14 +14,10 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
    Görünmez bir örtü hedefi 44x44e tamamlıyor; kutu, kenarlık, yazı ve
    hizalama birebir aynı kalıyor. K8de anahtar satırında yaptığımın aynısı.
 
-   K9 (kenarlık kontrastı): ÖLÇÜLDÜ — normal temada kenarlık/kart oranı
-   1,17:1, WCAG 1.4.11in metin dışı eşiği 3:1. Yüksek kontrast ayarı bunu
-   16,58:1e çıkarıyor, yani erişilebilir yol VAR ve çalışıyor.
-   KARAR: temaya dokunmadım (uygulamanın görünümünü baştan aşağı değiştirir,
-   bu bir tasarım kararı). Asıl boşluk BULUNABİLİRLİKTİ: ihtiyacı olan kişi
-   ayarı avlamak zorundaydı. Artık işletim sisteminde yüksek kontrast
-   açıksa uygulama da açık başlıyor — yalnız ilk açılışta, sonradan
-   kapatan kullanıcının kararına saygı duyuluyor. */
+   K9 (kenarlık kontrastı): İlk ölçümde normal tema 1,17:1di ve 3:1 eşiğinin
+   altındaydı. v9.26 modern kabuk kararıyla sınırlar yalnız süs olmaktan çıkıp
+   kontrol gruplarını ayıran gerçek bir işarete dönüştü; normal tema artık
+   3:1 üstünde. Yüksek kontrast kipi ayrıca korunuyor. */
 
 /* ---------- K11: HEDEF BÜYÜDÜ, PAİNT BÜYÜMEDİ ---------- */
 const kural=sec=>{
@@ -66,7 +62,7 @@ const kural=sec=>{
     const normal=K(hex(line),hex(card));
     const yuksek=K([255,255,255],hex(card));
     console.log('   kenarlık/kart — normal: '+normal.toFixed(2)+':1 · yüksek kontrast: '+yuksek.toFixed(2)+':1');
-    ok('normal tema eşiğin ALTINDA (bilinen ve kabul edilen durum: '+normal.toFixed(2)+':1)', normal<3);
+    ok('normal tema metin dışı kontrast eşiğini AŞIYOR ('+normal.toFixed(2)+':1)', normal>=3);
     ok('yüksek kontrast eşiği AŞIYOR ('+yuksek.toFixed(2)+':1)', yuksek>=3);
     ok('yüksek kontrast bol pay bırakıyor', yuksek>10);
   }

@@ -105,7 +105,7 @@ if(Object.values(P).some(x=>!x)) return;
     ok('kutu zemini sayfadan neredeyse ayrılmıyor — kenarlık tek ayırt edici ('+r.toFixed(2)+':1)', r<1.2);
   }
   const kenar=oran(P.line,P.sheetbg);
-  ok('normal tema kenarlığı 3:1 altında ('+kenar.toFixed(2)+':1) — bilinen, Erdal kararına bırakıldı', kenar<3);
+  ok('normal tema kenarlığı 3:1 eşiğini geçiyor ('+kenar.toFixed(2)+':1)', kenar>=3);
 }
 {
   /* DÜZELTME: yüksek kontrast artık yazı kutularını ve ayraçları da kapsıyor. */

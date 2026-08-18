@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.25 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "v9.25 için bir şeyler yapıldı"
+  "bul": "v9.26 HAZIR · yayın bekliyor",
+  "koy": "v9.26 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -3946,6 +3946,34 @@
   "kaynak": "telefon",
   "bul": "startNoCam:'Kamerasız prova yap'",
   "koy": "startNoCam:'Kamerasız sadece sufle'"
+ },
+ {
+  "ad": "v9.26 giriş zemini katmanlı marka ışığını kaybediyor",
+  "test": "181-modern-arayuz-kabugu.js",
+  "kaynak": "telefon",
+  "bul": "background:radial-gradient(circle at 12% 8%,rgba(37,99,235,.22),transparent 34%),",
+  "koy": "background:linear-gradient(#0A0C11,#0A0C11),"
+ },
+ {
+  "ad": "v9.26 çekim kontrol iskelesi cam derinliğini kaybediyor",
+  "test": "181-modern-arayuz-kabugu.js",
+  "kaynak": "telefon",
+  "bul": "backdrop-filter:blur(20px) saturate(1.25);-webkit-backdrop-filter:blur(20px) saturate(1.25)",
+  "koy": "backdrop-filter:none;-webkit-backdrop-filter:none"
+ },
+ {
+  "ad": "v9.26 ana eylem tekrar düz ve yükseltisiz oluyor",
+  "test": "181-modern-arayuz-kabugu.js",
+  "kaynak": "telefon",
+  "bul": "background:linear-gradient(135deg,#13E08A,var(--accent))",
+  "koy": "background:var(--accent)"
+ },
+ {
+  "ad": "v9.26 normal tema kontrol sınırı 3e 1 altına dönüyor",
+  "test": "181-modern-arayuz-kabugu.js",
+  "kaynak": "jeton",
+  "bul": "--s-line:#667085",
+  "koy": "--s-line:#272C38"
  },
  {
   "ad": "K1 karşılama başlığı yine sürüm notu başlığı",

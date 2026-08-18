@@ -49,7 +49,7 @@
   --s-bg:#0A0C11;          /* en arka zemin */
   --s-surface:#12151C;     /* sayfa/panel */
   --s-raised:#1A1E27;      /* kart, yükseltilmiş kutu */
-  --s-line:#272C38;        /* ayraç */
+  --s-line:#667085;        /* ayraç + kontrol sınırı: koyu yüzeyde 3:1 üstü */
 
   /* --- metin --- */
   --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
@@ -1984,7 +1984,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.25';   // telefon sürümüyle aynı numaralama
+  const VER='9.26';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -4886,6 +4886,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.26':{tr:'<b>Arayüz daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Yüzey sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; ortak renk, yükselti ve dokunma sistemi telefon ile masaüstünde korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> Surface boundaries now pass the accessible 3:1 threshold in the normal theme, with the shared colour, elevation and touch system preserved across phone and desktop.'},
    '9.25':{tr:'<b>Prova ve kayıt yolu artık ilk ekranda açıkça ayrılıyor.</b> Telefon girişindeki kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> On the phone, the recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},
  '9.24':{tr:'<b>iPhone çekim güvenliği tamamlandı.</b> Kayıt sırasında sesle takip güvenli varsayılanla duraklatılıyor, bekleyen yeniden başlatmalar kaydı etkileyemiyor ve kayıt bitince takip kendiliğinden geri geliyor. Donma tekrar görülürse sonuç ekranı ses oturumu zincirini doğrudan gösteriyor; eski ve yanlış bellek öğüdü geri gelmiyor.',en:'<b>iPhone recording safety is complete.</b> Voice follow pauses with a safe default during recording, pending recognition restarts cannot disturb the take, and tracking returns automatically when recording ends. If a freeze recurs, the result screen points directly to the audio-session chain instead of the old memory advice.'},
  '9.23':{tr:'<b>iPhone çekimlerinde görüntünün donması: sebep bulundu ve kapatıldı.</b> Aylardır bildirdiğin sorun buydu — video bir süre sonra donuyor, ses tam. Eski teşhis belleği suçluyordu ve yanlıştı: ölçülen vakada 41 saniyelik çekimde görüntü 19. saniyede donmuştu, 19 saniye ise 1080p kayıtta ancak 20 MB eder. Gerçek zincir şu: iPhone ses oturumunu TEK tutar; sesle takip için kullanılan tanıma her sessizlikte kapanır ve uygulama onu yeniden başlatır; her başlatma ses oturumunu yeniden kurar ve yakalama oturumu yeniden kurulunca GÖRÜNTÜ donar, ses akmaya devam eder. Yani donma bir süre sonra değil, İLK KONUŞMA ARASINDAN sonra oluyordu — 19 saniye tam da birkaç cümlelik açılışın ardından gelen ilk duraklama. Aynı önlem nefesle akış için zaten alınmıştı, sesle takibe hiç uygulanmamıştı. Artık kayıt başlarken sesle takip duraklatılıyor, sebebi ekranda yazıyor ve kayıt bitince kendiliğinden geri geliyor. Risk almak isteyen için Ayarlar → Sesle takip → Kayıt sırasında sesle takip anahtarı var; açıkken donma olursa sonuç ekranı sebebi doğrudan söylüyor. Masaüstünde bu kısıt yok, orada hiçbir şey değişmedi.<br><b>Çekim sonrası öğüt de düzeltildi.</b> Ekran aylardır 720p yap ve çekimi kısa tut diyordu; bu öğüt yanlış yere gönderiyordu. Artık ses oturumunun yeniden kurulmasını gösteriyor.',

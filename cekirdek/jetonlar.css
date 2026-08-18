@@ -31,7 +31,7 @@
   --s-bg:#0A0C11;          /* en arka zemin */
   --s-surface:#12151C;     /* sayfa/panel */
   --s-raised:#1A1E27;      /* kart, yükseltilmiş kutu */
-  --s-line:#272C38;        /* ayraç */
+  --s-line:#667085;        /* ayraç + kontrol sınırı: koyu yüzeyde 3:1 üstü */
 
   /* --- metin --- */
   --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */

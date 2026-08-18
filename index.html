@@ -99,7 +99,7 @@
   --s-bg:#0A0C11;          /* en arka zemin */
   --s-surface:#12151C;     /* sayfa/panel */
   --s-raised:#1A1E27;      /* kart, yükseltilmiş kutu */
-  --s-line:#272C38;        /* ayraç */
+  --s-line:#667085;        /* ayraç + kontrol sınırı: koyu yüzeyde 3:1 üstü */
 
   /* --- metin --- */
   --t-hi:#F2F4F8;          /* 15,40 : başlık ve gövde */
@@ -428,7 +428,10 @@
     /* Alt boşluk etiketler için büyük; değeri `--barAlt` jetonundan geliyor
        ki üstteki katmanları taşıyan `--barH` ile ASLA ayrışmasın. */
     padding:10px 10px var(--barAlt);
-    background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
+    background:linear-gradient(180deg,rgba(26,30,39,.78),rgba(10,12,17,.94));
+    border-top:1px solid rgba(255,255,255,.16);border-radius:28px 28px 0 0;
+    box-shadow:0 -18px 48px rgba(0,0,0,.46),inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(20px) saturate(1.25);-webkit-backdrop-filter:blur(20px) saturate(1.25)}
   /* ===== ÇEKİM ÇUBUĞU ETİKETLERİ =====
      Altı yuvarlak ikon vardı ve hiçbirinin yazısı yoktu: kullanıcı ne
      yaptıklarını ancak tek tek basarak öğreniyordu. Deponun 4 numaralı hata
@@ -458,8 +461,11 @@
      Etiket kayıt boyunca hiç yazılmıyor: kırmızı kare zaten "durdur" diyor
      ve yanında süre sayacı çalışıyor. */
   body.rec #recBtn::before{content:''}
-  .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;border:none;background:rgba(40,40,46,.8);
-    color:#fff;font-size:var(--tx-lg);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);flex:none}
+  .cbtn{position:relative;width:var(--cb,54px);height:var(--cb,54px);border-radius:50%;
+    border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);
+    color:#fff;font-size:var(--tx-lg);display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--el-1);backdrop-filter:blur(10px);flex:none;
+    transition:transform var(--hiz-hizli) var(--egri),background var(--hiz-hizli) var(--egri),border-color var(--hiz-hizli) var(--egri)}
   .cbtn:active{filter:brightness(1.4)}
   .cbtn.on{background:var(--accent);color:var(--accent-d)}
   /* SVG krom ikonları (B.2): currentColor sayesinde düğme durumu neyse
@@ -495,7 +501,10 @@
      kimlik (marka + tek cümle) · eylem (asıl + ikincil) · güven ve
      üçüncül işler. Aradaki boşluklar ölçek jetonlarından geliyor. */
   #intro{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-8);
-    background:radial-gradient(circle at 50% 32%,#10231a,#000);padding:28px;text-align:center}
+    background:radial-gradient(circle at 12% 8%,rgba(37,99,235,.22),transparent 34%),
+      radial-gradient(circle at 88% 30%,rgba(0,212,126,.18),transparent 36%),
+      linear-gradient(165deg,#111722 0%,#0A0C11 48%,#07110d 100%);
+    padding:28px;text-align:center}
   #introUst{display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)}
   /* Marka işareti: sahnedeki okuma çizgisinin küçültülmüş hâli. Ölçüsü
      başlıkla birlikte büyüsün diye em cinsinden. */
@@ -542,10 +551,12 @@
      kullanıcı için sürüm numarası ilk okunacak şey değil. */
   #verChip{font-size:var(--tx-xs);font-weight:800;color:var(--t-low);letter-spacing:.08em;
     background:none;border:none;padding:0}
-  .big{background:var(--accent);color:var(--accent-d);border:none;border-radius:18px;font-size:var(--tx-lg);font-weight:800;
-    padding:18px 28px;display:flex;align-items:center;gap:10px}
-  .ghostbig{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);
-    border-radius:14px;font-size:var(--tx-md);font-weight:600;padding:13px 20px}
+  .big{background:linear-gradient(135deg,#13E08A,var(--accent));color:var(--accent-d);border:1px solid rgba(255,255,255,.22);
+    border-radius:18px;font-size:var(--tx-lg);font-weight:800;min-height:56px;
+    padding:16px 28px;display:flex;align-items:center;gap:10px;box-shadow:0 14px 34px rgba(0,212,126,.24),var(--el-1)}
+  .ghostbig{background:rgba(255,255,255,.065);color:var(--t-hi);border:1px solid rgba(255,255,255,.16);
+    border-radius:16px;font-size:var(--tx-md);font-weight:700;min-height:48px;padding:13px 20px;
+    box-shadow:var(--el-1);backdrop-filter:blur(12px)}
   #langSwitch{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;display:flex;gap:6px}
   #langSwitch button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;
     border-radius:10px;padding:7px 11px;font-size:var(--tx-sm);font-weight:700}
@@ -557,7 +568,9 @@
   #backdrop{position:absolute;inset:0;z-index:29;background:rgba(0,0,0,.45);
     opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
   body.sheeting #backdrop{opacity:1;pointer-events:auto}
-  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--sheetbg);box-shadow:var(--el-3);
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;
+    background:linear-gradient(180deg,rgba(26,30,39,.98),rgba(18,21,28,.99));box-shadow:var(--el-3);
+    border:1px solid rgba(255,255,255,.14);border-bottom:none;
     border-radius:22px 22px 0 0;padding:6px 18px calc(20px + env(safe-area-inset-bottom));
     transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
     max-height:90%;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;
@@ -586,7 +599,8 @@
   body.peek #peekTip{display:block}
   .grab{width:40px;height:5px;border-radius:3px;background:#3a3a44;margin:8px auto 12px}
   .sheet h2{font-size:var(--tx-lg);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
-  .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;background:var(--sheetbg);padding:6px 0;z-index:2}
+  .tabs{display:flex;gap:6px;margin:12px 0 4px;position:sticky;top:0;
+    background:rgba(18,21,28,.92);backdrop-filter:blur(14px);padding:6px;z-index:2;border-radius:14px}
   .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:#cfd0d4;border-radius:11px;
     box-shadow:var(--el-1);transition:transform var(--hiz-hizli) var(--egri),background var(--hiz-hizli) var(--egri);
     padding:11px 0;font-size:var(--tx-sm);font-weight:700}
@@ -911,7 +925,8 @@
   @media (max-height:430px){ .tapnote{display:none} }
 
   @media (min-width:820px){
-    #bar{padding-bottom:22px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,92%);background:none}
+    #bar{padding:12px 14px 30px;left:50%;right:auto;bottom:16px;transform:translateX(-50%);width:min(620px,92%);
+      border:1px solid rgba(255,255,255,.16);border-radius:30px}
     .sheet{left:50%;right:auto;transform:translate(-50%,110%);width:min(560px,94%);border-radius:22px;bottom:16px;max-height:88%}
     .sheet.open{transform:translate(-50%,0)}
   }
@@ -2023,7 +2038,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.25';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.26';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -9984,6 +9999,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.26':{tr:'<b>Arayüz baştan sona daha modern ve kullanıcı dostu bir ürün kabuğuna kavuştu.</b> Girişte katmanlı marka zemini, çekimde tek parça cam kontrol iskelesi, ayarlarda daha belirgin yüzeyler ve daha güçlü ana/ikincil eylem ayrımı var. Kontrol sınırları artık normal temada da erişilebilir 3:1 eşiğini geçiyor; 44 px dokunma hedefleri korunuyor.',en:'<b>The interface now has a more modern, user-friendly product shell.</b> The welcome screen uses layered brand lighting, recording controls sit on one glass dock, settings have clearer surfaces, and primary versus secondary actions are easier to distinguish. Control boundaries now pass the accessible 3:1 threshold in the normal theme while 44 px touch targets remain intact.'},
  '9.25':{tr:'<b>Prova ve kayıt artık ilk ekranda açıkça ayrılıyor.</b> Kayıt yolu kamerayı açacağını, prova yolu ise kamera kullanmadan prova yapacağını doğrudan söylüyor. Davranış değişmedi; hangi yola girdiğin artık tahmin gerektirmiyor.',en:'<b>Rehearsal and recording are now explicit on the first screen.</b> The recording path says it will open the camera, while the rehearsal path clearly runs without one. Behaviour is unchanged; choosing a path no longer requires guessing.'},
  '9.24':{tr:'<b>iPhone çekim güvenliği tamamlandı.</b> Kayıt sırasında sesle takip güvenli varsayılanla duraklatılıyor, bekleyen yeniden başlatmalar kaydı etkileyemiyor ve kayıt bitince takip kendiliğinden geri geliyor. Donma tekrar görülürse sonuç ekranı ses oturumu zincirini doğrudan gösteriyor; eski ve yanlış bellek öğüdü geri gelmiyor.',en:'<b>iPhone recording safety is complete.</b> Voice follow pauses with a safe default during recording, pending recognition restarts cannot disturb the take, and tracking returns automatically when recording ends. If a freeze recurs, the result screen points directly to the audio-session chain instead of the old memory advice.'},
  '9.23':{tr:'<b>iPhone çekimlerinde görüntünün donması: sebep bulundu ve kapatıldı.</b> Aylardır bildirdiğin sorun buydu — video bir süre sonra donuyor, ses tam. Eski teşhis belleği suçluyordu ve yanlıştı: ölçülen vakada 41 saniyelik çekimde görüntü 19. saniyede donmuştu, 19 saniye ise 1080p kayıtta ancak 20 MB eder. Gerçek zincir şu: iPhone ses oturumunu TEK tutar; sesle takip için kullanılan tanıma her sessizlikte kapanır ve uygulama onu yeniden başlatır; her başlatma ses oturumunu yeniden kurar ve yakalama oturumu yeniden kurulunca GÖRÜNTÜ donar, ses akmaya devam eder. Yani donma bir süre sonra değil, İLK KONUŞMA ARASINDAN sonra oluyordu — 19 saniye tam da birkaç cümlelik açılışın ardından gelen ilk duraklama. Aynı önlem nefesle akış için zaten alınmıştı, sesle takibe hiç uygulanmamıştı. Artık kayıt başlarken sesle takip duraklatılıyor, sebebi ekranda yazıyor ve kayıt bitince kendiliğinden geri geliyor. Risk almak isteyen için Ayarlar → Sesle takip → Kayıt sırasında sesle takip anahtarı var; açıkken donma olursa sonuç ekranı sebebi doğrudan söylüyor. Masaüstünde bu kısıt yok, orada hiçbir şey değişmedi.<br><b>Çekim sonrası öğüt de düzeltildi.</b> Ekran aylardır 720p yap ve çekimi kısa tut diyordu; bu öğüt yanlış yere gönderiyordu. Artık ses oturumunun yeniden kurulmasını gösteriyor.',

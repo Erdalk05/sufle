@@ -2,6 +2,13 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟠 18 Ağustos — **v9.26 HAZIR · yayın bekliyor**
+
+Modern arayüz dilimi uygulandı: katmanlı giriş zemini, tek parça cam çekim
+iskelesi, belirgin ayar yüzeyleri, güçlü ana/ikincil eylem ayrımı ve normal
+temada 3:1 üstü kontrol sınırları. Davranış ve veri yapısı değişmedi; 44 px
+dokunma hedefleri ve azaltılmış hareket tercihi korunuyor. Tam kapı sırada.
+
 ## 🟢 18 Ağustos — **v9.25 YAYINLANDI ve canlıdan doğrulandı**
 
 Strateji yol haritasının ilk P1 bilgi mimarisi dilimi tamamlandı: girişteki
@@ -1692,7 +1699,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7092 test** (gece başında 732) · yeni test dosyası: 39–180
+- **7106 test** (gece başında 732) · yeni test dosyası: 39–181
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
