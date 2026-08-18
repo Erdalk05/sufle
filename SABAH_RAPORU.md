@@ -2,12 +2,16 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟠 18 Ağustos — **v9.26 HAZIR · yayın bekliyor**
+## 🟢 18 Ağustos — **v9.26 YAYINLANDI ve canlıdan doğrulandı**
 
 Modern arayüz dilimi uygulandı: katmanlı giriş zemini, tek parça cam çekim
 iskelesi, belirgin ayar yüzeyleri, güçlü ana/ikincil eylem ayrımı ve normal
 temada 3:1 üstü kontrol sınırları. Davranış ve veri yapısı değişmedi; 44 px
-dokunma hedefleri ve azaltılmış hareket tercihi korunuyor. Tam kapı sırada.
+dokunma hedefleri ve azaltılmış hareket tercihi korunuyor.
+Tam kapı **7.106/7.106 test**, **602/602 kasıtlı bozma**, sıfır kontrast
+ihlali ve gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti. `816f0cf`
+origin/main'e gönderildi; canlı duman testi 430/360/1440 pxte v9.26'yı,
+açılan panoları ve taşmasız görünümü doğruladı.
 
 ## 🟢 18 Ağustos — **v9.25 YAYINLANDI ve canlıdan doğrulandı**
 
