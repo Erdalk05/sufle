@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟠 18 Ağustos — **v9.27 HAZIR · yayın bekliyor**
+## 🟢 18 Ağustos — **v9.27 YAYINLANDI ve canlıdan doğrulandı**
 
 Kullanıcı geri bildirimiyle bulunan dil keşfedilebilirliği açığı kapatıldı:
 Türkçe ve English seçimi artık yalnız giriş ekranında değil, Ayarlar açıldığında
@@ -10,7 +10,9 @@ her sekmenin üstünde görünür. İki giriş aynı yerel tercihi kullanıyor; 
 seçili durum ve ekran okuyucunun `aria-pressed` bilgisi birlikte yenileniyor.
 Davranış 10 yeni iddia ve 4 kasıtlı bozmayla ayrıştırıldı. Tam kapı
 **7.116/7.116 test**, **606/606 kasıtlı bozma**, sıfır kontrast ihlali ve
-gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti.
+gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti. `31226a5` origin/main'e
+gönderildi; canlı duman testi 430/360/1440 pxte v9.27'yi, açılan panoları ve
+taşmasız görünümü doğruladı. Doğrudan CDN dosyasında `sheetLang` izi de görüldü.
 
 ## 🟢 18 Ağustos — **v9.26 YAYINLANDI ve canlıdan doğrulandı**
 
