@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 18 Ağustos — **v9.32 hazır · henüz yayınlanmadı**
+## 🟢 18 Ağustos — **v9.32 YAYINLANDI ve canlıdan doğrulandı**
 
 ### 🔴 iPHONE'DA CAM/ŞEFFAF YÜZEYLERİN HİÇBİRİ ÇALIŞMIYORMUŞ
 
@@ -40,6 +40,10 @@ birebir sabitlediği için önek eklenince ÜRÜN DOĞRUYKEN kırıldı, içerik
 
 Yeni test dosyası **190** (yol tarifi, 11 iddia) ve **191** (iOS öneki, 10
 iddia) · 10 yeni kasıtlı bozma.
+
+**Canlı doğrulama:** md5 birebir, `VER='9.32'` · `sufle-v104`, canlıda
+`-webkit-backdrop-filter` **16 kural**. `canli.py` üç genişlikte temiz.
+`.son-yayin` doğrulamadan SONRA `9.32 104` yazıldı.
 
 ## 🟢 18 Ağustos — **v9.31 YAYINLANDI ve canlıdan doğrulandı**
 
