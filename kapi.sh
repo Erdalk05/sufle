@@ -3,10 +3,15 @@
 # 8 adım: derleme · denetim · sözdizimi · testler · sürüm · aynalar · kapsam · bozma turu
 # ⚠️ .son-yayin dosyasını YAYINDAN SONRA yaz. Önce yazarsan kapı yeni sürümü
 #    "zaten yayınlanmış" sanıp kendini bloke eder (bir kez başıma geldi).
-#   ./kapi.sh
+#   ./kapi.sh                  # yeni uygulama sürümü, yayın öncesi
+#   ./kapi.sh --yayin-sonrasi  # canlı sürüm değişmeden yalnız araç/belge testi
 # Çıkış kodu 0 = yayınlanabilir.
 set -uo pipefail
 cd "$(dirname "$0")"
+YAYIN_SONRASI=0
+if [ "${1:-}" = "--yayin-sonrasi" ]; then YAYIN_SONRASI=1; shift; fi
+if [ "$#" -ne 0 ]; then echo "Kullanım: ./kapi.sh [--yayin-sonrasi]" >&2; exit 2; fi
+export SUFLE_YAYIN_SONRASI="$YAYIN_SONRASI"
 KOD=0
 say(){ printf '\n\033[1m== %s ==\033[0m\n' "$1"; }
 
@@ -57,16 +62,22 @@ node tests/kos.js || KOD=1
 
 say "5/10 Sürüm tutarlılığı"
 python3 - <<'PY' || KOD=1
-import re, sys
+import os, re, sys
 ver = re.search(r"VER='([\d.]+)'", open('index.html', encoding='utf-8').read()).group(1)
 cache = re.search(r"CACHE\s*=\s*'sufle-v(\d+)'", open('sw.js', encoding='utf-8').read()).group(1)
 print("  index.html VER =", ver, "· sw.js cache = sufle-v" + cache)
+post = os.environ.get('SUFLE_YAYIN_SONRASI') == '1'
 try:
     prev = open('.son-yayin', encoding='utf-8').read().split()
 except Exception:
     prev = None
 if prev and prev[0] == ver:
-    print("  ✗ VER artmamış — son yayınla aynı (%s). sw.js cache'ini de artır." % ver); sys.exit(1)
+    if post and int(cache) == int(prev[1]):
+        print("  ✓ yayın sonrası araç/belge kapısı — canlı sürüm ve cache bilinçli olarak aynı")
+        sys.exit(0)
+    print("  ✗ VER artmamış — son yayınla aynı (%s). Araç/belge işi ise --yayin-sonrasi kullan." % ver); sys.exit(1)
+if post:
+    print("  ✗ --yayin-sonrasi yalnız canlı sürüm ve cache aynıyken kullanılabilir."); sys.exit(1)
 if prev and int(cache) <= int(prev[1]):
     print("  ✗ sw.js cache artmamış — eski sürüm cihazlarda kalır."); sys.exit(1)
 print("  ✓ sürüm ve cache ileri gitmiş")

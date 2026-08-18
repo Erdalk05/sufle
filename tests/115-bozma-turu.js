@@ -105,7 +105,8 @@ function kos(args, kayitIcerik){
 
 /* ---------- KAPIYA BAĞLI MI ---------- */
 {
-  const sh=fs.readFileSync(path.join(REPO,'kapi.sh'),'utf8');
+  const kapiYolu=process.env.SUFLE_KAPI || path.join(REPO,'kapi.sh');
+  const sh=fs.readFileSync(kapiYolu,'utf8');
   ok('kapıda bozma adımı var', /say "\d+\/\d+ Kasıtlı bozma turu"/.test(sh));
   ok('bozma betiği çağrılıyor', /python3 bozma\.py \|\| KOD=1/.test(sh));
   const etiketler=[...sh.matchAll(/say "(\d+)\/(\d+) /g)];
@@ -210,7 +211,8 @@ function kos(args, kayitIcerik){
     throw new Error('Verilen yol yok: '+process.env.SUFLE_KAYIT_OLCUM);
   const ky=fs.readFileSync(kyol,'utf8');
   ok('çekim akışı ölçümü depoda', ky.length>800);
-  const kapiMetni=fs.readFileSync(path.join(REPO,'kapi.sh'),'utf8');
+  const kapiYolu=process.env.SUFLE_KAPI || path.join(REPO,'kapi.sh');
+  const kapiMetni=fs.readFileSync(kapiYolu,'utf8');
   ok('kapı bu adımı çağırıyor', /python3 kayit\.py/.test(kapiMetni));
   ok('Chrome yoksa atlandığı SÖYLENİYOR', /ATLANDI: Chrome yok — çekim akışı/.test(kapiMetni));
   /* BEŞ HALKANIN BEŞİ DE ÖLÇÜLMELİ: biri düşerse o halka sessizce korumasız

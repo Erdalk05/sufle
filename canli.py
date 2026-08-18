@@ -15,6 +15,8 @@
      python3 canli.py file:///.../index.html
 """
 import json
+import os
+import re
 import sys
 import time
 
@@ -31,6 +33,36 @@ PANOLAR = [
     ('senaryolar', '#scriptsBtn', '#scriptsSheet'),
     ('çekime hazır mıyım', '#readyBtn', '#ready'),
 ]
+
+
+def beklenen_surum():
+    """Canlı sayfanın eşleşmesi gereken kanon sürümü depodan oku."""
+    yol = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+    with open(yol, encoding='utf-8') as f:
+        eslesme = re.search(r"VER='([\d.]+)'", f.read())
+    if not eslesme:
+        raise RuntimeError('index.html içinde VER okunamadı')
+    return eslesme.group(1)
+
+
+def olcum_sorunlari(sonuc, beklenen):
+    """Tek genişliğin yanlış-yeşil vermesine yol açacak kusurları döndür."""
+    sorunlar = []
+    if sonuc.get('surum') != beklenen:
+        sorunlar.append('sürüm %s, beklenen %s' % (sonuc.get('surum') or 'YOK', beklenen))
+    if not sonuc.get('suflePaneli'):
+        sorunlar.append('sufle paneli yok')
+    if not sonuc.get('metinVar'):
+        sorunlar.append('sufle metni yok')
+    if sonuc.get('tasma'):
+        sorunlar.append('yatay taşma var')
+    if sonuc.get('hatalar', 0):
+        sorunlar.append('%d çalışma zamanı hatası' % sonuc['hatalar'])
+    if sonuc.get('gizliDugme', 0):
+        sorunlar.append('%d sıfır genişlikli görünür düğme' % sonuc['gizliDugme'])
+    if any(r != 'açıldı' for _, r in sonuc.get('panolar', [])):
+        sorunlar.append('açılmayan ana pano var')
+    return sorunlar
 
 
 def olc(adres, genislik, yukseklik):
@@ -87,19 +119,21 @@ def olc(adres, genislik, yukseklik):
 
 def main(argv):
     adres = argv[0] if argv else CANLI
+    beklenen = beklenen_surum()
     print('ölçülen adres:', adres)
+    print('beklenen sürüm:', beklenen)
     kirik = 0
     for ad, w, h in GENISLIKLER:
         s = olc(adres, w, h)
         panolar = ' · '.join('%s:%s' % (a, r) for a, r in s['panolar'])
-        print('%-14s %4dpx · sürüm %-6s · sufle %s · metin %s · taşma %s' % (
+        print('%-14s %4dpx · sürüm %-6s · sufle %s · metin %s · taşma %s · hata %d' % (
             ad, w, s['surum'], 'var' if s['suflePaneli'] else 'YOK',
-            'var' if s['metinVar'] else 'YOK', 'VAR' if s['tasma'] else 'yok'))
+            'var' if s['metinVar'] else 'YOK', 'VAR' if s['tasma'] else 'yok', s['hatalar']))
         print('               %s' % panolar)
-        if not s['suflePaneli'] or not s['metinVar'] or s['tasma']:
+        sorunlar = olcum_sorunlari(s, beklenen)
+        if sorunlar:
             kirik += 1
-        if any(r != 'açıldı' for _, r in s['panolar']):
-            kirik += 1
+            print('               ⛔ ' + ' · '.join(sorunlar))
     print()
     print('✅ canlı duman testi temiz' if not kirik else '⛔ CANLI KIRIK — %d ölçümde sorun' % kirik)
     return 1 if kirik else 0

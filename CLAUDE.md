@@ -25,6 +25,8 @@ Kapının 5. adımı dördünü de md5 ile karşılaştırır; bayat ayna = KIRM
                    # sürüm · aynalar · fonksiyon kapsamı · kasıtlı bozma turu ·
                    # kontrast (çizilmiş arayüz) · ÇEKİM AKIŞI uçtan uca
                    # (gerçek tarayıcı + sahte kamera; Chrome yoksa ATLANDI der)
+./kapi.sh --yayin-sonrasi  # uygulama sürümü değişmeden yalnız test/araç/belge
+                           # geliştirildiyse; canlı VER ve cache birebir aynı olmalı
 ```
 Kapı yeşil değilse iş bitmemiştir. Yayından sonra kapı "VER son yayınla aynı" der — bu **doğru**, sonraki sürüm artışında yeşile döner.
 

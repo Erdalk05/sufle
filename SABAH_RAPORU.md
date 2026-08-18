@@ -14,6 +14,20 @@ gerçek kamera-kayıt-sonuç-arşiv zinciriyle geçti. `31226a5` origin/main'e
 gönderildi; canlı duman testi 430/360/1440 pxte v9.27'yi, açılan panoları ve
 taşmasız görünümü doğruladı. Doğrudan CDN dosyasında `sheetLang` izi de görüldü.
 
+Canlı doğrulama sırasında yayın betiğinin eski v9.26'yı görmesine rağmen diğer
+yüzeyler açıldığı için yanlış biçimde “temiz” dediği yakalandı. `canli.py` artık
+kanon `index.html` sürümünü zorunlu eşleştiriyor; çalışma zamanı hatası, sıfır
+genişlikli görünür düğme ve açılmayan ana pano da kırmızı sebep üretiyor. Bu
+operasyonel kapı 12 iddia ve 4 kasıtlı bozmayla ayrıştırıldı. Yayın sonrası
+kapı da normal yayın kapısını gevşetmeden yalnız aynı sürüm + aynı cache için
+ayrıldı; 9 iddia ve 3 kasıtlı bozmayla ölçüldü. Tam kapı **7137/7137 test**,
+**613/613 kasıtlı bozma**, 10 çizilmiş arayüz durumu ve kamera → kayıt → sonuç
+→ altyazı → arşiv uçtan uca akışıyla yeşil kapandı.
+Uygulama sürümü değişmeden araç/belge doğrulamak için `kapi.sh` dosyasına
+dar kapsamlı `--yayin-sonrasi` kipi eklendi: yalnız `.son-yayin` ile hem VER
+hem cache birebir aynıysa geçer; normal yayın öncesi kuralı gevşetmez. Bu ayrım
+9 iddia ve 3 kasıtlı bozmayla kilitlendi.
+
 ## 🟢 18 Ağustos — **v9.26 YAYINLANDI ve canlıdan doğrulandı**
 
 Modern arayüz dilimi uygulandı: katmanlı giriş zemini, tek parça cam çekim
@@ -1715,7 +1729,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7116 test** (gece başında 732) · yeni test dosyası: 39–182
+- **7137 test** (gece başında 732) · yeni test dosyası: 39–184
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

@@ -4240,5 +4240,54 @@
   "kaynak": "telefon",
   "bul": "$$('[data-lang]').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; st.lang=L; save(); applyLang(); });",
   "koy": "$$('[data-lang]').forEach(b=>b.onclick=()=>{ L=b.dataset.lang; applyLang(); });"
+ },
+ {
+  "ad": "canlı kapı eski sürümü doğru sürüm sanıyor",
+  "test": "183-canli-surum-kapisi.js",
+  "kaynak": "canli",
+  "bul": "    if sonuc.get('surum') != beklenen:",
+  "koy": "    if sonuc.get('surum') == beklenen:"
+ },
+ {
+  "ad": "canlı kapı çalışma zamanı hatalarını yok sayıyor",
+  "test": "183-canli-surum-kapisi.js",
+  "kaynak": "canli",
+  "bul": "    if sonuc.get('hatalar', 0):",
+  "koy": "    if False:"
+ },
+ {
+  "ad": "canlı kapı görünür ama sıfır genişlikli düğmeyi yok sayıyor",
+  "test": "183-canli-surum-kapisi.js",
+  "kaynak": "canli",
+  "bul": "    if sonuc.get('gizliDugme', 0):",
+  "koy": "    if False:"
+ },
+ {
+  "ad": "canlı ana akış sürüm ve sağlık kararını çağırmıyor",
+  "test": "183-canli-surum-kapisi.js",
+  "kaynak": "canli",
+  "bul": "        sorunlar = olcum_sorunlari(s, beklenen)",
+  "koy": "        sorunlar = []"
+ },
+ {
+  "ad": "yayın sonrası kip cache eşitliğini aramadan kapıyı açıyor",
+  "test": "184-yayin-sonrasi-kapi.js",
+  "kaynak": "kapi",
+  "bul": "    if post and int(cache) == int(prev[1]):",
+  "koy": "    if post:"
+ },
+ {
+  "ad": "normal yayın kapısı aynı sürümü kabul ediyor",
+  "test": "184-yayin-sonrasi-kapi.js",
+  "kaynak": "kapi",
+  "bul": "    print(\"  ✗ VER artmamış — son yayınla aynı (%s). Araç/belge işi ise --yayin-sonrasi kullan.\" % ver); sys.exit(1)",
+  "koy": "    print(\"  ✓ aynı sürüm\"); sys.exit(0)"
+ },
+ {
+  "ad": "yayın sonrası kip yeni uygulama sürümünü gizleyebiliyor",
+  "test": "184-yayin-sonrasi-kapi.js",
+  "kaynak": "kapi",
+  "bul": "if post:\n    print(\"  ✗ --yayin-sonrasi yalnız canlı sürüm ve cache aynıyken kullanılabilir.\"); sys.exit(1)",
+  "koy": "if post:\n    print(\"  ✓ yayın sonrası\"); sys.exit(0)"
  }
 ]

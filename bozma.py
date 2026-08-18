@@ -93,6 +93,7 @@ KAYNAK = {
     # Deneme kılavuzu ve canlı duman betiği: elden dağıtımın iki dayanağı.
     'deneme': (os.path.join(REPO, 'DENEME.md'), 'SUFLE_DENEME'),
     'canli': (os.path.join(REPO, 'canli.py'), 'SUFLE_CANLI'),
+    'kapi': (os.path.join(REPO, 'kapi.sh'), 'SUFLE_KAPI'),
     'manifest': (os.path.join(REPO, 'manifest.json'), 'SUFLE_MANIFEST'),
     # Mağaza kabuğu: Apple hesabı gelene kadar tek koruma bu üç dosya.
     'kabuk_plist': (os.path.join(REPO, 'ios-kabuk', 'Kabuk-Info.plist'), 'SUFLE_KABUK_PLIST'),

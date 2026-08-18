@@ -91,7 +91,8 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
 }
 {
   /* Kapı adım sayısı. */
-  const sh=fs.readFileSync(path.join(REPO,'kapi.sh'),'utf8');
+  const kapiYolu=process.env.SUFLE_KAPI || path.join(REPO,'kapi.sh');
+  const sh=fs.readFileSync(kapiYolu,'utf8');
   const adim=[...sh.matchAll(/say "(\d+)\/(\d+) /g)].length;
   const yazan=sayi(/Kapı: (\d+) adım yeşil/);
   ok('raporda kapı adım sayısı yazıyor', yazan!==null);
