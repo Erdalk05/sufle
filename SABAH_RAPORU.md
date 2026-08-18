@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 18 Ağustos — **v9.30 ACİL ANDROID DÜZELTMESİ · henüz yayınlanmadı**
+## 🟢 18 Ağustos — **v9.30 YAYINLANDI ve canlıdan doğrulandı**
 
 Gerçek Samsung Android çekiminde 39,5 MB MP4 ve iki ses izi oluştuğu hâlde
 sonuç ekranında video görünmedi. Kök neden kayıt biçimi değildi: uzun prova
@@ -13,6 +13,8 @@ videonun başında açılıyor. Çizilmiş Android sonucunda oynatıcı yüksekl
 ölçülüyor. 17 yeni iddia ve 6 kasıtlı bozma eklendi. Tam kapı sonucu:
 **7208/7208 test**, **628/628 kasıtlı bozma**, **11 çizilmiş arayüz durumu**
 ve kamera → kayıt → görünür sonuç oynatıcısı → altyazı → arşiv akışı yeşil.
+
+**Canlı doğrulama (18 Ağustos akşamı):** `index.html` md5 birebir (`b15e8ac4…`), canlı `VER='9.30'`, `sw.js` → `sufle-v102`. Düzeltmenin izi canlıdan sayıldı: `56dvh` 2 · `min-height:260px` 1 · `#result').scrollTop=0` 1 · sürüm notu anahtarı `'9.30'` 2. `canli.py` **üç genişlikte temiz** (430/360/1440 px · sürüm 9.30 · taşma yok · çalışma zamanı hatası 0 · ayarlar, senaryolar ve çekime hazır mıyım panoları açıldı). `.son-yayin` doğrulamadan SONRA `9.30 102` yazıldı.
 
 ## 🟢 18 Ağustos — **v9.29 YAYINLANDI ve canlıdan doğrulandı**
 
