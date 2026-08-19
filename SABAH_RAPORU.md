@@ -2,7 +2,11 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 20 Ağustos gecesi — **v9.39 hazır · henüz yayınlanmadı** — TAŞIMA BİTTİ: 172 → 4
+## 🟢 20 Ağustos gecesi — v9.39 YAYINLANDI ve canlıdan doğrulandı (`sufle-v111`) — TAŞIMA BİTTİ: 172 → 4
+
+**Canlı doğrulama:** md5 birebir (`5e3213a5…` / `1ac85e4a…`) · `canli.py` üç
+genişlikte temiz · izler canlıdan sayıldı (`onbGovdeM` 3 · `krBagli` 3 ·
+`mimeVars` 3 · `vdAciklama` 3 · `srSn` 4). `.son-yayin` sonra yazıldı.
 
 Sözlüğü atlayan kullanıcı metni **172'den 4'e** indi. Kalan dördü metin
 değil, sisteme verilen **dil kodu** (`tr-TR`, `en-US`, `tr`) — cırcırın
