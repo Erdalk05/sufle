@@ -4566,9 +4566,9 @@
  {
   "ad": "v9.33 yumuşatma kenarları da siliyor (düz bulanıklık)",
   "test": "192-guzellik-ve-hizli-erisim.js",
-  "kaynak": "telefon",
-  "bul": "'float wsk(vec3 s,float l0){float d=abs(dot(s,vec3(0.299,0.587,0.114))-l0);'+\n'return 1.0-smoothstep(0.045,0.17,d);}'+",
-  "koy": "'float wsk(vec3 s,float l0){return 1.0;}'+"
+  "kaynak": "guzellik",
+  "bul": "  'return 1.0-smoothstep(0.045,0.17,d);}'+",
+  "koy": "  'return 0.0;}'+"
  },
  {
   "ad": "v9.33 filtre kapalıyken güzellik sessizce ölüyor",
@@ -5045,5 +5045,47 @@
   "kaynak": "telefon",
   "bul": "          data-i18n-etiket=\"hizliEt\" data-etiket=\"Hızlı\">",
   "koy": "          >"
+ },
+ {
+  "ad": "v9.35 güzellik gölgelendiricisi kenar korumayı bırakıyor (düz bulanıklık)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "guzellik",
+  "bul": "  'return 1.0-smoothstep(0.045,0.17,d);}'+",
+  "koy": "  'return 1.0;}'+"
+ },
+ {
+  "ad": "v9.35 güzellik kapalıyken de sekiz doku okuması yapılıyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "guzellik",
+  "bul": "  'if(bty<=0.0) return c0;'+",
+  "koy": "  'if(bty<-1.0) return c0;'+"
+ },
+ {
+  "ad": "v9.35 Mac'te yumuşatma kroma erken dönüşünden SONRA (yeşil ekran kapalıyken ölü)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "mac",
+  "bul": "  'void main(){vec2 t=uv*sc+of;vec3 c=skinSoft(t,texture2D(tex,t).rgb);'+",
+  "koy": "  'void main(){vec2 t=uv*sc+of;vec3 c=texture2D(tex,t).rgb;'+"
+ },
+ {
+  "ad": "v9.35 Mac'te piksel adımı sabitleniyor (4K'da yumuşatma görünmez)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "mac",
+  "bul": "    gl.uniform2f(U('px'), 1/Math.max(1,cam.videoWidth||1280), 1/Math.max(1,cam.videoHeight||720));",
+  "koy": "    gl.uniform2f(U('px'), 1/1280, 1/720);"
+ },
+ {
+  "ad": "v9.35 Mac'te kırpma kapalıyken güzellik sessizce ölüyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "mac",
+  "bul": "    if(!cropOn()) toast(m('btyKirpma')); save(); });",
+  "koy": "    save(); });"
+ },
+ {
+  "ad": "v9.35 kamera karosu kamerasızken yine sessiz",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  if(i==='backCam' && !stream){ toast(m('needCam')); return; }",
+  "koy": "  /* koruma kaldırıldı */"
  }
 ]

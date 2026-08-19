@@ -1,12 +1,17 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {oku,telefonYolu}=require('./kaynak.js');
+const {oku,telefonYolu,macYolu,cekirdekOku}=require('./kaynak.js');
 const src=oku(telefonYolu());
+const mac=oku(macYolu());
+/* v9.35: gölgelendirici ORTAK kaynağa taşındı (masaüstünde de çalışıyor).
+   Kabukta metin aramak yerine çekirdeği okuyup İKİ kabuğun da onu
+   kullandığını ölçüyoruz — kopya kalırsa iki ekran farklı yumuşatır. */
+const GLSL=cekirdekOku('guzellik-glsl.js','SUFLE_GUZELLIK');
 
 /* ===== GÜZELLİK (YÜZ YUMUŞATMA) — v9.33 =====
    Erdal: "yüz maskeleme yok, diğer birçok teleprompterda var."
    Ölçüldü: renk düzeltme (parlaklık/kontrast/doygunluk/SICAKLIK/keskinlik)
    vardı, cilt yumuşatma yoktu. */
-const fs_=src.slice(src.indexOf('const FS_SRC='), src.indexOf('let comp='));
+const fs_=GLSL;
 ok('shader güzellik değişkenini alıyor', /uniform float bty;/.test(fs_));
 ok('yumuşatma fonksiyonu var', /vec3 skinSoft\(vec2 t,vec3 c0\)/.test(fs_));
 ok('güzellik kapalıyken tek örnek bile fazladan okunmuyor', /if\(bty<=0\.0\) return c0;/.test(fs_));
@@ -15,7 +20,18 @@ ok('sekiz komşu örnek alınıyor', (fs_.match(/texture2D\(tex,t[+-]a[1-4]\)/g)
    "güzellik" değil "maske" olur. Ağırlık parlaklık farkıyla düşüyor. */
 ok('örnek ağırlığı parlaklık farkına göre düşüyor', /float wsk\(vec3 s,float l0\)[\s\S]{0,200}smoothstep/.test(fs_));
 ok('yumuşatma karışım oranı güzellik değeri', /return mix\(c0,bl,bty\);/.test(fs_));
-ok('yumuşatma keskinlikten ÖNCE uygulanıyor', /sharpen\(t,skinSoft\(t,texture2D\(tex,t\)\.rgb\)\)/.test(fs_));
+ok('yumuşatma keskinlikten ÖNCE uygulanıyor', /sharpen\(t,skinSoft\(t,texture2D\(tex,t\)\.rgb\)\)/.test(src));
+/* İKİ KABUK DA ORTAK GÖLGELENDİRİCİYİ KULLANIYOR (v9.35). v9.33'te kod
+   yalnız telefondaydı ve masaüstü sürüm notu "burada kompozit yok" diyordu;
+   ölçüm bunu çürüttü — Mac'te kırpma açıkken GL zaten koşuyor. */
+for(const [ad,kabuk] of [['telefon',src],['Mac',mac]]){
+  ok(ad+': ortak gölgelendirici gömülü', /vec3 skinSoft\(vec2 t,vec3 c0\)/.test(kabuk));
+  ok(ad+': gölgelendiriciyi FS_SRC kullanıyor', /GUZELLIK_GLSL\+/.test(kabuk));
+  /* `px` kabuğun kendi tanımı: çekirdekte ikinci kez tanımlanırsa GLSL
+     çift tanım hatası verir ve boru hattı SESSİZCE kurulmaz. */
+  ok(ad+': px kabukta bir kez tanımlı',
+     (kabuk.match(/uniform vec2 px;/g)||[]).length===1);
+}
 
 const vp=src.slice(src.indexOf('function vidParams(){'), src.indexOf('function hex2rgb'));
 ok('güzellik artınca keskinlik geri çekiliyor', /shp:base\.shp\*k\*\(1-0\.75\*b\)/.test(vp));
@@ -93,3 +109,33 @@ ok('karoların etiketleri iki dilde', /hzGuzellik:'Güzellik'/.test(src) && /hzG
    kaçırıyordu (bozma inmedi ama test geçti). */
 ok('çizilmiş arayüz kapısı paneli ölçüyor', /\('telefon-hizli',\s+TELEFON/.test(require('fs').readFileSync(
    process.env.SUFLE_KONTRAST||require('path').join(__dirname,'..','kontrast.py'),'utf8')));
+
+/* ===== GÜZELLİK MASAÜSTÜNDE (v9.35) =====
+   v9.33'ün sürüm notu "masaüstünde kompozit boru hattı yok" diyerek özelliği
+   atlamıştı. ÖLÇÜM o gerekçeyi çürüttü: Mac'te kırpma (varsayılan AÇIK) zaten
+   WebGL boru hattını koşturuyor — eksik olan boru hattı değil, gölgelendirici
+   satırlarıydı. Masaüstünde güzelliğin ön koşulu kompozit DEĞİL, kırpma. */
+ok('Mac: güzellik sürgüsü arayüzde', /id="macBty"[^>]*min="0" max="100"/.test(mac));
+ok('Mac: sürgü kroma kutusunun DIŞINDA (yeşil ekran gerekmiyor)',
+   mac.indexOf('id="macBty"') < mac.indexOf('id="chromaBox"'));
+ok('Mac: değer GPU\'ya gönderiliyor', /uniform1f\(U\('bty'\)/.test(mac));
+/* `px` olmadan yumuşatma yarıçapı çözünürlükle kayar ve 4K'da hiç görünmez. */
+ok('Mac: piksel adımı kaynak çözünürlüğünden hesaplanıyor',
+   /uniform2f\(U\('px'\), 1\/Math\.max\(1,cam\.videoWidth/.test(mac));
+/* Yumuşatma kroma erken dönüşünden ÖNCE uygulanmalı: sonra uygulansaydı
+   yeşil ekran kapalıyken hiç çalışmazdı (deponun ölü ayar sınıfı). */
+ok('Mac: yumuşatma kroma erken dönüşünden ÖNCE',
+   /vec3 c=skinSoft\(t,texture2D\(tex,t\)\.rgb\)/.test(mac));
+/* Kırpma kapalıyken (serbest oran) GL hiç koşmuyor — o zaman SEBEBİ
+   söylenmeli, sessizce hiçbir şey yapmamalı. */
+ok('Mac: kırpma kapalıyken sebebi söyleniyor',
+   /if\(!cropOn\(\)\) toast\(m\('btyKirpma'\)\)/.test(mac));
+ok('Mac: sebep iki dilde', /btyKirpma:'Güzellik yalnız KIRPARAK/.test(mac) &&
+   /btyKirpma:'Beauty only works while recording cropped/.test(mac));
+/* Kamera gerektiren karo, kamera yokken sebebini söylemeli: ölçüldü, "Kamera"
+   karosu değeri Ön → Arka çeviriyor ve hiçbir şey olmuyordu. */
+ok('kamera karosu kamerasızken sebebini söylüyor',
+   /if\(i==='backCam' && !stream\)\{ toast\(m\('needCam'\)\); return; \}/.test(src));
+ok('Mac: değer ekranda yazıyor', /function macBtyYaz\(\)/.test(mac) &&
+   (mac.match(/macBtyYaz\(\)/g)||[]).length>=3);
+

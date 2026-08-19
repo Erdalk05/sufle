@@ -61,13 +61,36 @@ for(const ad of PLAN){
      sarılmış satırlarını yükleme anında koşan kod sanıyordu (ölçüldü). */
   const bildirim=[], ustDuzeyKod=[];
   let d=0;
+  /* ÇOK SATIRLI BİLDİRİM SÜRÜYOR (2026-08-19). Derinlik takibi yalnız
+     parantezleri sayıyor; `const X = 'a'+\n  'b';` gibi bir bildirimde
+     derinlik hep 0 kalıyor ve SARILMIŞ satırlar "yükleme anında koşan kod"
+     sanılıyordu. Ölçüldü: `guzellik-glsl.js` (tek sabit, 20 satır) bu yüzden
+     kırmızı verdi — kural doğru, ayrıştırıcı eksikti. Bildirim, satırı
+     noktalı virgülle biten satıra kadar sürüyor. */
+  let bildirimSuruyor=false;
   for(const ln of kod.split('\n')){
     const bas=d;
     for(const ch of ln){ if('{(['.includes(ch)) d++; else if('})]'.includes(ch)) d--; }
     const t=ln.trim();
     if(bas!==0 || !t) continue;
+    if(bildirimSuruyor){
+      if(!/^['"`+]/.test(t)) bildirimSuruyor=false;      // dize birleştirmesi bitti
+      else { if(/;\s*$/.test(t)) bildirimSuruyor=false; continue; }
+    }
     let m;
-    if((m=t.match(/^(?:export\s+)?(const|let|var)\s+([A-Za-z_$][\w$]*)/))) bildirim.push({ad:m[2],tur:m[1]});
+    if((m=t.match(/^(?:export\s+)?(const|let|var)\s+([A-Za-z_$][\w$]*)/))){
+      bildirim.push({ad:m[2],tur:m[1]});
+      /* DAR TUTULDU: yalnız `+` ile SATIRI BÖLÜNMÜŞ dize birleştirmesi
+         sürüyor sayılıyor. "Noktalı virgülle bitmiyorsa sürüyor" demek çok
+         geniş: modüllerdeki çok satırlı ok fonksiyonlarından sonra gelen
+         `function` bildirimleri de yutuluyor ve kopya denetimi çöküyordu
+         (ölçüldü, ilk denememde tam bu oldu). */
+      /* Satır `+` ya da `=` ile bitiyorsa dize birleştirmesi devam ediyor
+         demektir (`const X =` tek başına da olabilir). Devam satırları
+         yalnız dize/operatörle başlıyorsa yutuluyor; başka bir şeyle
+         başladığı anda süre biter, yani `function` bildirimleri kaçmaz. */
+      if(/[+=]\s*$/.test(t)) bildirimSuruyor=true;
+    }
     else if((m=t.match(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/))) bildirim.push({ad:m[1],tur:'function'});
     else if(/^[})\];]/.test(t)) continue;
     else ustDuzeyKod.push(t.slice(0,70));

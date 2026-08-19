@@ -64,6 +64,7 @@ KAYNAK = {
     'senaryo': (os.path.join(REPO, 'cekirdek', 'senaryo.js'), 'SUFLE_SENARYO'),
     'etiket': (os.path.join(REPO, 'cekirdek', 'etiket.js'), 'SUFLE_ETIKET'),
     'kamera': (os.path.join(REPO, 'cekirdek', 'kamera.js'), 'SUFLE_KAMERA'),
+    'guzellik': (os.path.join(REPO, 'cekirdek', 'guzellik-glsl.js'), 'SUFLE_GUZELLIK'),
     # Kapının kendi betiği de bozulabilmeli: kapsam kapısının etkisiz
     # kaldığı bir gece ancak böyle yakalanır.
     'kapsam': (os.path.join(REPO, 'kapsam.py'), 'SUFLE_KAPSAM'),

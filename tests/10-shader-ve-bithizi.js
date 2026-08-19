@@ -3,7 +3,14 @@ const {telefonYolu,macYolu,oku}=require('./kaynak');
 const src=oku(telefonYolu());
 
 // --- shader kaynağı tutarlı mı (GLSL derlenemeden önce yapısal kontrol) ---
-const fsSrc=(src.match(/const FS_SRC=[\s\S]*?;\n/)||[''])[0];
+/* v9.35: gölgelendiricinin güzellik bölümü ORTAK kaynağa taşındı
+   (`cekirdek/guzellik-glsl.js`) ve FS_SRC onu `GUZELLIK_GLSL+` ile
+   içeri alıyor. Yalnız FS_SRC metnine bakan uniform denetimi o
+   bölümdeki tanımları GÖREMEZ ve JS'in beslediği `bty` uniformunu
+   'olmayan uniform' sanar — aracın kendi kör noktası. Gömülü çekirdek
+   bloğu da okunuyor. */
+const fsSrc=((src.match(/const FS_SRC=[\s\S]*?;\n/)||[''])[0])+
+  ((src.match(/==CEKIRDEK:guzellik-glsl\.js==[\s\S]*?==\/CEKIRDEK:guzellik-glsl\.js==/)||[''])[0]);
 ok('mask uniform tanımlı', /uniform float mask;/.test(fsSrc));
 ok('mask kullanılıyor', /mask>0\.5/.test(fsSrc));
 ok('mask erken dönüşü var', /return; \}'\+/.test(fsSrc));

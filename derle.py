@@ -120,6 +120,11 @@ PLAN = [
     # (ön koşulu olan ayar = sessiz ölü özellik). Telefonda vardı, Mac'te hiç
     # yoktu; kopyalamak yerine karar tek kaynağa alındı.
     ('kamera.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Güzellik gölgelendiricisi (2026-08-19). v9.33'te yalnız telefondaydı;
+    # ölçüm masaüstünde de GL boru hattının koştuğunu gösterdi (kırpma açıkken).
+    # Eşik ve yarıçap iki dosyada ayrı yaşarsa aynı çekim iki ekranda farklı
+    # yumuşar ve kimse sebebini bulamaz.
+    ('guzellik-glsl.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

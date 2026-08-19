@@ -78,7 +78,11 @@ st.vidFx='bilinmeyen'; st.vidAmt=100;
 ok('bilinmeyen filtrede çökmüyor', vidParams().con>0);
 
 // ---------- SHADER TUTARLILIĞI ----------
-const fsSrc=cikar(src,/const FS_SRC=[\s\S]*?;\n/,'FS_SRC');
+/* v9.35: güzellik bölümü ortak çekirdeğe taşındı; yalnız FS_SRC metnine
+   bakan uniform denetimi oradaki tanımları göremiyor ve JS'in beslediği
+   `bty`yi 'olmayan uniform' sanıyordu. Gömülü çekirdek bloğu da okunuyor. */
+const fsSrc=cikar(src,/const FS_SRC=[\s\S]*?;\n/,'FS_SRC')+
+  ((src.match(/==CEKIRDEK:guzellik-glsl\.js==[\s\S]*?==\/CEKIRDEK:guzellik-glsl\.js==/)||[''])[0]);
 const uniforms=[...fsSrc.matchAll(/uniform \w+ (\w+);/g)].map(m=>m[1]);
 const setU=[...src.matchAll(/getUniformLocation\(comp\.pr,'(\w+)'\)/g)].map(m=>m[1]);
 const beslenmeyen=uniforms.filter(u=>!setU.includes(u)&&u!=='tex'&&u!=='bg');
