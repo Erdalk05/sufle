@@ -500,6 +500,20 @@
     color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
     text-shadow:0 1px 3px rgba(0,0,0,.8)}
   .cbtn.on::after{color:var(--r-action-t)}
+  /* 🔴 ADSIZ DÜĞME = GÖRÜNMEZ ÖZELLİK (2026-08-19). Hızlı erişim düğmesi
+     sahnenin sağ üstünde duruyordu ama ekrandaki TEK adsız düğmeydi: alt
+     çubuktaki altı düğmenin altında adı yazıyor, bunun altında yazmıyordu.
+     Üstelik ikonu üç nokta — "daha fazla" demek, ne olduğunu söylemiyor.
+     Erdal canlı uygulamada "hızlı erişim görünmüyor" dedi; düğme oradaydı,
+     ADI yoktu. Deponun kendi kuralı: düğmenin adı özelliğin adı olsun.
+     Etiket alt çubukla AYNI mekanizmadan geliyor (`data-etiket`), yani tek
+     kaynak; odak kipinde o da susuyor. */
+  #hizliBtn::after{content:attr(data-etiket);position:absolute;
+    top:calc(100% + 3px);left:50%;transform:translateX(-50%);
+    font-size:10px;font-weight:650;letter-spacing:.01em;line-height:1;
+    color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  body.hideUI #hizliBtn::after{content:''}
   /* Odak kipinde (kayıtta düğmeleri gizle) etiket de gitmeli. */
   body.hideUI .cbtn::after,body.hideUI #recBtn::before{content:''}
   /* Kayıt sürerken "Çek" yazmak yanlış olurdu — o an yapılacak iş DURDURMAK.
@@ -1054,7 +1068,8 @@
        Kopyalasaydım kamera değişimi, fenerin yeniden uygulanması ve kayıt
        sırasındaki engeller iki yerde yaşar, zamanla ayrışırdı. -->
   <button id="hizliBtn" aria-label="Hızlı erişim" data-aria="hizliBtn"
-          data-i18n-title="hizliT" title="Hızlı erişim" aria-expanded="false">
+          data-i18n-title="hizliT" title="Hızlı erişim" aria-expanded="false"
+          data-i18n-etiket="hizliEt" data-etiket="Hızlı">
     <svg class="ic" aria-hidden="true"><use href="#i-dahafazla"/></svg>
   </button>
   <div id="hizliPanel" role="group" aria-label="Hızlı erişim" data-i18n-aria="hizliT">
@@ -1368,7 +1383,10 @@
 
     </div></details>
     <details class="grup"><summary><span data-i18n="vfxTitle"></span><span class="ozet"></span></summary><div class="icerik">
-    <div class="row" style="margin-top:20px"><label data-i18n="vfxTitle">Görüntü filtresi</label><span class="v" id="vFxAmt">—</span></div>
+    <!-- Kartın adı artık "Görüntü filtresi ve güzellik" (güzellik aranırken
+         bulunabilsin diye). İÇERDEKİ satır yalnız RENK filtresini etiketliyor;
+         ikisine aynı anahtarı vermek kartın başlığını iki kez yazdırıyordu. -->
+    <div class="row" style="margin-top:20px"><label data-i18n="vfxSegL">Görüntü filtresi</label><span class="v" id="vFxAmt">—</span></div>
     <!-- KOMPOZİT BAĞIMLI BLOK: `vidParams()` yalnız `drawComp()` içinde
          okunuyor, yani kompozit kapalıyken filtre ne önizlemeye ne kayda
          işliyor. Anahtarlar (burnCaps/chroma) bu muameleyi zaten görüyordu;
@@ -1383,13 +1401,18 @@
       <button data-vfx="lowlight" data-i18n="vfxLow">Az ışık</button>
     </div>
     <input type="range" data-aria="vidAmt" id="vidAmt" min="0" max="150" value="100">
-    <!-- GÜZELLİK: filtreden AYRI bir sürgü. Renk hazır ayarı "Kapalı" olsa
-         bile çalışır — kullanıcı rengine dokunulmasını istemeden yüz
-         yumuşatma isteyebilir. -->
+    </div>
+    <!-- 🔴 GÜZELLİK KOMPOZİT BAĞIMLI KUTUNUN DIŞINDA (2026-08-19'da taşındı).
+         v9.33'te kutunun İÇİNDEYDİ ve kutu kompozit kapalıyken soluklaşıp
+         "· kompozit açık olmalı" yazıyordu. Oysa güzellik gereken boru
+         hattını KENDİSİ açıyor (`ensureCompVfx`) — yani arayüz, var olmayan
+         bir ön koşulu duyuruyordu. Erdal canlı uygulamada tam bu yüzden
+         "güzellik görünmüyor" dedi: soluk bir satır ve "önce şunu aç" yazısı,
+         kullanıcı için YOK demektir. Ölçüldü (canlı, 430x932): `#btyAmt`
+         opacity 1 ama kapsayıcı 0.45 ve kapı metni "kompozit açık olmalı". -->
     <div class="row" style="margin-top:16px"><label for="btyAmt" data-i18n="btyL">Güzellik (yüz yumuşatma)</label><span class="v" id="vBty">—</span></div>
     <input type="range" data-aria="btyAmt" id="btyAmt" min="0" max="100" value="0">
     <div class="hint" data-i18n="btyHint">Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.</div>
-    </div>
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
     </div></details>
@@ -2182,7 +2205,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.34';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.35';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2301,8 +2324,8 @@ const I18N={
   profL:'Hazır kurulum',pfEdu:'Eğitim',pfReels:'Reels',pfYT:'YouTube',pfSales:'Satış',pfNews:'Haber',pfBeam:'Cam rig',
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
-  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
-  hizliT:'Hızlı erişim',hzKamera:'Kamera',hzIsik:'Işık',hzGuzellik:'Güzellik',hzYaziKucult:'Yazı küçült',hzYaziBuyut:'Yazı büyüt',hzOdak:'Odak',btyL:'Güzellik (yüz yumuşatma)',btyHint:'Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.',vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Filtre ve güzellik',vfxSegL:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
+  hizliT:'Hızlı erişim',hizliEt:'Hızlı',hzKamera:'Kamera',hzIsik:'Işık',hzGuzellik:'Güzellik',hzYaziKucult:'Yazı küçült',hzYaziBuyut:'Yazı büyüt',hzOdak:'Odak',btyL:'Güzellik (yüz yumuşatma)',btyHint:'Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.',vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'Perdenin rengini kameradan ölç',tgMask:'Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'Mikrofon',tgEyeLine:'Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',mapImport:'⬇︎ Profili içe aktar',
@@ -2567,8 +2590,8 @@ const I18N={
   profL:'Quick setup',pfEdu:'Education',pfReels:'Reels',pfYT:'YouTube',pfSales:'Sales',pfNews:'News',pfBeam:'Beam splitter',
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
-  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
-  hizliT:'Quick access',hzKamera:'Camera',hzIsik:'Light',hzGuzellik:'Beauty',hzYaziKucult:'Smaller text',hzYaziBuyut:'Bigger text',hzOdak:'Focus',btyL:'Beauty (skin smoothing)',btyHint:'Softens flat areas such as skin while leaving eyes, brows, hair and lip edges intact. Very high values look doughy — 30 to 50 stays natural.',vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Filter and beauty',vfxSegL:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
+  hizliT:'Quick access',hizliEt:'Quick',hzKamera:'Camera',hzIsik:'Light',hzGuzellik:'Beauty',hzYaziKucult:'Smaller text',hzYaziBuyut:'Bigger text',hzOdak:'Focus',btyL:'Beauty (skin smoothing)',btyHint:'Softens flat areas such as skin while leaving eyes, brows, hair and lip edges intact. Very high values look doughy — 30 to 50 stays natural.',vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'Sample the screen colour from camera',tgMask:'Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'Microphone',tgEyeLine:'Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',mapImport:'⬇︎ Import profile',
@@ -10709,7 +10732,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.35':{tr:'🔎 <b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'🔎 <b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},

@@ -2,6 +2,43 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 19 Ağustos — **v9.35 hazır · henüz yayınlanmadı** — "v9.33 GÖRÜNMÜYOR"
+
+Erdal canlı uygulamada **"v9.33 yapılanlar görünmüyor"** dedi. Kaynağa değil
+**çizilmiş ekrana** bakıldı (canlı adres, gerçek Chrome, 430×932) ve **üç
+kusur** çıktı — üçü de aynı sınıftan: **özellik VAR, bulunamıyor.**
+
+**① Güzellik yanlış kartın altında saklıydı.** Ayarlar → Kamera listesinde
+kartın adı *"Görüntü filtresi"*; özeti *"%100 · Doğal"*. Hiçbir yerde
+"güzellik" yazmıyor. Kullanıcı listeyi tarar, göremez ve **yok** sanır —
+deponun 4 numaralı kuralı: *jargon/yanlış ad = görünmezlik.*
+Kart artık **"Filtre ve güzellik"**.
+
+**② Güzellik satırı, olmayan bir ön koşulu duyuruyordu.** Sürgü kompozit
+bağımlılık kutusunun içindeydi: kompozit kapalıyken kutu %45 saydamlaşıyor ve
+**"· kompozit açık olmalı"** yazıyordu. Oysa güzellik gereken boru hattını
+**kendisi açıyor** (`ensureCompVfx`) — yani ön koşul YOK. Soluk bir satır ve
+"önce şunu aç" yazısı, kullanıcı için "çalışmıyor" demektir.
+Ölçüldü (canlı): `#btyAmt` opacity 1 ama kapsayıcı 0.45, kapı metni
+"kompozit açık olmalı". Sürgü kutunun **dışına** alındı; renk filtresi
+gerçekten kompozite bağlı olduğu için o kutuda **kaldı**.
+
+**③ Hızlı erişim düğmesi ekrandaki TEK adsız düğmeydi.** Sahnenin sağ üstünde
+duruyor ama ikonu üç nokta ve altında ad yok; alt çubuktaki altı düğmenin
+hepsinin altında adı yazıyor. Artık altında **"Hızlı"** yazıyor, aynı
+`data-etiket` mekanizmasından — odak kipinde o da susuyor.
+
+**Kendi testlerim iki kez yanlış tarafta durdu:**
+`tests/192` *"güzellik kompozit kutusunun İÇİNDE"* diye kilitlemişti — yanlış
+tasarımı teste yazmışım. `tests/72` de aynısını söylüyordu **ve üstelik
+ölçmüyordu bile**: bloğu "son `</div>`e kadar" kesiyordu, blokta bir ipucu
+`<div>`i olduğu anda kesim bloğun DIŞINI de içine alıyordu — sürgüyü dışarı
+taşıdığım hâlde iddia yine geçti. Kesim iç içe `div` sayacak hâle getirildi ve
+iki iddia da **tersine** çevrildi, gerekçesi yazıldı.
+
+Yeni kural olarak eklendi: kart adı güzelliği söylemeli · düğmenin görünen
+adı olmalı · gerçekten ön koşulu olmayan ayar gölgelenmemeli. 3 yeni bozma.
+
 ## 🟢 19 Ağustos — v9.34 YAYINLANDI ve canlıdan doğrulandı (`sufle-v106`), Erdal onayıyla
 
 **Doğrulama:** `index.html` ve `sw.js` md5 birebir (`b6c55036…` /

@@ -120,6 +120,11 @@ AYNALAR = [
     # dosya masaüstündeki kopyadır; bayat sunucu = bayat güvenlik.
     ("Mac sunucusu",    "mac/teleprompter_server.py", "~/Desktop/Teleprompter/teleprompter_server.py"),
     ("Windows sunucusu","mac/teleprompter_server.py", "~/Desktop/Teleprompter-Windows/teleprompter_server.py"),
+    # BAŞLATICILAR DA AYNA (2026-08-19). Windows başlatıcısı YALNIZ masaüstünde
+    # duruyordu ve disk temizliğinde kayboldu — depoda olmayan dosya, yedeği
+    # olmayan dosyadır. İkisi de artık depoda ve burada karşılaştırılıyor.
+    ("Mac başlatıcısı", "mac/Teleprompter Sunucu.command", "~/Desktop/Teleprompter/Teleprompter Sunucu.command"),
+    ("Windows başlatıcısı", "windows/Teleprompter Baslat.bat", "~/Desktop/Teleprompter-Windows/Teleprompter Baslat.bat"),
 ]
 for ad, kanon, ayna in AYNALAR:
     ayna = os.path.expanduser(ayna)

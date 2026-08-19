@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 19 Ağustos — v9.34 YAYINLANDI ve canlıdan doğrulandı",
+  "bul": "## 🔴 19 Ağustos — **v9.35 hazır · henüz yayınlanmadı**",
   "koy": "## 19 Ağustos — bir şeyler yapıldı"
  },
  {
@@ -4634,11 +4634,11 @@
   "koy": "    ('telefon-hzl',      TELEFON, 430, 932, 3,"
  },
  {
-  "ad": "v9.33 güzellik sürgüsü kompozit bloğunun dışında",
+  "ad": "v9.35 güzellik sürgüsü tekrar kompozit bloğunun İÇİNDE (soluk görünür, kullanıcı yok sanır)",
   "test": "72-olu-chroma-ayarlari.js",
   "kaynak": "telefon",
-  "bul": "    <input type=\"range\" data-aria=\"btyAmt\" id=\"btyAmt\" min=\"0\" max=\"100\" value=\"0\">",
-  "koy": "    <!-- güzellik sürgüsü bloğun dışına alındı -->"
+  "bul": "    </div>\n    <!-- 🔴 GÜZELLİK KOMPOZİT BAĞIMLI KUTUNUN DIŞINDA",
+  "koy": "    <!-- 🔴 GÜZELLİK KOMPOZİT BAĞIMLI KUTUNUN DIŞINDA"
  },
  {
   "ad": "v9.34 etiket anahtarı Türkçe İ'yi katlamıyor",
@@ -5031,5 +5031,19 @@
   "kaynak": "kayit_olcum",
   "bul": "    acik = os.environ.get('SUFLE_TELEFON')",
   "koy": "    acik = None"
+ },
+ {
+  "ad": "v9.35 kart adı güzelliği söylemiyor (kullanıcı tararken bulamaz)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "vfxTitle:'Filtre ve güzellik'",
+  "koy": "vfxTitle:'Görüntü filtresi'"
+ },
+ {
+  "ad": "v9.35 hızlı erişim düğmesi yine adsız (ekrandaki tek adsız düğme)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "          data-i18n-etiket=\"hizliEt\" data-etiket=\"Hızlı\">",
+  "koy": "          >"
  }
 ]

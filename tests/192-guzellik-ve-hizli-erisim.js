@@ -28,8 +28,29 @@ ok('güzellik kompoziti kendisi açıyor', /if\(\(st\.vidFx==='off' && !\(st\.bt
 ok('güzellik sürgüsü arayüzde var', /id="btyAmt"[^>]*min="0" max="100"/.test(src));
 ok('sürgünün erişilebilir adı var', /btyAmt:'Güzellik miktarı'/.test(src) && /btyAmt:'Beauty amount'/.test(src));
 ok('güzellik etiketi iki dilde', /btyL:'Güzellik \(yüz yumuşatma\)'/.test(src) && /btyL:'Beauty \(skin smoothing\)'/.test(src));
-ok('kompozit bağımlılık kutusunun İÇİNDE', src.indexOf('id="btyAmt"')>src.indexOf('id="vfxDeps"') &&
-   src.indexOf('id="btyAmt"')<src.indexOf('data-i18n="vfxHint"'));
+/* 🔴 v9.33'te bu iddia "kompozit kutusunun İÇİNDE" diyordu ve yanlıştı:
+   güzellik boru hattını kendisi açtığı için onun ön koşulu YOK, ama kutunun
+   içinde durduğu sürece soluk görünüyor ve "kompozit açık olmalı" yazıyordu.
+   Kullanıcı için bu "özellik yok" demek — canlı uygulamada tam böyle oldu.
+   Yeni kural: güzellik AYNI KARTTA ama kapının dışında. */
+ok('güzellik kutunun DIŞINDA ama aynı kartta',
+   src.indexOf('id="btyAmt"')>src.indexOf('id="vfxDeps"') &&
+   src.indexOf('id="btyAmt"')<src.indexOf('data-i18n="vfxHint"') &&
+   src.indexOf('id="btyAmt"')>src.indexOf('id="vidAmt"'));
+/* Kart adı güzelliği SÖYLEMELİ: kullanıcı ayarları tarayarak arar ve
+   "Görüntü filtresi" başlığı altında güzellik olduğunu tahmin edemez
+   (jargon = görünmezlik, deponun 4 numaralı kuralı). */
+ok('kart adı güzelliği söylüyor',
+   /vfxTitle:'Filtre ve güzellik'/.test(src) && /vfxTitle:'Filter and beauty'/.test(src));
+/* 🔴 ADSIZ DÜĞME = GÖRÜNMEZ ÖZELLİK. Hızlı erişim, sahnedeki TEK adsız
+   düğmeydi ve ikonu üç nokta; alt çubuktaki altı düğmenin hepsinin altında
+   adı yazıyor. Erdal "hızlı erişim görünmüyor" dedi — düğme oradaydı, adı
+   yoktu. Etiket alt çubukla AYNI mekanizmadan (`data-etiket`) geliyor. */
+ok('hızlı erişim düğmesinin görünen adı var',
+   /id="hizliBtn"[\s\S]{0,240}?data-etiket="Hızlı"/.test(src));
+ok('adı iki dilde tanımlı',
+   /hizliEt:'Hızlı'/.test(src) && /hizliEt:'Quick'/.test(src));
+ok('adı odak kipinde susuyor', /body\.hideUI #hizliBtn::after\{content:''\}/.test(src));
 
 /* ===== HIZLI ERİŞİM ===== */
 const hz=src.slice(src.indexOf('function hizliKapat()'), src.indexOf('/* ===== SESLİ TAKİPTE'));

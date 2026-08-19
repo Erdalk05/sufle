@@ -170,18 +170,39 @@ function kapiKos({chroma, burnCaps, comp, compOn}){
      etiketini AŞIYORDU: sürgüyü bloğun dışına taşıyan kasıtlı bozma
      yakalanmadı, yani test ayırt etmiyordu. Blok, kendisinden sonraki ilk
      ipucuna (filtre açıklaması) kadar kesilip İÇİNE bakılıyor. */
+  /* 🔴 KESME ARTIK İÇ İÇE DİV SAYIYOR (2026-08-19). Eski hâli "vfxHint'e
+     kadar oku, SON `</div>`e kadar kes" diyordu; blokta bir `<div class=hint>`
+     bulunduğu anda son kapanış O ipucununki oluyor ve kesilen parça bloğun
+     DIŞINDAKİ ögeleri de içine alıyordu. Sonuç: güzellik sürgüsü bloğun
+     dışına taşındığı hâlde iddia YİNE geçti — yani test kendi kesme
+     hatası yüzünden yanlış şeyi ölçüyordu. */
   const iBas = tel2.indexOf('<div id="vfxDeps">');
-  const iSon = tel2.indexOf('data-i18n="vfxHint"', iBas);
-  const blokIci = (iBas >= 0 && iSon > iBas) ? tel2.slice(iBas, iSon) : '';
-  const kapanis = blokIci.lastIndexOf('</div>');
-  const icerik = kapanis >= 0 ? blokIci.slice(0, kapanis) : blokIci;
+  const icerik = (()=>{
+    if(iBas < 0) return '';
+    let derinlik = 0, i = iBas;
+    const acik = /<div\b/g, kapa = /<\/div>/g;
+    while(i < tel2.length){
+      acik.lastIndex = i; kapa.lastIndex = i;
+      const a2 = acik.exec(tel2), k2 = kapa.exec(tel2);
+      if(!k2) return tel2.slice(iBas);
+      if(a2 && a2.index < k2.index){ derinlik++; i = a2.index + 4; }
+      else { derinlik--; if(derinlik === 0) return tel2.slice(iBas, k2.index); i = k2.index + 6; }
+    }
+    return tel2.slice(iBas);
+  })();
   ok('blok kesilebildi', !!icerik);
   ok('segment bloğun içinde', /id="vfxSeg"/.test(icerik));
   ok('sürgü de bloğun içinde', /id="vidAmt"/.test(icerik));
-  /* v9.33: güzellik sürgüsü de AYNI bloğun içinde olmalı. Dışına çıkarsa
-     kompozit kapalıyken sürüklenebilir ama hiçbir şey yapmaz — segment ve
-     `vidAmt` için düzeltilen kusurun aynısı, yeni denetimde tekrar ederdi. */
-  ok('güzellik sürgüsü de bloğun içinde', /id="btyAmt"/.test(icerik));
+  /* 🔴 KARAR DEĞİŞTİ (2026-08-19) — v9.33'te bu iddia TERSİNİ söylüyordu ve
+     YANLIŞTI. Güzellik gereken boru hattını KENDİSİ açıyor (`ensureCompVfx`),
+     yani onun için "kompozit açık olmalı" diye bir ön koşul YOK. Bloğun
+     içinde durduğu sürece satır soluklaşıyor ve "önce şunu aç" yazıyordu;
+     Erdal canlı uygulamada tam bu yüzden "güzellik görünmüyor" dedi.
+     Renk filtresi (segment + `vidAmt`) gerçekten kompozite bağlı, o blokta
+     KALIYOR. Yani kural değişmedi: gerçekten ön koşulu olan gölgelenir,
+     olmayan gölgelenmez. */
+  ok('güzellik sürgüsü bloğun DIŞINDA (kendi ön koşulunu sağlıyor)',
+     !/id="btyAmt"/.test(icerik) && /id="btyAmt"/.test(tel2));
   ok('blok kuralı kompozitin gerçekten koştuğuna bakıyor',
      /'#vfxDeps',\s+\(\)=>!!\(st\.comp&&comp\.on\)/.test(mGate[0]));
   /* Seçim yapmak AÇIK bir istektir: koşulu kendimiz sağlıyoruz (burnCaps ve
