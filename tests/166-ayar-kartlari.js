@@ -1,6 +1,13 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const path=require('path');
 const {telefonYolu,oku,repoOku}=require('./kaynak');
+/* v9.37: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co3}=require('./kaynak.js');
+const SOZ_T=_co3('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -201,7 +208,8 @@ function kur(kartlar){
 function kosturr(kartNesneleri){
   const koklar=kur(kartNesneleri);
   new Function('__k','__stil', `
-    const L='tr';
+    ${SOZ_T}
+    globalThis.L='tr';
     ${mFold[0]}
     ${mNorm[0]}
     ${mZincir[0]}

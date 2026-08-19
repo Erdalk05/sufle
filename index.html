@@ -2221,7 +2221,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.37';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.38';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2497,6 +2497,22 @@ const I18N={
   asKisik:'Ses çok kısık — mikrofona yaklaş',asIyi:'Ses seviyesi iyi',
   rcKelime:'Okunacak kelime',rcCumle:'Cümle / ortalama uzunluk',rcTemiz:'Temiz görünüyor',
   rnCihaz:' — cihaz bu kadarını verdi',rnMik:'Mikrofon ',
+  /* Kumanda tanısı, izin yolu ve küçük durum metinleri (2026-08-20, tests/197). */
+  krBas:'Kumandandaki bir tuşa bas — gelen tuşu buraya yazacağım…',
+  krYazida:'<b>Tuşlar bir yazı kutusuna gidiyor.</b> Bu panelde metin kutusu var (tetik kelimesi); imleç oradayken kumandanın tuşları yazı olarak gidiyor.<br><br>Kutunun dışına bir kez dokun, sonra kumandaya tekrar bas.',
+  krYok:'<b>Hiç tuş gelmedi.</b> En yaygın sebep: ucuz kumandalar <b>Ses Aç / Ses Kıs</b> tuşu gönderir; iPhone ve Android bu tuşları tarayıcıya <b>hiç vermez</b>. Bu bir uygulama hatası değil, işletim sistemi sınırı.<br><br><b>Çalışanlar:</b> klavye modundaki (HID keyboard) sunum kumandaları, sayfa çevirici pedallar, Bluetooth klavyeler. Kutusunda “PowerPoint / Keynote sunum kumandası” yazanlar genelde çalışır.<br><br><b>Kumandan yoksa:</b> <b>sesli komut</b> aynı işi görür — “sufle başla”, “sufle dur”, “sufle hızlan”, “sufle başa dön”.',
+  izIos:'Ayarlar → {t} → Kamera → İzin ver, sonra sayfayı yenile',
+  izAndroid:'adres çubuğundaki kilit simgesi → İzinler → Kamera → İzin ver, sonra sayfayı yenile',
+  izMasa:'adres çubuğundaki kamera/kilit simgesinden izin ver, sonra sayfayı yenile',
+  tpOlculen:'Ölçülen tempon: ',tpUygula:'uygula',
+  vdKonusuyor:'konuşuyor',vdSessiz:'sessiz',
+  svIzinYok:'Mikrofon izni yok.',
+  svIzinYol:'iPhone: <b>Ayarlar → Safari → Mikrofon → Sor/İzin ver</b>, sonra sayfayı yenile.<br>Sayfa içi izin kutusu bir kez reddedilince tekrar çıkmaz — ayardan açman gerekiyor.',
+  vbKayip:'Metni bulamıyorum — okuduğun yeri parmakla göster',vbTakip:'Takip ediyor',
+  ozAcikN:'{a}/{t} açık',
+  scYeni:'Yeni senaryo',scBasliksiz:'Başlıksız senaryo',scOrnek:'Örnek metin',
+  stKelime:' kelime · ~',
+  tkBitti:'bitti — kaydı durdur',
   duzeyL:'Ayar düzeyi',duzeyTemel:'Temel',duzeyIleri:'Gelişmiş',
   duzeyHint:'Temel akışta uzman kartları gizli — hiçbir ayar kaybolmuyor, Gelişmiş\'e geçince {n} kart geri geliyor. Arama her iki düzeyde de hepsini buluyor.',
   scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
@@ -2764,6 +2780,21 @@ const I18N={
   asKisik:'Audio very quiet — get closer to the mic',asIyi:'Audio level good',
   rcKelime:'Words to read',rcCumle:'Sentences / avg length',rcTemiz:'Looks clean',
   rnCihaz:' — this is what the device gave',rnMik:'Mic ',
+  krBas:'Press a button on your remote — I will print the key here…',
+  krYazida:'<b>Keys are going into a text box.</b> This panel has a text field (your trigger word); while the cursor sits there, remote keys are typed as text.<br><br>Tap outside the box once, then press the remote again.',
+  krYok:'<b>No key received.</b> Most likely your clicker sends <b>Volume Up / Down</b>; iOS and Android never pass those keys to a browser. This is an OS limit, not an app bug.<br><br><b>What works:</b> HID-keyboard presenters, page-turner pedals, Bluetooth keyboards — anything sold as a “PowerPoint / Keynote presenter”.<br><br><b>No clicker?</b> <b>voice commands</b> do the same job: “prompter start”, “prompter stop”, “prompter faster”, “prompter rewind”.',
+  izIos:'Settings → {t} → Camera → Allow, then reload',
+  izAndroid:'lock icon in the address bar → Permissions → Camera → Allow, then reload',
+  izMasa:'use the camera/lock icon in the address bar to allow, then reload',
+  tpOlculen:'Your measured pace: ',tpUygula:'apply',
+  vdKonusuyor:'speaking',vdSessiz:'silent',
+  svIzinYok:'Microphone permission denied.',
+  svIzinYol:'iPhone: <b>Settings → Safari → Microphone → Ask/Allow</b>, then reload. Once denied, the in-page prompt never reappears.',
+  vbKayip:'Lost the text — tap where you are',vbTakip:'Following',
+  ozAcikN:'{a}/{t} on',
+  scYeni:'New script',scBasliksiz:'Untitled script',scOrnek:'Sample script',
+  stKelime:' words · ~',
+  tkBitti:'done — stop recording',
   duzeyL:'Setting level',duzeyTemel:'Basic',duzeyIleri:'Advanced',
   duzeyHint:'Expert cards are hidden in Basic — nothing is lost; switching to Advanced brings {n} cards back. Search finds everything at either level.',
   scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
@@ -3503,7 +3534,7 @@ function load(){
     if(mm && mm.matches) st.hicon=true;
   }
   if(!Array.isArray(st.scripts)||!st.scripts.length){
-    st.scripts=[{id:uid(),title:L==='tr'?'Örnek metin':'Sample script',text:L==='tr'?DEMO_TR:DEMO_EN,up:Date.now()}];
+    st.scripts=[{id:uid(),title:t('scOrnek'),text:L==='tr'?DEMO_TR:DEMO_EN,up:Date.now()}];
     st.activeId=st.scripts[0].id;
   }
   if(!st.scripts.find(s=>s.id===st.activeId)) st.activeId=st.scripts[0].id;
@@ -3812,7 +3843,7 @@ function countWords(txt){
     return n+r.replace(/\{[^}]*\}/g,'').split(/\s+/).filter(Boolean).length;
   },0);
 }
-function statLine(n){ return n+(L==='tr'?' kelime · ~':' words · ~')+clock(n/st.wpm*60); }
+function statLine(n){ return n+t('stKelime')+clock(n/st.wpm*60); }
 function updateStats(){
   const el=$('#stats'); if(el) el.textContent=statLine(countWords($('#text').value||active().text||''));
   introSenaryoYaz();
@@ -3832,7 +3863,7 @@ function introSenaryoYaz(){
   const n=metin? countWords(metin) : 0;
   if(!n){ k.classList.add('hidden'); return; }
   const ad=(s.title||'').trim();
-  $('#introSenAd').textContent = ad || (L==='tr'?'Başlıksız senaryo':'Untitled script');
+  $('#introSenAd').textContent = ad || t('scBasliksiz');
   $('#introSenOlcu').textContent = statLine(n);
   k.classList.remove('hidden');
 }
@@ -3888,7 +3919,7 @@ function tick(now){
       for(const sc of sections){
         if(pos<sc.endPos && next>=sc.endPos){
           setPos(sc.endPos); stop();
-          toast('🎬 '+sc.title+' '+(L==='tr'?'bitti — kaydı durdur':'done — stop recording')); return;
+          toast('🎬 '+sc.title+' '+t('tkBitti')); return;
         }
       }
     }
@@ -7590,15 +7621,16 @@ function izinYolu(){
   const u=navigator.userAgent;
   if(/iphone|ipad|ipod/i.test(u)){
     // iOS'ta üçüncü parti tarayıcıların KENDİ Ayarlar girdisi var
-    const t=/crios/i.test(u)?'Chrome':/fxios/i.test(u)?'Firefox':/edgios/i.test(u)?'Edge':'Safari';
-    return L==='tr' ? 'Ayarlar → '+t+' → Kamera → İzin ver, sonra sayfayı yenile'
-                    : 'Settings → '+t+' → Camera → Allow, then reload';
+    /* Yerel değişken `tar`: eskiden `t` idi ve sözlük fonksiyonunu GÖLGELİYORDU.
+       Metni sözlüğe taşırken `window.t(...)` yazmak zorunda kalmıştım — oysa
+       uygulama bir IIFE içinde, `window.t` diye bir şey YOK: satır çalışma
+       anında çökerdi. Gölgeleme kaldırıldı. */
+    const tar=/crios/i.test(u)?'Chrome':/fxios/i.test(u)?'Firefox':/edgios/i.test(u)?'Edge':'Safari';
+    return srY(t('izIos'),{t:tar});
   }
   if(/android/i.test(u))
-    return L==='tr' ? 'adres çubuğundaki kilit simgesi → İzinler → Kamera → İzin ver, sonra sayfayı yenile'
-                    : 'lock icon in the address bar → Permissions → Camera → Allow, then reload';
-  return L==='tr' ? 'adres çubuğundaki kamera/kilit simgesinden izin ver, sonra sayfayı yenile'
-                  : 'use the camera/lock icon in the address bar to allow, then reload';
+    return t('izAndroid');
+  return t('izMasa');
 }
 function platformName(){
   const u=navigator.userAgent;
@@ -8092,8 +8124,8 @@ function measureTempo(){
 function renderTempo(){
   const b=$('#tempoBtn'); if(!b) return;
   b.classList.toggle('hidden',!measuredWpm);
-  if(measuredWpm) b.textContent=(L==='tr'?'⏱ Ölçülen tempon: ':'⏱ Your measured pace: ')+measuredWpm+' wpm — '+
-    (L==='tr'?'uygula':'apply');
+  if(measuredWpm) b.textContent='⏱ '+t('tpOlculen')+measuredWpm+' wpm — '+
+    t('tpUygula');
 }
 
 /* ============ SENARYOLAR ============ */
@@ -8372,7 +8404,7 @@ function vadBaslat(){
       vad.sesli=k.sesli;
       if(vad.sesli && !running && !counting && !voiceOn) start();
       else if(!vad.sesli && vad.bosluk>=5 && running && !voiceOn) stop();
-      const el=$('#vadState'); if(el) el.textContent = vad.sesli ? (L==='tr'?'konuşuyor':'speaking') : (L==='tr'?'sessiz':'silent');
+      const el=$('#vadState'); if(el) el.textContent = vad.sesli ? t('vdKonusuyor') : t('vdSessiz');
     },100);
     renderVad();
   }catch(e){ logErr('vad',e); st.vad=false; apply(); save(); }
@@ -8530,9 +8562,8 @@ function startVoice(){
     if(er==='not-allowed'||er==='service-not-allowed'){
       stopVoice();
       const o=$('#voiceTestOut');
-      if(o) o.innerHTML='⚠️ <b>'+(L==='tr'?'Mikrofon izni yok.':'Microphone permission denied.')+'</b><br>'+
-        (L==='tr'? 'iPhone: <b>Ayarlar → Safari → Mikrofon → Sor/İzin ver</b>, sonra sayfayı yenile.<br>Sayfa içi izin kutusu bir kez reddedilince tekrar çıkmaz — ayardan açman gerekiyor.'
-                 : 'iPhone: <b>Settings → Safari → Microphone → Ask/Allow</b>, then reload. Once denied, the in-page prompt never reappears.');
+      if(o) o.innerHTML='⚠️ <b>'+t('svIzinYok')+'</b><br>'+
+        t('svIzinYol');
       toast(m('micDenied')); return;
     }
     if(er&&er!=='no-speech'&&er!=='aborted') logErr('voice',er);
@@ -8734,8 +8765,8 @@ function setVoiceBadge(k){
   if(k===vBadge) return; vBadge=k;
   const b=$('#voiceBtn'); if(!b) return;
   b.classList.toggle('lost', k==='lost');
-  b.title = k==='lost' ? (L==='tr'?'Metni bulamıyorum — okuduğun yeri parmakla göster':'Lost the text — tap where you are')
-                       : (L==='tr'?'Takip ediyor':'Following');
+  b.title = k==='lost' ? t('vbKayip')
+                       : t('vbTakip');
 }
 function matchVoice(spoken){
   if(voicePaused||!normWords.length) return;
@@ -9366,9 +9397,8 @@ function ozetCiz(){
         .map(t=>t.querySelector('.sw')).filter(Boolean);
       const n=sw.filter(s=>s.classList.contains('on')).length;
       // Tek anahtarlı kartta "1/1 açık" saymak gülünç; orada durum yeter.
-      if(sw.length===1) ekle(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));
-      else if(sw.length) ekle(L==='tr' ? n+'/'+sw.length+' açık'
-                                       : n+'/'+sw.length+' on');
+      if(sw.length===1) ekle(n ? t('hzAcik') : t('hzKapali'));
+      else if(sw.length) ekle(srY(t('ozAcikN'),{a:n, t:sw.length}));
     }
     const o=g.querySelector('.ozet'); if(o) ozetSigdir(o,parca,cekirdek);
   });
@@ -10810,22 +10840,17 @@ function armRemoteWatch(){
   const d=$('#remoteDiag'); if(!d) return;
   gotKey=false; yazidaYutuldu=false;
   yollariYaz();
-  d.textContent = L==='tr' ? 'Kumandandaki bir tuşa bas — gelen tuşu buraya yazacağım…'
-                           : 'Press a button on your remote — I will print the key here…';
+  d.textContent = t('krBas');
   remoteWatch=setTimeout(()=>{
     if(gotKey) return;
     /* Tuş geldi ama yazı alanına düştüyse sebep işletim sistemi DEĞİL. Yanlış
        tarif, hiç tarif olmamasından kötü: kullanıcı kumandasını suçlayıp
        yenisini alır, oysa tek yapması gereken kutunun dışına dokunmak. */
     if(yazidaYutuldu){
-      d.innerHTML = L==='tr'
-        ? '⌨️ <b>Tuşlar bir yazı kutusuna gidiyor.</b> Bu panelde metin kutusu var (tetik kelimesi); imleç oradayken kumandanın tuşları yazı olarak gidiyor.<br><br>Kutunun dışına bir kez dokun, sonra kumandaya tekrar bas.'
-        : '⌨️ <b>Keys are going into a text box.</b> This panel has a text field (your trigger word); while the cursor sits there, remote keys are typed as text.<br><br>Tap outside the box once, then press the remote again.';
+      d.innerHTML = '⌨️ '+t('krYazida');
       return;
     }
-    d.innerHTML = L==='tr'
-      ? '⚠️ <b>Hiç tuş gelmedi.</b> En yaygın sebep: ucuz kumandalar <b>Ses Aç / Ses Kıs</b> tuşu gönderir; iPhone ve Android bu tuşları tarayıcıya <b>hiç vermez</b>. Bu bir uygulama hatası değil, işletim sistemi sınırı.<br><br><b>Çalışanlar:</b> klavye modundaki (HID keyboard) sunum kumandaları, sayfa çevirici pedallar, Bluetooth klavyeler. Kutusunda “PowerPoint / Keynote sunum kumandası” yazanlar genelde çalışır.<br><br><b>Kumandan yoksa:</b> <b>sesli komut</b> aynı işi görür — “sufle başla”, “sufle dur”, “sufle hızlan”, “sufle başa dön”.'
-      : '⚠️ <b>No key received.</b> Most likely your clicker sends <b>Volume Up / Down</b>; iOS and Android never pass those keys to a browser. This is an OS limit, not an app bug.<br><br><b>What works:</b> HID-keyboard presenters, page-turner pedals, Bluetooth keyboards — anything sold as a “PowerPoint / Keynote presenter”.<br><br><b>No clicker?</b> <b>voice commands</b> do the same job: “prompter start”, “prompter stop”, “prompter faster”, “prompter rewind”.';
+    d.innerHTML = '⚠️ '+t('krYok');
   },6000);
 }
 function flashKey(k,act){
@@ -10857,7 +10882,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.37':{tr:'🌍 <b>Arayüz metinlerinin çoğu tek kaynağa taşındı.</b> Sesle takip öz-testi, ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi ve kamera notları artık sözlükten okunuyor. Senin için görünen fark: <b>dili değiştirdiğinde bu ekranlar da anında değişiyor</b> ve iki dil arasında eksik bilgi kalmıyor. Perde arkasında üçüncü bir arayüz dilinin önü açılıyor: sözlüğü atlayan metin sayısı 172den 50ye indi.',en:'🌍 <b>Most interface texts now come from a single source.</b> The voice self-test, audio verdict, speakability summary, voice-follow strip and camera notes all read from the dictionary. What you notice: <b>switching language now updates these screens instantly</b> and neither language is missing information the other has. Behind the scenes this clears the way for a third interface language: texts bypassing the dictionary went from 172 down to 50.'},'9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.38':{tr:'🌍 <b>Sözlüğü atlayan metin 50den 30a indi.</b> Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü ve senaryo adı yedekleri de tek kaynağa geçti. <b>Yol boyunca bir çökme hatası da yakalandı:</b> izin tarifini yazan fonksiyonda yerel bir değişken sözlük fonksiyonunu gölgeliyordu — o satır çalışma anında hata verecekti.',en:'🌍 <b>Texts bypassing the dictionary went from 50 down to 30.</b> The clicker diagnostic, camera permission directions, voice-follow badge, pace measurement and script name fallbacks now read from a single source. <b>A crash was caught on the way:</b> in the permission-path function a local variable shadowed the translation helper, so that line would have thrown at runtime.'},'9.37':{tr:'🌍 <b>Arayüz metinlerinin çoğu tek kaynağa taşındı.</b> Sesle takip öz-testi, ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi ve kamera notları artık sözlükten okunuyor. Senin için görünen fark: <b>dili değiştirdiğinde bu ekranlar da anında değişiyor</b> ve iki dil arasında eksik bilgi kalmıyor. Perde arkasında üçüncü bir arayüz dilinin önü açılıyor: sözlüğü atlayan metin sayısı 172den 50ye indi.',en:'🌍 <b>Most interface texts now come from a single source.</b> The voice self-test, audio verdict, speakability summary, voice-follow strip and camera notes all read from the dictionary. What you notice: <b>switching language now updates these screens instantly</b> and neither language is missing information the other has. Behind the scenes this clears the way for a third interface language: texts bypassing the dictionary went from 172 down to 50.'},'9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
@@ -11622,7 +11647,7 @@ function muzikAnahtari(){
   if(txt) txt.textContent = acik ? (mk.ad||t('muzikSes'))
     : (d.sebep==='ios' ? t('muzikIosKisa') : d.sebep==='ham' ? t('muzikHamKisa')
       : d.sebep==='fxKapali' ? t('muzikFxKisa')
-      : d.sebep==='dosyaYok' ? t('muzikYokKisa') : (L==='tr'?'kapalı':'off'));
+      : d.sebep==='dosyaYok' ? t('muzikYokKisa') : t('hzKapali'));
 }
 $('#logoPick').onclick=()=>$('#logoFile').click();
 $('#logoFile').onchange=e=>{
@@ -11663,7 +11688,7 @@ $('#title').oninput=()=>{ pullEditor(); renderScripts(); };
 $('#scTags').onchange=()=>{ pullEditor(); renderScripts(); };
 $('#text').oninput=()=>{ pullEditor(); updateStats(); };
 $('#saveScript').onclick=()=>{ pullEditor(); buildContent(); reset(); renderScripts(); closeSheets(); };
-$('#newScript').onclick=()=>{ rememberPos(); pullEditor(); const s={id:uid(),title:L==='tr'?'Yeni senaryo':'New script',text:'',up:Date.now()};
+$('#newScript').onclick=()=>{ rememberPos(); pullEditor(); const s={id:uid(),title:t('scYeni'),text:'',up:Date.now()};
   st.scripts.unshift(s); st.activeId=s.id; save(); fillEditor(); renderScripts(); buildContent(); $('#text').focus(); };
 /* VERİ KAYBI: silme tek dokunuştu — onay yok, geri dönüş yok. Saatlerce yazılan metin
    yanlışlıkla tek dokunuşla gidiyordu. Artık iki aşamalı onay + geri alma var. */

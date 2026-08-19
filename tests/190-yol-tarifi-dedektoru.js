@@ -69,6 +69,13 @@ ok('etiketin kısaltılmış hâli kabul ediliyor', !/yere gönderiyor/.test(kis
 /* AYIRT EDİCİ VAKA: yukarıdaki tarif `icerir` ile de geçiyor (etiket tarifin
    İÇİNDE bütün hâlde). Kısaltma kuralı ancak tarif etiketten KISA olduğunda
    gerekiyor: gerçek etiket parantezli uzun hâli, tarif ise sade hâli. */
+/* YER TUTUCULU TARİF DOĞRULANAMAZ (2026-08-19). Metin sözlüğe taşınınca
+   değişken parça `{t}` olarak duruyor (ör. tarayıcı adı) ve gerçek değeri
+   ancak çalışma anında biliniyor. Dedektör onu "var olmayan bir yer" sayarsa
+   YALANCI KIRMIZI verir — ölçemediği şeyi kusur bildirmek aracın kendi
+   kusuru olur. Sınır burada yazılı ve ölçülü. */
+const yerTutucu=kos(kabuk('Ayarlar → {t} → Kamera'));
+ok('yer tutuculu tarif yalancı alarm vermiyor', !/yere gönderiyor/.test(yerTutucu));
 const kisa2=kos(kabuk('Ayarlar → Ses → Güvenli ses modu'));
 ok('tarif etiketin kısaltılmış hâliyse kabul ediliyor', !/yere gönderiyor/.test(kisa2));
 

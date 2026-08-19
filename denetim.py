@@ -492,6 +492,14 @@ def yol_tarifi_denetimi(src, js):
         parcalar = [x for x in parcalar if x]
         if len(parcalar) < 2:
             continue
+        # YER TUTUCULU TARİF DOĞRULANAMAZ (2026-08-19). Metin sözlüğe taşındığında
+        # değişken parça `{t}` olarak duruyor (ör. tarayıcı adı) ve gerçek değeri
+        # ancak çalışma anında biliniyor. Dedektör onu "var olmayan bir yer" sayıp
+        # YALANCI KIRMIZI veriyordu; ölçemediği bir şeyi kusur bildirmek, aracın
+        # kendi kusuru olur. Yer tutucu taşıyan tarif atlanıyor ve bu SINIR
+        # burada yazılı — sessizce geçmek ile ölçmek arasındaki fark budur.
+        if any("{" in p and "}" in p for p in parcalar):
+            continue
         kok = parcalar[0].split()[-1] if parcalar[0].split() else ""
         if kok not in KOKLER:
             continue                      # bizim yolumuz değil

@@ -2,7 +2,30 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟢 20 Ağustos gecesi — v9.37 YAYINLANDI ve canlıdan doğrulandı (`sufle-v109`) — SÖZLÜK CIRCIRI 84 → 50
+## 🔴 20 Ağustos gecesi — **v9.38 hazır · henüz yayınlanmadı** — CIRCIR 50 → 30 + BİR ÇÖKME
+
+Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü,
+nefesle akış durumu ve senaryo adı yedekleri sözlüğe taşındı.
+
+**🔴 Taşırken gerçek bir ÇÖKME hatası yakalandı.** `izinYolu()` içinde yerel
+bir değişkenin adı `t` idi ve **sözlük fonksiyonunu gölgeliyordu**. Metni
+sözlüğe taşırken bu yüzden `window.t(...)` yazmak zorunda kalmıştım — oysa
+uygulama bir IIFE içinde ve `window.t` diye bir şey YOK: kamera izni
+reddedilen kullanıcı, tarifi göreceği yerde **çalışma zamanı hatası**
+alacaktı. Değişken `tar` oldu.
+*Ders: gölgeleyen bir yerel ad, taşıma sırasında sessizce yanlış çağrı
+yazdırıyor — testler onu ancak o dal koşarsa görür.*
+
+**Dedektörün yeni sınırı yazılı:** yer tutuculu tarifler (`Ayarlar → {t} →
+Kamera`) doğrulanamaz, çünkü değişken parçanın gerçek değeri ancak çalışma
+anında bilinir. Dedektör onları "var olmayan yer" sayıp yalancı kırmızı
+veriyordu; artık atlıyor ve bu sınır `tests/190`da ölçülü.
+
+**Beş tezgâh daha gerçek sözlüğü yükler hâle geldi** (`tests/52`, `76`, `166`,
+`169` ve öncekiler): sahte metin uyduran bir tezgâh, sözlükten silinen
+anahtarı sessizce geçirir.
+
+## 20 Ağustos gecesi — v9.37 turu: sözlük cırcırı 84 → 50 (yayınlandı)
 
 **Canlı doğrulama:** md5 birebir (`b423ccc5…` / `c60d9ea7…`) · `canli.py` üç
 genişlikte temiz · izler canlıdan sayıldı (`vtDinliyor` 3 · `asKirpma` 3 ·

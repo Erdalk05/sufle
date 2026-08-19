@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 20 Ağustos gecesi — v9.37 YAYINLANDI ve canlıdan doğrulandı",
+  "bul": "## 🔴 20 Ağustos gecesi — **v9.38 hazır · henüz yayınlanmadı**",
   "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
  },
  {
@@ -2341,8 +2341,8 @@
   "ad": "izin kurtarma yolu tarayıcıyı ayırt etmiyor (yanlış yol tarif edilir)",
   "test": "52-izin-kurtarma-yolu.js",
   "kaynak": "telefon",
-  "bul": "    const t=/crios/i.test(u)?'Chrome':/fxios/i.test(u)?'Firefox':/edgios/i.test(u)?'Edge':'Safari';",
-  "koy": "    const t='Safari';"
+  "bul": "    const tar=/crios/i.test(u)?'Chrome':/fxios/i.test(u)?'Firefox':/edgios/i.test(u)?'Edge':'Safari';",
+  "koy": "    const tar='Safari';"
  },
  {
   "ad": "sürüm sıralaması metin olarak yapılıyor (10.0 < 9.1 sanılır)",
@@ -2796,7 +2796,7 @@
   "ad": "tek anahtarlı kart '1/1 açık' diyor (durum yerine sayım)",
   "test": "166-ayar-kartlari.js",
   "kaynak": "telefon",
-  "bul": "      if(sw.length===1) ekle(n ? (L==='tr'?'Açık':'On') : (L==='tr'?'Kapalı':'Off'));\n      else if(sw.length)",
+  "bul": "      if(sw.length===1) ekle(n ? t('hzAcik') : t('hzKapali'));\n      else if(sw.length)",
   "koy": "      if(sw.length)"
  },
  {
@@ -5164,5 +5164,26 @@
   "kaynak": "telefon",
   "bul": "    out.innerHTML='✅ '+srY(t('vtCalisiyor'),{n:w, s:esc(heard)});",
   "koy": "    out.innerHTML='✅ '+t('vtCalisiyor');"
+ },
+ {
+  "ad": "v9.37 izin yolu tarayıcı adını yerine oturtmuyor (ekranda süslü parantez)",
+  "test": "52-izin-kurtarma-yolu.js",
+  "kaynak": "telefon",
+  "bul": "    return srY(t('izIos'),{t:tar});",
+  "koy": "    return t('izIos');"
+ },
+ {
+  "ad": "v9.37 kumanda tanısı tekrar koda dönüyor (sözlük dışı metin artar)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  d.textContent = t('krBas');",
+  "koy": "  d.textContent = L==='tr' ? 'Kumandandaki bir tuşa bas' : 'Press a button';"
+ },
+ {
+  "ad": "v9.37 dedektör yer tutuculu tarifi yine kusur sayıyor (yalancı kırmızı)",
+  "test": "190-yol-tarifi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "        if any(\"{\" in p and \"}\" in p for p in parcalar):\n            continue",
+  "koy": "        pass"
  }
 ]

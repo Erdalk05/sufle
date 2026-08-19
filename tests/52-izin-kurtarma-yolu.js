@@ -1,5 +1,12 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+/* v9.37: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co3}=require('./kaynak.js');
+const SOZ_T=_co3('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
@@ -22,8 +29,8 @@ const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    İki platformu karşılaştırmak yine teşhis aracı oldu.) */
 
 const izinYolu=new Function('navigator','L',
-  cikar(kod,/function izinYolu\(\)\{[\s\S]*?\n\}/,'izinYolu')+'; return izinYolu;');
-const yol=(ua,dil='tr')=>izinYolu({userAgent:ua},dil)();
+  SOZ_T+'\n'+cikar(kod,/function izinYolu\(\)\{[\s\S]*?\n\}/,'izinYolu')+'; return izinYolu;');
+const yol=(ua,dil='tr')=>{ globalThis.L=dil; return izinYolu({userAgent:ua},dil)(); };
 
 const UA={
   iosSafari :'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605 Version/17.0 Safari/604',

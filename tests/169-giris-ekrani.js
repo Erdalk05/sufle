@@ -85,8 +85,13 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
      anmadığı fonksiyon" sayıyor ve bu yüzey ölçülmeden kalmıştı. */
   ok('senaryo adını yazan fonksiyon var (introSenaryoYaz)',
      /function introSenaryoYaz\(\)\{/.test(kaynak) && /introSenaryoYaz\(\);/.test(kaynak));
+  /* v9.37: yedek metin sözlüğe taşındı. Ölçüt aynı — adsız senaryo için
+     İKİ DİLDE bir karşılık var mı — ama artık doğru yerde aranıyor, ayrıca
+     çipin o anahtarı gerçekten okuduğu da ölçülüyor. */
   ok('adsız senaryo için yedek metin iki dilde',
-     /\$\('#introSenAd'\)\.textContent = ad \|\| \(L==='tr'\?'Başlıksız senaryo':'Untitled script'\)/.test(kaynak));
+     /scBasliksiz:'Başlıksız senaryo'/.test(kaynak) &&
+     /scBasliksiz:'Untitled script'/.test(kaynak) &&
+     /\$\('#introSenAd'\)\.textContent = ad \|\| t\('scBasliksiz'\)/.test(kaynak));
   /* ENV DESTEKLİ OKUMA ŞART (kapı 115): kasıtlı bozma turu kaynağın geçici
      bir kopyasını bozup testi ona karşı koşturuyor. `fs` ile doğrudan depoyu
      okuyan test, bozmayı HİÇ ölçmez ama "geçti" der. */

@@ -1,5 +1,12 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku}=require('./kaynak');
+/* v9.37: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co3}=require('./kaynak.js');
+const SOZ_T=_co3('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -55,8 +62,9 @@ ok('nöbetçi her açılışta iki bayrağı da sıfırlıyor', /gotKey=false; y
 /* ---------- NÖBETÇİ GERÇEKTEN NE YAZIYOR ---------- */
 function nobetKos({tusGeldi, yutuldu}){
   return new Function('__g','__y', `
+    ${SOZ_T}
     let gotKey=false, remoteWatch=0, yazidaYutuldu=false;
-    const L='tr';
+    globalThis.L='tr';
     const el={textContent:'', innerHTML:''};
     const $=s=>(s==='#remoteDiag'?el:null);
     let zamanlayici=null;
