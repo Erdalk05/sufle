@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 20 Ağustos gecesi — **v9.36 hazır · henüz yayınlanmadı** — KATMANLI AYARLAR
+## 🟢 20 Ağustos gecesi — v9.36 YAYINLANDI ve canlıdan doğrulandı (`sufle-v108`) — KATMANLI AYARLAR
 
 Rakip analizinin (`belgeler/SUFLE_RAKIP_STRATEJI_...docx`) P0–P3 listesi ölçüldü:
 **11 maddenin 9'u kapalıydı**, açık kalan tek P1 buydu.
@@ -14,6 +14,13 @@ kullanıcıya nerede olduğunu söylemek zor. Üç kural birlikte uygulandı:
 neden az" sorusu sorulmadan cevap görünüyor ② gizlenen kart **sayısı** yazıyor
 ③ **arama düzeyi aşıyor**: gizli bir kartı bulup gösteremeyen arama "bulundu"
 der ve hiçbir şey görünmez (deponun 2 numaralı sınıfı).
+
+**Canlı doğrulama:** md5 birebir (`ddca4956…` / `1d4af06e…`) · `canli.py` üç
+genişlikte temiz · izler canlıdan sayıldı (`duzeySeg` 3 · `ayarTemel` 2 ·
+`ayarAra` 3 · uzman kart niteliği 17 · `duzeyHint` 5). `.son-yayin` sonra yazıldı.
+
+> Yayın durumu bilerek YALNIZ bu bölümde yazılı — iki yerde yazınca
+> `tests/116`nın kasıtlı bozması etkisiz kalıyor.
 
 14 kart uzman işaretlendi (yerleşim, renk, ayna, dosya boyutu, mikrofon
 seçimi, çerçeve, ışık denetçisi, kompozit, müzik, ses stüdyosu, altyazı
@@ -27,7 +34,7 @@ kart saymayı bıraktılar · `tests/93`ün tezgâhı gövde nesnesi sağlamadı
 "hiçbir kart açık başlamıyor" iddiası sessizce her zaman geçer oldu — kasıtlı
 bozma inmeyince yakalandı.
 
-## 🟢 19 Ağustos gecesi — v9.35 YAYINLANDI ve canlıdan doğrulandı (`sufle-v107`)
+## 19 Ağustos gecesi — v9.35 turu (yayınlandı, kanıtı aşağıda)
 
 `index.html` ve `sw.js` md5 birebir (`0a4c1943…` / `8bad5d8c…`) · `canli.py`
 üç genişlikte temiz · canlıdan sayılan izler: `skinSoft` 2 · `GUZELLIK_GLSL` 2 ·
