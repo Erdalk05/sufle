@@ -1,6 +1,6 @@
 # Sufle — Mağaza Metinleri
 
-**Sürüm:** 9.9 · **Hazırlandı:** 15 Ağustos 2026
+**Sürüm:** 9.34 · **Hazırlandı:** 15 Ağustos 2026 · **Son güncelleme:** 19 Ağustos 2026
 
 ⚠️ **KURAL: bu dosyadaki her cümle uygulamada ÖLÇÜLEREK doğrulanmış bir
 özelliğe dayanır.** Mağaza metni pazarlama değil **söz**dür; olmayan bir
@@ -203,7 +203,30 @@ hiçbir şey anlatmaz:
 5. Çekim sonrası budama ekranı → *"Baştan sondan kes"*
 6. Masaüstü: sağ panel sekmeleri + telefonda uzak önizleme
 
-## Sürüm notu (mağaza "Yenilikler" alanı, v9.30)
+## Sürüm notu (mağaza "Yenilikler" alanı, v9.34)
+
+> Bu bölüm **ürün sürümüyle birlikte güncellenir**. 19 Ağustos 2026'da v9.34'e
+> çekildi. Mağaza notu ile uygulamanın kendi sürüm notu ayrışırsa kullanıcı
+> mağazada aylar önceki ürünü okur.
+
+**TR:** Senaryolara etiket verebiliyorsun: başlığın altına virgülle yaz, listenin
+üstündeki jetondan birine dokun, yalnız o etiketin senaryoları kalsın. Klasör
+yerine etiket, çünkü aynı senaryo hem "Reels" hem "Müşteri A" olabilmeli.
+Güzellik (yüz yumuşatma) eklendi — düz bulanıklık değil, göz, kaş ve dudak
+sınırı olduğu gibi kalıyor. Sağ üstte saydam hızlı erişim: kamera çevir, ışık,
+güzellik, yazı boyutu ve odak tek dokunuş uzakta. Masaüstünde elle pozlama,
+beyaz ayarı, odak kilidi ve fener; kameran desteklemiyorsa hiç görünmüyorlar.
+
+**EN:** Scripts can carry tags: type them comma-separated under the title, tap a
+chip above the list and only that tag's scripts remain. Tags rather than folders,
+because the same script should be able to be both "Reels" and "Client A". Added
+beauty (skin smoothing) that is not a plain blur — eyes, brows and lip edges stay
+intact. A translucent quick-access panel in the top right: flip camera, light,
+beauty, text size and focus, one tap away. On the desktop, manual exposure, white
+balance, focus lock and torch — hidden entirely when your camera does not support
+them.
+
+## Önceki sürüm notu (v9.30)
 
 > Bu bölüm **ürün sürümüyle birlikte güncellenir**. v9.9'da kalmış hâli 18
 > Ağustos 2026'da yenilendi: mağaza notu ile uygulamanın kendi sürüm notu
