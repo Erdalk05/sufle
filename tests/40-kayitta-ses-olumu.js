@@ -131,10 +131,13 @@ ok('uyarı bayrağı da sıfırlanıyor (sonraki çekim temiz başlasın)',
 
 /* ---------- SONUÇ EKRANI SON ŞANS ----------
    Kayıt sırasındaki uyarıyı kaçırmış olabilir; sonuç ekranında da yazmalı. */
-ok('sonuç ekranında "SES ... SANİYEDE KESİLDİ" var', /SES '\+clock\(sesOldu\)\+' SANİYEDE KESİLDİ/.test(kod));
-ok('sonuç ekranı iki dilde', /AUDIO STOPPED AT '\+clock\(sesOldu\)/.test(kod));
+/* v9.34: cümleler sözlüğe taşındı; ölçüt aynı, yeri değişti. */
+ok('sonuç ekranında "SES ... SANİYEDE KESİLDİ" var',
+   /srAudStopped:'SES \{t\} SANİYEDE KESİLDİ'/.test(kod) &&
+   /srY\(t\('srAudStopped'\),\{t:clock\(sesOldu\)\}\)/.test(kod));
+ok('sonuç ekranı iki dilde', /srAudStopped:'AUDIO STOPPED AT \{t\}'/.test(kod));
 ok('ne yapacağı söyleniyor (kulaklığı kontrol et)', /Kulaklığı kontrol et/.test(kod));
-ok('görüntü donması tanısı bozulmadı', /GÖRÜNTÜ '\+clock\(nerede\)\+' SANİYEDE DONMUŞ/.test(kod));
+ok('görüntü donması tanısı bozulmadı', /srVidFroze:'GÖRÜNTÜ \{t\} SANİYEDE DONMUŞ'/.test(kod));
 
 /* ---------- MESAJLAR ---------- */
 for(const k of ['audDied','fxDead','fxBack'])

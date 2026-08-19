@@ -2356,6 +2356,28 @@ const I18N={
   /* ÖN KOŞUL SEBEPLERİ (`gateSettings`). 2026-08-19'da koddan buraya taşındı.
      Bu cümleler deponun imza özelliği: bir ayarın ön koşulu varsa sebebi
      YAZILIYOR, ayar sessizce ölü bırakılmıyor. */
+  /* SONUÇ EKRANI TANI SATIRLARI. 2026-08-19'da `showResult` içinden buraya
+     taşındı. Bu satırlar sorun anında bakılan TEK yer — yarısı sözlükte
+     yarısı kodda olamaz (T49'da tam da bunun bedeli ölçülmüştü: İngilizceye
+     geçen kullanıcı tanı satırının yarısını Türkçe okuyordu). */
+  srFmt:'⚠️ Biçim {f} — iPhone Fotoğraflar yalnız MP4 kabul eder',
+  srNoShare:'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)',
+  srShareOk:'✓ MP4 · paylaşım destekleniyor',
+  srNoAudBrowser:'BU TARAYICI SES KAYDETMİYOR — Safari kullan',
+  srComp:'kompozit',srRaw:'ham kamera',srAudTrack:'ses izi {n}',
+  srNoAudTake:'⚠️ Kayıtta SES İZİ YOKTU — ',
+  srVidFroze:'GÖRÜNTÜ {t} SANİYEDE DONMUŞ',
+  srVidFrozeD:'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). Kompoziti kapatmak ve 720pye düşmek de yükü azaltır.',
+  srAudStopped:'SES {t} SANİYEDE KESİLDİ',
+  srAudStoppedD:'Görüntü tam ama mikrofon çekim ortasında gitti (Bluetooth kulaklık kopması ya da mikrofonun başka bir uygulamaya kapılması). Kulaklığı kontrol et ve tekrar çek.',
+  srFileAud:' · dosyada SES VAR ({n} iz)',srFileNoAud:' · ⚠️ DOSYADA SES YOK',
+  srAudUnread:' · ses izi okunamadı',
+  srCompNoAud:'⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompozit ve yeşil ekran → "Kompoziti aç" anahtarını kapat ve tekrar çek',
+  srAudOk:'Ses kaydedildi',srAudNone:'BU VİDEODA SES YOK',
+  srAudFix:'Tekrar çekmeden önce: Ayarlar → Kamera → <b>Güvenli ses modu</b> açık olsun',
+  srProcessed:' · ses işlendi',
+  srCapsOk:'{n} altyazı satırı hazır — senaryodan üretildi, yazım hatasız',
+  srCapsNone:'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.',
   gwKamera:'kamera gerekli',gwKroma:'yeşil ekran açık olmalı',
   gwTanima:'bu tarayıcıda tanıma yok',gwBolum:'senaryoda bölüm başlığı yok (# ile ekle)',
   gwIos:'yalnız iPhone için (masaüstünde bu kısıt yok)',
@@ -2563,6 +2585,24 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  srFmt:'⚠️ Format {f} — iPhone Photos only accepts MP4',
+  srNoShare:'⚠️ This browser cannot share files (use Safari)',
+  srShareOk:'✓ MP4 · sharing supported',
+  srNoAudBrowser:'THIS BROWSER RECORDS NO AUDIO — use Safari',
+  srComp:'composite',srRaw:'raw camera',srAudTrack:'audio track {n}',
+  srNoAudTake:'⚠️ THE TAKE HAD NO AUDIO TRACK — ',
+  srVidFroze:'VIDEO FROZE AT {t}',
+  srVidFrozeD:'Audio is complete but video stopped early. The usual cause is the audio session being rebuilt mid-take (voice follow, an incoming call, a headset switch). Turning the composite off and dropping to 720p also reduces the load.',
+  srAudStopped:'AUDIO STOPPED AT {t}',
+  srAudStoppedD:'Video is complete but the microphone was lost mid-take (Bluetooth disconnect or another app taking the microphone). Check your headset and shoot again.',
+  srFileAud:' · file HAS AUDIO ({n})',srFileNoAud:' · ⚠️ FILE HAS NO AUDIO',
+  srAudUnread:' · could not read audio track',
+  srCompNoAud:'⚠️ iOS drops audio when composite is on — Settings → Camera → Composite and green screen → switch "Enable composite" off, then reshoot',
+  srAudOk:'Audio recorded',srAudNone:'THIS VIDEO HAS NO AUDIO',
+  srAudFix:'Before reshooting: Settings → Camera → enable <b>Safe audio mode</b>',
+  srProcessed:' · processed',
+  srCapsOk:'{n} caption lines ready — generated from the script, no typos',
+  srCapsNone:'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.',
   gwKamera:'needs camera',gwKroma:'needs green screen',
   gwTanima:'no recognition here',gwBolum:'no section headings in the script',
   gwIos:'iPhone only (no such limit on desktop)',
@@ -6281,18 +6321,22 @@ async function probeAudio(blob){
 /* Sonuç ekranının DİLE BAĞLI parçaları. showResult() bir kez çalışıyor;
    dil değişince yalnız bu üç metin yenilenmeli (video, budama ve düğmeler
    zaten data-i18n ile bağlı). */
+/* CÜMLELER SÖZLÜKTE (2026-08-19, tests/197). Yer tutucu dolduran yardımcı;
+   anahtar `t('...')` ile yazılı kaldığı için ölü anahtar denetimi sağlam
+   kalıyor. ÜST SEVİYEDE: ilk yazışımda `showResult`ın İÇİNDE tanımlamıştım
+   ve dil tazeleyicisi (`sonucTazele`) onu göremiyordu — dil değiştirilince
+   sonuç ekranı Türkçe kalıyordu. Çizilmiş arayüz kapısı yakaladı. */
+const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
 let sonDiag='';
 function sonucTazele(){
   const ai=$('#audInfo'); if(ai){
     const kucuk=ai.querySelector('small');
-    if(kucuk) kucuk.textContent=audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'');
+    if(kucuk) kucuk.textContent=audSummary()+(fxUsed?t('srProcessed'):'');
   }
   const n=buildCues().length, ci=$('#capInfo');
   if(ci) ci.textContent = n
-    ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'
-               : n+' caption lines ready — generated from the script, no typos')
-    : (L==='tr'? 'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.'
-               : 'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.');
+    ? srY(t('srCapsOk'),{n})
+    : t('srCapsNone');
   /* Paylaşım tanısı `lastPath` ölçümlerinden kuruluyor; dil değişince
      yeniden hesaplamak yerine showResult'ı yeniden çalıştırmak videoyu da
      yeniden yüklerdi. Metni kuran yol tek yerde, sonucu burada tazeleniyor. */
@@ -6385,19 +6429,18 @@ function showResult(blob){
   let diag='';
   const f0=new File([blob],'x.'+(fmt==='MP4'?'mp4':'webm'),{type:blob.type});
   const canF=!!(navigator.canShare&&navigator.canShare({files:[f0]}));
-  if(fmt!=='MP4') diag=(L==='tr'?'⚠️ Biçim '+fmt+' — iPhone Fotoğraflar yalnız MP4 kabul eder':'⚠️ Format '+fmt+' — iPhone Photos only accepts MP4');
-  else if(!canF) diag=(L==='tr'?'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)':'⚠️ This browser cannot share files (use Safari)');
-  else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');
-  if(IS_IOS_ALT) diag='⚠️ '+(L==='tr'?'BU TARAYICI SES KAYDETMİYOR — Safari kullan':'THIS BROWSER RECORDS NO AUDIO — use Safari')+' · '+diag;
+  if(fmt!=='MP4') diag=srY(t('srFmt'),{f:fmt});
+  else if(!canF) diag=t('srNoShare');
+  else diag=t('srShareOk');
+  if(IS_IOS_ALT) diag='⚠️ '+t('srNoAudBrowser')+' · '+diag;
   if(lastPath){
     /* SABİT TÜRKÇEYDİ (T49 denetiminde ölçüldü): İngilizceye geçen kullanıcı
        tanı satırının yarısını Türkçe okuyordu. Tanı satırı sorun anında
        bakılan tek yer — yarısı yabancı dilde olamaz. */
-    diag += ' · ' + (lastPath.comp ? (L==='tr'?'kompozit':'composite')
-                                   : (L==='tr'?'ham kamera':'raw camera'))
-          + ' · ' + (L==='tr'?'ses izi ':'audio track ') + lastPath.aud
+    diag += ' · ' + (lastPath.comp ? t('srComp') : t('srRaw'))
+          + ' · ' + srY(t('srAudTrack'),{n:lastPath.aud})
           + (lastPath.aud?(' ('+lastPath.live+')'):'');
-    if(!lastPath.aud) diag=(L==='tr'?'⚠️ Kayıtta SES İZİ YOKTU — ':'⚠️ THE TAKE HAD NO AUDIO TRACK — ')+diag;
+    if(!lastPath.aud) diag=t('srNoAudTake')+diag;
   }
   sonDiag=diag;              // dil değişince yeniden yazılabilsin
   $('#shareDiag').textContent=diag;
@@ -6414,7 +6457,7 @@ function showResult(blob){
       if(vidOldu>0.5 || (isFinite(dosyaSure) && lastDur>3 && fark>1.5)){
         const nerede = vidOldu>0.5 ? vidOldu : dosyaSure;
         $('#audInfo').innerHTML='<b style="color:#ff5252">'+
-          (L==='tr' ? 'GÖRÜNTÜ '+clock(nerede)+' SANİYEDE DONMUŞ' : 'VIDEO FROZE AT '+clock(nerede))+
+          srY(t('srVidFroze'),{t:clock(nerede)})+
           /* ÖĞÜT DEĞİŞTİ (2026-08-17 akşamı). Eskiden "iPhone uzun çekimde
              belleği tüketebiliyor: 720p yap, çekimi kısa tut" yazıyordu.
              Bu öğüt YANLIŞ YERE gönderiyordu: v9.0da ölçülen vaka 41 saniyelik
@@ -6423,24 +6466,14 @@ function showResult(blob){
              tetikleyicisi kayıt sırasında çalışan sesle takip. Artık önce O
              söyleniyor, yalnız gerçekten o çekimde açıksa. */
           '</b><br><small>'+
-          ((cekimSesle && IS_WK) ? m('vidDonduSes') : (L==='tr'
-            ? 'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses '
-              +'oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). '
-              +'Kompoziti kapatmak ve 720pye düşmek de yükü azaltır.'
-            : 'Audio is complete but video stopped early. The usual cause is the audio session '
-              +'being rebuilt mid-take (voice follow, an incoming call, a headset switch). '
-              +'Turning the composite off and dropping to 720p also reduces the load.'))+'</small>';
+          ((cekimSesle && IS_WK) ? m('vidDonduSes') : t('srVidFrozeD'))+'</small>';
       }
       /* Sesin kesildiğini de SÖYLE. Kayıt sırasında uyarı çıkıyor ama kullanıcı
          suflenin akışına bakıyor olabilir; sonuç ekranı son şans. */
       else if(sesOldu>0.5){
         $('#audInfo').innerHTML='<b style="color:#ff5252">'+
-          (L==='tr' ? 'SES '+clock(sesOldu)+' SANİYEDE KESİLDİ' : 'AUDIO STOPPED AT '+clock(sesOldu))+
-          '</b><br><small>'+(L==='tr'
-            ? 'Görüntü tam ama mikrofon çekim ortasında gitti (Bluetooth kulaklık kopması ya da '
-              +'mikrofonun başka bir uygulamaya kapılması). Kulaklığı kontrol et ve tekrar çek.'
-            : 'Video is complete but the microphone was lost mid-take (Bluetooth disconnect or another app '
-              +'taking the microphone). Check your headset and shoot again.')+'</small>';
+          srY(t('srAudStopped'),{t:clock(sesOldu)})+
+          '</b><br><small>'+t('srAudStoppedD')+'</small>';
       }
     },{once:true});
     vv.addEventListener('error',()=>{ try{ URL.revokeObjectURL(uu); }catch(e){ logErr('url',e); } },{once:true});
@@ -6448,28 +6481,23 @@ function showResult(blob){
   })();
   probeAudio(blob).then(n=>{
     let tag;
-    if(n>0) tag=(L==='tr'?' · dosyada SES VAR ('+n+' iz)':' · file HAS AUDIO ('+n+')');
-    else if(n===0) tag=(L==='tr'?' · ⚠️ DOSYADA SES YOK':' · ⚠️ FILE HAS NO AUDIO');
-    else tag=(L==='tr'?' · ses izi okunamadı':' · could not read audio track');
+    if(n>0) tag=srY(t('srFileAud'),{n});
+    else if(n===0) tag=t('srFileNoAud');
+    else tag=t('srAudUnread');
     $('#shareDiag').textContent=diag+tag;
     if(n===0 && lastPath && lastPath.comp)
-      $('#audInfo').textContent=(L==='tr'
-        /* TARİF ARAYÜZDE BULUNMAYAN BİR DENETİMİ ADLANDIRIYORDU (2026-08-18,
-           yeni yol-tarifi dedektörünün ilk bulgusu). Metin "Kompoziti kapat"
-           diyordu; anahtarın adı `tgComp` = "Kompoziti aç" ve hiç değişmiyor,
-           üstelik "Kompozit ve yeşil ekran" kartının İÇİNDE. Kullanıcı
-           Kamera sekmesinde yazılan adı arıyor ve bulamıyor. */
-        ? '⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompozit ve yeşil ekran → "Kompoziti aç" anahtarını kapat ve tekrar çek'
-        : '⚠️ iOS drops audio when composite is on — Settings → Camera → Composite and green screen → switch "Enable composite" off, then reshoot');
+      /* TARİF ARAYÜZDE BULUNMAYAN BİR DENETİMİ ADLANDIRIYORDU (2026-08-18,
+         yol-tarifi dedektörünün ilk bulgusu). Metin "Kompoziti kapat"
+         diyordu; anahtarın adı tgComp = "Kompoziti aç" ve hiç değişmiyor.
+         Metin sözlüğe taşındı, yani tarifi artık tests/190 da tarıyor. */
+      $('#audInfo').textContent=t('srCompNoAud');
   });
   // 10.6 Önce ne yapman gerektiği, sonra teknik ayrıntı.
   const sesVar=lastPath && lastPath.aud>0;
   $('#audInfo').innerHTML = (sesVar
-      ? '<b style="color:var(--accent)">'+(L==='tr'?'Ses kaydedildi':'Audio recorded')+'</b>'
-      : '<b style="color:#ff5252">'+(L==='tr'?'BU VİDEODA SES YOK':'THIS VIDEO HAS NO AUDIO')+'</b><br>'+
-        (L==='tr'?'Tekrar çekmeden önce: Ayarlar → Kamera → <b>Güvenli ses modu</b> açık olsun'
-                :'Before reshooting: Settings → Camera → enable <b>Safe audio mode</b>'))
-    + '<br><small style="color:var(--t-low)">'+audSummary()+(fxUsed?(L==='tr'?' · ses işlendi':' · processed'):'')+'</small>';
+      ? '<b style="color:var(--accent)">'+t('srAudOk')+'</b>'
+      : '<b style="color:#ff5252">'+t('srAudNone')+'</b><br>'+t('srAudFix'))
+    + '<br><small style="color:var(--t-low)">'+audSummary()+(fxUsed?t('srProcessed'):'')+'</small>';
   const n=buildCues().length;
   $('#capInfo').textContent = n
     ? (L==='tr'? n+' altyazı satırı hazır — senaryodan üretildi, yazım hatasız'

@@ -605,8 +605,8 @@
   "ad": "T49 paylaşım tanısı sabit Türkçeye döndü",
   "test": "137-prova-raporu.js",
   "kaynak": "telefon",
-  "bul": "(L==='tr'?'kompozit':'composite')",
-  "koy": "('kompozit')"
+  "bul": "    diag += ' · ' + (lastPath.comp ? t('srComp') : t('srRaw'))",
+  "koy": "    diag += ' · ' + (lastPath.comp ? 'kompozit' : 'ham kamera')"
  },
  {
   "ad": "F1 iOS ölçümünün dürüstlük sınırı silindi (varlık = çalışan tanıma sanılır)",
@@ -4133,8 +4133,8 @@
   "ad": "D11 donma sebebi sesle takiple ilişkilendirilmiyor",
   "test": "179-iphone-cekim-donmasi.js",
   "kaynak": "telefon",
-  "bul": "          ((cekimSesle && IS_WK) ? m('vidDonduSes') : (L==='tr'",
-  "koy": "          ((false) ? m('vidDonduSes') : (L==='tr'"
+  "bul": "          ((cekimSesle && IS_WK) ? m('vidDonduSes') : t('srVidFrozeD'))+'</small>';",
+  "koy": "          ((false) ? m('vidDonduSes') : t('srVidFrozeD'))+'</small>';"
  },
  {
   "ad": "D12 kayıttaki yeniden başlatma damgalanmıyor (bir daha olursa iz yok)",
@@ -4147,8 +4147,8 @@
   "ad": "D13 çürüyen bellek öğüdü geri geldi (kullanıcı yanlış yere gider)",
   "test": "179-iphone-cekim-donmasi.js",
   "kaynak": "telefon",
-  "bul": "            ? 'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses '\n              +'oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). '",
-  "koy": "            ? 'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor. '\n              +'720p yap. '"
+  "bul": "  srVidFrozeD:'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). Kompoziti kapatmak ve 720pye düşmek de yükü azaltır.',",
+  "koy": "  srVidFrozeD:'Ses tam ama görüntü erken kesilmiş. iPhone uzun çekimde belleği tüketebiliyor: 720p yap, çekimi kısa tut.',"
  },
  {
   "ad": "D14 geri getirme gecikmesi nefesle akıştan ayrıştı",
@@ -4947,5 +4947,40 @@
   "kaynak": "telefon",
   "bul": "  const rKam=t('gwKamera'), rKroma=t('gwKroma'), rTan=t('gwTanima'),",
   "koy": "  const rKam=t('gwKamera'), rKroma='yeşil ekran açık olmalı', rTan=t('gwTanima'),"
+ },
+ {
+  "ad": "v9.34 sonuç tanı satırı tekrar koda dönüyor (sözlük dışı metin artar)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  else diag=t('srShareOk');",
+  "koy": "  else diag=(L==='tr'?'✓ MP4 · paylaşım destekleniyor':'✓ MP4 · sharing supported');"
+ },
+ {
+  "ad": "v9.34 donma anı tanı satırına yazılmıyor",
+  "test": "13-kayit-yolu-ve-durum.js",
+  "kaynak": "telefon",
+  "bul": "          srY(t('srVidFroze'),{t:clock(nerede)})+",
+  "koy": "          t('srVidFroze')+"
+ },
+ {
+  "ad": "v9.34 ses kesilme anı yazılmıyor",
+  "test": "40-kayitta-ses-olumu.js",
+  "kaynak": "telefon",
+  "bul": "          srY(t('srAudStopped'),{t:clock(sesOldu)})+",
+  "koy": "          t('srAudStopped')+"
+ },
+ {
+  "ad": "v9.34 tanı satırının yarısı tekrar tek dilde",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "  srComp:'composite',srRaw:'raw camera',srAudTrack:'audio track {n}',",
+  "koy": "  srCompX:'composite',srRaw:'raw camera',srAudTrack:'audio track {n}',"
+ },
+ {
+  "ad": "v9.34 yer tutucu yardımcısı yine showResult'ın içinde (dil değişince sonuç ekranı Türkçe kalır)",
+  "test": "137-prova-raporu.js",
+  "kaynak": "telefon",
+  "bul": "const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };",
+  "koy": "const srY=(m,d)=>m;"
  }
 ]

@@ -140,7 +140,11 @@ ok('mesaj iki dilde', (js.match(/vidDied:/g)||[]).length===2);
 ok('dosya süresi ölçülüyor', /const dosyaSure=vv\.duration;/.test(js));
 ok('ses süresiyle karşılaştırılıyor', /const fark=\(lastDur\|\|0\)-dosyaSure;/.test(js));
 ok('1,5 sn üstü fark bildiriliyor', /fark>1\.5/.test(js));
-ok('donma anı gösteriliyor', /GÖRÜNTÜ '\+clock\(nerede\)\+' SANİYEDE DONMUŞ/.test(js));
+/* v9.34: cümle sözlüğe taşındı ({t} yer tutucusuyla). Ölçüt aynı — donma
+   ANI kullanıcıya yazılıyor mu — ama artık doğru yerde aranıyor. */
+ok('donma anı gösteriliyor',
+   /srVidFroze:'GÖRÜNTÜ \{t\} SANİYEDE DONMUŞ'/.test(src) &&
+   /srY\(t\('srVidFroze'\),\{t:clock\(nerede\)\}\)/.test(js));
 /* ÖĞÜT DEĞİŞTİ ÇÜNKÜ YANLIŞTI (2026-08-17 akşamı). Eski metin donmayı
    BELLEĞE bağlıyordu ("iPhone uzun çekimde belleği tüketebiliyor, 720p yap,
    çekimi kısa tut"). v9.0 commitindeki ölçüm bunu çürütüyor: 41 saniyelik

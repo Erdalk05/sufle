@@ -38,6 +38,25 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🌍 Dördüncü grup: sonuç ekranı tanı satırları (telefon 125 → 110)
+
+`showResult`in 15 cümlesi sözlüğe alındı — paylaşım tanısı, donma/ses kesilme
+tanıları, dosya ses etiketi, altyazı bilgisi ve **senin sorduğun paylaşım tanı
+satırı** dahil. Bu satırlar sorun anında bakılan tek yer; yarısı sözlükte
+yarısı kodda olamaz (T49'da tam bu ölçülmüştü: İngilizceye geçen kullanıcı
+tanı satırının yarısını Türkçe okuyordu).
+
+**Taşırken KENDİ kusurumu ürettim ve çizilmiş arayüz kapısı yakaladı:** yer
+tutucu dolduran yardımcıyı `showResult`ın İÇİNDE tanımlamıştım, oysa dil
+tazeleyicisi `sonucTazele` de onu çağırıyor. Sonuç: **dil değiştirilince sonuç
+ekranı Türkçe kalıyordu** — üstelik hata sessizdi, ekranda yalnız eski dil
+duruyordu. Kapı `#shareDiag` ve `#capInfo` için "çevrilmemiş metin 0 → 2" dedi.
+Yardımcı üst seviyeye alındı ve `tests/137` bunu kaynağa kilitledi.
+
+**Ayrıca bir tutarsızlık kapandı:** `sonucTazele` içindeki *" · ses işlendi"*
+hâlâ koda gömülüydü, yani sonuç ekranının aynı satırı iki ayrı yerden iki ayrı
+kuralla yazılıyordu.
+
 ### 🌍 Üçüncü grup: ön koşul sebepleri (telefon 137 → 125) + BİR DAVRANIŞ KUSURU
 
 `gateSettings`in 22 sebep dizesi sözlüğe alındı. Bunlar deponun imza

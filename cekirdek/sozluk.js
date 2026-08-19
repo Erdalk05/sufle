@@ -165,6 +165,28 @@ const I18N={
   /* ÖN KOŞUL SEBEPLERİ (`gateSettings`). 2026-08-19'da koddan buraya taşındı.
      Bu cümleler deponun imza özelliği: bir ayarın ön koşulu varsa sebebi
      YAZILIYOR, ayar sessizce ölü bırakılmıyor. */
+  /* SONUÇ EKRANI TANI SATIRLARI. 2026-08-19'da `showResult` içinden buraya
+     taşındı. Bu satırlar sorun anında bakılan TEK yer — yarısı sözlükte
+     yarısı kodda olamaz (T49'da tam da bunun bedeli ölçülmüştü: İngilizceye
+     geçen kullanıcı tanı satırının yarısını Türkçe okuyordu). */
+  srFmt:'⚠️ Biçim {f} — iPhone Fotoğraflar yalnız MP4 kabul eder',
+  srNoShare:'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)',
+  srShareOk:'✓ MP4 · paylaşım destekleniyor',
+  srNoAudBrowser:'BU TARAYICI SES KAYDETMİYOR — Safari kullan',
+  srComp:'kompozit',srRaw:'ham kamera',srAudTrack:'ses izi {n}',
+  srNoAudTake:'⚠️ Kayıtta SES İZİ YOKTU — ',
+  srVidFroze:'GÖRÜNTÜ {t} SANİYEDE DONMUŞ',
+  srVidFrozeD:'Ses tam ama görüntü erken kesilmiş. En sık sebebi çekim sırasında ses oturumunun yeniden kurulması (sesle takip, gelen arama, kulaklık değişimi). Kompoziti kapatmak ve 720pye düşmek de yükü azaltır.',
+  srAudStopped:'SES {t} SANİYEDE KESİLDİ',
+  srAudStoppedD:'Görüntü tam ama mikrofon çekim ortasında gitti (Bluetooth kulaklık kopması ya da mikrofonun başka bir uygulamaya kapılması). Kulaklığı kontrol et ve tekrar çek.',
+  srFileAud:' · dosyada SES VAR ({n} iz)',srFileNoAud:' · ⚠️ DOSYADA SES YOK',
+  srAudUnread:' · ses izi okunamadı',
+  srCompNoAud:'⚠️ Kompozit açıkken iPhone sesi kaydetmiyor — Ayarlar → Kamera → Kompozit ve yeşil ekran → "Kompoziti aç" anahtarını kapat ve tekrar çek',
+  srAudOk:'Ses kaydedildi',srAudNone:'BU VİDEODA SES YOK',
+  srAudFix:'Tekrar çekmeden önce: Ayarlar → Kamera → <b>Güvenli ses modu</b> açık olsun',
+  srProcessed:' · ses işlendi',
+  srCapsOk:'{n} altyazı satırı hazır — senaryodan üretildi, yazım hatasız',
+  srCapsNone:'Altyazı yok — altyazı, okuduğun kelimelerin çizgiden geçme anından üretilir; bu çekimde sufle akmamış.',
   gwKamera:'kamera gerekli',gwKroma:'yeşil ekran açık olmalı',
   gwTanima:'bu tarayıcıda tanıma yok',gwBolum:'senaryoda bölüm başlığı yok (# ile ekle)',
   gwIos:'yalnız iPhone için (masaüstünde bu kısıt yok)',
@@ -372,6 +394,24 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  srFmt:'⚠️ Format {f} — iPhone Photos only accepts MP4',
+  srNoShare:'⚠️ This browser cannot share files (use Safari)',
+  srShareOk:'✓ MP4 · sharing supported',
+  srNoAudBrowser:'THIS BROWSER RECORDS NO AUDIO — use Safari',
+  srComp:'composite',srRaw:'raw camera',srAudTrack:'audio track {n}',
+  srNoAudTake:'⚠️ THE TAKE HAD NO AUDIO TRACK — ',
+  srVidFroze:'VIDEO FROZE AT {t}',
+  srVidFrozeD:'Audio is complete but video stopped early. The usual cause is the audio session being rebuilt mid-take (voice follow, an incoming call, a headset switch). Turning the composite off and dropping to 720p also reduces the load.',
+  srAudStopped:'AUDIO STOPPED AT {t}',
+  srAudStoppedD:'Video is complete but the microphone was lost mid-take (Bluetooth disconnect or another app taking the microphone). Check your headset and shoot again.',
+  srFileAud:' · file HAS AUDIO ({n})',srFileNoAud:' · ⚠️ FILE HAS NO AUDIO',
+  srAudUnread:' · could not read audio track',
+  srCompNoAud:'⚠️ iOS drops audio when composite is on — Settings → Camera → Composite and green screen → switch "Enable composite" off, then reshoot',
+  srAudOk:'Audio recorded',srAudNone:'THIS VIDEO HAS NO AUDIO',
+  srAudFix:'Before reshooting: Settings → Camera → enable <b>Safe audio mode</b>',
+  srProcessed:' · processed',
+  srCapsOk:'{n} caption lines ready — generated from the script, no typos',
+  srCapsNone:'No captions — they are built from when each word crossed the reading line; the prompter did not run in this take.',
   gwKamera:'needs camera',gwKroma:'needs green screen',
   gwTanima:'no recognition here',gwBolum:'no section headings in the script',
   gwIos:'iPhone only (no such limit on desktop)',

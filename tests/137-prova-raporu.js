@@ -236,8 +236,24 @@ const kelimeler = (zamanlar, kuyruk = 0) => {
   /* Paylaşım tanısındaki SABİT TÜRKÇE parçalar da çevrildi (denetimde
      bulundu): tanı satırı sorun anında bakılan tek yer, yarısı yabancı
      dilde olamaz. */
-  ok('tanı satırı iki dilde', /'kompozit':'composite'/.test(src) &&
-     /'ham kamera':'raw camera'/.test(src));
+  /* v9.34: tanı satırı sözlüğe taşındı. Ölçüt aynı: satırın HER parçası iki
+     dilde de var mı — yarısı Türkçe kalan bir tanı satırı T49'da ölçülmüş
+     gerçek kusurdu. */
+  ok('tanı satırı iki dilde',
+     /srComp:'kompozit'/.test(src) && /srComp:'composite'/.test(src) &&
+     /srRaw:'ham kamera'/.test(src) && /srRaw:'raw camera'/.test(src));
+  /* Sözlükte durması yetmez: TANI SATIRI onu okumalı. Yalnız sözlüğe bakan
+     bir iddia, kod sabit Türkçeye dönse bile yeşil kalırdı. */
+  ok('tanı satırı metni sözlükten okuyor',
+     /lastPath\.comp \? t\('srComp'\) : t\('srRaw'\)/.test(src));
+  /* 🔴 YARDIMCI ÜST SEVİYEDE OLMALI. İlk yazışta `showResult`ın İÇİNDE
+     tanımlıydı ve dil tazeleyicisi (`sonucTazele`) onu göremiyordu: dil
+     değiştirilince sonuç ekranı Türkçe kalıyordu. Çizilmiş arayüz kapısı
+     yakaladı; bu iddia kaynağa da kilitliyor. */
+  ok('yer tutucu yardımcısı üst seviyede (dil tazeleyicisi de görüyor)',
+     /\nconst srY=\(m,d\)=>\{ for\(const x in/.test(src));
+  ok('yer tutucu gerçekten dolduruluyor',
+     /srY\(t\('srCapsOk'\),\{n\}\)/.test(src));
   /* Türkçe metin ŞAPKALI yazılmalı: Türkçe-öncelikli bir üründe
      "Ses cok kisik" kabul edilemez. */
   /* Kaynakta uzun tire `\u2014` kaçışıyla yazılı; iddia METNE bakmalı,
