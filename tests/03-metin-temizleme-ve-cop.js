@@ -2,10 +2,18 @@ const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCo
 
 // ---- index.html'den ÇIKARILAN gerçek fonksiyonlar ----
 const {telefonYolu,macYolu,oku}=require('./kaynak');
+/* v9.36: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() sağlıyor. Sahte metin uydursaydık sözlükten
+   silinen bir anahtar burada sessizce geçerdi.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co2}=require('./kaynak.js');
+const SOZ_T=_co2('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];";
 const src=oku(telefonYolu());
 const grab=re=>{ const m=src.match(re); if(!m) throw new Error('bulunamadı: '+re); return m[0]; };
 eval(grab(/function stripInvisible\(x\)\{[\s\S]*?\n\}/));
 eval(grab(/function firstLineTitle\(txt\)\{[\s\S]*?\n\}/));
+globalThis.L='tr'; eval(SOZ_T);
 eval(grab(/function resNote\(\)\{[\s\S]*?\n\}/).replace('const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};','const v=VT;'));
 
 // --- görünmez karakter temizliği ---

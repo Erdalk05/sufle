@@ -2221,7 +2221,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.36';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.37';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2473,6 +2473,30 @@ const I18N={
   isikIyi:'Işık ve çerçeve iyi görünüyor ✓',isikIyiD:'yüz {y} · arka {a} · kontrast {k}',
   isikKapaliT:'Kamera kapalı',isikKapaliD:'Önce kamerayı aç',
   scFavAdd:'Favorilere ekle',scFavDel:'Favorilerden çıkar',
+  /* SESLE TAKİP ÖZ-TESTİ (2026-08-20'de sözlüğe taşındı, tests/197).
+     Emoji KODDA kalıyor: sözlük değerlerinde süs emojisi yasak (tests/143)
+     ve bu satırların emojisi durum simgesi, etiket değil. */
+  vtYok:'Bu tarayıcıda konuşma tanıma yok',vtSafari:'iPhone\'da Safari kullan.',
+  vtDinliyor:'Dinliyorum… <b>yüksek sesle bir cümle söyle</b> (8 sn)',
+  vtDuydum:'Duyduğum: ',
+  vtIzinYok:'Mikrofon izni yok — Ayarlar → Safari → Mikrofon → İzin ver',
+  vtHata:'Tanıma hatası: ',
+  vtSesYok:'Hiç ses alınmadı',
+  vtKamera:'<b>Kamera şu anda açık</b> ve mikrofonu paylaşıyor — iPhone\'da bu tanımayı susturabiliyor. Kamerayı kapatıp bu testi tekrar çalıştır: sonuç değişiyorsa sebep budur.',
+  vtIzinBelki:'Mikrofon izni verilmemiş olabilir ya da başka uygulama mikrofonu tutuyor.',
+  vtCalisiyor:'<b>Çalışıyor.</b> {n} kelime duyuldu: “{s}”<br>Sesle takip bu cihazda kullanılabilir.',
+  vtTempo:'Tempo ',
+  /* Küçük yüzeylerin metinleri (2026-08-20, tests/197). Emoji KODDA kalıyor:
+     sözlük değerlerinde süs emojisi yasak (tests/143). */
+  fxHam:'ham (işleme yok)',fxTarayici:'tarayıcı bastırması',
+  fxIosUyari:'<b>iPhone\'da ses işleme zinciri çalıştırılamıyor.</b> Mikrofonu işleme hattına bağlamak Safari\'de kaydın sesini tümden düşürüyor. Burada tarayıcının kendi gürültü bastırması kullanılıyor — <b>Ham ses</b> kapalı kaldığı sürece açıktır.',
+  fxAciklama:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan ayar budur.',
+  vhTakip:'takip',vhKayip:'bulamadım',vhDinliyor:'dinliyorum',vhSesYok:'(ses yok)',
+  mpOniz:'Önizleme: ',dosyadanAd:'Dosyadan',
+  asYok:'Ses yok',asKirpma:'Kaydın %{p}\'inde ses kırpmış — mikrofondan uzaklaş ya da daha sakin konuş',
+  asKisik:'Ses çok kısık — mikrofona yaklaş',asIyi:'Ses seviyesi iyi',
+  rcKelime:'Okunacak kelime',rcCumle:'Cümle / ortalama uzunluk',rcTemiz:'Temiz görünüyor',
+  rnCihaz:' — cihaz bu kadarını verdi',rnMik:'Mikrofon ',
   duzeyL:'Ayar düzeyi',duzeyTemel:'Temel',duzeyIleri:'Gelişmiş',
   duzeyHint:'Temel akışta uzman kartları gizli — hiçbir ayar kaybolmuyor, Gelişmiş\'e geçince {n} kart geri geliyor. Arama her iki düzeyde de hepsini buluyor.',
   scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
@@ -2721,6 +2745,25 @@ const I18N={
   isikIyi:'Light and framing look good ✓',isikIyiD:'face {y} · back {a} · contrast {k}',
   isikKapaliT:'Camera off',isikKapaliD:'Open the camera first',
   scFavAdd:'Add to favourites',scFavDel:'Remove from favourites',
+  vtYok:'No speech recognition in this browser',vtSafari:'Use Safari on iPhone.',
+  vtDinliyor:'Listening… <b>say a sentence out loud</b> (8 s)',
+  vtDuydum:'Heard: ',
+  vtIzinYok:'Mic permission denied — Settings → Safari → Microphone → Allow',
+  vtHata:'Recognition error: ',
+  vtSesYok:'No audio received',
+  vtKamera:'<b>The camera is on</b> and shares the mic — on iPhone this can silence recognition. Turn the camera off and run this test again: if the result changes, that is the cause.',
+  vtIzinBelki:'Permission may be denied, or another app holds the mic.',
+  vtCalisiyor:'<b>Working.</b> {n} words heard: “{s}”<br>Voice follow is usable on this device.',
+  vtTempo:'Pace ',
+  fxHam:'raw (no processing)',fxTarayici:'browser suppression',
+  fxIosUyari:'<b>The processing chain cannot run on iPhone.</b> Routing the mic through Web Audio silences the recording in Safari. The browser\'s own noise suppression is used instead.',
+  fxAciklama:'Rumble cut + 50 Hz mains notch + noise gate + levelling. This matters most when using the built-in microphone.',
+  vhTakip:'tracking',vhKayip:'lost',vhDinliyor:'listening',vhSesYok:'(no audio)',
+  mpOniz:'Preview: ',dosyadanAd:'From file',
+  asYok:'No audio',asKirpma:'Audio clipped in {p}% of the take — back off the mic',
+  asKisik:'Audio very quiet — get closer to the mic',asIyi:'Audio level good',
+  rcKelime:'Words to read',rcCumle:'Sentences / avg length',rcTemiz:'Looks clean',
+  rnCihaz:' — this is what the device gave',rnMik:'Mic ',
   duzeyL:'Setting level',duzeyTemel:'Basic',duzeyIleri:'Advanced',
   duzeyHint:'Expert cards are hidden in Basic — nothing is lost; switching to Advanced brings {n} cards back. Search finds everything at either level.',
   scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
@@ -4497,7 +4540,7 @@ function resNote(){
   const v=(vTrack&&vTrack.getSettings)?vTrack.getSettings():{};
   const got=Math.min(v.width||0,v.height||0);
   if(!got) return '';
-  return got<want*0.9 ? (L==='tr'?' — cihaz bu kadarını verdi':' — this is what the device gave') : '';
+  return got<want*0.9 ? t('rnCihaz') : '';
 }
 /* 8.6 Harici mikrofon takılıysa kullanıcı seçebilsin. Tek giriş varsa bölüm hiç görünmüyor
    (yalancı seçenek kalabalığı olmasın). iOS izin vermeden cihaz adlarını boş döndürür. */
@@ -4512,7 +4555,7 @@ async function setupMics(){
     row.style.display='flex'; seg.style.display='flex'; seg.innerHTML='';
     mics.forEach((d,i)=>{
       const b=document.createElement('button');
-      b.textContent=(d.label||((L==='tr'?'Mikrofon ':'Mic ')+(i+1))).slice(0,18);
+      b.textContent=(d.label||(t('rnMik')+(i+1))).slice(0,18);
       b.className=(st.micId===d.deviceId||(!st.micId&&i===0))?'on':'';
       b.onclick=async()=>{ if(!kameraDegisebilir()) return;
         st.micId=d.deviceId; save(); await openCam(); setupMics(); };
@@ -5731,15 +5774,14 @@ function sesKodu(){
 }
 function audSummary(){
   const k=sesKodu(); if(!k) return '';
-  if(k==='none') return L==='tr'?'\ud83d\udd07 Ses yok':'\ud83d\udd07 No audio';
+  /* Emoji KODDA: sözlük değerlerinde süs emojisi yasak (tests/143) ve
+     bunlar durum simgesi, etiket değil. */
+  if(k==='none') return '\u{1F507} '+t('asYok');
   const pct=audStats.clip/audStats.n*100;
-  if(k==='clip') return (L==='tr'?'\u26a0\ufe0f Kaydın %'+Math.round(pct)+"'inde ses kırpmış \u2014 mikrofondan uzaklaş ya da daha sakin konuş"
-                                 :'\u26a0\ufe0f Audio clipped in '+Math.round(pct)+'% of the take \u2014 back off the mic');
-  if(k==='low') return (L==='tr'?'\ud83d\udd08 Ses çok kısık \u2014 mikrofona yaklaş':'\ud83d\udd08 Audio very quiet \u2014 get closer to the mic');
-  return (L==='tr'?'\ud83d\udd0a Ses seviyesi iyi':'\ud83d\udd0a Audio level good');
+  if(k==='clip') return '\u26a0\ufe0f '+srY(t('asKirpma'),{p:Math.round(pct)});
+  if(k==='low') return '\u{1F508} '+t('asKisik');
+  return '\u{1F50A} '+t('asIyi');
 }
-/* Ar\u015fiv listesinde k\u0131sa h\u00e2li. Kod saklan\u0131p burada \u00e7evriliyor \u2014 \u00e7ekim
-   s\u0131ras\u0131ndaki aray\u00fcz dili neyse o dilde donup kalmas\u0131n diye. */
 function sesRozeti(k){
   return k==='ok'?'\ud83d\udd0a':k==='low'?'\ud83d\udd08':k==='clip'?'\u26a0\ufe0f':k==='none'?'\ud83d\udd07':'';
 }
@@ -5970,9 +6012,9 @@ function gateWant(rms, gateVal){
                                        // kapanmada sesi yok ediyordu (-18 dB)
 }
 function fxLabel(){
-  if(st.rawAudio) return L==='tr'?'ham (işleme yok)':'raw (no processing)';
-  if(IS_WK) return L==='tr'?'tarayıcı bastırması':'browser suppression';
-  return (st.audioFx||'voice')==='off' ? (L==='tr'?'kapalı':'off') : (L==='tr'?'açık':'on');
+  if(st.rawAudio) return t('fxHam');
+  if(IS_WK) return t('fxTarayici');
+  return (st.audioFx||'voice')==='off' ? t('hzKapali') : t('hzAcik');
 }
 function renderVfx(){
   if(typeof hizliCiz==='function') hizliCiz();
@@ -5980,19 +6022,17 @@ function renderVfx(){
   const a=$('#vidAmt'), lab=$('#vFxAmt');
   if(a) a.value=(st.vidAmt==null?100:st.vidAmt);
   if(a) a.style.display=(st.vidFx==='off')?'none':'';
-  if(lab) lab.textContent=(st.vidFx==='off')?(L==='tr'?'kapalı':'off'):('%'+(st.vidAmt==null?100:st.vidAmt));
+  if(lab) lab.textContent=(st.vidFx==='off')?t('hzKapali'):('%'+(st.vidAmt==null?100:st.vidAmt));
   const bs=$('#btyAmt'), bl=$('#vBty');
   if(bs) bs.value=(st.bty==null?0:st.bty);
-  if(bl) bl.textContent=(st.bty>0)?('%'+st.bty):(L==='tr'?'kapalı':'off');
+  if(bl) bl.textContent=(st.bty>0)?('%'+st.bty):t('hzKapali');
 }
 function renderFx(){
   const st2=$('#fxState'); if(st2) st2.textContent=fxLabel();
   const h=$('#fxHint');
   if(h) h.innerHTML = IS_WK
-    ? (L==='tr'? '⚠️ <b>iPhone\'da ses işleme zinciri çalıştırılamıyor.</b> Mikrofonu işleme hattına bağlamak Safari\'de kaydın sesini tümden düşürüyor. Burada tarayıcının kendi gürültü bastırması kullanılıyor — <b>Ham ses</b> kapalı kaldığı sürece açıktır.'
-              : '⚠️ <b>The processing chain cannot run on iPhone.</b> Routing the mic through Web Audio silences the recording in Safari. The browser\'s own noise suppression is used instead.')
-    : (L==='tr'? 'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekim yapıyorsan en çok işe yarayan ayar budur.'
-              : 'Rumble cut + 50 Hz mains notch + noise gate + levelling. This matters most when using the built-in microphone.');
+    ? '⚠️ '+t('fxIosUyari')
+    : t('fxAciklama');
   const adv=$('#fxAdv'); if(adv) adv.classList.toggle('hidden', IS_WK || st.rawAudio || (st.audioFx||'voice')==='off');
   const P=fxParams();
   if($('#fxGate')){ $('#fxGate').value=P.gate; $('#vGate').textContent=P.gate; }
@@ -7871,9 +7911,9 @@ function speakCheck(){
 function renderCheck(){
   const r=speakCheck(), box=$('#checkOut');
   const COL={bad:'#ff6b6b',warn:'#ffb300',info:'#9aa0a6',ok:'var(--accent)'};
-  let html='<div class="kv"><span>'+(L==='tr'?'Okunacak kelime':'Words to read')+'</span><b>'+r.wc+'</b></div>'+
-           '<div class="kv"><span>'+(L==='tr'?'Cümle / ortalama uzunluk':'Sentences / avg length')+'</span><b>'+r.sentences+' · '+r.avg+'</b></div>';
-  if(!r.out.length) html+='<div class="empty">'+(L==='tr'?'Temiz görünüyor 👍':'Looks clean 👍')+'</div>';
+  let html='<div class="kv"><span>'+t('rcKelime')+'</span><b>'+r.wc+'</b></div>'+
+           '<div class="kv"><span>'+t('rcCumle')+'</span><b>'+r.sentences+' · '+r.avg+'</b></div>';
+  if(!r.out.length) html+='<div class="empty">'+t('rcTemiz')+' 👍</div>';
   r.out.forEach(o=>{ html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+COL[o.lv]+'">'+
     esc(o.t)+'</div><div class="s">'+esc(o.d)+'</div></div></div>'; });
   box.innerHTML=html;
@@ -8681,10 +8721,10 @@ function vHud(durum, duydu, yer, genis){
   el.classList.remove('hidden');
   const d=$('#vHudDurum');
   d.className = durum==='ok'?'ok':(durum==='kayip'?'kayip':'sessiz');
-  d.textContent = durum==='ok' ? (L==='tr'?'✓ takip':'✓ tracking')
-                : durum==='kayip' ? (L==='tr'?'✕ bulamadım':'✕ lost')
-                : (L==='tr'?'… dinliyorum':'… listening');
-  $('#vHudDuydu').textContent = duydu ? '“'+duydu+'”' : (L==='tr'?'(ses yok)':'(no audio)');
+  d.textContent = durum==='ok' ? '✓ '+t('vhTakip')
+                : durum==='kayip' ? '✕ '+t('vhKayip')
+                : '… '+t('vhDinliyor');
+  $('#vHudDuydu').textContent = duydu ? '“'+duydu+'”' : t('vhSesYok');
   const toplam=normWords.length||1;
   $('#vHudYer').textContent = Math.min(100,Math.round(yer/toplam*100))+'%'+(genis?' ⟳':'');
   clearTimeout(vHudT);
@@ -10817,7 +10857,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.37':{tr:'🌍 <b>Arayüz metinlerinin çoğu tek kaynağa taşındı.</b> Sesle takip öz-testi, ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi ve kamera notları artık sözlükten okunuyor. Senin için görünen fark: <b>dili değiştirdiğinde bu ekranlar da anında değişiyor</b> ve iki dil arasında eksik bilgi kalmıyor. Perde arkasında üçüncü bir arayüz dilinin önü açılıyor: sözlüğü atlayan metin sayısı 172den 50ye indi.',en:'🌍 <b>Most interface texts now come from a single source.</b> The voice self-test, audio verdict, speakability summary, voice-follow strip and camera notes all read from the dictionary. What you notice: <b>switching language now updates these screens instantly</b> and neither language is missing information the other has. Behind the scenes this clears the way for a third interface language: texts bypassing the dictionary went from 172 down to 50.'},'9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
@@ -11908,39 +11948,32 @@ $('#archWipe').onclick=async()=>{
 $('#voiceTest').onclick=()=>{
   const out=$('#voiceTestOut');
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ out.innerHTML='✕ <b>'+(L==='tr'?'Bu tarayıcıda konuşma tanıma yok':'No speech recognition in this browser')+'</b>'+
-    (IS_IOS?'<br>'+(L==='tr'?'iPhone\'da Safari kullan.':'Use Safari on iPhone.'):''); return; }
-  out.innerHTML=(L==='tr'?'🎤 Dinliyorum… <b>yüksek sesle bir cümle söyle</b> (8 sn)':'🎤 Listening… <b>say a sentence out loud</b> (8 s)');
+  /* Emoji KODDA kalıyor: sözlükte süs emojisi yasak ve bunlar durum simgesi. */
+  if(!SR){ out.innerHTML='✕ <b>'+t('vtYok')+'</b>'+(IS_IOS?'<br>'+t('vtSafari'):''); return; }
+  out.innerHTML='🎤 '+t('vtDinliyor');
   let heard='', got=false;
   const r=new SR(); r.lang=st.voiceLang; r.continuous=true; r.interimResults=true;
   r.onresult=e=>{ got=true; heard=(e.results[e.results.length-1][0].transcript||'').trim(); 
-    out.innerHTML=(L==='tr'?'👂 Duyduğum: ':'👂 Heard: ')+'<b>'+esc(heard)+'</b>'; };
+    out.innerHTML='👂 '+t('vtDuydum')+'<b>'+esc(heard)+'</b>'; };
   r.onerror=ev=>{ const er=ev&&ev.error;
-    out.innerHTML='✕ <b>'+(er==='not-allowed'
-      ? (L==='tr'?'Mikrofon izni yok — Ayarlar → Safari → Mikrofon → İzin ver':'Mic permission denied — Settings → Safari → Microphone → Allow')
-      : (L==='tr'?'Tanıma hatası: ':'Recognition error: ')+esc(er||'?'))+'</b>'; };
+    out.innerHTML='✕ <b>'+(er==='not-allowed' ? t('vtIzinYok')
+                                               : t('vtHata')+esc(er||'?'))+'</b>'; };
   try{ r.start(); }catch(e){ out.textContent='✕ '+(e.message||e); return; }
   setTimeout(()=>{ try{ r.stop(); }catch(e){ logErr('voiceTest',e); }
     if(!got){
       /* KAMERA AÇIKSA EN OLASI NEDEN ODUR ve testin bunu söylemesi gerekir;
          yoksa kullanıcı izinlerle uğraşıp doğru yeri hiç denemez. */
       const kamera=!!(stream && stream.getAudioTracks && stream.getAudioTracks().length);
-      out.innerHTML='⚠️ <b>'+(L==='tr'?'Hiç ses alınmadı':'No audio received')+'</b><br>'+
-        (kamera
-          ? (L==='tr'?'<b>Kamera şu anda açık</b> ve mikrofonu paylaşıyor — iPhone\'da bu tanımayı susturabiliyor. Kamerayı kapatıp bu testi tekrar çalıştır: sonuç değişiyorsa sebep budur.'
-                     :'<b>The camera is on</b> and shares the mic — on iPhone this can silence recognition. Turn the camera off and run this test again: if the result changes, that is the cause.')
-          : (L==='tr'?'Mikrofon izni verilmemiş olabilir ya da başka uygulama mikrofonu tutuyor.':'Permission may be denied, or another app holds the mic.'));
+      out.innerHTML='⚠️ <b>'+t('vtSesYok')+'</b><br>'+(kamera?t('vtKamera'):t('vtIzinBelki'));
       return; }
     const w=heard.split(/\s+/).filter(Boolean).length;
-    out.innerHTML=(L==='tr'
-      ? '✅ <b>Çalışıyor.</b> '+w+' kelime duyuldu: “'+esc(heard)+'”<br>Sesle takip bu cihazda kullanılabilir.'
-      : '✅ <b>Working.</b> '+w+' words heard: “'+esc(heard)+'”<br>Voice follow is usable on this device.');
+    out.innerHTML='✅ '+srY(t('vtCalisiyor'),{n:w, s:esc(heard)});
   },8000);
 };
 $('#undoDel').onclick=restoreTrash;
 $('#tempoBtn').onclick=()=>{ if(!measuredWpm) return;
   st.wpm=measuredWpm; apply(); save(); updateStats(); renderScripts();
-  toast((L==='tr'?'Tempo ':'Pace ')+measuredWpm+' wpm'); };
+  toast(t('vtTempo')+measuredWpm+' wpm'); };
 $('#tClean').onclick=()=>applyTool(cleanText,m('tDone'));
 $('#tJoin').onclick=()=>applyTool(joinLines,m('tDone'));
 $('#tCase').onclick=()=>applyTool(sentenceCase,m('tDone'));
@@ -11955,7 +11988,7 @@ function renderMarkPrev(){
   const line=(ta.value.split(/\n/)[upto.split(/\n/).length-1]||'').trim();
   if(!line || !/[*/{]|\(\d/.test(line)){ box.style.display='none'; return; }
   box.style.display='';
-  box.innerHTML='<b>'+(L==='tr'?'Önizleme: ':'Preview: ')+'</b>'+
+  box.innerHTML='<b>'+t('mpOniz')+'</b>'+
     markup(line).replace(/class="w em"/g,'style="font-weight:900;color:var(--accent)"')
                 .replace(/class="w"/g,'style="opacity:.85"')
                 .replace(/class="hold"[^>]*>/g,'style="color:#ffb300">');
@@ -11976,7 +12009,7 @@ $('#txtFile').onchange=async e=>{
     try{
       const txt=(await docxMetni(f)).replace(/\r\n/g,'\n');
       if(!txt.trim()){ toast(m('emptyText')); e.target.value=''; return; }
-      const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
+      const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||t('dosyadanAd'),text:txt,up:Date.now()};
       st.scripts.unshift(s); st.activeId=s.id; save();
       fillEditor(); renderScripts(); buildContent(); reset(); toast(m('imported'));
     }catch(err){ logErr('docx',err); toast(m('docxBad')); }
@@ -11991,7 +12024,7 @@ $('#txtFile').onchange=async e=>{
     try{
       const txt=(await pdfMetni(f)).replace(/\r\n/g,'\n');
       if(!txt.trim()){ toast(m('pdfMetinYok')); e.target.value=''; return; }
-      const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
+      const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||t('dosyadanAd'),text:txt,up:Date.now()};
       st.scripts.unshift(s); st.activeId=s.id; save();
       fillEditor(); renderScripts(); buildContent(); reset(); toast(m('imported'));
     }catch(err){
@@ -12010,7 +12043,7 @@ $('#txtFile').onchange=async e=>{
   r.onload=()=>{
     const txt=String(srtToText(String(r.result))||'').replace(/\r\n/g,'\n');
     if(!txt.trim()){ toast(m('emptyText')); return; }
-    const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||(L==='tr'?'Dosyadan':'From file'),text:txt,up:Date.now()};
+    const s={id:uid(),title:(f.name||'').replace(/\.[^.]+$/,'')||t('dosyadanAd'),text:txt,up:Date.now()};
     st.scripts.unshift(s); st.activeId=s.id; save();
     fillEditor(); renderScripts(); buildContent(); reset(); toast(m('imported'));
   };

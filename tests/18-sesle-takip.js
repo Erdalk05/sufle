@@ -62,8 +62,19 @@ ok('başarılı eşleşmede sayaç sıfırlanıyor', /else jumpSwallow=0;/.test(
 // ---- CANLI ŞERİT ----
 ok('takip şeridi var', /id="vHud"/.test(src));
 ok('şerit ne duyduğunu gösteriyor', /vHudDuydu/.test(src));
-ok('şerit eşleşti/bulamadım ayrımı yapıyor',
-   /durum==='ok' \? \(L==='tr'\?'✓ takip'/.test(src) && /durum==='kayip' \? \(L==='tr'\?'✕ bulamadım'/.test(src));
+/* v9.36: metinler sözlüğe taşındı. ÖLÇÜT DEĞİŞMEDİ — şerit üç durumu
+   AYIRIYOR mu — ama artık birleştirme BİÇİMİ kilitlenmiyor (tests/114 haklı
+   olarak uyardı): üç ayrı anahtarın kullanıldığı ve ikisinin de iki dilde
+   tanımlı olduğu ölçülüyor. */
+{
+  const uc=['vhTakip','vhKayip','vhDinliyor'];
+  ok('şerit üç durumu ayrı anahtarla söylüyor',
+     uc.every(k=>new RegExp("t\\('"+k+"'\\)").test(src)));
+  ok('üç durumun metni iki dilde tanımlı',
+     uc.every(k=>(src.match(new RegExp(k+":'",'g'))||[]).length===2));
+  ok('üç durum birbirinden farklı',
+     new Set(uc.map(k=>(src.match(new RegExp(k+":'((?:[^'\\\\]|\\\\.)*)'"))||[])[1])).size===3);
+}
 ok('şerit metindeki yeri yüzdeyle gösteriyor', /Math\.round\(yer\/toplam\*100\)/.test(js));
 ok('geniş arama şeritte işaretleniyor', /genis\?' ⟳':''/.test(js));
 ok('takip kapanınca şerit gizleniyor', /\$\('#vHud'\) && \$\('#vHud'\)\.classList\.add\('hidden'\)/.test(js));

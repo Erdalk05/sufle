@@ -1,5 +1,12 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+/* v9.36: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() sağlıyor. Sahte metin uydursaydık sözlükten
+   silinen bir anahtar burada sessizce geçerdi.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co2}=require('./kaynak.js');
+const SOZ_T=_co2('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];";
 const tel=oku(telefonYolu());
 const mac=oku(macYolu());
 
@@ -136,6 +143,10 @@ function ozet(src, macMi, audStats){
      Mac'te böyle bir ayrım yok. */
   const kodSrc = macMi ? '' : cikar(src, /function sesKodu\(\)\{[\s\S]*?\n\}/, 'sesKodu');
   const kur = new Function('__stats', `
+    ${SOZ_T}
+    /* Yer tutucu dolduran yardımcı üst seviyede yaşıyor; tezgâh aynısını
+       sağlıyor ki çıkarılan fonksiyon çalışsın. */
+    const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
     const audStats=__stats;
     let aTrack=1;
     const stream={ getAudioTracks:()=>[1] };

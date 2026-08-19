@@ -84,8 +84,22 @@ const startVoice = cikar(src, /function startVoice\(\)\{[\s\S]*?\n\}/, 'startVoi
   ok('öz-test bloğu ayrılabildi (ölçmeyen kapı değil)', test.length > 800);
   ok('öz-test kamera durumunu ölçüyor',
      /const kamera=!!\(stream && stream\.getAudioTracks/.test(test));
+  /* v9.36: cümle sözlüğe taşındı; ölçüt aynı — öz-test kamerayı kapatıp
+     tekrar denemeyi SÖYLÜYOR mu — ama artık doğru yerde aranıyor. Ayrıca
+     kabuğun o cümleyi gerçekten okuduğu da ölçülüyor: yalnız sözlüğe bakan
+     iddia, çağrı kalksa bile yeşil kalırdı. */
   ok('öz-test kamerayı kapatıp TEKRAR denemeyi söylüyor',
-     /tekrar çalıştır/.test(test) && /run this test again/.test(test));
+     /* `[^']*` YETMİYOR: Türkçe değerde kaçışlı kesme işareti var
+        (iPhone\\'da) ve desen orada duruyordu — İngilizce geçip Türkçe
+        kalıyordu, yani iddia yarım ölçüyordu. */
+     /vtKamera:'(?:[^'\\]|\\.)*tekrar çalıştır/.test(src) &&
+     /vtKamera:'(?:[^'\\]|\\.)*run this test again/.test(src) &&
+     /kamera\?t\('vtKamera'\):t\('vtIzinBelki'\)/.test(test));
+  /* Sonuç cümlesindeki sayı ve duyulan metin gerçekten yerine oturmalı:
+     yer tutucu doldurulmazsa ekranda süslü parantez görünür ve öz-test
+     "çalışıyor" derken kaç kelime duyduğunu söylemez. */
+  ok('öz-test kaç kelime duyduğunu söylüyor',
+     /srY\(t\('vtCalisiyor'\),\{n:w, s:esc\(heard\)\}\)/.test(test));
 }
 
 /* ---------- ÖLÇÜLEN ZEMİN HÂLÂ GEÇERLİ Mİ ---------- */

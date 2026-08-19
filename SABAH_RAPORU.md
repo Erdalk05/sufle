@@ -2,6 +2,31 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 20 Ağustos gecesi — **v9.37 hazır · henüz yayınlanmadı** — SÖZLÜK CIRCIRI 84 → 50
+
+Üçüncü arayüz dilinin önündeki engel (sözlüğü atlayan metinler) tek gecede
+**172 → 50** indi. Bu turda taşınan yüzeyler: sesle takip **öz-testi** (10
+cümle), ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi,
+görüntü filtresi/güzellik etiketleri, kamera notları ve dosya adı üretimi.
+
+**Kullanıcı için görünen fark:** bu ekranlar artık **dil değişince anında**
+güncelleniyor ve iki dil arasında eksik bilgi kalmıyor. Sözlük dışı metnin
+bedeli hep aynı: dile bağlanmıyor ve iki dil sessizce ayrışıyor.
+
+**Kural gereği emoji KODDA kaldı:** sözlük değerlerinde süs emojisi yasak
+(`tests/143`) ve bu satırlardaki emoji durum simgesi — etiket değil.
+
+**Dört tezgâh gerçek sözlüğü yükler hâle geldi** (`tests/03`, `21`, `53` ve
+`142`): sahte metin uydursaydık sözlükten silinen bir anahtar orada sessizce
+geçerdi. `tests/18`in yeni iddiası ilk yazışta **birleştirme biçimini**
+kilitliyordu ve `tests/114` haklı olarak uyardı — iddia üç durumun AYRI
+anahtar kullandığını ve ikisinin de iki dilde tanımlı olduğunu ölçecek
+şekilde yeniden yazıldı.
+
+**Taban düzeltmesi:** `tests/beklenen.json`da `114` için 19 yazıyordu, oysa
+dosyada 18 koşulsuz iddia var — geçici bir koşudan kalmış bir sayı kapıyı
+haksız yere kırmızı tutuyordu. 18'e döndürüldü.
+
 ## 🟢 20 Ağustos gecesi — v9.36 YAYINLANDI ve canlıdan doğrulandı (`sufle-v108`) — KATMANLI AYARLAR
 
 Rakip analizinin (`belgeler/SUFLE_RAKIP_STRATEJI_...docx`) P0–P3 listesi ölçüldü:

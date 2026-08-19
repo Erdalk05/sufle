@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 20 Ağustos gecesi — v9.36 YAYINLANDI ve canlıdan doğrulandı",
+  "bul": "## 🔴 20 Ağustos gecesi — **v9.37 hazır · henüz yayınlanmadı**",
   "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
  },
  {
@@ -5150,5 +5150,19 @@
   "kaynak": "telefon",
   "bul": "<details class=\"grup\"><summary><span data-i18n=\"gTempo\"",
   "koy": "<details class=\"grup\" data-duzey=\"ileri\"><summary><span data-i18n=\"gTempo\""
+ },
+ {
+  "ad": "v9.36 sesle takip öz-testi tekrar koda dönüyor (sözlük dışı metin artar)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  out.innerHTML='🎤 '+t('vtDinliyor');",
+  "koy": "  out.innerHTML=(L==='tr'?'🎤 Dinliyorum…':'🎤 Listening…');"
+ },
+ {
+  "ad": "v9.36 öz-test sonucunda duyulan kelime sayısı yerine oturmuyor",
+  "test": "142-sesle-takip-nobetcisi.js",
+  "kaynak": "telefon",
+  "bul": "    out.innerHTML='✅ '+srY(t('vtCalisiyor'),{n:w, s:esc(heard)});",
+  "koy": "    out.innerHTML='✅ '+t('vtCalisiyor');"
  }
 ]

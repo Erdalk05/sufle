@@ -1,5 +1,12 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku,cikar}=require('./kaynak');
+/* v9.36: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK
+   sözlüğü yükleyip t() sağlıyor. Sahte metin uydursaydık sözlükten
+   silinen bir anahtar burada sessizce geçerdi.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co2}=require('./kaynak.js');
+const SOZ_T=_co2('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];";
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -98,7 +105,7 @@ ok('openCam kapısı izleri durdurmadan önce',
    Gerçek fonksiyonla ölç: istenen ile alınan ayrışırsa "cihaz bu kadarını
    verdi" çıkıyor. Ayar uygulanmadığı hâlde değişmişse bu cümle yalan olurdu. */
 const rn=new Function('st','vTrack','L',
-  cikar(kod,/function resNote\(\)\{[\s\S]*?\n\}/,'resNote')+'; return resNote;');
+  SOZ_T+'\n'+cikar(kod,/function resNote\(\)\{[\s\S]*?\n\}/,'resNote')+'; return resNote;');
 const not=(kalite,w,h)=>rn({quality:kalite},{getSettings:()=>({width:w,height:h})},'tr')();
 ok('4K istenip 1080 alınınca açıklama çıkıyor', /cihaz bu kadarını verdi/.test(not('4k',1920,1080)));
 ok('1080 istenip 1080 alınınca açıklama YOK', not('1080',1920,1080) === '');
