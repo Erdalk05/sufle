@@ -162,6 +162,14 @@ const I18N={
      dışındaydılar (bkz. tests/197). Sayılar `{}` yer tutucularıyla giriyor ve
      yer tutucular İKİ DİLDE aynı: biri `{s}` diğeri `{time}` derse sayı bir
      dilde süslü parantez olarak görünür. */
+  /* ÖN KOŞUL SEBEPLERİ (`gateSettings`). 2026-08-19'da koddan buraya taşındı.
+     Bu cümleler deponun imza özelliği: bir ayarın ön koşulu varsa sebebi
+     YAZILIYOR, ayar sessizce ölü bırakılmıyor. */
+  gwKamera:'kamera gerekli',gwKroma:'yeşil ekran açık olmalı',
+  gwTanima:'bu tarayıcıda tanıma yok',gwBolum:'senaryoda bölüm başlığı yok (# ile ekle)',
+  gwIos:'yalnız iPhone için (masaüstünde bu kısıt yok)',
+  gwGomme:'altyazı gömme açık olmalı',gwKomut:'sesli komut açık olmalı',
+  gwKompozit:'kompozit açık olmalı',
   rcIosSes:'Bu tarayıcı ses kaydetmiyor',rcIosSesD:'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç',
   rcKamKapali:'Kamera kapalı',rcKamKapaliD:'Başlangıç ekranından kamerayı aç',
   rcKamAcik:'Kamera açık',
@@ -364,6 +372,11 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  gwKamera:'needs camera',gwKroma:'needs green screen',
+  gwTanima:'no recognition here',gwBolum:'no section headings in the script',
+  gwIos:'iPhone only (no such limit on desktop)',
+  gwGomme:'needs burned-in captions',gwKomut:'needs voice commands',
+  gwKompozit:'needs the composite pipeline',
   rcIosSes:'This browser records no audio',rcIosSesD:'On iPhone only Safari writes audio — open it in Safari',
   rcKamKapali:'Camera off',rcKamKapaliD:'Open the camera from the start screen',
   rcKamAcik:'Camera on',

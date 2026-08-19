@@ -1970,7 +1970,7 @@
   "ad": "ön koşullu ayarın sebebi yazılmıyor (ölü ayar sınıfı)",
   "test": "94-on-kosullu-ayarlar.js",
   "kaynak": "telefon",
-  "bul": "    ['stopAtSection', ()=>sections.length>0,\n     L==='tr'?'senaryoda bölüm başlığı yok (# ile ekle)':'no section headings in the script'],",
+  "bul": "    ['stopAtSection', ()=>sections.length>0, rBol],",
   "koy": "    ['stopAtSection', ()=>sections.length>0, ''],"
  },
  {
@@ -4933,5 +4933,19 @@
   "kaynak": "telefon",
   "bul": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:yz(t('rcDepoDoluD'),{s:sure})});",
   "koy": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:t('rcDepoDoluD')});"
+ },
+ {
+  "ad": "v9.34 ön koşul sebebi tekrar koda dönüyor (sözlük dışı metin artar)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "        rKom=t('gwKomut'), rKmp=t('gwKompozit');",
+  "koy": "        rKom=t('gwKomut'), rKmp=(L==='tr'?'kompozit açık olmalı':'needs the composite pipeline');"
+ },
+ {
+  "ad": "v9.34 ön koşul sebebi sözlükten okunmuyor (dil değişince eski dilde kalır)",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "  const rKam=t('gwKamera'), rKroma=t('gwKroma'), rTan=t('gwTanima'),",
+  "koy": "  const rKam=t('gwKamera'), rKroma='yeşil ekran açık olmalı', rTan=t('gwTanima'),"
  }
 ]

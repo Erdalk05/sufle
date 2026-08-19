@@ -2353,6 +2353,14 @@ const I18N={
      dışındaydılar (bkz. tests/197). Sayılar `{}` yer tutucularıyla giriyor ve
      yer tutucular İKİ DİLDE aynı: biri `{s}` diğeri `{time}` derse sayı bir
      dilde süslü parantez olarak görünür. */
+  /* ÖN KOŞUL SEBEPLERİ (`gateSettings`). 2026-08-19'da koddan buraya taşındı.
+     Bu cümleler deponun imza özelliği: bir ayarın ön koşulu varsa sebebi
+     YAZILIYOR, ayar sessizce ölü bırakılmıyor. */
+  gwKamera:'kamera gerekli',gwKroma:'yeşil ekran açık olmalı',
+  gwTanima:'bu tarayıcıda tanıma yok',gwBolum:'senaryoda bölüm başlığı yok (# ile ekle)',
+  gwIos:'yalnız iPhone için (masaüstünde bu kısıt yok)',
+  gwGomme:'altyazı gömme açık olmalı',gwKomut:'sesli komut açık olmalı',
+  gwKompozit:'kompozit açık olmalı',
   rcIosSes:'Bu tarayıcı ses kaydetmiyor',rcIosSesD:'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç',
   rcKamKapali:'Kamera kapalı',rcKamKapaliD:'Başlangıç ekranından kamerayı aç',
   rcKamAcik:'Kamera açık',
@@ -2555,6 +2563,11 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  gwKamera:'needs camera',gwKroma:'needs green screen',
+  gwTanima:'no recognition here',gwBolum:'no section headings in the script',
+  gwIos:'iPhone only (no such limit on desktop)',
+  gwGomme:'needs burned-in captions',gwKomut:'needs voice commands',
+  gwKompozit:'needs the composite pipeline',
   rcIosSes:'This browser records no audio',rcIosSesD:'On iPhone only Safari writes audio — open it in Safari',
   rcKamKapali:'Camera off',rcKamKapaliD:'Open the camera from the start screen',
   rcKamAcik:'Camera on',
@@ -11602,25 +11615,32 @@ $('#restoreBk').onclick=restoreBackup;
 /* 11.5 ÖN KOŞUL: koşulu sağlanmayan ayar açıkken hiçbir şey yapmıyordu.
    Artık soluk görünüyor ve NEDEN çalışmadığı yanına yazılıyor. */
 function gateSettings(){
+  /* SEBEPLER HER ÇİZİMDE SÖZLÜKTEN OKUNUYOR. Eskiden dizi kurulurken
+     L==='tr' ile çözülüyorlardı ve iki bedeli vardı: ① metinler sözlüğün
+     DIŞINDA kalıyordu (tests/197'nin ölçtüğü sınıf) ② kullanıcı arayüz
+     dilini değiştirdiğinde açık duran ayar sayfasındaki sebepler eski dilde
+     kalıyordu. Yerel sabitler `t('...')` ile okunuyor, yani anahtar kullanımı
+     denetimin tanıdığı biçimde duruyor. */
+  const rKam=t('gwKamera'), rKroma=t('gwKroma'), rTan=t('gwTanima'),
+        rBol=t('gwBolum'), rIos=t('gwIos'), rGom=t('gwGomme'),
+        rKom=t('gwKomut'), rKmp=t('gwKompozit');
   const kural=[
-    ['burnCaps', ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
-    ['chroma',   ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
-    ['maskPrev', ()=>!!st.chroma, L==='tr'?'yeşil ekran açık olmalı':'needs green screen'],
-    ['torch',    ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    ['burnCaps', ()=>!!stream, rKam],
+    ['chroma',   ()=>!!stream, rKam],
+    ['maskPrev', ()=>!!st.chroma, rKroma],
+    ['torch',    ()=>!!stream, rKam],
     ['voiceCmd', ()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition),
-                 L==='tr'?'bu tarayıcıda tanıma yok':'no recognition here'],
+                 rTan],
     /* K2 taramasi: on kosulu olan ama kapida OLMAYAN uc ayar bulundu.
        Ucu de aciktir ama sessizdir — kullanici anahtari aciyor, hicbir sey
        olmuyor ve sebebi hicbir yerde yazmiyor. */
-    ['stopAtSection', ()=>sections.length>0,
-     L==='tr'?'senaryoda bölüm başlığı yok (# ile ekle)':'no section headings in the script'],
-    ['vad', ()=>!!stream, L==='tr'?'kamera gerekli':'needs camera'],
+    ['stopAtSection', ()=>sections.length>0, rBol],
+    ['vad', ()=>!!stream, rKam],
     /* Bu anahtar YALNIZ iOSta bir şey yapıyor: tek ses oturumu kısıtı orada
        var. Masaüstünde açık bırakmak "açıyorum, hiçbir şey olmuyor" demek
        olurdu — deponun 3 numaralı kuralı. */
-    ['sesKayitta', ()=>IS_WK, L==='tr'?'yalnız iPhone için (masaüstünde bu kısıt yok)'
-                                     :'iPhone only (no such limit on desktop)'],
-    ['rawAudio', ()=>true, '']
+    ['sesKayitta', ()=>IS_WK, rIos],
+    ['rawAudio', ()=>true, null]
   ];
   kural.forEach(([k,ok,sebep])=>{
     const sw=$('#sheet').querySelector('[data-t="'+k+'"]');
@@ -11643,19 +11663,15 @@ function gateSettings(){
      gömme kapalıyken boyut/konum/biçim/satır ayarları için geçerli. Hepsi
      görünüyor, sürüklenebiliyor ve HİÇBİR ŞEY yapmıyordu; sebebi de yazmıyordu.
      Anahtarlarla aynı muamele: soluklaştır ve nedenini söyle. */
-  [['#chromaDeps', ()=>!!st.chroma,
-    L==='tr'?'yeşil ekran açık olmalı':'needs green screen'],
-   ['#burnDeps',   ()=>!!st.burnCaps,
-    L==='tr'?'altyazı gömme açık olmalı':'needs burned-in captions'],
-   ['#wakeDeps',   ()=>!!st.voiceCmd,
-    L==='tr'?'sesli komut açık olmalı':'needs voice commands'],
+  [['#chromaDeps', ()=>!!st.chroma, rKroma],
+   ['#burnDeps',   ()=>!!st.burnCaps, rGom],
+   ['#wakeDeps',   ()=>!!st.voiceCmd, rKom],
    /* GÖRÜNTÜ FİLTRESİ (2026-08-17). K2 taramasının kör noktasıydı: ölçütü
       "anahtar" (`data-t=…`) olduğu için segment ve sürgü hiç taranmadı.
       `vidParams()` yalnız `drawComp()` içinde okunuyor — kompozit kapalıyken
       filtre ne önizlemede ne kayıtta var. Varsayılan `comp:false` olduğu için
       bu HER YENİ KULLANICIDA böyleydi ve kart yine de "Doğal" yazıyordu. */
-   ['#vfxDeps',    ()=>!!(st.comp&&comp.on),
-    L==='tr'?'kompozit açık olmalı':'needs the composite pipeline']
+   ['#vfxDeps',    ()=>!!(st.comp&&comp.on), rKmp]
   ].forEach(([sel,ok,sebep])=>{
     const blok=$(sel); if(!blok) return;
     const uygun=ok();

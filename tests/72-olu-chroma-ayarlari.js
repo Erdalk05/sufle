@@ -1,5 +1,9 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku}=require('./kaynak');
+/* v9.34: sebepler sözlükten okunuyor; tezgâh gerçek sözlüğü yüklüyor.
+   Yorumda ters tırnak yok — şablon dizesinin içine giriyor. */
+const {cekirdekOku}=require('./kaynak');
+const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -71,9 +75,12 @@ ok('gateSettings çıkarılabildi', !!mGate);
 if(!mGate) return;
 ok('blok kuralı yeşil ekrana bağlı', /'#chromaDeps', \(\)=>!!st\.chroma/.test(mGate[0]));
 ok('blok kuralı altyazı gömmeye bağlı', /'#burnDeps',\s+\(\)=>!!st\.burnCaps/.test(mGate[0]));
+/* v9.34: sebepler sözlüğe taşındı (tests/197). Ölçüt aynı — sebep İKİ DİLDE
+   de var mı — ama artık doğru yerde aranıyor: sözlükte. */
 ok('sebep iki dilde yazılıyor',
-   /yeşil ekran açık olmalı[\s\S]*?needs green screen/.test(mGate[0]) &&
-   /altyazı gömme açık olmalı[\s\S]*?needs burned-in captions/.test(mGate[0]));
+   /gwKroma:'yeşil ekran açık olmalı'/.test(tel) && /gwKroma:'needs green screen'/.test(tel) &&
+   /gwGomme:'altyazı gömme açık olmalı'/.test(tel) && /gwGomme:'needs burned-in captions'/.test(tel));
+ok('kapı sebebi sözlükten okuyor', /rKroma=t\('gwKroma'\)/.test(mGate[0]));
 /* İDDİA "kapı her apply()te koşuyor"dur, satırın BİÇİMİ değil. Eski desen
    `renderVad(); gateSettings()` diye birebir yazılmıştı ve araya yeni bir
    render çağrısı girince kullanıcı için hiçbir şey değişmediği hâlde kırmızı
@@ -86,6 +93,8 @@ function kapiKos({chroma, burnCaps, comp, compOn}){
   return new Function('__c','__b','__k','__ko', `
     const st={chroma:__c, burnCaps:__b, voiceCmd:__b, comp:__k};
     const L='tr';
+    ${SOZ}
+    const t=(k)=>I18N[L][k];
     /* K2 kurallarinin okudugu durum (stream asagida zaten tanimli). */
     const sections=[];
     const kutular={};

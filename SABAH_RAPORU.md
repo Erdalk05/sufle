@@ -38,6 +38,26 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🌍 Üçüncü grup: ön koşul sebepleri (telefon 137 → 125) + BİR DAVRANIŞ KUSURU
+
+`gateSettings`in 22 sebep dizesi sözlüğe alındı. Bunlar deponun imza
+özelliği: bir ayarın ön koşulu varsa sebebi YAZILIR, ayar sessizce ölü
+bırakılmaz.
+
+**Taşırken gerçek bir kusur çıktı:** sebepler dizi KURULURKEN çözülüyordu
+(`L==='tr'?…`), yani **kullanıcı arayüz dilini değiştirdiğinde açık duran
+ayar sayfasındaki sebepler eski dilde kalıyordu.** Artık her çizimde
+sözlükten okunuyor. Bu, sözlük dışı metnin ikinci gizli bedeli: metin
+sözlükte olmadığı için dil değişimine de bağlanmıyor.
+
+**Detektörle iki kez çarpıştım ve ikisinde de detektör haklıydı:** üçüncü
+öğeyi fonksiyon yapınca `denetim.py` *"tanımsız olabilir (fonksiyon çağrısı)"*
+dedi; anahtarı değişkenle geçirince *"sözlük anahtarı değişkenle çağrılıyor —
+ölü anahtar denetimi güvenilmez"* dedi. İkisi de doğru uyarı. Çözüm sebepleri
+fonksiyonun başında **yerel sabitlere** çözmek oldu: `t('gwKamera')` yazılı
+kalıyor (denetim görüyor), her çizimde yeniden okunuyor (dil değişimi
+çalışıyor).
+
 ### 🌍 İkinci grup taşındı: hazırlık kontrolü (telefon 160 → 137)
 
 `readyChecks`in **23 cümlesi** sözlüğe alındı — sözlük dışı metnin tek
@@ -2108,7 +2128,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7539 test** (gece başında 732) · yeni test dosyası: 39–197
+- **7540 test** (gece başında 732) · yeni test dosyası: 39–197
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
