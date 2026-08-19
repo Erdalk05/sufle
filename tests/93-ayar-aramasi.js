@@ -136,6 +136,13 @@ function ara(sorgu, once){
                           : __p.reduce((a,p)=>a.concat(p.gruplar),[]) } };
     const $=k=>el[k];
     const $$=()=>__tabs;
+    /* v9.36: arama, katmanlı ayarların düzey süzgecini gövde sınıfıyla
+       askıya alıyor. Tezgâh gövdeyi sağlamazsa test ÜRÜN DOĞRUYKEN çöker
+       ve çöken test hiçbir iddia basmaz. Sahte gövde, sınıfın gerçekten
+       konup kalktığını ölçebilmemiz için izleniyor.
+       (Bu yorumda ters tırnak YOK: şablon dizesinin içinde tezgâhı keser.) */
+    const bodySinif=[];
+    const body={ classList:{ toggle:(k,v)=>{ bodySinif.push(k+'='+(v?1:0)); } } };
     function ozetTazele(){}
     /* Kartlar bölüm kutularına ayrıldıktan sonra (KART_BOLUM) arama
        kutuları da gösterip gizliyor; simülasyon o işlevi sağlamazsa

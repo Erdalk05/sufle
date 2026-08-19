@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🔴 19 Ağustos — **v9.35 hazır · henüz yayınlanmadı**",
-  "koy": "## 19 Ağustos — bir şeyler yapıldı"
+  "bul": "## 🔴 20 Ağustos gecesi — **v9.36 hazır · henüz yayınlanmadı**",
+  "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -5115,5 +5115,40 @@
   "kaynak": "mac",
   "bul": "      el.onclick=(e)=>{ if(!e.target.classList.contains('x') && !e.target.classList.contains('fav')) selectScript(s.id); };",
   "koy": "      el.onclick=(e)=>{ if(!e.target.classList.contains('x')) selectScript(s.id); };"
+ },
+ {
+  "ad": "v9.36 arama düzey süzgecini aşamıyor (gizli kart bulunur ama görünmez)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  body.classList.toggle('ayarAra', !!q);   // arama düzey süzgecini askıya alır",
+  "koy": "  /* arama düzey süzgecini artık askıya almıyor */"
+ },
+ {
+  "ad": "v9.36 kaç kartın gizlendiği söylenmiyor (kullanıcı kaybolduk sanır)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "  if(h) h.textContent = temel ? srY(t('duzeyHint'),{n}) : '';",
+  "koy": "  if(h) h.textContent = '';"
+ },
+ {
+  "ad": "v9.36 düzey seçimi kalıcı değil (her açılışta Temel'e döner)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "$$('#duzeySeg button').forEach(b=>b.onclick=()=>{ st.ayarDuzey=b.dataset.duzey; save(); duzeyCiz(); });",
+  "koy": "$$('#duzeySeg button').forEach(b=>b.onclick=()=>{ st.ayarDuzey=b.dataset.duzey; duzeyCiz(); });"
+ },
+ {
+  "ad": "v9.36 seçili düzey ekran okuyucuya bildirilmiyor",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "    b.setAttribute('aria-pressed', secili?'true':'false');",
+  "koy": "    b.title='';"
+ },
+ {
+  "ad": "v9.36 temel kart da uzman sayılıyor (ana akıştan hız ayarı kayboluyor)",
+  "test": "166-ayar-kartlari.js",
+  "kaynak": "telefon",
+  "bul": "<details class=\"grup\"><summary><span data-i18n=\"gTempo\"",
+  "koy": "<details class=\"grup\" data-duzey=\"ileri\"><summary><span data-i18n=\"gTempo\""
  }
 ]

@@ -901,6 +901,11 @@
     background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.55),0 0 0 2px var(--accent)}
   input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
   .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:7px;margin-top:8px}
+  /* Temel düzeyde uzman kartları gizli — ama ARAMA SIRASINDA DEĞİL.
+     Arama gizli bir kartı bulup gösteremeseydi 'bulundu' der, hiçbir şey
+     görünmezdi; bu deponun 2 numaralı sınıfı. `!important` YOK: aramanın
+     satır içi display'iyle kavga etmesin. */
+  body.ayarTemel:not(.ayarAra) .grup[data-duzey="ileri"]{display:none}
   /* ETİKET ÇUBUĞU eşit sütunlu ızgara OLAMAZ: etiketler kullanıcının kendi
      kelimeleri ve uzunlukları birbirini tutmaz — `auto-fit` en uzun jetonu
      kırpar, kullanıcı hangi etikete bastığını göremez. Sarmalı akış her
@@ -1209,6 +1214,17 @@
       <button data-lang="en" aria-pressed="false">English</button>
     </div>
   </div>
+  <!-- KATMANLI AYARLAR (v9.36). Rakip yol haritasının açık kalan tek P1'i.
+       Kabul ölçütü dokümandan: "temel akışta uzman özellikler görünmez;
+       İŞLEVLER KAYBOLMAZ". Bu yüzden gizleme ARAMAYI ETKİLEMİYOR ve kaç
+       kartın gizlendiği rakamla yazıyor — "bir şeyler kayboldu" hissi,
+       özelliğin kendisini kaybettirmekten daha pahalıdır. -->
+  <div class="row alanSat" style="margin-top:6px"><label class="alanEt" data-i18n="duzeyL">Ayar düzeyi</label></div>
+  <div class="seg" id="duzeySeg" role="group" aria-label="Ayar düzeyi" data-i18n-aria="duzeyL">
+    <button data-duzey="temel" data-i18n="duzeyTemel">Temel</button>
+    <button data-duzey="ileri" data-i18n="duzeyIleri">Gelişmiş</button>
+  </div>
+  <div class="hint" id="duzeyHint"></div>
   <input type="text" id="setFind" placeholder="Ayarlarda ara…" data-i18n-ph="setFindPh">
   <div id="setFindOut" class="hint" style="display:none"></div>
 
@@ -1271,7 +1287,7 @@
     <div class="sheetbtns"><button class="cancel" id="eyeRecipe" data-i18n="eyeRecipe">Göz teması ayarını uygula</button></div>
     <div class="hint" id="gazeHint"></div>
     </div></details>
-    <details class="grup"><summary><span data-i18n="gYerlesim"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gYerlesim"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label for="fs" data-i18n="fontSize">Yazı boyutu</label><span class="v" id="vFs">46</span></div>
     <input type="range" id="fs" min="22" max="110" value="46">
 
@@ -1326,7 +1342,7 @@
     </div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gRenk"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gRenk"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="textColor">Yazı rengi</label></div>
     <div class="seg" id="colorSeg">
       <button data-c="#ffffff" class="on" data-i18n="cWhite">Beyaz</button>
@@ -1346,7 +1362,7 @@
     <input type="range" id="scrimSl" min="0" max="85" value="35">
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gAyna"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gAyna"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgMirror">Yazıyı aynala (cam rig / beam splitter)</span><div class="sw" data-t="mirrorText"></div></div>
     <div class="tog"><span data-i18n="tgFlip">Yazıyı dikey çevir</span><div class="sw" data-t="flipText"></div></div>
     <div class="tog"><span data-i18n="tgShadow">Yazı gölgesi</span><div class="sw on" data-t="shadow"></div></div>
@@ -1416,7 +1432,7 @@
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gDosya"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gDosya"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:14px"><label data-i18n="brL">Video kalitesi / dosya boyutu</label><span class="v" id="vBr">—</span></div>
     <div class="seg" id="brSeg">
       <button data-br="low" data-i18n="brLow">Küçük dosya</button>
@@ -1426,12 +1442,12 @@
     <div class="hint" id="brHint"></div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gMikSec"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gMikSec"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" id="micRow" style="display:none;margin-top:14px"><label data-i18n="micSel">Mikrofon</label></div>
     <div class="seg" id="micSeg" style="display:none"></div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gCerceve"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gCerceve"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label data-i18n="frameGuide">Çerçeve kılavuzu</label></div>
     <div class="seg" id="aspSeg">
       <button data-asp="none" class="on" data-i18n="aspNone">Kapalı</button>
@@ -1465,7 +1481,7 @@
     <div class="tog"><span data-i18n="tgGrid">▦ Üçler kuralı + baş boşluğu</span><div class="sw" data-t="grid"></div></div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gIsik"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gIsik"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns">
       <button class="cancel" id="lightBtn" data-i18n="lightBtn">Şimdi denetle</button>
       <button class="cancel" id="tiltBtn" data-i18n="tiltBtn">Eğim ölç</button>
@@ -1474,7 +1490,7 @@
     <div class="hint" data-i18n="lightHint">Bu sekme açıkken saniyede bir ölçüyor. Yüz bölgesinin parlaklığını kenarlarla karşılaştırıp arkadan ışığı, patlamayı ve kontrast eksikliğini yakalar.</div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="gKompozit"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gKompozit"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgComp">Kompoziti aç</span><div class="sw" data-t="comp"></div></div>
     <div class="hint" data-i18n="compHint">Kayıt kameradan değil işlenmiş tuvalden alınır: seçtiğin oran gerçekten kırpılır ve yeşil ekran çalışır. Pil/ısı maliyeti vardır, gerekmedikçe kapalı tut.</div>
     <div id="compBox" class="hidden">
@@ -1575,7 +1591,7 @@
     <div class="hint" data-i18n="micHint">Konuş — çubuk oynamıyorsa ses kaydedilmez. Oynamıyorsa: iOS Ayarlar → Safari → Mikrofon izni, ya da mikrofonu tutan başka bir uygulamayı kapat.</div>
 
     </div></details>
-    <details class="grup"><summary><span data-i18n="muzikTitle"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="muzikTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="muzikTitle">Müzik yatağı</label><span class="v" id="muzikDurumTxt">—</span></div>
     <div class="sheetbtns">
       <button class="cancel" id="muzikPick" data-i18n="muzikPick">Müzik seç</button>
@@ -1589,7 +1605,7 @@
     <input type="range" id="muzikKis" min="0" max="100" value="80">
     <div class="hint" id="muzikHint" data-i18n="muzikHint">Müzik kayda karışır ve konuşurken kendiliğinden kısılır. Dosya cihazdan çıkmaz ve saklanmaz — her oturumda yeniden seçilir.</div>
     </div></details>
-    <details class="grup"><summary><span data-i18n="fxTitle"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="fxTitle"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row" style="margin-top:20px"><label data-i18n="fxTitle">Ses Stüdyosu</label><span class="v" id="fxState">—</span></div>
     <div class="seg" id="fxSeg">
       <button data-fx="off" data-i18n="fxOff">Kapalı</button>
@@ -1615,7 +1631,7 @@
 
   <!-- DİĞER -->
   <div class="tab" id="tab-more">
-    <details class="grup"><summary><span data-i18n="gAltyaziZ"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gAltyaziZ"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="row"><label for="capOffset" data-i18n="capOffset">Altyazı kayması (sn)</label><span class="v" id="vCapOff">0.0</span></div>
     <input type="range" id="capOffset" min="-20" max="20" value="0">
     <div class="hint" data-i18n="capHint">Altyazı senaryodan üretilir, konuşma tanıma kullanılmaz — yazım her zaman doğrudur. Zamanlama kelimenin okuma çizgisinden geçtiği andır; erken/geç çıkıyorsa buradan kaydır.</div>
@@ -1639,7 +1655,7 @@
     <div class="sheetbtns"><button class="cancel" id="voiceTest" data-i18n="voiceTest">Mikrofonu ve tanımayı sına</button></div>
     <div class="hint" id="voiceTestOut"></div>
     </div></details>
-    <details class="grup"><summary><span data-i18n="gEkran"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gEkran"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="tog"><span data-i18n="tgLock">Kayıtta ekranı kilitle</span><div class="sw" data-t="autoLock"></div></div>
     <div class="tog"><span data-i18n="tgKeepAwake">Ekranı uyanık tut</span><div class="sw on" data-t="wake"></div></div>
     <div class="tog"><span data-i18n="tgHicon">◐ Yüksek kontrast</span><div class="sw" data-t="hicon"></div></div>
@@ -1654,7 +1670,7 @@
     <input type="file" id="impFile" accept="application/json,.json" class="hidden">
     <div class="sheetbtns"><button class="cancel" id="takesBtn" data-i18n="takes">Çekimlerim</button></div>
     </div></details>
-    <details class="grup"><summary><span data-i18n="gCihaz"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gCihaz"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns"><button class="cancel" id="remoteBtn" data-i18n="remote">Uzaktan kumanda</button></div>
     <div class="sheetbtns"><button class="cancel" id="devBtn" data-i18n="devBtn">Cihaz uyumluluğu</button></div>
     <div id="devOut"></div>
@@ -1663,7 +1679,7 @@
          açılan sayfa. Kapatan ya da kaçıran bir daha ulaşamıyordu. -->
     <div class="sheetbtns"><button class="cancel" id="newsBtn" data-i18n="newsTitle">🆕 Ne değişti?</button></div>
     </div></details>
-    <details class="grup"><summary><span data-i18n="gSifirla"></span><span class="ozet"></span></summary><div class="icerik">
+    <details class="grup" data-duzey="ileri"><summary><span data-i18n="gSifirla"></span><span class="ozet"></span></summary><div class="icerik">
     <div class="sheetbtns"><button class="danger" id="resetAll" data-i18n="resetAll">↺ Ayarları varsayılana döndür</button></div>
     <div class="hint" data-i18n="resetHint">Yalnız ayarları sıfırlar — senaryoların ve çekimlerin durur.</div>
     <div class="hint" id="verLine" style="text-align:center;margin-top:14px">Sufle v2.0</div>
@@ -2205,7 +2221,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.35';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.36';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2457,6 +2473,8 @@ const I18N={
   isikIyi:'Işık ve çerçeve iyi görünüyor ✓',isikIyiD:'yüz {y} · arka {a} · kontrast {k}',
   isikKapaliT:'Kamera kapalı',isikKapaliD:'Önce kamerayı aç',
   scFavAdd:'Favorilere ekle',scFavDel:'Favorilerden çıkar',
+  duzeyL:'Ayar düzeyi',duzeyTemel:'Temel',duzeyIleri:'Gelişmiş',
+  duzeyHint:'Temel akışta uzman kartları gizli — hiçbir ayar kaybolmuyor, Gelişmiş\'e geçince {n} kart geri geliyor. Arama her iki düzeyde de hepsini buluyor.',
   scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
   scTagsHint:'Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.',
   fromFileHint:'Word (.docx), PDF, düz metin, Markdown ve altyazı dosyaları. PDF metni gömülü değilse (taranmış sayfa) uygulama bunu söyler; o zaman metni kopyalayıp Yapıştır ile getir.',
@@ -2703,6 +2721,8 @@ const I18N={
   isikIyi:'Light and framing look good ✓',isikIyiD:'face {y} · back {a} · contrast {k}',
   isikKapaliT:'Camera off',isikKapaliD:'Open the camera first',
   scFavAdd:'Add to favourites',scFavDel:'Remove from favourites',
+  duzeyL:'Setting level',duzeyTemel:'Basic',duzeyIleri:'Advanced',
+  duzeyHint:'Expert cards are hidden in Basic — nothing is lost; switching to Advanced brings {n} cards back. Search finds everything at either level.',
   scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
   scTagsHint:'Separate with commas. One script can carry several tags — that is what a folder cannot do. Up to 6 tags.',
   fromFileHint:'Word (.docx), PDF, plain text, Markdown and subtitle files. If a PDF has no embedded text (a scanned page) the app says so; then copy the text and use Paste.',
@@ -3366,7 +3386,7 @@ const DEF={
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
   hideUI:true,
-  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, pozElle:false, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, sesKayitta:false, trash:[], wakeWord:'',
+  target:0, voiceLang:'tr-TR', zoom:100, poz:undefined, pozElle:false, wb:0, vad:false, vadSens:20, eyeLine:false, hicon:false, hiconSoruldu:0, camLock:false, seenVer:'', scSort:'used', ayarDuzey:'temel', capStyle:'clean', capMaxW:7, bitrate:'mid', micId:null, maskPrev:false, remoteMap:null, remoteMap2:null, voiceCmd:true, sesKayitta:false, trash:[], wakeWord:'',
   mode:'free', safe:false, band:0, dist:60, capOffset:0, bionic:false, stopAtSection:false, textCase:'none',
   /* G.1: karaoke vurgusu VARSAYILAN AÇIK. Eski kullanıcının kaydında bu alan
      yok ama Object.assign varsayılanın üstüne yazdığı için EKSİK ALAN
@@ -8903,6 +8923,22 @@ SHEETS.forEach(sel=>{
 });
 
 /* ============ AYARLARI UYGULA ============ */
+function duzeyCiz(){
+  /* KATMANLI AYARLAR — gizlenen kart SAYISI yazılıyor. "Bir şeyler kayboldu"
+     hissi, özelliğin kendisini kaybettirmekten pahalıdır: kullanıcı neyin
+     nerede olduğunu bilmezse Gelişmiş'i hiç aramaz. Arama her iki düzeyde de
+     hepsini buluyor (bkz. `body.ayarAra`). */
+  const temel = (st.ayarDuzey||'temel')==='temel';
+  body.classList.toggle('ayarTemel', temel);
+  $$('#duzeySeg button').forEach(b=>{
+    const secili = b.dataset.duzey===(temel?'temel':'ileri');
+    b.classList.toggle('on', secili);
+    b.setAttribute('aria-pressed', secili?'true':'false');
+  });
+  const n=$$('#sheet .grup[data-duzey="ileri"]').length;
+  const h=$('#duzeyHint');
+  if(h) h.textContent = temel ? srY(t('duzeyHint'),{n}) : '';
+}
 function apply(){
   root.style.setProperty('--fs',st.fs+'px');
   root.style.setProperty('--lh',String(st.lh/100));
@@ -8988,7 +9024,7 @@ function apply(){
   $$('#capAnimSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ka===(st.capAnim||'yumusak')));
   if($('#capMaxW')){ $('#capMaxW').value=st.capMaxW||7; $('#vCapW').textContent=st.capMaxW||7; }
   $$('#brSeg button').forEach(b=>b.classList.toggle('on',b.dataset.br===(st.bitrate||'mid')));
-  renderBitrate(); renderFx(); renderVfx(); renderVad(); renderMime(); gateSettings();
+  renderBitrate(); renderFx(); renderVfx(); renderVad(); renderMime(); gateSettings(); duzeyCiz();
   if($('#vadSens')) $('#vadSens').value=(st.vadSens==null?20:st.vadSens);
   $$('#qSeg button').forEach(b=>b.classList.toggle('on',b.dataset.q===st.quality));
   $$('#aspSeg button').forEach(b=>b.classList.toggle('on',b.dataset.asp===st.asp));
@@ -10781,7 +10817,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
@@ -11633,6 +11669,7 @@ function searchSettings(){
       [...g.querySelector('.icerik').children].forEach(c=>{
         c.style.display=''; c.classList.remove('aramaAcik'); }); });
   };
+  body.classList.toggle('ayarAra', !!q);   // arama düzey süzgecini askıya alır
   if(!q){
     temizle();
     $$('#sheet .tabs button').forEach(b=>b.style.display='');
@@ -11712,6 +11749,7 @@ $$('.sheet .grup').forEach(g=>{
   g.addEventListener('toggle',()=>{ if(!$('#setFind').value) g.dataset.acik=g.open?'1':'0';
     if(g.open) ozetTazele(true); });
 });
+$$('#duzeySeg button').forEach(b=>b.onclick=()=>{ st.ayarDuzey=b.dataset.duzey; save(); duzeyCiz(); });
 $$('#scSort button').forEach(b=>b.onclick=()=>{ st.scSort=b.dataset.ss;
   $$('#scSort button').forEach(x=>x.classList.toggle('on',x===b)); save(); renderScripts(); });
 $$('#capStyleSeg button').forEach(b=>b.onclick=()=>{ st.capStyle=b.dataset.cs;

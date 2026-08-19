@@ -2,6 +2,31 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 20 Ağustos gecesi — **v9.36 hazır · henüz yayınlanmadı** — KATMANLI AYARLAR
+
+Rakip analizinin (`belgeler/SUFLE_RAKIP_STRATEJI_...docx`) P0–P3 listesi ölçüldü:
+**11 maddenin 9'u kapalıydı**, açık kalan tek P1 buydu.
+
+Kabul ölçütü dokümandan: *"temel akışta uzman özellikler görünmez; İŞLEVLER
+KAYBOLMAZ."* İkinci cümle birincisinden zor: bir kartı gizlemek kolay,
+kullanıcıya nerede olduğunu söylemek zor. Üç kural birlikte uygulandı:
+① düzey seçicisi ayar sayfasının **en üstünde**, aramadan da önce — "kartlar
+neden az" sorusu sorulmadan cevap görünüyor ② gizlenen kart **sayısı** yazıyor
+③ **arama düzeyi aşıyor**: gizli bir kartı bulup gösteremeyen arama "bulundu"
+der ve hiçbir şey görünmez (deponun 2 numaralı sınıfı).
+
+14 kart uzman işaretlendi (yerleşim, renk, ayna, dosya boyutu, mikrofon
+seçimi, çerçeve, ışık denetçisi, kompozit, müzik, ses stüdyosu, altyazı
+zamanlama, ekran, cihaz, sıfırla); hız, profil, kalite, kamera, sesle takip
+gibi ana akış kartları Temel'de kaldı.
+
+**Üç test biçim kilidiydi ve düzeltildi:** `tests/166` ve `tests/171` kartları
+`<details class="grup"><summary>` diye BİREBİR arıyordu, yeni nitelik gelince
+kart saymayı bıraktılar · `tests/93`ün tezgâhı gövde nesnesi sağlamadığı için
+ÜRÜN DOĞRUYKEN çöküyordu. İlk düzeltmemde `open` bilgisini yok saydım ve
+"hiçbir kart açık başlamıyor" iddiası sessizce her zaman geçer oldu — kasıtlı
+bozma inmeyince yakalandı.
+
 ## 🟢 19 Ağustos gecesi — v9.35 YAYINLANDI ve canlıdan doğrulandı (`sufle-v107`)
 
 `index.html` ve `sw.js` md5 birebir (`0a4c1943…` / `8bad5d8c…`) · `canli.py`
@@ -9,13 +34,17 @@
 `data-etiket="Hızlı"` 1 · `scFavAdd` 3 · `Filtre ve güzellik` 2.
 `.son-yayin` doğrulamadan SONRA yazıldı (`9.35 107`).
 
+> **Yayın durumu bilerek YALNIZ burada yazılı.** İki yerde yazınca birini
+> bozmak `tests/116`nın kasıtlı bozmasını etkisiz bırakıyor — kanıtın ayırt
+> etmesi için durumun tek yerde olması şart. Bu gece ikinci kez oldu.
+
 **Bu yayında:** v9.33'ün üç bulunabilirlik kusuru (güzellik yanlış kartın
 altında + olmayan ön koşul duyurusu, hızlı erişim düğmesi adsız) ·
 **güzellik masaüstüne geldi** (ortak gölgelendirici) · hızlı erişimdeki
 kamera karosu artık sebebini söylüyor · **senaryo favorisi** · kapının 10.
 adımının yanlış dosyayı ölçmesi.
 
-## 🟢 19 Ağustos — v9.35 YAYINLANDI ve canlıdan doğrulandı (`sufle-v107`) — "v9.33 GÖRÜNMÜYOR"
+## 19 Ağustos — "v9.33 GÖRÜNMÜYOR" turu (kanıtı en üstteki bölümde)
 
 Erdal canlı uygulamada **"v9.33 yapılanlar görünmüyor"** dedi. Kaynağa değil
 **çizilmiş ekrana** bakıldı (canlı adres, gerçek Chrome, 430×932) ve **üç
@@ -52,7 +81,7 @@ iki iddia da **tersine** çevrildi, gerekçesi yazıldı.
 Yeni kural olarak eklendi: kart adı güzelliği söylemeli · düğmenin görünen
 adı olmalı · gerçekten ön koşulu olmayan ayar gölgelenmemeli. 3 yeni bozma.
 
-## 🟢 19 Ağustos — v9.34 YAYINLANDI ve canlıdan doğrulandı (`sufle-v106`), Erdal onayıyla
+## 19 Ağustos — v9.34 turu (kanıtı aşağıda)
 
 **Doğrulama:** `index.html` ve `sw.js` md5 birebir (`b6c55036…` /
 `538a5fd4…`) · `canli.py` üç genişlikte temiz (sufle var · metin var · taşma
@@ -138,7 +167,7 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 `~/Documents` dışında tutulmalı ③ aynalar hâlâ iCloud altında ④ eski dizin
 `~/Desktop/.sufle-deploy` **silinmedi**, dokunulmadı.
 
-## 🟢 19 Ağustos — **v9.34 YAYINLANDI ve canlıdan doğrulandı** — SENARYO ETİKETLERİ
+## 19 Ağustos — senaryo etiketleri turu
 
 ### 🌍 Altı grup daha + iki KAPI KUSURU (telefon 110 → 84)
 

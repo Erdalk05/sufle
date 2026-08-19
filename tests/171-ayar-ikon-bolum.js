@@ -34,7 +34,7 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/<!--[\s\S]*?-->/g,'');
 
 /* ---------- 1. HER KARTIN İKONU VAR ---------- */
 {
-  const kartlar=[...tel.matchAll(/<details class="grup"(?: open)?><summary><span data-i18n="(\w+)"/g)]
+  const kartlar=[...tel.matchAll(/<details class="grup"[^>]*><summary><span data-i18n="(\w+)"/g)]
                   .map(m=>m[1]);
   ok('ayar/senaryo kartları bulundu ('+kartlar.length+')', kartlar.length>=26);
 

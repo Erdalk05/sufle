@@ -148,6 +148,13 @@ SONRA = {
     'telefon-kompozit': (
         "document.querySelector('#settingsBtn').click();"
         " await new Promise(r=>setTimeout(r,400));"
+        # v9.36 KATMANLI AYARLAR: kompozit kartı UZMAN kartıdır ve Temel
+        # düzeyde çizilmiyor. Kullanıcı da ona ancak Gelişmiş'e geçerek
+        # ulaşıyor; ölçüm o yolu izlemezse kartı hiç bulamaz. Kapı bunu
+        # ilk koşuşta yakaladı — yani katmanlama gerçekten çiziliyor.
+        " const dz=document.querySelector('#duzeySeg [data-duzey=ileri]');"
+        " if(dz) dz.click();"
+        " await new Promise(r=>setTimeout(r,300));"
         " document.querySelector('[data-tab=cam]').click();"
         " await new Promise(r=>setTimeout(r,300));"
         " const ac=el=>{ if(!el) return; el.classList.remove('hidden');"

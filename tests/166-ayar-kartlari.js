@@ -16,7 +16,14 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ---------- 1. YAPI ---------- */
 const sheet=tel.slice(tel.indexOf('id="sheet"'), tel.indexOf('id="scriptsSheet"'));
-const kartlar=[...sheet.matchAll(/<details class="grup"( open)?><summary><span data-i18n="(\w+)"/g)];
+/* v9.36: kartlar `data-duzey="ileri"` niteliği taşıyabiliyor (katmanlı
+   ayarlar). Desen o niteliği görünce kart saymayı bırakıyordu — ürün
+   doğruyken kırılan biçim kilidi. */
+const kartlar=[...sheet.matchAll(/<details class="grup"([^>]*)><summary><span data-i18n="(\w+)"/g)]
+  /* `open` bilgisi KORUNUYOR: ilk düzeltmemde niteliği tümden yok saymıştım
+     ve "hiçbir kart açık başlamıyor" iddiası sessizce her zaman geçer oldu —
+     kasıtlı bozma da inmedi. Nitelik metninden çıkarılıyor. */
+  .map(m=>[m[0], /\bopen\b/.test(m[1]) ? ' open' : undefined, m[2]]);
 ok('ayar sayfası kartlardan oluşuyor ('+kartlar.length+' kart)', kartlar.length>=20);
 
 /* AÇIK KART YOK: sayfa açıldığında konuların LİSTESİ görünür. Bir kart açık
@@ -309,7 +316,7 @@ function anahtar(acik){
 /* ---------- 3. SENARYOLAR SAYFASI DA KARTLANDI ---------- */
 {
   const sc=tel.slice(tel.indexOf('id="scriptsSheet"'), tel.indexOf('id="takesSheet"'));
-  const k=[...sc.matchAll(/<details class="grup"><summary><span data-i18n="(\w+)"/g)].map(m=>m[1]);
+  const k=[...sc.matchAll(/<details class="grup"[^>]*><summary><span data-i18n="(\w+)"/g)].map(m=>m[1]);
   ok('senaryolar sayfasında da kart var ('+k.length+')', k.length>=4);
   /* Sık kullanılan İKİSİ kartın DIŞINDA kalmalı: liste ve metin alanı.
      Kullanıcı buraya senaryo yazmaya gelir; onları da katlamak işi bozar. */
@@ -332,7 +339,7 @@ function anahtar(acik){
 /* ---------- 3b. SONUÇ EKRANI: TEK ASIL EYLEM ---------- */
 {
   const res=tel.slice(tel.indexOf('<div id="result">'), tel.indexOf('<div id="ready"'));
-  const kartlar=[...res.matchAll(/<details class="grup"><summary><span data-i18n="(\w+)"/g)].map(m=>m[1]);
+  const kartlar=[...res.matchAll(/<details class="grup"[^>]*><summary><span data-i18n="(\w+)"/g)].map(m=>m[1]);
   ok('sonuç ekranında kart var ('+kartlar.join(', ')+')', kartlar.length>=2);
   /* Jetonların kendi kuralı: dolu yeşil = asıl eylem, ekranda TEK olmalı.
      Ölçülen kusur: sekiz düğme aynı ağırlıkta iki sıra hâlinde duruyordu. */
@@ -544,4 +551,45 @@ ok('kullanıcı kartı açıp kapatınca yeni durum akılda kalıyor (arama kapa
   ok('zorlanma haritası kartın içinde', !disarida('id="macDiffClear"'));
   ok('masaüstünde kart biçimi tanımlı', /\.grup\{background:var\(--card/.test(mac));
   ok('masaüstü kart başlığı en az 40 px', /\.grup>summary\{[^}]*min-height:40px/.test(mac));
+}
+
+/* ---------- KATMANLI AYARLAR (v9.36) ----------
+   Rakip yol haritasının açık kalan tek P1'i. Kabul ölçütü dokümandan:
+   "temel akışta uzman özellikler görünmez; İŞLEVLER KAYBOLMAZ."
+
+   Bu iki cümlenin ikincisi birincisinden önemli: bir ayarı gizlemek kolay,
+   kullanıcıya nerede olduğunu söylemek zor. Bu yüzden ① gizlenen kart SAYISI
+   ekranda yazıyor ② arama her iki düzeyde de hepsini buluyor ③ düzey
+   seçicisi ayar sayfasının EN ÜSTÜNDE, aramadan önce. */
+{
+  const kart=[...tel.matchAll(/<details class="grup"[^>]*data-duzey="ileri"[^>]*><summary><span data-i18n="(\w+)"/g)]
+    .map(m=>m[1]);
+  ok('uzman kartları işaretli ('+kart.length+')', kart.length>=10);
+  ok('temel kartlar işaretsiz kalmış',
+     !kart.includes('gTempo') && !kart.includes('mode') && !kart.includes('quality'));
+  ok('düzey seçicisi var', /id="duzeySeg"/.test(tel));
+  /* Seçici ARAMADAN ÖNCE: arama kutusunu geçtikten sonra görülen bir düzey
+     seçici, kullanıcıya "kartlar neden az" sorusunu sorduktan SONRA cevap
+     verir. */
+  ok('düzey seçicisi arama kutusundan önce',
+     tel.indexOf('id="duzeySeg"') < tel.indexOf('id="setFind"'));
+  ok('temel düzeyde uzman kartı gizleniyor',
+     /body\.ayarTemel:not\(\.ayarAra\) \.grup\[data-duzey="ileri"\]\{display:none\}/.test(tel));
+  /* 🔴 ARAMA DÜZEYİ AŞMALI: gizli bir kartı bulup gösteremeyen arama
+     "bulundu" der ve hiçbir şey görünmez — deponun 2 numaralı sınıfı. */
+  ok('arama düzey süzgecini askıya alıyor',
+     /classList\.toggle\('ayarAra', !!q\)/.test(tel));
+  ok('kaç kartın gizlendiği yazılıyor', /srY\(t\('duzeyHint'\),\{n\}\)/.test(tel));
+  /* Fonksiyon adıyla anılıyor: kapsam kapısı 'hiçbir testin anmadığı
+     fonksiyon' sayıyor ve yeni kod sessizce ölçüsüz kalmasın diye. */
+  ok('düzey çizimi tek fonksiyonda', /function duzeyCiz\(\)/.test(tel) &&
+     (tel.match(/duzeyCiz\(\)/g)||[]).length>=3);
+  ok('düzey iki dilde tanımlı',
+     /duzeyTemel:'Temel'/.test(tel) && /duzeyTemel:'Basic'/.test(tel) &&
+     /duzeyIleri:'Gelişmiş'/.test(tel) && /duzeyIleri:'Advanced'/.test(tel));
+  ok('seçim kalıcı', /st\.ayarDuzey=b\.dataset\.duzey; save\(\)/.test(tel));
+  /* Ekran okuyucu için seçili düzey söylenmeli: iki düğme arasındaki fark
+     yalnız renkse, sesli okumada hiçbir fark yok. */
+  ok('seçili düzey aria ile bildiriliyor',
+     /b\.setAttribute\('aria-pressed', secili\?'true':'false'\)/.test(tel));
 }
