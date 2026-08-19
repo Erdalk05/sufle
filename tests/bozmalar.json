@@ -5087,5 +5087,33 @@
   "kaynak": "telefon",
   "bul": "  if(i==='backCam' && !stream){ toast(m('needCam')); return; }",
   "koy": "  /* koruma kaldırıldı */"
+ },
+ {
+  "ad": "v9.35 favori sıralamayı EZİYOR (kullanıcının seçtiği sıra kayboluyor)",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "    const f=(b.fav?1:0)-(a.fav?1:0); if(f) return f;",
+  "koy": "    return (b.fav?1:0)-(a.fav?1:0);"
+ },
+ {
+  "ad": "v9.35 yıldıza dokunmak senaryoyu da açıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "    d.querySelector('[data-a=\"fav\"]').onclick=e=>{ e.stopPropagation();",
+  "koy": "    d.querySelector('[data-a=\"fav\"]').onclick=e=>{"
+ },
+ {
+  "ad": "v9.35 favori düğmesinin adı duruma göre değişmiyor (ekran okuyucu için anlamsız)",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "aria-label=\"'+(s.fav?t('scFavDel'):t('scFavAdd'))+",
+  "koy": "aria-label=\"'+t('scFavAdd')+"
+ },
+ {
+  "ad": "v9.35 Mac'te yıldız satırı da açıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "mac",
+  "bul": "      el.onclick=(e)=>{ if(!e.target.classList.contains('x') && !e.target.classList.contains('fav')) selectScript(s.id); };",
+  "koy": "      el.onclick=(e)=>{ if(!e.target.classList.contains('x')) selectScript(s.id); };"
  }
 ]

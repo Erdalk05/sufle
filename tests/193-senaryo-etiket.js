@@ -131,3 +131,33 @@ for(const k of ['scTagsL','scTagsPh','scTagAll','scTagsHint']){
   ok('anahtar iki dilde: '+k,
      (tel.match(new RegExp(k+":'",'g'))||[]).length>=2);
 }
+
+/* ---------- 8) SENARYO FAVORİSİ (v9.35) ----------
+   Rakip yol haritasının "senaryo organizasyonu" maddesinin son parçası.
+   Çekim arşivinde yıldız ZATEN vardı (`fav`), senaryolarda yoktu — aynı
+   kavramın yarısı eksikti. Favori ayrı bir sekme DEĞİL: liste ikiye
+   bölünürse kullanıcı aradığı senaryonun hangi yarıda olduğunu bilemez. */
+for(const [ad,src] of [['telefon',tel],['Mac',mac]]){
+  ok(ad+': favori düğmesi var', /aria-pressed="\$\{?s\.fav/.test(src) || /s\.fav\?'★':'☆'/.test(src));
+  ok(ad+': favori kalıcı duruma yazılıyor', /s\.fav=!s\.fav; save\(\)/.test(src));
+  /* Sıralamanın YERİNE değil ÜSTÜNE: kullanıcının seçtiği sıra korunuyor. */
+  /* SIRALAMANIN ÜSTÜNDE, YERİNE DEĞİL: favori eşitliğinde kullanıcının
+     seçtiği sıra (son kullanılan / ada göre / uzunluğa göre) devam etmeli.
+     Yalnız `fav` farkını döndüren bir karşılaştırma o sırayı tümden siler. */
+  ok(ad+': favoriler seçili sıralamanın üstünde',
+     /const f=\(b\.fav\?1:0\)-\(a\.fav\?1:0\); if\(f\) return f;/.test(src) ||
+     /\.sort\(\(a,b\)=>\(\(b\.fav\?1:0\)-\(a\.fav\?1:0\)\)\)/.test(src));
+  /* Telefonda yıldız AYRI bir düğme ve `stopPropagation` çağırıyor; Mac'te
+     satırın kendi tıklaması sınıfa bakarak ayrılıyor. İkisi de aynı sonucu
+     veriyor: yıldız senaryoyu AÇMIYOR. */
+  ok(ad+': yıldıza dokunmak senaryoyu AÇMIYOR',
+     /\[data-a="fav"\]'\)\.onclick=e=>\{ e\.stopPropagation\(\);/.test(src) ||
+     /!e\.target\.classList\.contains\('fav'\)/.test(src));
+}
+/* Erişilebilir ad DURUMU söylemeli: "Favori" tek başına açık mı kapalı mı
+   demiyor; ekran okuyucu kullanıcısı için düğme o zaman anlamsız. */
+ok('favori düğmesinin adı duruma göre değişiyor',
+   /scFavAdd:'Favorilere ekle'/.test(tel) && /scFavDel:'Favorilerden çıkar'/.test(tel) &&
+   /scFavAdd:'Add to favourites'/.test(tel) && /scFavDel:'Remove from favourites'/.test(tel) &&
+   /\(s\.fav\?t\('scFavDel'\):t\('scFavAdd'\)\)/.test(tel));
+
