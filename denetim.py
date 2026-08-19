@@ -85,6 +85,12 @@ def kullanilan_anahtarlar(path):
     tablo = re.search(r"const KART_BOLUM=\{(.*?)\n\};", js, re.S)
     if tablo:
         yardimci |= set(re.findall(r"'([A-Za-z0-9]+)'", tablo.group(1)))
+    # DÖRDÜNCÜ ÖRNEK (2026-08-19): ışık denetçisinin cümleleri sözlüğe taşındı
+    # ve modül anahtarı `isikYaz(tt,'anahtar')` ile okuyor. Bu satır olmasaydı
+    # 18 anahtar birden "hiç kullanılmıyor" diye bağırırdı. Ortak şekil hep
+    # aynı: ANAHTARI SAKLAYAN YARDIMCI. Yeni bir yardımcı yazan herkesin bu
+    # listeye de bakması gerekiyor — dedektörün kendi kör noktası burada.
+    yardimci |= set(re.findall(r"\bisikYaz\(\s*\w+\s*,\s*'([A-Za-z0-9]+)'", js))
     return (yardimci | set(re.findall(r"\bt\('([A-Za-z0-9]+)'\)", js))
             | set(re.findall(r'data-i18n="([^"]+)"', html))
             | set(re.findall(r'data-i18n-ph="([^"]+)"', html))

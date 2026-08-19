@@ -4863,5 +4863,26 @@
   "kaynak": "mac",
   "bul": "  $('#macWb').addEventListener('dblclick',()=>{ state.wb=0;",
   "koy": "  $('#macWb').addEventListener('mouseenter',()=>{ state.wb=0;"
+ },
+ {
+  "ad": "v9.34 ışık cümlesi sözlüğe değil tekrar koda dönüyor",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  if(s.center<55) out.push({lv:'bad', t:isikYaz(tt,'isikKaranlik'),",
+  "koy": "  if(s.center<55) out.push({lv:'bad', t:(L==='tr'?'Yüzün karanlık':'Your face is dark'),"
+ },
+ {
+  "ad": "v9.34 yer tutucu iki dilde ayrışıyor (sayı bir dilde süslü parantez kalır)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "isikArkaD:'Turn away from the window (back {a} / face {y})'",
+  "koy": "isikArkaD:'Turn away from the window (back {back} / face {face})'"
+ },
+ {
+  "ad": "v9.34 ışık anahtarının İngilizcesi düşürüldü (arayüzde undefined)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  isikSiyah:'The camera is sending a black frame',",
+  "koy": "  isikSiyahX:'The camera is sending a black frame',"
  }
 ]

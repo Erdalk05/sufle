@@ -151,6 +151,22 @@ const I18N={
   tgLock:'Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
   /* .docx içe aktarma (D.1) */
   /* Etiket = klasörün çok üyelikli hâli; gerekçesi cekirdek/etiket.js'te. */
+  /* IŞIK/ÇERÇEVE DENETÇİSİNİN CÜMLELERİ. 2026-08-19'da `cekirdek/isik.js`
+     içinden buraya taşındı: orada `L==='tr'?…:…` ile YAZILIYORLARDI, yani
+     sözlüğün dışındaydılar. Sözlük dışındaki kullanıcı metni üç kapının
+     birden kör noktası — i18n kapsamı, çeviri kaçağı taraması ve arayüz
+     kontrast denetimi hiçbiri oraya bakmıyor — ve üçüncü arayüz dilinin
+     önündeki asıl engel de bu. Sayılar `{}` yer tutucularıyla giriyor. */
+  isikSiyah:'Kamera siyah kare veriyor',
+  isikSiyahD:'Bu bir ışık sorunu değil — görüntü hiç gelmiyor. Mercek kapağını/parmağını kontrol et; uygulamayı arka plandan yeni getirdiysen birkaç saniye bekle ya da kamerayı kapatıp aç.',
+  isikKaranlik:'Yüzün karanlık',isikKaranlikD:'Işığı yüzünün önüne al; pencereye dönük otur. Ortalama parlaklık {y}/255',
+  isikAzKaranlik:'Yüzün az karanlık',isikAzKaranlikD:'Biraz daha ışık iyi olur ({y}/255)',
+  isikArka:'Arkadan ışık geliyor',isikArkaD:'Pencereye sırtını dönmüşsün — dön ya da perdeyi kapat (arka {a} / yüz {y})',
+  isikPatlak:'Işık patlıyor',isikPatlakD:'Karenin %{p}\'i bembeyaz — ışığı kıs ya da uzaklaştır',
+  isikYassi:'Görüntü yassı, kontrast düşük',isikYassiD:'Tek yönden yumuşak ışık ekle; düz tavan ışığı yassı gösterir',
+  isikEgik:'Telefon eğik',isikEgikD:'{d}° yana yatık — düzelt',
+  isikIyi:'Işık ve çerçeve iyi görünüyor ✓',isikIyiD:'yüz {y} · arka {a} · kontrast {k}',
+  isikKapaliT:'Kamera kapalı',isikKapaliD:'Önce kamerayı aç',
   scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
   scTagsHint:'Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.',
   fromFileHint:'Word (.docx), PDF, düz metin, Markdown ve altyazı dosyaları. PDF metni gömülü değilse (taranmış sayfa) uygulama bunu söyler; o zaman metni kopyalayıp Yapıştır ile getir.',
@@ -325,6 +341,16 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  isikSiyah:'The camera is sending a black frame',
+  isikSiyahD:'This is not a lighting problem — no image is arriving. Check the lens cover or your finger; if you just returned from the background, wait a moment or reopen the camera.',
+  isikKaranlik:'Your face is dark',isikKaranlikD:'Move the light in front of you. Center brightness {y}/255',
+  isikAzKaranlik:'Face slightly dark',isikAzKaranlikD:'A bit more light would help ({y}/255)',
+  isikArka:'You are backlit',isikArkaD:'Turn away from the window (back {a} / face {y})',
+  isikPatlak:'Highlights blown',isikPatlakD:'{p}% of the frame is pure white — dim or move the light',
+  isikYassi:'Flat, low-contrast image',isikYassiD:'Add one directional light; flat ceiling light looks dull',
+  isikEgik:'Phone is tilted',isikEgikD:'{d}° roll — level it',
+  isikIyi:'Light and framing look good ✓',isikIyiD:'face {y} · back {a} · contrast {k}',
+  isikKapaliT:'Camera off',isikKapaliD:'Open the camera first',
   scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
   scTagsHint:'Separate with commas. One script can carry several tags — that is what a folder cannot do. Up to 6 tags.',
   fromFileHint:'Word (.docx), PDF, plain text, Markdown and subtitle files. If a PDF has no embedded text (a scanned page) the app says so; then copy the text and use Paste.',

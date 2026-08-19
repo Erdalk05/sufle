@@ -43,8 +43,23 @@ function isikIstatistik(d){
 }
 
 /* İstatistikten kullanıcının okuyacağı öğütler.
-   `tiltDeg` null ise eğim satırı hiç üretilmez (masaüstü). */
-function isikBulgular(s, L, tiltDeg){
+   `tiltDeg` null ise eğim satırı hiç üretilmez (masaüstü).
+
+   ⚠️ METİNLER ARTIK SÖZLÜKTE (2026-08-19). Önce burada `L==='tr'?…:…` ile
+   yazılıyorlardı ve sözlüğün dışında kalan kullanıcı metni ÜÇ kapının birden
+   kör noktası: i18n kapsamı, çeviri kaçağı taraması ve çizilmiş arayüz
+   denetimi hiçbiri oraya bakmıyor. Üçüncü arayüz dilinin önündeki asıl engel
+   de bu — çeviri değil, sözlüğü atlayan metinler.
+
+   `tt` bir ARAMA FONKSİYONU (kabuğun `t`si). Modül saf kalıyor: dile değil,
+   verilen aramaya bağlı; test de kendi sözlüğüyle koşturabiliyor. */
+function isikYaz(tt, anahtar, degerler){
+  let m=String(tt(anahtar)||'');
+  for(const k in (degerler||{})) m=m.split('{'+k+'}').join(degerler[k]);
+  return m;
+}
+
+function isikBulgular(s, tt, tiltDeg){
   /* SİYAH KARE — IŞIK SORUNU DEĞİL, GÖRÜNTÜ YOK.
      Kamera açık görünüyor ama kare bomboş: mercek kapağı/parmak, ya da iOS
      arka plandan dönerken bir süre boş kare veriyor. Eskiden bu duruma
@@ -52,32 +67,27 @@ function isikBulgular(s, L, tiltDeg){
      deniyordu. Kullanıcı ışık ekliyor, hiçbir şey değişmiyor; asıl sebep
      hiçbir yerde yazmıyor.
      Erken dönüyoruz: yanıltıcı ışık öğüdünü üstüne yığmanın anlamı yok. */
-  if(s.darkPct>90) return [{lv:'bad',
-    t:(L==='tr'?'Kamera siyah kare veriyor':'The camera is sending a black frame'),
-    d:(L==='tr'?'Bu bir ışık sorunu değil — görüntü hiç gelmiyor. Mercek kapağını/parmağını kontrol et; '
-               +'uygulamayı arka plandan yeni getirdiysen birkaç saniye bekle ya da kamerayı kapatıp aç.'
-               :'This is not a lighting problem — no image is arriving. Check the lens cover or your finger; '
-               +'if you just returned from the background, wait a moment or reopen the camera.')}];
+  if(s.darkPct>90) return [{lv:'bad', t:isikYaz(tt,'isikSiyah'), d:isikYaz(tt,'isikSiyahD')}];
   const out=[];
-  if(s.center<55) out.push({lv:'bad',t:(L==='tr'?'Yüzün karanlık':'Your face is dark'),
-    d:(L==='tr'?'Işığı yüzünün önüne al; pencereye dönük otur. Ortalama parlaklık '+Math.round(s.center)+'/255':'Move the light in front of you. Center brightness '+Math.round(s.center)+'/255')});
-  else if(s.center<85) out.push({lv:'warn',t:(L==='tr'?'Yüzün az karanlık':'Face slightly dark'),d:(L==='tr'?'Biraz daha ışık iyi olur ('+Math.round(s.center)+'/255)':'A bit more light would help ('+Math.round(s.center)+'/255)')});
-  if(s.edge>s.center*1.55) out.push({lv:'bad',t:(L==='tr'?'Arkadan ışık geliyor':'You are backlit'),
-    d:(L==='tr'?'Pencereye sırtını dönmüşsün — dön ya da perdeyi kapat (arka '+Math.round(s.edge)+' / yüz '+Math.round(s.center)+')':'Turn away from the window (back '+Math.round(s.edge)+' / face '+Math.round(s.center)+')')});
-  if(s.hotPct>8) out.push({lv:'warn',t:(L==='tr'?'Işık patlıyor':'Highlights blown'),
-    d:(L==='tr'?'Karenin %'+Math.round(s.hotPct)+'\'i bembeyaz — ışığı kıs ya da uzaklaştır':Math.round(s.hotPct)+'% of the frame is pure white — dim or move the light')});
-  if(s.sd<16) out.push({lv:'warn',t:(L==='tr'?'Görüntü yassı, kontrast düşük':'Flat, low-contrast image'),
-    d:(L==='tr'?'Tek yönden yumuşak ışık ekle; düz tavan ışığı yassı gösterir':'Add one directional light; flat ceiling light looks dull')});
-  if(tiltDeg!=null && Math.abs(tiltDeg)>4) out.push({lv:'warn',t:(L==='tr'?'Telefon eğik':'Phone is tilted'),
-    d:Math.abs(Math.round(tiltDeg))+'° '+(L==='tr'?'yana yatık — düzelt':'roll — level it')});
-  if(!out.length) out.push({lv:'ok',t:(L==='tr'?'Işık ve çerçeve iyi görünüyor ✓':'Light and framing look good ✓'),
-    d:(L==='tr'?'yüz '+Math.round(s.center)+' · arka '+Math.round(s.edge)+' · kontrast '+Math.round(s.sd):'face '+Math.round(s.center)+' · back '+Math.round(s.edge)+' · contrast '+Math.round(s.sd))});
+  const y=Math.round(s.center), a=Math.round(s.edge), k=Math.round(s.sd);
+  if(s.center<55) out.push({lv:'bad', t:isikYaz(tt,'isikKaranlik'),
+    d:isikYaz(tt,'isikKaranlikD',{y})});
+  else if(s.center<85) out.push({lv:'warn', t:isikYaz(tt,'isikAzKaranlik'),
+    d:isikYaz(tt,'isikAzKaranlikD',{y})});
+  if(s.edge>s.center*1.55) out.push({lv:'bad', t:isikYaz(tt,'isikArka'),
+    d:isikYaz(tt,'isikArkaD',{a,y})});
+  if(s.hotPct>8) out.push({lv:'warn', t:isikYaz(tt,'isikPatlak'),
+    d:isikYaz(tt,'isikPatlakD',{p:Math.round(s.hotPct)})});
+  if(s.sd<16) out.push({lv:'warn', t:isikYaz(tt,'isikYassi'), d:isikYaz(tt,'isikYassiD')});
+  if(tiltDeg!=null && Math.abs(tiltDeg)>4) out.push({lv:'warn', t:isikYaz(tt,'isikEgik'),
+    d:isikYaz(tt,'isikEgikD',{d:Math.abs(Math.round(tiltDeg))})});
+  if(!out.length) out.push({lv:'ok', t:isikYaz(tt,'isikIyi'),
+    d:isikYaz(tt,'isikIyiD',{y,a,k})});
   return out;
 }
 
 /* KAMERA KAPALI SATIRI da ortak: iki kabukta farklı yazılsaydı, aynı
    durumda iki farklı cümle okunurdu. */
-function isikKameraKapali(L){
-  return [{lv:'info',t:(L==='tr'?'Kamera kapalı':'Camera off'),
-           d:(L==='tr'?'Önce kamerayı aç':'Open the camera first')}];
+function isikKameraKapali(tt){
+  return [{lv:'info', t:isikYaz(tt,'isikKapaliT'), d:isikYaz(tt,'isikKapaliD')}];
 }

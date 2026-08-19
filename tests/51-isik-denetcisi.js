@@ -7,6 +7,7 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    dosyasını okusaydı kasıtlı bozma turu bu dosyada SESSİZCE etkisiz kalırdı
    (bu depoda dört kez yaşanmış hata sınıfı). */
 const cek=cekirdekOku('isik.js','SUFLE_ISIK').replace(/\/\*[\s\S]*?\*\//g,'');
+const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK');
 
 /* IŞIK DENETÇİSİ — İKİ SORU
    1) Boş/siyah karede NaN üretiyor mu?  → HAYIR, hipotez çürüdü.
@@ -31,21 +32,27 @@ const sf=cikar(kod,/function sampleFrame\(\)\{[\s\S]*?\n\}/,'sampleFrame');
 const lc=cikar(kod,/function lightCheck\(\)\{[\s\S]*?\n\}/,'lightCheck');
 
 /* Sentetik kare: her piksel aynı ton. `desen` verilirse (x,y)->ton. */
-function kos({ton=0, desen=null, tilt=null, kameraAcik=true}={}){
+function kos({ton=0, desen=null, tilt=null, kameraAcik=true, dil='tr'}={}){
   const px=new Uint8ClampedArray(32*48*4);
   for(let y=0;y<48;y++) for(let x=0;x<32;x++){
     const v=desen?desen(x,y):ton, i=(y*32+x)*4;
     px[i]=v; px[i+1]=v; px[i+2]=v; px[i+3]=255;
   }
   const ctx={ drawImage(){}, getImageData:()=>({data:px}) };
+  /* v9.34: ışık cümleleri SÖZLÜĞE taşındı; modül artık dile değil bir ARAMA
+     fonksiyonuna bağlı. Tezgâh gerçek sözlüğü yüklüyor — kendi sahte
+     metinlerini uydursaydı, sözlükten silinen bir anahtar burada sessizce
+     "geçer" ve test ölçmeyen bir kapıya dönerdi. */
   return new Function('cam','__ctx','L','tiltDeg', `
     let lightCv={getContext:()=>__ctx,width:32,height:48};
     const document={createElement:()=>lightCv};
+    ${SOZ}
+    const t=(k)=>I18N[L][k];
     ${cek}
     ${sf}
     ${lc}
     return {s:sampleFrame(), out:lightCheck()};
-  `)({videoWidth:kameraAcik?640:0}, ctx, 'tr', tilt);
+  `)({videoWidth:kameraAcik?640:0}, ctx, dil, tilt);
 }
 const basliklar=r=>r.out.map(o=>o.t);
 const seviyeler=r=>r.out.map(o=>o.lv);
@@ -187,23 +194,32 @@ ok('bilgi satırları hazırlık kontrolüne taşınmıyor (gürültü olmasın)
   /* Çekirdek DOSYADAN okunuyor: gömülü kopya değil, tek kaynak ölçülsün. */
   const cek = cekirdekOku('isik.js');
   ok('istatistik ve bulgu ayrı fonksiyonlar (ölçüm/yargı ayrımı)',
-     /function isikIstatistik\(d\)\{/.test(cek) && /function isikBulgular\(s, L, tiltDeg\)\{/.test(cek));
-  ok('kamera kapalı durumu ayrı fonksiyonda', /function isikKameraKapali\(L\)\{/.test(cek));
+     /function isikIstatistik\(d\)\{/.test(cek) && /function isikBulgular\(s, tt, tiltDeg\)\{/.test(cek));
+  ok('kamera kapalı durumu ayrı fonksiyonda', /function isikKameraKapali\(tt\)\{/.test(cek));
+  /* v9.34: METİN MODÜLDE DEĞİL SÖZLÜKTE. Sözlüğü atlayan kullanıcı metni üç
+     kapının birden kör noktası (i18n kapsamı · çeviri kaçağı · çizilmiş
+     arayüz) ve üçüncü arayüz dilinin önündeki asıl engel. */
+  ok('modülde artık gömülü Türkçe/İngilizce cümle yok',
+     !/L==='tr'\s*\?/.test(cek.replace(/\/\*[\s\S]*?\*\//g,'')));
   /* Kamera kapalıyken üretilen satır YARGI DEĞİL BİLGİ olmalı: hazırlık
      kontrolü info satırlarını atıyor, aksi hâlde kamerasız kipte
      "ışığın kötü" diye yalan bir uyarı çıkardı. */
-  const kapali=new Function(cek+'; return isikKameraKapali("tr");')();
+  const kk=(dil)=>new Function('__L', SOZ+'\nconst t=(k)=>I18N[__L][k];\n'+cek+
+                              '\nreturn isikKameraKapali(t);')(dil);
+  const kapali=kk('tr');
   ok('kamera kapalı satırı info seviyesinde', kapali.length===1 && kapali[0].lv==='info');
-  const kapaliEn=new Function(cek+'; return isikKameraKapali("en");')();
+  const kapaliEn=kk('en');
   ok('kamera kapalı satırı iki dilde', kapaliEn[0].t!==kapali[0].t);
+  ok('kamera kapalı satırı sözlükten geliyor (boş değil)',
+     !!kapali[0].t && !!kapali[0].d && !/\{/.test(kapali[0].d));
 
   /* MASAÜSTÜ AYNI ÇEKİRDEĞİ ÇAĞIRIYOR MU — kopya hesap varsa iki platform
      zamanla ayrışır ve bunu kimse fark etmez. */
   const macKod=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
   ok('masaüstü bulgusu çekirdeği çağırıyor',
-     /function macIsikBulgu\(\)\{[\s\S]*?isikBulgular\(s, L, null\)/.test(macKod));
+     /function macIsikBulgu\(\)\{[\s\S]*?isikBulgular\(s, t, null\)/.test(macKod));
   ok('masaüstü kamera kapalıyken çekirdeğin bilgi satırını kullanıyor',
-     /macIsikBulgu\(\)\{[\s\S]*?isikKameraKapali\(L\)/.test(macKod));
+     /macIsikBulgu\(\)\{[\s\S]*?isikKameraKapali\(t\)/.test(macKod));
   ok('masaüstü çizimi bulgudan besleniyor',
      /function macIsikCiz\(\)\{[\s\S]*?macIsikBulgu\(\)\.map/.test(macKod));
   /* Nabız yalnız kamera açıkken atmalı; kapalıyken saniyede bir boş ölçüm

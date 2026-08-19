@@ -38,6 +38,43 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🌍 ÜÇÜNCÜ ARAYÜZ DİLİNİN ÖNÜNDEKİ ASIL ENGEL ÖLÇÜLDÜ — ve engel çeviri değil
+
+Eksik listesindeki "arayüz dili yalnız TR/EN" maddesine el atmadan önce
+ölçtüm ve madde **yanlış çerçevelenmişti**. Sözlüğe üçüncü bir dil bloğu
+eklemek kolay; asıl engel **sözlüğü ATLAYAN kullanıcı metinleri**:
+
+    L==='tr' ? 'Yüzün karanlık' : 'Your face is dark'
+
+Telefon kabuğunda **172**, masaüstünde **17** tane. Bunlar `I18N`in dışında
+yaşıyor ve **deponun üç kapısının birden kör noktası**: i18n kapsam denetimi
+sözlüğe bakar, çeviri kaçağı taraması sözlük değerlerini tarar, çizilmiş
+arayüz denetimi yalnız o an ekranda duran metni ölçer. Üçüncü dil eklenip bu
+160 dal düzeltilmezse kullanıcı **yarı çevrilmiş** bir arayüz görür — en kötü
+sonuç.
+
+**Yapılan iki şey:**
+① **Işık/çerçeve denetçisinin cümleleri sözlüğe taşındı** (ilk grup, çünkü
+`cekirdek/isik.js` üzerinden İKİ kabukta birden sayılıyordu). Modül artık
+dile değil bir **arama fonksiyonuna** bağlı, yani saf kalıyor; sayılar `{y}`
+`{a}` `{p}` yer tutucularıyla giriyor. **Mac 17 → 5**, telefon 172 → 160.
+② **Cırcır kapısı** (`tests/197`): sayı yalnız AŞAĞI inebiliyor. Kapsam
+kapısı, bozma sayacı ve parite tabanı ile aynı desen — düzeltmeyi zorunlu
+kılmıyor ama **geri gitmeyi imkânsız kılıyor**. Yer tutucuların iki dilde
+aynı olması da kilitli (biri `{y}` diğeri `{face}` derse sayı bir dilde
+süslü parantez olarak görünürdü).
+
+**Dedektörün kendi kör noktası yine çıktı:** `denetim.py`nin anahtar
+kullanım tarayıcısı `isikYaz(tt,'anahtar')` biçimini bilmiyordu ve 18
+anahtarı birden "hiç kullanılmıyor" diye bağırdı. Bu, aynı sınıfın
+**dördüncü** örneği (`bilgiGosterK`, `KART_BOLUM`, `data-i18n-etiket`);
+ortak şekil: **anahtarı saklayan yardımcı**. Tarayıcıya eklendi, gerekçe
+yazıldı.
+
+**Kasıtlı sınır:** yerel ayar kodları (`'tr-TR'`/`'en-US'`) da bu desende
+yazılıyor ama kullanıcı metni değil, API girdisi. Ayrı ayıklamak dedektörü
+kırılgan yapardı; hedef **sıfır değil, her sürümde daha az**.
+
 ### 🕵️ v9.31'de ADI KONAN ama yazılmayan dedektör yazıldı — ve ilk vakasını yakaladı
 
 v9.31'in notunda şu duruyordu: *"Dedektör fikri (henüz yazılmadı): arayüz
@@ -2047,7 +2084,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7442 test** (gece başında 732) · yeni test dosyası: 39–196
+- **7469 test** (gece başında 732) · yeni test dosyası: 39–197
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
