@@ -2,7 +2,11 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 20 Ağustos gecesi — **v9.37 hazır · henüz yayınlanmadı** — SÖZLÜK CIRCIRI 84 → 50
+## 🟢 20 Ağustos gecesi — v9.37 YAYINLANDI ve canlıdan doğrulandı (`sufle-v109`) — SÖZLÜK CIRCIRI 84 → 50
+
+**Canlı doğrulama:** md5 birebir (`b423ccc5…` / `c60d9ea7…`) · `canli.py` üç
+genişlikte temiz · izler canlıdan sayıldı (`vtDinliyor` 3 · `asKirpma` 3 ·
+`vhTakip` 3 · `fxIosUyari` 3 · `rcKelime` 3). `.son-yayin` sonra yazıldı.
 
 Üçüncü arayüz dilinin önündeki engel (sözlüğü atlayan metinler) tek gecede
 **172 → 50** indi. Bu turda taşınan yüzeyler: sesle takip **öz-testi** (10
@@ -27,7 +31,7 @@ anahtar kullandığını ve ikisinin de iki dilde tanımlı olduğunu ölçecek
 dosyada 18 koşulsuz iddia var — geçici bir koşudan kalmış bir sayı kapıyı
 haksız yere kırmızı tutuyordu. 18'e döndürüldü.
 
-## 🟢 20 Ağustos gecesi — v9.36 YAYINLANDI ve canlıdan doğrulandı (`sufle-v108`) — KATMANLI AYARLAR
+## 20 Ağustos gecesi — v9.36 turu: KATMANLI AYARLAR (yayınlandı)
 
 Rakip analizinin (`belgeler/SUFLE_RAKIP_STRATEJI_...docx`) P0–P3 listesi ölçüldü:
 **11 maddenin 9'u kapalıydı**, açık kalan tek P1 buydu.
