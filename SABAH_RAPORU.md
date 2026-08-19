@@ -2,6 +2,20 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴 20 Ağustos gecesi — **v9.40 hazır · henüz yayınlanmadı** — MASAÜSTÜ METİNLERİ + MAĞAZA
+
+Masaüstündeki son 4 sözlük dışı metin de taşındı (**Mac 17 → 1**; kalan tek
+satır dil kodu). Telefon 4, Mac 1 — ikisi de metin değil, sisteme verilen
+`tr-TR`/`en-US`. **Taşıma tümüyle bitti.**
+
+`MAGAZA.md` v9.34'ten **v9.39'a** çekildi: mağaza notu ile uygulamanın kendi
+sürüm notu ayrışırsa kullanıcı mağazada haftalar önceki ürünü okur.
+`EKSIKLER_20260819.md` da güncel sayılara çekildi.
+
+**`tests/148` yine biçim kilidiydi:** Mac birimini `L==='tr' ? ' sn' : ' s'`
+diye BİREBİR arıyordu. Ölçüt değişmedi (birim dile göre seçiliyor mu), yeri
+ve biçimi değişti.
+
 ## 🧾 20 Ağustos gecesi — ÇEKİM GÜVENİLİRLİĞİ MATRİSİ (yol haritasının kalan P0'ı)
 
 Rakip yol haritasının ikinci P0'ı *"izin, depolama, arka plan, Bluetooth

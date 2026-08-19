@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 20 Ağustos gecesi — v9.39 YAYINLANDI ve canlıdan doğrulandı",
+  "bul": "## 🔴 20 Ağustos gecesi — **v9.40 hazır · henüz yayınlanmadı**",
   "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
  },
  {
@@ -5211,7 +5211,7 @@
   "ad": "v9.40 matris sürümü bayatlıyor",
   "test": "199-guvenilirlik-matrisi.js",
   "kaynak": "matris",
-  "bul": "sürüm 9.39",
+  "bul": "sürüm 9.40",
   "koy": "sürüm 9.1"
  }
 ]

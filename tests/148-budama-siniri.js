@@ -138,7 +138,10 @@ if (fn) {
        /Math\.min\(Math\.max\([\s\S]*?trimA\+0\.3\), d\)/.test(mFn));
     ok('Mac: kısa videoda başlangıç geri çekiliyor',
        /trimB-trimA<0\.3\) trimA=Math\.max\(0, trimB-0\.3\)/.test(mFn));
-    ok('Mac: birim dile göre', /L==='tr' \? ' sn' : ' s'/.test(mFn));
+    /* v9.40: birim Mac'te de sözlükten okunuyor (telefonla aynı anahtar).
+       Ölçüt aynı — birim DİLE GÖRE seçiliyor mu — biçim kilitli değil. */
+    ok('Mac: birim dile göre', /t\('srSn'\)/.test(mFn) &&
+       /srSn:' sn'/.test(mac) && /srSn:' s'/.test(mac));
     ok('Mac: bilgi satırı iki dilde (eskiden tamamı Türkçeydi)',
        /Seçilen: /.test(mFn) && /Selected: /.test(mFn));
     ok('Mac: sabit " sn" eki kalmadı', !/toFixed\(1\)\+' sn'/.test(mFn));

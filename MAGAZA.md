@@ -1,6 +1,6 @@
 # Sufle — Mağaza Metinleri
 
-**Sürüm:** 9.34 · **Hazırlandı:** 15 Ağustos 2026 · **Son güncelleme:** 19 Ağustos 2026
+**Sürüm:** 9.39 · **Hazırlandı:** 15 Ağustos 2026 · **Son güncelleme:** 20 Ağustos 2026
 
 ⚠️ **KURAL: bu dosyadaki her cümle uygulamada ÖLÇÜLEREK doğrulanmış bir
 özelliğe dayanır.** Mağaza metni pazarlama değil **söz**dür; olmayan bir
@@ -203,7 +203,30 @@ hiçbir şey anlatmaz:
 5. Çekim sonrası budama ekranı → *"Baştan sondan kes"*
 6. Masaüstü: sağ panel sekmeleri + telefonda uzak önizleme
 
-## Sürüm notu (mağaza "Yenilikler" alanı, v9.34)
+## Sürüm notu (mağaza "Yenilikler" alanı, v9.39)
+
+> Bu bölüm **ürün sürümüyle birlikte güncellenir**. 20 Ağustos 2026'da v9.39'a
+> çekildi.
+
+**TR:** Ayarlar artık Temel ve Gelişmiş olarak iki düzeyde: temel akışta uzman
+kartları görünmüyor, hiçbir ayar kaybolmuyor ve arama her iki düzeyde de
+hepsini buluyor. Güzellik (yüz yumuşatma) masaüstüne de geldi ve telefonla
+aynı kaynaktan geliyor. Senaryolara etiket ve favori eklendi; favoriler
+seçtiğin sıralamanın üstünde kalıyor. Masaüstünde elle pozlama, beyaz ayarı,
+odak kilidi ve fener — kameran desteklemiyorsa hiç görünmüyorlar. Arayüz
+metinlerinin tamamı tek kaynağa taşındı: dili değiştirdiğinde her ekran anında
+değişiyor.
+
+**EN:** Settings now come in two levels, Basic and Advanced: the basic flow
+hides expert cards, nothing is lost, and search finds everything at either
+level. Beauty (skin smoothing) reached the desktop and shares one source with
+the phone. Scripts gained tags and favourites, and favourites sit on top of
+your chosen sort order. On the desktop: manual exposure, white balance, focus
+lock and torch — hidden entirely when your camera does not support them. Every
+interface text now comes from a single source, so switching language updates
+every screen instantly.
+
+## Önceki sürüm notu (v9.34)
 
 > Bu bölüm **ürün sürümüyle birlikte güncellenir**. 19 Ağustos 2026'da v9.34'e
 > çekildi. Mağaza notu ile uygulamanın kendi sürüm notu ayrışırsa kullanıcı
