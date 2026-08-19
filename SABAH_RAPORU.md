@@ -2,6 +2,20 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🟢 19 Ağustos — v9.34 YAYINLANDI ve canlıdan doğrulandı (`sufle-v106`), Erdal onayıyla
+
+**Doğrulama:** `index.html` ve `sw.js` md5 birebir (`b6c55036…` /
+`538a5fd4…`) · `canli.py` üç genişlikte temiz (sufle var · metin var · taşma
+yok · hata 0; ayarlar, senaryolar ve hazırlık panolarının üçü de açıldı) ·
+GitHub Pages ilk iki denemede hâlâ 9.32 döndü, üçüncüde 9.34 (yine ~1 dakika).
+Yeni özelliklerin izi canlıdan sayıldı: `etiketAyristir` 3 · `scTagBar` 4 ·
+`kamPozYolu` 2 · `kamWbKisiti` 2 · `isikYaz` 16 · `srY` 26 · `gwKamera` 3 ·
+`rcYer` 3 · `skinSoft` 2 · `hizliPanel` 7. `.son-yayin` doğrulamadan SONRA
+yazıldı (`9.34 106`).
+
+**Bu yayın v9.33 + v9.34'ün ikisini birden taşıyor** — v9.33 iCloud olayı
+yüzünden yayınlanmadan beklemişti.
+
 ## 🔴🔴 19 Ağustos — **DEPO ~/Desktop'TA ÇÖZÜLDÜ, `~/sufle`'YE TAŞINDI**
 
 Ayrıntı: `OLAY_20260819_ICLOUD.md`. Kısası: disk **%98 dolu**, macOS `~/Desktop`
@@ -36,7 +50,7 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 `~/Documents` dışında tutulmalı ③ aynalar hâlâ iCloud altında ④ eski dizin
 `~/Desktop/.sufle-deploy` **silinmedi**, dokunulmadı.
 
-## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
+## 🟢 19 Ağustos — **v9.34 YAYINLANDI ve canlıdan doğrulandı** — SENARYO ETİKETLERİ
 
 ### 🌍 Altı grup daha + iki KAPI KUSURU (telefon 110 → 84)
 
@@ -279,7 +293,7 @@ borcunun ta kendisi. Biçim şartı kaldırıldı, davranış şartı kaldı.
 Yeni test dosyası **193** (51 iddia) · **13 yeni kasıtlı bozma** · toplam
 **676 bozma kanıtlı**.
 
-## 🔴 18 Ağustos — **v9.33 hazır · henüz yayınlanmadı** — ÖN YÜZ TURU 1
+## 🟢 18 Ağustos — **v9.33** (v9.34 ile birlikte YAYINLANDI) — ÖN YÜZ TURU 1
 
 Erdal gerçek cihazla üç madde bildirdi. Üçü de doğrulandı, üçü de kapandı.
 
