@@ -28,7 +28,24 @@ import time
 
 from ekran import Tarayici, KAPAT_ONB
 
-TELEFON = 'file:///Users/erdalkiziroglu/Desktop/.sufle-deploy/index.html'
+# 🔴 MUTLAK YOL TUZAĞI (2026-08-19'da ısırdı). Burada depo yolu ELLE
+# yazılıydı: `file:///Users/…/Desktop/.sufle-deploy/index.html`. Depo
+# `~/sufle`ye taşındıktan sonra bu adım AYLARCA yaşayabilecek bir yalan
+# söylemeye başladı — çekim akışını ölçtüğünü sanırken ESKİ dosyayı açıyordu
+# ve o dosya hâlâ çalışan bir uygulama olduğu için KAPI YEŞİL kalıyordu.
+# Ancak eski klasör silinince ortaya çıktı. Aynı sınıf Erdal'ın başka
+# deposunda da yaşandı ("yeşil kapı mutlak yol tuzağı").
+# Yol artık BETİĞİN KENDİ KONUMUNDAN türetiliyor; `SUFLE_TELEFON` verilirse
+# (kasıtlı bozma turu) o kullanılıyor.
+def _telefon_yolu():
+    acik = os.environ.get('SUFLE_TELEFON')
+    yol = acik if acik else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+    if not os.path.exists(yol):
+        raise SystemExit('⛔ ölçülecek dosya yok: ' + yol)
+    return 'file://' + yol
+
+
+TELEFON = _telefon_yolu()
 
 
 def js(t, kod, ad):

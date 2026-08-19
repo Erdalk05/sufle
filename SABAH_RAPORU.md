@@ -15,6 +15,44 @@ yazıldı (`9.34 106`).
 
 **Bu yayın v9.33 + v9.34'ün ikisini birden taşıyor** — v9.33 iCloud olayı
 yüzünden yayınlanmadan beklemişti.
+## 🔴 19 Ağustos (yayından SONRA) — KAPININ 10. ADIMI YANLIŞ DOSYAYI ÖLÇÜYORMUŞ
+
+Disk boşaltılırken `~/sufle` ve `~/Desktop/.sufle-deploy` **silindi**. Kayıp
+yok — her şey GitHub'daydı, depo yeniden klonlandı (`ad2a24b`, 0 okunamayan
+dosya). Ama silinme, **aylarca yaşayabilecek bir yalanı** ortaya çıkardı:
+
+`kayit.py` — kapının 10. adımı, "çekim akışı uçtan uca" — ölçeceği dosyanın
+yolunu ELLE taşıyordu:
+
+    TELEFON = 'file:///Users/…/Desktop/.sufle-deploy/index.html'
+
+Depo `~/sufle`ye taşındıktan sonra bu adım **eski dosyayı** açmaya devam etti.
+Eski dosya hâlâ çalışan bir uygulama olduğu için **adım yeşil verdi ve o günkü
+kodu hiç ölçmedi.** Yani bugünkü bütün turlarda çekim akışı ölçülmüş
+GÖRÜNÜYORDU. Kusur ancak klasör silinip dosya bulunamayınca çıktı — kapı,
+yanlış şeyi ölçtüğünü kendi başına söyleyemiyordu.
+
+**Sinsiliğin sebebi:** yanlış yol hata vermiyor, sadece BAŞKA bir şeyi
+ölçüyor. Test yeşil, rapor yeşil, yayın gidiyor.
+
+**Yapılan:** yol artık betiğin kendi konumundan türetiliyor, `SUFLE_TELEFON`
+ortam değişkenine saygı duyuyor ve dosya yoksa **açıkça duruyor** (boş sayfayı
+ölçüp "kamera açılmadı" demek, olmayan bir ürün kusuru bildirmek olurdu).
+`tests/163`teki iki mutlak yol da ev dizininden kurulur hâle geldi; ayna
+klasörü yoksa iddia **ATLANDI diyor**, sessizce geçmiyor.
+
+**Nöbetçi:** `tests/198` — depodaki hiçbir araç/test dosyası kullanıcıya özel
+mutlak yol taşıyamaz. 3 kasıtlı bozma ile kanıtlandı.
+
+⚠️ **Bu yayının kendisi etkilenmedi** — yayın kanıtı aşağıdaki bölümde: o iki
+ölçüm (canlı dosyanın karşılaştırması ve gerçek tarayıcı turu) zaten doğru
+dosyaya bakıyordu, çünkü ikisi de adresi ağdan alıyor.
+
+> Not: yayın durumu cümlesi bilerek **yalnız** aşağıdaki bölümde yazılı.
+> İlk yazışımda bu paragrafta da tekrarlamıştım ve `tests/116`nın kasıtlı
+> bozması "inmez" oldu: rapor durumu iki yerde söyleyince, birini bozmak
+> testi kırmıyordu. Kanıtın ayırt etmesi için durumun TEK yerde olması şart.
+
 
 ## 🔴🔴 19 Ağustos — **DEPO ~/Desktop'TA ÇÖZÜLDÜ, `~/sufle`'YE TAŞINDI**
 
@@ -2188,7 +2226,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7540 test** (gece başında 732) · yeni test dosyası: 39–197
+- **7540 test** (gece başında 732) · yeni test dosyası: 39–198
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

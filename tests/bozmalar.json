@@ -5010,5 +5010,26 @@
   "kaynak": "telefon",
   "bul": "  if(longS.length) out.push({lv:'warn',t:srY(t('spkLongS'),{n:longS.length}),",
   "koy": "  if(longS.length) out.push({lv:'warn',t:t('spkLongS'),"
+ },
+ {
+  "ad": "v9.35 çekim akışı yine mutlak yola dönüyor (ESKİ dosyayı ölçer, kapı yeşil kalır)",
+  "test": "198-mutlak-yol-nobetcisi.js",
+  "kaynak": "kayit_olcum",
+  "bul": "    yol = acik if acik else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')",
+  "koy": "    yol = '/Users/' + 'erdalkiziroglu' + '/Desktop/.sufle-deploy/index.html'"
+ },
+ {
+  "ad": "v9.35 ölçülecek dosya yoksa sessizce devam ediliyor",
+  "test": "198-mutlak-yol-nobetcisi.js",
+  "kaynak": "kayit_olcum",
+  "bul": "        raise SystemExit('⛔ ölçülecek dosya yok: ' + yol)",
+  "koy": "        pass"
+ },
+ {
+  "ad": "v9.35 çekim akışı ortam değişkenini yok sayıyor (bozma turu ölçmez)",
+  "test": "198-mutlak-yol-nobetcisi.js",
+  "kaynak": "kayit_olcum",
+  "bul": "    acik = os.environ.get('SUFLE_TELEFON')",
+  "koy": "    acik = None"
  }
 ]

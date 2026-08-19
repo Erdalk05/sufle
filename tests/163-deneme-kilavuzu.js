@@ -57,12 +57,23 @@ const D=KILAVUZ.replace(/\s+/g,' ');
   /* MAC: file:// açılışında kumandanın çalışmadığı UYGULAMADA da yazılı. */
   ok('kodda file:// uyarısı var', /file:\/\/ modunda sunucuya bağlanamaz/.test(mac));
   ok('kılavuz çift tıklamayı uyarıyor', /ÇİFT TIKLAMA/.test(KILAVUZ) && /file:\/\//.test(D));
-  ok('kılavuz sunucu dosyasının adını doğru veriyor',
-     /Teleprompter Sunucu\.command/.test(D) &&
-     fs.existsSync('/Users/erdalkiziroglu/Desktop/Teleprompter/Teleprompter Sunucu.command'));
-  ok('kılavuz Windows başlatıcısının adını doğru veriyor',
-     /Teleprompter Baslat\.bat/.test(D) &&
-     fs.existsSync('/Users/erdalkiziroglu/Desktop/Teleprompter-Windows/Teleprompter Baslat.bat'));
+  /* 🔴 MUTLAK YOL YAZILIYDI (2026-08-19'da düzeltildi). Kullanıcı adı ve
+     `Desktop` elle gömülüydü; başka bir makinede — ya da klasör taşınınca —
+     iddia SESSİZCE yalan söylerdi. Aynı gün `kayit.py` tam bu yüzden dört
+     saat boyunca ESKİ dosyayı ölçtü ve kapı yeşil kaldı. Yol artık ev
+     dizininden türetiliyor; ayna klasörü yoksa iddia ATLANIYOR ve bunu
+     SÖYLÜYOR — sessizce geçmek, ölçmeyen kapı olurdu. */
+  const ayna=(alt,dosya)=>path.join(process.env.HOME||'', 'Desktop', alt, dosya);
+  const macBaslatici=ayna('Teleprompter','Teleprompter Sunucu.command');
+  const winBaslatici=ayna('Teleprompter-Windows','Teleprompter Baslat.bat');
+  ok('kılavuz sunucu dosyasının adını doğru veriyor', /Teleprompter Sunucu\.command/.test(D));
+  ok('kılavuz Windows başlatıcısının adını doğru veriyor', /Teleprompter Baslat\.bat/.test(D));
+  if(fs.existsSync(path.dirname(macBaslatici)))
+    ok('Mac başlatıcısı aynada duruyor', fs.existsSync(macBaslatici));
+  else console.log('ATLANDI: Mac ayna klasörü bu makinede yok — '+path.dirname(macBaslatici));
+  if(fs.existsSync(path.dirname(winBaslatici)))
+    ok('Windows başlatıcısı aynada duruyor', fs.existsSync(winBaslatici));
+  else console.log('ATLANDI: Windows ayna klasörü bu makinede yok — '+path.dirname(winBaslatici));
   /* Kılavuz localhost:8080 diyorsa sunucunun varsayılan portu da o olmalı. */
   const sunucu=fs.readFileSync(require('./kaynak.js').sunucuYolu(),'utf8');
   /* Başlangıç portu artık ortamdan da verilebiliyor (testler makine
