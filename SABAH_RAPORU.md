@@ -2,7 +2,20 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 19 Ağustos — **v9.35 hazır · henüz yayınlanmadı** — "v9.33 GÖRÜNMÜYOR"
+## 🟢 19 Ağustos gecesi — v9.35 YAYINLANDI ve canlıdan doğrulandı (`sufle-v107`)
+
+`index.html` ve `sw.js` md5 birebir (`0a4c1943…` / `8bad5d8c…`) · `canli.py`
+üç genişlikte temiz · canlıdan sayılan izler: `skinSoft` 2 · `GUZELLIK_GLSL` 2 ·
+`data-etiket="Hızlı"` 1 · `scFavAdd` 3 · `Filtre ve güzellik` 2.
+`.son-yayin` doğrulamadan SONRA yazıldı (`9.35 107`).
+
+**Bu yayında:** v9.33'ün üç bulunabilirlik kusuru (güzellik yanlış kartın
+altında + olmayan ön koşul duyurusu, hızlı erişim düğmesi adsız) ·
+**güzellik masaüstüne geldi** (ortak gölgelendirici) · hızlı erişimdeki
+kamera karosu artık sebebini söylüyor · **senaryo favorisi** · kapının 10.
+adımının yanlış dosyayı ölçmesi.
+
+## 🟢 19 Ağustos — v9.35 YAYINLANDI ve canlıdan doğrulandı (`sufle-v107`) — "v9.33 GÖRÜNMÜYOR"
 
 Erdal canlı uygulamada **"v9.33 yapılanlar görünmüyor"** dedi. Kaynağa değil
 **çizilmiş ekrana** bakıldı (canlı adres, gerçek Chrome, 430×932) ve **üç
