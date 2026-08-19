@@ -467,7 +467,7 @@ def yol_tarifi_denetimi(src, js):
     degerler = _sozluk_degerleri(js)
     if not degerler:
         return []
-    etiketler = _etiket_kumesi(degerler)
+    etiketler_tum = _etiket_kumesi(degerler)
     bulunmayan = []
     # PENCERE DEĞİL TAM DİZE. İlk yazışta tarifi sabit karakter penceresiyle
     # çekiyordum; son parça kesilince dedektör KENDİ kusuru yüzünden yalancı
@@ -480,6 +480,14 @@ def yol_tarifi_denetimi(src, js):
     for ham0 in [x for x in metinler if "→" in x]:
         # Biçim etiketleri (<b>…</b>) tarifin parçasını ikiye bölüyordu.
         ham = re.sub(r"<[^>]+>", " ", ham0)
+        # 🔴 TARİFİN KENDİSİ ETİKET SAYILAMAZ (2026-08-19). Tarif metni
+        # sözlüğe taşınınca kendi değeri de "arayüz etiketi" kümesine giriyor
+        # ve `icerir` denetimi tarifi KENDİ İÇİNDE bulup geçiriyordu — yani
+        # bir tarifi sözlüğe koymak onu sessizce denetim dışı bırakıyordu.
+        # Ölçüldü: `srAudFix` taşınınca iki kasıtlı bozma birden inmez oldu.
+        # Karşılaştırma kümesinden tarifin kendi metni çıkarılıyor.
+        kendi = _etiket_kumesi([ham0, ham])
+        etiketler = etiketler_tum - kendi
         parcalar = [x.strip(" .,:;()") for x in ham.split("→")]
         parcalar = [x for x in parcalar if x]
         if len(parcalar) < 2:

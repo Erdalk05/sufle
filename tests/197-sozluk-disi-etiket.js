@@ -107,3 +107,37 @@ for(const k of ['isikSiyah','isikKaranlik','isikArka','isikPatlak','isikYassi',
     ok('"'+k+'" yer tutucuları iki dilde aynı ('+tr+')', !!tr && tr===en);
   }
 }
+
+/* ---------- YER TUTUCU TAŞIYAN ANAHTAR, DOLDURULARAK OKUNMALI ----------
+   Cümleler sözlüğe taşınınca yeni bir sessiz kusur sınıfı doğdu: değerde
+   `{n}` var ama çağrı yeri onu doldurmuyor. Ekranda süslü parantez görünür,
+   kaynakta hiçbir şey görünmez ve hiçbir kapı bunu ölçmüyordu — bir kasıtlı
+   bozma "inmeyince" ortaya çıktı.
+
+   KURAL: değeri yer tutucu içeren HER anahtar, dolduran bir yardımcıdan
+   geçmeli (`srY(t('K'),…)` ya da çekirdeğin `isikYaz(tt,'K',…)`si).
+   Kural biçim değil DAVRANIŞ kilitliyor: yardımcının adı değişirse burası
+   da değişir, ama "yer tutucu doldurulmalı" iddiası ayakta kalır. */
+{
+  const soz=tel.slice(tel.indexOf('const I18N={'));
+  const kes=soz.search(/\n\s*en:\{/);
+  const trBlok=soz.slice(0,kes);
+  const yerTutuculu=[...trBlok.matchAll(/(\w+):'((?:[^'\\]|\\.)*)'/g)]
+    .filter(m=>/\{\w+\}/.test(m[2])).map(m=>m[1]);
+  ok('yer tutucu taşıyan anahtar var (ölçüm ölü değil)', yerTutuculu.length>=10);
+  const doldurulmayan=yerTutuculu.filter(k=>{
+    /* İki meşru yol var: yer tutucu dolduran yardımcı, ya da deponun eski
+       idiomu `t('K').replace('{x}', …)`. İkisi de kabul; ölçülen şey
+       yer tutucunun DOLDURULMASI, yardımcının adı değil. */
+    const kullanim=new RegExp("(srY|isikYaz)\\((tt,)?\\s*t?\\(?'"+k+"'"+
+                              "|t\\('"+k+"'\\)\\.replace\\(");
+    /* Kabuklardan HERHANGİ BİRİNDE dolduruluyorsa yeter: bazı anahtarlar
+       yalnız tek kabukta kullanılıyor. Hiç kullanılmayan anahtarı zaten
+       denetim.py "ölü anahtar" diye bildiriyor. */
+    return !(kullanim.test(tel) || kullanim.test(mac));
+  });
+  ok('yer tutucu taşıyan her anahtar doldurularak okunuyor'+
+     (doldurulmayan.length?' — doldurulmayan: '+doldurulmayan.join(', '):''),
+     doldurulmayan.length===0);
+}
+

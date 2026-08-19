@@ -2360,6 +2360,28 @@ const I18N={
      taşındı. Bu satırlar sorun anında bakılan TEK yer — yarısı sözlükte
      yarısı kodda olamaz (T49'da tam da bunun bedeli ölçülmüştü: İngilizceye
      geçen kullanıcı tanı satırının yarısını Türkçe okuyordu). */
+  /* ZORLANMA HARİTASI VE HIZLI ERİŞİM DEĞERLERİ (2026-08-19, tests/197). */
+  /* CİHAZ PANELİ VE KONUŞULABİLİRLİK DENETİMİ (2026-08-19, tests/197). */
+  dvDevice:'Cihaz',dvVersion:'Sürüm',dvStorage:'Depo',
+  dvPersist:'Çekim arşivi kalıcı',
+  dvPersistD:'Tarayıcı yer açmak için eski çekimleri silebilir. Önemli çekimleri Fotoğraflar\'a kaydet. Uygulamayı Ana Ekrana eklemek kalıcılığı genelde açar.',
+  dvErrors:'Son hatalar',
+  spkLongS:'{n} uzun cümle (>20 kelime)',spkLongSD:'En uzunu {w} kelime: “{s}…”',
+  spkHardW:'{n} zor kelime (5+ hece)',
+  spkFiller:'Dolgu kelime',
+  spkAcr:'{n} kısaltma',spkAcrD:'Harf harf mi okuyacaksın? Telaffuzu yaz: {o} · ',
+  spkRepeat:'Çok tekrarlanan kelime',
+  spkNums:'Sesli okunuşu yazılmalı',
+  spkOver:'{m} sınırını {s} sn aşıyor',spkOverD:'Yaklaşık {w} kelime çıkarman gerekiyor',
+  spkFits:'Süre uygun',spkFitsD:'~{s} / sınır {l}',
+  spkNoMark:'Hiç duraklama/vurgu işareti yok',
+  spkNoMarkD:'*vurgu* ve / // (2) ekle — okuma tekdüzelikten çıkar',
+  dfEmpty:'Henüz veri yok. Bir-iki prova yap: geri sardığın, duraklattığın yerler ve sesle takipte yavaşladığın kelimeler buraya birikir.',
+  dfSlow:'yavaşladın ×{n}',dfBack:'geri sardın ×{n}',dfPause:'duraklattın ×{n}',
+  dfTipShort:' → cümleyi kısalt ya da zor kelimeyi değiştir',
+  dfTipRewrite:' → burada tekliyorsun, yeniden yaz',
+  dfClear:'↺ haritayı sıfırla',
+  hzArka:'Arka',hzOn:'Ön',hzAcik:'Açık',hzKapali:'Kapalı',
   srFmt:'⚠️ Biçim {f} — iPhone Fotoğraflar yalnız MP4 kabul eder',
   srNoShare:'⚠️ Bu tarayıcı dosya paylaşmayı desteklemiyor (Safari kullan)',
   srShareOk:'✓ MP4 · paylaşım destekleniyor',
@@ -2585,6 +2607,26 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  dvDevice:'Device',dvVersion:'Version',dvStorage:'Storage',
+  dvPersist:'Take archive is persistent',
+  dvPersistD:'The browser may delete old takes to free space. Save important takes to Photos. Adding the app to the Home Screen usually makes storage persistent.',
+  dvErrors:'Recent errors',
+  spkLongS:'{n} long sentences (>20 words)',spkLongSD:'Longest {w} words: “{s}…”',
+  spkHardW:'{n} hard words (5+ syllables)',
+  spkFiller:'Filler words',
+  spkAcr:'{n} acronyms',spkAcrD:'Read letter by letter? Add pronunciation: ',
+  spkRepeat:'Heavily repeated words',
+  spkNums:'Write out how to say these',
+  spkOver:'{m} limit exceeded by {s}s',spkOverD:'Cut roughly {w} words',
+  spkFits:'Duration fits',spkFitsD:'~{s} / limit {l}',
+  spkNoMark:'No pause/emphasis marks',
+  spkNoMarkD:'Add *emphasis* and / // (2) to break the monotone',
+  dfEmpty:'No data yet. Do a couple of rehearsals: rewinds, pauses and words you slow down on in voice mode collect here.',
+  dfSlow:'slowed ×{n}',dfBack:'rewound ×{n}',dfPause:'paused ×{n}',
+  dfTipShort:' → shorten it or swap the hard word',
+  dfTipRewrite:' → you keep stumbling here, rewrite it',
+  dfClear:'↺ clear map',
+  hzArka:'Rear',hzOn:'Front',hzAcik:'On',hzKapali:'Off',
   srFmt:'⚠️ Format {f} — iPhone Photos only accepts MP4',
   srNoShare:'⚠️ This browser cannot share files (use Safari)',
   srShareOk:'✓ MP4 · sharing supported',
@@ -7490,25 +7532,23 @@ function deviceReport(){
 function renderDevice(){
   const box=$('#devOut'); if(!box) return;
   const rows=deviceReport();
-  let html='<div class="kv"><span>'+(L==='tr'?'Cihaz':'Device')+'</span><b>'+esc(platformName())+'</b></div>'+
-           '<div class="kv"><span>'+(L==='tr'?'Sürüm':'Version')+'</span><b>v'+VER+'</b></div>';
+  let html='<div class="kv"><span>'+t('dvDevice')+'</span><b>'+esc(platformName())+'</b></div>'+
+           '<div class="kv"><span>'+t('dvVersion')+'</span><b>v'+VER+'</b></div>';
   rows.forEach(r=>{
     const name=(L==='tr'?r[0]:r[1]), ok=r[2];
     html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+(ok?'var(--accent)':'#ffb300')+'">'+
       (ok?'✓ ':'✕ ')+esc(name)+'</div>'+(!ok&&r[3]?'<div class="s">'+esc(r[3])+'</div>':'')+'</div></div>';
   });
   // Depo kullanımı: "arşive yazamadım" uyarısının sebebi burada görünsün
-  html+='<div class="kv" id="quotaKv"><span>'+(L==='tr'?'Depo':'Storage')+'</span><b>—</b></div>';
+  html+='<div class="kv" id="quotaKv"><span>'+t('dvStorage')+'</span><b>—</b></div>';
   // Arşiv kalıcı mı: değilse tarayıcı çekimleri bir gün silebilir, kullanıcı bilmeli
   html+='<div class="listitem"><div class="meta"><div class="t" style="color:'+(persistedOK?'var(--accent)':'#ffb300')+'">'+
-    (persistedOK?'✓ ':'✕ ')+(L==='tr'?'Çekim arşivi kalıcı':'Take archive is persistent')+'</div>'+
-    (persistedOK?'':'<div class="s">'+(L==='tr'
-      ? 'Tarayıcı yer açmak için eski çekimleri silebilir. Önemli çekimleri Fotoğraflar\'a kaydet. Uygulamayı Ana Ekrana eklemek kalıcılığı genelde açar.'
-      : 'The browser may delete old takes to free space. Save important takes to Photos. Adding the app to the Home Screen usually makes storage persistent.')+'</div>')+
+    (persistedOK?'✓ ':'✕ ')+t('dvPersist')+'</div>'+
+    (persistedOK?'':'<div class="s">'+t('dvPersistD')+'</div>')+
     '</div></div>';
   // Hata günlüğü: sessiz kırılmalar artık okunabilir. Yoksa satır hiç çıkmıyor.
   if(ERRLOG.length){
-    html+='<div class="kv" style="margin-top:10px"><span>'+(L==='tr'?'Son hatalar':'Recent errors')+'</span><b>'+ERRLOG.length+'</b></div>';
+    html+='<div class="kv" style="margin-top:10px"><span>'+t('dvErrors')+'</span><b>'+ERRLOG.length+'</b></div>';
     ERRLOG.slice(-5).reverse().forEach(e=>{
       html+='<div class="listitem"><div class="meta"><div class="t" style="color:#ffb300">'+esc(e.where)+'</div>'+
         '<div class="s">'+esc(e.msg)+'</div></div></div>';
@@ -7596,10 +7636,6 @@ function readyChecks(){
      (ölçümü ve gerekçesi tests/197'de). Sayılar `{}` yer tutucularıyla
      giriyor; `t()` doğrudan çağrıldığı için anahtar kullanımı denetimin
      tanıdığı biçimde kalıyor. */
-  /* Yardımcı ANAHTARI DEĞİL ÇÖZÜLMÜŞ METNİ alıyor. `t(değişken)` biçimi
-     denetimin ölü anahtar taramasını kör eder ve zaten uyarı veriyor;
-     `t('rcYer')` yazınca hem anahtar sayılıyor hem de tarama sağlam kalıyor. */
-  const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
   if(IS_IOS_ALT) out.push({lv:'bad',t:t('rcIosSes'),d:t('rcIosSesD')});
   // kamera
   if(!stream){ out.push({lv:'bad',t:t('rcKamKapali'),d:t('rcKamKapaliD')}); }
@@ -7617,27 +7653,27 @@ function readyChecks(){
   const secs=wc/st.wpm*60 + duraklamaSn(_mt2);
   if(!wc) out.push({lv:'bad',t:t('rcMetinBos'),d:t('rcMetinBosD')});
   else if(lim && secs>lim) out.push({lv:'warn',t:t('rcSinirAsim'),
-    d:yz(t('rcSinirAsimD'),{s:clock(secs),l:clock(lim),k:Math.ceil((secs-lim)*st.wpm/60)})});
+    d:srY(t('rcSinirAsimD'),{s:clock(secs),l:clock(lim),k:Math.ceil((secs-lim)*st.wpm/60)})});
   else out.push({lv:'ok',t:t('rcSureUygun'),
-    d:yz(t('rcSureUygunD'),{w:wc,s:clock(secs)})+(lim?yz(t('rcSinirEk'),{l:clock(lim)}):'')});
+    d:srY(t('rcSureUygunD'),{w:wc,s:clock(secs)})+(lim?srY(t('rcSinirEk'),{l:clock(lim)}):'')});
   // kompozit performansı: ölçülmeden "ısınıyor mu" sorusuna cevap verilemez
   if(comp.on && compFps.v){
-    if(compFps.v<20) out.push({lv:'warn',t:yz(t('rcKompYavas'),{f:compFps.v}),d:t('rcKompYavasD')});
-    else out.push({lv:'ok',t:yz(t('rcKompAkici'),{f:compFps.v}),d:''});
+    if(compFps.v<20) out.push({lv:'warn',t:srY(t('rcKompYavas'),{f:compFps.v}),d:t('rcKompYavasD')});
+    else out.push({lv:'ok',t:srY(t('rcKompAkici'),{f:compFps.v}),d:''});
   }
   // göz teması
   const ga=gazeAngle();
-  if(ga>=9) out.push({lv:'warn',t:t('rcGozZayif'),d:yz(t('rcGozZayifD'),{a:Math.round(ga)})});
+  if(ga>=9) out.push({lv:'warn',t:t('rcGozZayif'),d:srY(t('rcGozZayifD'),{a:Math.round(ga)})});
   else out.push({lv:'ok',t:t('rcGozIyi'),d:'≈'+Math.round(ga)+'°'});
   // senaryonun kendisi sesli komut tetikliyor mu
   const kal=komutKaliplari();
-  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:yz(t('rcKomutD'),{k:kal[0]})});
+  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:srY(t('rcKomutD'),{k:kal[0]})});
   // depoda kalan yer
   const kdk=kalanDk();
   if(kdk!=null){
-    const sure=yz(t('rcYer'),{n:Math.floor(kdk)});
-    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:yz(t('rcDepoDoluD'),{s:sure})});
-    else if(kdk<10) out.push({lv:'warn',t:t('rcDepoAz'),d:yz(t('rcDepoAzD'),{s:sure})});
+    const sure=srY(t('rcYer'),{n:Math.floor(kdk)});
+    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:srY(t('rcDepoDoluD'),{s:sure})});
+    else if(kdk<10) out.push({lv:'warn',t:t('rcDepoAz'),d:srY(t('rcDepoAzD'),{s:sure})});
     else out.push({lv:'ok',t:t('rcDepoVar'),d:sure});
   }
   // konum
@@ -7686,23 +7722,20 @@ function renderDiff(){
   const box=$('#diffOut'); if(!box) return;
   const rows=diffReport();
   if(!rows.length){
-    box.innerHTML='<div class="empty">'+(L==='tr'
-      ? 'Henüz veri yok. Bir-iki prova yap: geri sardığın, duraklattığın yerler ve 🎤 sesle takipte yavaşladığın kelimeler buraya birikir.'
-      : 'No data yet. Do a couple of rehearsals: rewinds, pauses and words you slow down on in 🎤 voice mode collect here.')+'</div>';
+    box.innerHTML='<div class="empty">'+t('dfEmpty')+'</div>';
     return;
   }
   let html='';
   rows.slice(0,6).forEach((r,n)=>{
     const parts=[];
-    if(r.s) parts.push((L==='tr'?'yavaşladın ×':'slowed ×')+r.s);
-    if(r.b) parts.push((L==='tr'?'geri sardın ×':'rewound ×')+r.b);
-    if(r.p) parts.push((L==='tr'?'duraklattın ×':'paused ×')+r.p);
-    const tip = r.s>=2 ? (L==='tr'?' → cümleyi kısalt ya da zor kelimeyi değiştir':' → shorten it or swap the hard word')
-              : (r.b>=2 ? (L==='tr'?' → burada tekliyorsun, yeniden yaz':' → you keep stumbling here, rewrite it') : '');
+    if(r.s) parts.push(srY(t('dfSlow'),{n:r.s}));
+    if(r.b) parts.push(srY(t('dfBack'),{n:r.b}));
+    if(r.p) parts.push(srY(t('dfPause'),{n:r.p}));
+    const tip = r.s>=2 ? t('dfTipShort') : (r.b>=2 ? t('dfTipRewrite') : '');
     html+='<div class="listitem"><div class="meta"><div class="t">'+(n+1)+'. “'+esc(r.text)+'…”</div>'+
           '<div class="s">'+esc(parts.join(' · ')+tip)+'</div></div></div>';
   });
-  html+='<div class="sheetbtns"><button class="cancel" id="diffClear">'+(L==='tr'?'↺ haritayı sıfırla':'↺ clear map')+'</button></div>';
+  html+='<div class="sheetbtns"><button class="cancel" id="diffClear">'+t('dfClear')+'</button></div>';
   box.innerHTML=html;
   $('#diffClear').onclick=()=>{ active().diff={}; save(); renderDiff(); };
 }
@@ -7722,48 +7755,46 @@ function speakCheck(){
   const out=[];
   // 1) uzun cümleler
   const longS=sentences.map(s=>({s,n:(s.match(/\S+/g)||[]).length})).filter(x=>x.n>20).sort((a,b)=>b.n-a.n);
-  if(longS.length) out.push({lv:'warn',t:(L==='tr'?longS.length+' uzun cümle (>20 kelime)':longS.length+' long sentences (>20 words)'),
-    d:(L==='tr'?'En uzunu '+longS[0].n+' kelime: “':'Longest '+longS[0].n+' words: “')+longS[0].s.slice(0,70)+'…”'});
+  if(longS.length) out.push({lv:'warn',t:srY(t('spkLongS'),{n:longS.length}),
+    d:srY(t('spkLongSD'),{w:longS[0].n, s:longS[0].s.slice(0,70)})});
   // 2) uzun kelimeler
   const words0=(body.match(/[\p{L}\p{N}'’-]+/gu)||[]);
   const longW=[...new Set(words0.filter(w=>syllables(w)>4||w.length>14))];
-  if(longW.length) out.push({lv:'info',t:(L==='tr'?longW.length+' zor kelime (5+ hece)':longW.length+' hard words (5+ syllables)'),
+  if(longW.length) out.push({lv:'info',t:srY(t('spkHardW'),{n:longW.length}),
     d:longW.slice(0,8).join(', ')});
   // 3) dolgu kelimeler
   const fl=(L==='tr'?FILLERS_TR:FILLERS_EN);
   const fCount={}; words0.forEach(w=>{ const n=norm(w); if(fl.indexOf(n)>=0) fCount[n]=(fCount[n]||0)+1; });
   const fKeys=Object.keys(fCount);
-  if(fKeys.length) out.push({lv:'warn',t:(L==='tr'?'Dolgu kelime':'Filler words'),
+  if(fKeys.length) out.push({lv:'warn',t:t('spkFiller'),
     d:fKeys.map(k=>k+' ×'+fCount[k]).join(', ')});
   // 5) kısaltmalar: harf harf mi okunacak, kelime gibi mi? Prova edilmezse tökezleme sebebi.
   const acr=[...new Set((body.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g)||[]))].filter(a=>a!=='TV');
-  if(acr.length) out.push({lv:'info',t:(L==='tr'?acr.length+' kısaltma':acr.length+' acronyms'),
-    d:(L==='tr'?'Harf harf mi okuyacaksın? Telaffuzu yaz: '+acr[0]+'{'+acr[0].split('').join('-').toLowerCase()+'} · '
-              :'Read letter by letter? Add pronunciation: ')+acr.slice(0,8).join(', ')});
+  if(acr.length) out.push({lv:'info',t:srY(t('spkAcr'),{n:acr.length}),
+    d:srY(t('spkAcrD'),{o:acr[0]+'{'+acr[0].split('').join('-').toLowerCase()+'}'})+acr.slice(0,8).join(', ')});
   // 4) tekrar eden kelimeler
   const rep={}; words0.forEach(w=>{ const n=norm(w); if(n.length>4) rep[n]=(rep[n]||0)+1; });
   const rKeys=Object.keys(rep).filter(k=>rep[k]>=4).sort((a,b)=>rep[b]-rep[a]);
-  if(rKeys.length) out.push({lv:'info',t:(L==='tr'?'Çok tekrarlanan kelime':'Heavily repeated words'),
+  if(rKeys.length) out.push({lv:'info',t:t('spkRepeat'),
     d:rKeys.slice(0,6).map(k=>k+' ×'+rep[k]).join(', ')});
   // 5) rakam ve kısaltmalar
   const nums=[...new Set((body.match(/\d[\d.,:/%]*/g)||[]))];
   const abbr=[...new Set((body.match(/\b[A-ZÇĞİÖŞÜ]{2,}\b/g)||[]))];
-  if(nums.length||abbr.length) out.push({lv:'info',t:(L==='tr'?'Sesli okunuşu yazılmalı':'Write out how to say these'),
+  if(nums.length||abbr.length) out.push({lv:'info',t:t('spkNums'),
     d:[...nums.slice(0,6),...abbr.slice(0,6)].join(', ')});
   // 6) hedef süreye sığma
   const wc=countWords(txt), lim=curMode().limit;
   if(lim){
     const secs=wc/st.wpm*60 + duraklamaSn(txt), over=Math.ceil(secs-lim);
     if(over>0){ const cut=Math.ceil(over*st.wpm/60);
-      out.push({lv:'bad',t:(L==='tr'?curMode().n.tr+' sınırını '+over+' sn aşıyor':curMode().n.en+' limit exceeded by '+over+'s'),
-        d:(L==='tr'?'Yaklaşık '+cut+' kelime çıkarman gerekiyor':'Cut roughly '+cut+' words')});
-    } else out.push({lv:'ok',t:(L==='tr'?'Süre uygun':'Duration fits'),
-      d:(L==='tr'?'~'+clock(secs)+' / sınır '+clock(lim):'~'+clock(secs)+' / limit '+clock(lim))});
+      out.push({lv:'bad',t:srY(t('spkOver'),{m:(L==='tr'?curMode().n.tr:curMode().n.en), s:over}),
+        d:srY(t('spkOverD'),{w:cut})});
+    } else out.push({lv:'ok',t:t('spkFits'),
+      d:srY(t('spkFitsD'),{s:clock(secs), l:clock(lim)})});
   }
   // 7) işaretleme kullanımı
   const hasMark=/\*[^*]+\*|(^|\s)\/\/?(\s|$)|\(\d+s?\)/m.test(txt);
-  if(!hasMark) out.push({lv:'info',t:(L==='tr'?'Hiç duraklama/vurgu işareti yok':'No pause/emphasis marks'),
-    d:(L==='tr'?'*vurgu* ve / // (2) ekle — okuma tekdüzelikten çıkar':'Add *emphasis* and / // (2) to break the monotone')});
+  if(!hasMark) out.push({lv:'info',t:t('spkNoMark'), d:t('spkNoMarkD')});
   return {out, wc, sentences:sentences.length,
     avg: sentences.length? Math.round((body.match(/\S+/g)||[]).length/sentences.length):0};
 }
@@ -9304,10 +9335,10 @@ function hizliGuzellik(){
 function hizliCiz(){
   const yaz=(id,v,acik)=>{ const e=$(id); if(e) e.textContent=v;
     const k=e&&e.closest('.hkaro'); if(k) k.classList.toggle('on',!!acik); };
-  yaz('#hzKameraV', st.backCam?(L==='tr'?'Arka':'Rear'):(L==='tr'?'Ön':'Front'), !!st.backCam);
-  yaz('#hzIsikV',   st.torch?(L==='tr'?'Açık':'On'):(L==='tr'?'Kapalı':'Off'), !!st.torch);
-  yaz('#hzGuzellikV', st.bty>0?('%'+st.bty):(L==='tr'?'Kapalı':'Off'), st.bty>0);
-  yaz('#hzOdakV',   st.hideUI?(L==='tr'?'Açık':'On'):(L==='tr'?'Kapalı':'Off'), !!st.hideUI);
+  yaz('#hzKameraV', st.backCam?t('hzArka'):t('hzOn'), !!st.backCam);
+  yaz('#hzIsikV',   st.torch?t('hzAcik'):t('hzKapali'), !!st.torch);
+  yaz('#hzGuzellikV', st.bty>0?('%'+st.bty):t('hzKapali'), st.bty>0);
+  yaz('#hzOdakV',   st.hideUI?t('hzAcik'):t('hzKapali'), !!st.hideUI);
   /* Fener karosu YALNIZ cihaz destekliyorsa: desteklemeyen telefonda
      dokunulup hiçbir şey olmayan bir karo, ölü ayarın ta kendisidir.
      Ayarlar'daki satır zaten aynı kuralla gizleniyor (#torchRow). */

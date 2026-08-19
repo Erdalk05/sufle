@@ -30,7 +30,7 @@ const kos=(html)=>{
    çünkü o zaman test ürünün BAŞKA kusurlarına da kırılırdı. */
 const kabuk=(mesaj)=>`<!doctype html><body><div id="a"></div>
 <script>
-const I18N={tr:{tabCam:'Kamera',tabMore:'Diğer',gKompozit:'Kompozit ve yeşil ekran',devBtn:'Cihaz uyumluluğu',settings:'Ayarlar',bSes:'Ses'},
+const I18N={tr:{tabCam:'Kamera',tabMore:'Diğer',gKompozit:'Kompozit ve yeşil ekran',devBtn:'Cihaz uyumluluğu',settings:'Ayarlar',bSes:'Ses',bSesGuv:'Güvenli ses modu (iPhone için önerilir)'},
  en:{tabCam:'Camera',tabMore:'More',gKompozit:'Composite and green screen',devBtn:'Device compatibility',settings:'Settings',bSes:'Audio'}};
 const MSG={tr:{uyari:'${mesaj}'},en:{uyari:'x'}};
 </script></body>`;
@@ -54,10 +54,23 @@ ok('işletim sistemi tarifi yanlış alarm vermiyor', !/yere gönderiyor/.test(d
 // Biçim etiketi tarifin parçasını bölmemeli.
 const bicimli=kos(kabuk('Ayarlar → Kamera → <b>Kompozit ve yeşil ekran</b> açık olsun'));
 ok('kalın yazı tarifi bölmüyor', !/yere gönderiyor/.test(bicimli));
+/* AYIRT EDİCİ VAKA (2026-08-19): yukarıdaki tarifi `icerir` kuralı zaten
+   kurtarıyor — etiket, biçim etiketlerinin DIŞINDA bütün hâlde duruyor, yani
+   biçim temizliği bozulsa bile alarm çıkmıyordu. Bu, kasıtlı bozmanın
+   inmemesine yol açtı: bozmayı yakalayan tek şey ÜRÜNÜN o günkü metniydi ve
+   metin sözlüğe taşınınca kanıt sessizce öldü. Etiketin ORTASINI bölen bir
+   tarif, biçim temizliğini gerçekten şart koşuyor. */
+const bolen=kos(kabuk('Ayarlar → Kamera → <i>Kompozit</i> ve yeşil ekran açık olsun'));
+ok('etiketin BAŞINI saran biçim etiketi de temizleniyor', !/yere gönderiyor/.test(bolen));
 
 // Etiketin kısaltılmış hâli kabul edilmeli (gerçek etiket parantezli olabilir).
 const kisa=kos(kabuk('Ayarlar → Diğer → Cihaz uyumluluğu panelini aç'));
 ok('etiketin kısaltılmış hâli kabul ediliyor', !/yere gönderiyor/.test(kisa));
+/* AYIRT EDİCİ VAKA: yukarıdaki tarif `icerir` ile de geçiyor (etiket tarifin
+   İÇİNDE bütün hâlde). Kısaltma kuralı ancak tarif etiketten KISA olduğunda
+   gerekiyor: gerçek etiket parantezli uzun hâli, tarif ise sade hâli. */
+const kisa2=kos(kabuk('Ayarlar → Ses → Güvenli ses modu'));
+ok('tarif etiketin kısaltılmış hâliyse kabul ediliyor', !/yere gönderiyor/.test(kisa2));
 
 // Kendi köküyle başlamayan tarifler kapsam dışı (başka uygulamanın yolu).
 const yabanci=kos(kabuk('Fotoğraflar → Albümler → Son eklenenler'));

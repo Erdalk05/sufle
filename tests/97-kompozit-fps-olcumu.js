@@ -40,9 +40,9 @@ ok('yavaşsa ne yapılacağı yazıyor (720p ya da kompoziti kapat)',
 ok('akıcıysa da sayı gösteriliyor',
    /rcKompAkici:'Kompozit akıcı: \{f\} fps'/.test(tel) &&
    /rcKompAkici:'Composite smooth: \{f\} fps'/.test(tel) &&
-   /yz\(t\('rcKompAkici'\),\{f:compFps\.v\}\)/.test(kod));
+   /srY\(t\('rcKompAkici'\),\{f:compFps\.v\}\)/.test(kod));
 ok('yavaş satırında da sayı yerine oturuyor',
-   /yz\(t\('rcKompYavas'\),\{f:compFps\.v\}\)/.test(kod));
+   /srY\(t\('rcKompYavas'\),\{f:compFps\.v\}\)/.test(kod));
 /* Ölçüm penceresi 2 saniye: daha kısa olsa gürültülü, daha uzun olsa geç kalır. */
 ok('ölçüm penceresi 2 saniye', /if\(nowF-compFps\.t0>=2000\)\{/.test(kod));
 

@@ -104,7 +104,7 @@ function satir(kdkDeger){
        tezgâh aynısını sağlıyor — sahte metin uydurmak yerine GERÇEK sözlüğü
        yüklüyoruz ki sözlükten silinen bir anahtar burada da kırmızı versin.
        (Bu yorumda ters tırnak YOK: şablon dizesinin içinde tezgâhı keser.) */
-    const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
+    const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
     const kalanDk=()=>__k;
     ${cikar(ready, /const kdk=kalanDk\(\);[\s\S]*?\n  \}/, 'yer satırı')}
     return out;

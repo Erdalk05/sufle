@@ -4910,28 +4910,28 @@
   "ad": "v9.34 kalan yer dakikaya çevrilmiyor (yer tutucu ekranda kalır)",
   "test": "102-uzun-kayit-bellek.js",
   "kaynak": "telefon",
-  "bul": "    const sure=yz(t('rcYer'),{n:Math.floor(kdk)});",
+  "bul": "    const sure=srY(t('rcYer'),{n:Math.floor(kdk)});",
   "koy": "    const sure=t('rcYer');"
  },
  {
   "ad": "v9.34 kompozit fps sayısı yerine oturmuyor",
   "test": "97-kompozit-fps-olcumu.js",
   "kaynak": "telefon",
-  "bul": "    else out.push({lv:'ok',t:yz(t('rcKompAkici'),{f:compFps.v}),d:''});",
+  "bul": "    else out.push({lv:'ok',t:srY(t('rcKompAkici'),{f:compFps.v}),d:''});",
   "koy": "    else out.push({lv:'ok',t:t('rcKompAkici'),d:''});"
  },
  {
   "ad": "v9.34 sesli komut uyarısı hangi ifadeyi söylemiyor",
   "test": "49-senaryo-komut-tetikleme.js",
   "kaynak": "telefon",
-  "bul": "  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:yz(t('rcKomutD'),{k:kal[0]})});",
+  "bul": "  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:srY(t('rcKomutD'),{k:kal[0]})});",
   "koy": "  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:t('rcKomutD')});"
  },
  {
   "ad": "v9.34 depo uyarısında kalan süre yazılmıyor",
   "test": "41-disk-dolu.js",
   "kaynak": "telefon",
-  "bul": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:yz(t('rcDepoDoluD'),{s:sure})});",
+  "bul": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:srY(t('rcDepoDoluD'),{s:sure})});",
   "koy": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:t('rcDepoDoluD')});"
  },
  {
@@ -4982,5 +4982,33 @@
   "kaynak": "telefon",
   "bul": "const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };",
   "koy": "const srY=(m,d)=>m;"
+ },
+ {
+  "ad": "v9.34 zorlanma haritası sayısı yer tutucuya oturmuyor",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "    if(r.s) parts.push(srY(t('dfSlow'),{n:r.s}));",
+  "koy": "    if(r.s) parts.push((L==='tr'?'yavaşladın ×':'slowed ×')+r.s);"
+ },
+ {
+  "ad": "v9.34 hızlı erişim değeri tekrar koda gömülüyor",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  yaz('#hzIsikV',   st.torch?t('hzAcik'):t('hzKapali'), !!st.torch);",
+  "koy": "  yaz('#hzIsikV',   st.torch?(L==='tr'?'Açık':'On'):(L==='tr'?'Kapalı':'Off'), !!st.torch);"
+ },
+ {
+  "ad": "v9.34 cihaz paneli başlığı tekrar koda gömülüyor",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  html+='<div class=\"kv\" id=\"quotaKv\"><span>'+t('dvStorage')+'</span><b>—</b></div>';",
+  "koy": "  html+='<div class=\"kv\" id=\"quotaKv\"><span>'+(L==='tr'?'Depo':'Storage')+'</span><b>—</b></div>';"
+ },
+ {
+  "ad": "v9.34 konuşulabilirlik uyarısında sayı yerine oturmuyor",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  if(longS.length) out.push({lv:'warn',t:srY(t('spkLongS'),{n:longS.length}),",
+  "koy": "  if(longS.length) out.push({lv:'warn',t:t('spkLongS'),"
  }
 ]

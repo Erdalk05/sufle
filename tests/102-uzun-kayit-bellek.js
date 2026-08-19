@@ -145,7 +145,7 @@ ok('kalan yer üç seviyede bildiriliyor',
 ok('uyarı MB değil DAKİKA söylüyor (canlı dize)',
    /rcYer:'≈\{n\} dk çekim yeri'/.test(tel) &&
    /rcYer:'≈\{n\} min of recording'/.test(tel) &&
-   /yz\(t\('rcYer'\),\{n:Math\.floor\(kdk\)\}\)/.test(kod));
+   /srY\(t\('rcYer'\),\{n:Math\.floor\(kdk\)\}\)/.test(kod));
 ok('uyarı ne yapılacağını da söylüyor', /arşivden çekim sil/.test(tel));
 ok('kota okunamıyorsa hiç konuşulmuyor', /if\(kdk!=null\)\{/.test(kod));
 

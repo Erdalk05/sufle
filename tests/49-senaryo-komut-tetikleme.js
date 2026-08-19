@@ -96,7 +96,7 @@ function satir(kaliplarListe){
     const out=[]; const L='tr';
     ${SOZ}
     const t=(k)=>I18N[L][k];
-    const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
+    const srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
     const komutKaliplari=()=>__k;
     ${komutSatiri}
     return out;

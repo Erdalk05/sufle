@@ -38,6 +38,33 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🌍 Altı grup daha + iki KAPI KUSURU (telefon 110 → 84)
+
+Zorlanma haritası, hızlı erişim değerleri, cihaz paneli ve konuşulabilirlik
+denetimi de sözlüğe alındı. Toplam: **telefon 172 → 84, Mac 17 → 5.**
+
+**🔴 KAPININ KENDİ KUSURU — bir tarifi sözlüğe koymak onu denetim dışı
+bırakıyordu.** Yol-tarifi dedektörü (`tests/190`) tarifin her parçasını
+"gerçek bir arayüz etiketi mi" diye sorar. Tarif metni sözlüğe taşınınca
+**kendi değeri de etiket kümesine giriyor** ve dedektör tarifi KENDİ İÇİNDE
+bulup geçiriyordu. Yani bu turda taşıdığım her tarif sessizce denetimsiz
+kalacaktı. Ölçüyle çıktı: `srAudFix` taşınınca iki kasıtlı bozma birden
+"inmez" oldu. Dedektör artık karşılaştırma kümesinden **tarifin kendi
+metnini** çıkarıyor.
+
+**🔴 İKİ KANIT ZATEN SAHTEYMİŞ.** Aynı iki bozmayı incelerken çıktı: o
+kanıtların ayakta durmasının tek sebebi **ürünün o günkü bir metniydi**;
+sentetik vakalar `icerir` kuralı yüzünden bozma altında da geçiyordu. Yani
+kanıt, ölçtüğünü sandığı kuralı ölçmüyordu. İkisine de **gerçekten ayırt
+eden** sentetik vaka yazıldı (etiketin başını saran biçim etiketi · tarifin
+etiketin kısaltılmış hâli olması).
+
+**Yeni kural — yer tutucu doldurulmadan okunamaz** (`tests/197`): değeri
+`{n}` içeren HER anahtarın dolduran bir yardımcıdan geçmesi şart. Bu sınıf
+sessizdi: ekranda süslü parantez görünür, kaynakta hiçbir şey görünmez.
+Ayrıca üç ayrı isimle yaşayan aynı yardımcı (`yz`, `srY`) **tek isme**
+indirildi.
+
 ### 🌍 Dördüncü grup: sonuç ekranı tanı satırları (telefon 125 → 110)
 
 `showResult`in 15 cümlesi sözlüğe alındı — paylaşım tanısı, donma/ses kesilme
