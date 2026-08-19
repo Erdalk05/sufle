@@ -260,6 +260,47 @@
   #eyeline::before,#eyeline::after{content:"";position:absolute;top:-7px;border:7px solid transparent}
   #eyeline::before{left:0;border-left-color:var(--accent)}
   #eyeline::after{right:0;border-right-color:var(--accent)}
+  /* ===== HIZLI ERİŞİM =====
+     Sahnenin sağ üstü BİLEREK seçildi: sol üst geri/kapat için ayrılmış,
+     alt kenar kumanda çubuğunun. Cam yüzey burada süs değil işlev — düğme
+     görüntünün üstünde duruyor ve altındaki kadrajı görmeye devam ediyorsun.
+     iOS'ta öneksiz `backdrop-filter` HİÇ uygulanmıyor (v9.32'de ölçüldü),
+     bu yüzden ikisi birden yazılı. */
+  #hizliBtn{position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:6;
+    width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+    background:rgba(18,21,28,.52);color:#fff;border:1px solid rgba(255,255,255,.16);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);
+    box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer;transition:background .18s,transform .18s}
+  #hizliBtn .ic{width:22px;height:22px}
+  #hizliBtn[aria-expanded="true"]{background:var(--accent);color:var(--accent-d);transform:rotate(90deg)}
+  #hizliPanel{position:absolute;top:calc(62px + env(safe-area-inset-top));right:10px;z-index:6;
+    display:none;grid-template-columns:repeat(3,84px);gap:8px;padding:10px;border-radius:18px;
+    background:rgba(14,17,23,.58);border:1px solid rgba(255,255,255,.16);
+    -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+    box-shadow:0 18px 48px rgba(0,0,0,.5)}
+  body.hizliAcik #hizliPanel{display:grid;animation:hizliAc .16s ease-out}
+  @keyframes hizliAc{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){ body.hizliAcik #hizliPanel{animation:none} }
+  /* 360 px telefonda üç sütun 84 px + boşluk = 276 px; sağ kenar boşluğuyla
+     birlikte sığıyor. Daha dar cihazda iki sütuna düşüyor. */
+  @media (max-width:359px){ #hizliPanel{grid-template-columns:repeat(2,84px)} }
+  .hkaro{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-height:76px;padding:9px 4px;border-radius:14px;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:#fff;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+    font-size:var(--tx-xs);line-height:1.15;text-align:center;transition:background .15s,border-color .15s}
+  .hkaro:active{background:rgba(255,255,255,.14)}
+  .hkaro .ic{width:20px;height:20px}
+  /* DEĞER RENGİ DURUMU SÖYLER. İlk çizimde "Kapalı" da vurgu yeşiliyle
+     yazılıyordu; karo kapalıyken AÇIK gibi okunuyordu — renk bilgi taşımak
+     yerine yanlış bilgi taşıyordu (çizilmiş ekranda görüldü, kaynakta değil). */
+  .hkaro b{font-size:var(--tx-xs);font-weight:800;color:var(--muted);min-height:13px}
+  .hkaro.on b{color:var(--accent)}
+  .hkaro.on{background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:var(--accent)}
+  .hkaro:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  /* Odak kipinde (kayıtta düğmeler gizli) hızlı erişim de çekilir —
+     yoksa "düğmeleri gizle" sözünü tutmamış olurduk. */
+  body.hideUI #hizliBtn,body.hideUI #hizliPanel{opacity:0;pointer-events:none}
   #camMark{position:absolute;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
     z-index:5;background:rgba(0,200,83,.16);border:1px solid rgba(0,200,83,.45);color:#bfffd6;
     font-size:var(--tx-xs);font-weight:700;padding:var(--sp-1) 12px;border-radius:0 0 14px 14px;display:none}
@@ -846,6 +887,12 @@
     background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.55),0 0 0 2px var(--accent)}
   input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
   .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:7px;margin-top:8px}
+  /* ETİKET ÇUBUĞU eşit sütunlu ızgara OLAMAZ: etiketler kullanıcının kendi
+     kelimeleri ve uzunlukları birbirini tutmaz — `auto-fit` en uzun jetonu
+     kırpar, kullanıcı hangi etikete bastığını göremez. Sarmalı akış her
+     uzunluğu olduğu gibi gösteriyor. */
+  #scTagBar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  #scTagBar button{flex:0 1 auto;padding:var(--sp-2) 10px;font-size:var(--tx-sm)}
   /* Altı öğeli seçiciler 3'e 2 bölünsün: auto-fit dörde bölüp son satırda
      iki dar hücre bırakıyordu. */
   #modeSeg{grid-template-columns:repeat(3,1fr)}
@@ -998,6 +1045,25 @@
     <div id="headroom"></div>
     <div id="aspectBox"></div>
     <div id="safeWrap"></div>
+  </div>
+  <!-- HIZLI ERİŞİM (2026-08-18, Erdal'ın isteği). Çekim sürerken gereken
+       birkaç şey Ayarlar'ın içinde üç dokunuş uzaktaydı: kamera çevirmek,
+       fener, yazı boyutu. Kamera açıkken Ayarlar'ı açmak sahneyi de örtüyor.
+       Bu panel SAHNENİN ÜSTÜNDE duruyor, cam yüzey, tek dokunuşla açılıyor.
+       ⚠️ MANTIK KOPYALANMIYOR: her karo Ayarlar'daki GERÇEK satırı tıklıyor.
+       Kopyalasaydım kamera değişimi, fenerin yeniden uygulanması ve kayıt
+       sırasındaki engeller iki yerde yaşar, zamanla ayrışırdı. -->
+  <button id="hizliBtn" aria-label="Hızlı erişim" data-aria="hizliBtn"
+          data-i18n-title="hizliT" title="Hızlı erişim" aria-expanded="false">
+    <svg class="ic" aria-hidden="true"><use href="#i-dahafazla"/></svg>
+  </button>
+  <div id="hizliPanel" role="group" aria-label="Hızlı erişim" data-i18n-aria="hizliT">
+    <button class="hkaro" data-hizli="backCam"><svg class="ic" aria-hidden="true"><use href="#i-kamera"/></svg><span data-i18n="hzKamera">Kamera</span><b id="hzKameraV"></b></button>
+    <button class="hkaro" data-hizli="torch"><svg class="ic" aria-hidden="true"><use href="#i-isik"/></svg><span data-i18n="hzIsik">Işık</span><b id="hzIsikV"></b></button>
+    <button class="hkaro" data-hizli="bty"><svg class="ic" aria-hidden="true"><use href="#i-filtre"/></svg><span data-i18n="hzGuzellik">Güzellik</span><b id="hzGuzellikV"></b></button>
+    <button class="hkaro" data-hizli="fsDown"><svg class="ic" aria-hidden="true"><use href="#i-yazitipi"/></svg><span data-i18n="hzYaziKucult">Yazı küçült</span><b>A−</b></button>
+    <button class="hkaro" data-hizli="fsUp"><svg class="ic" aria-hidden="true"><use href="#i-yazitipi"/></svg><span data-i18n="hzYaziBuyut">Yazı büyüt</span><b>A+</b></button>
+    <button class="hkaro" data-hizli="hideUI"><svg class="ic" aria-hidden="true"><use href="#i-goz"/></svg><span data-i18n="hzOdak">Odak</span><b id="hzOdakV"></b></button>
   </div>
   <div id="camMark"><span data-i18n="lookHere">buraya bak</span></div>
   <div id="noAudioBadge" data-i18n="noMicShort">mikrofon yok — ses kaydedilmiyor</div>
@@ -1317,6 +1383,12 @@
       <button data-vfx="lowlight" data-i18n="vfxLow">Az ışık</button>
     </div>
     <input type="range" data-aria="vidAmt" id="vidAmt" min="0" max="150" value="100">
+    <!-- GÜZELLİK: filtreden AYRI bir sürgü. Renk hazır ayarı "Kapalı" olsa
+         bile çalışır — kullanıcı rengine dokunulmasını istemeden yüz
+         yumuşatma isteyebilir. -->
+    <div class="row" style="margin-top:16px"><label for="btyAmt" data-i18n="btyL">Güzellik (yüz yumuşatma)</label><span class="v" id="vBty">—</span></div>
+    <input type="range" data-aria="btyAmt" id="btyAmt" min="0" max="100" value="0">
+    <div class="hint" data-i18n="btyHint">Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.</div>
     </div>
     <div class="hint" data-i18n="vfxHint">Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.</div>
 
@@ -1596,6 +1668,12 @@
     <div class="hint" data-i18n="sectionsHint">Dokun, o bölüme atla.</div>
   </div>
   <input type="text" id="scriptFind" placeholder="Senaryolarda ara…" data-i18n-ph="findPh">
+  <!-- ETİKET SÜZGECİ. Hiç etiket yoksa çubuk HİÇ ÇİZİLMEZ: hiçbir şey
+       yapmayan denetim, bu deponun "ölü ayar" sınıfının liste hâlidir.
+       Arama kutusuyla aynı yapışkan blokta duruyor — süzgeci açıp
+       listenin dibine inince onu kapatacak jetona ulaşamamak, C.3'te
+       ölçülen kusurun aynısı olurdu. -->
+  <div class="seg hidden" id="scTagBar" role="group" aria-label="Etiketler" data-aria="scTagsL"></div>
   </div>
   <div class="seg" id="scSort" style="margin-bottom:6px">
     <button data-ss="used" class="on" data-i18n="ssUsed">Son kullanılan</button>
@@ -1634,6 +1712,9 @@
   <input type="file" id="txtFile" accept=".txt,.md,.srt,.vtt,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
   <div class="row alanSat" style="margin-top:18px"><label class="alanEt" data-i18n="title">Başlık</label></div>
   <input type="text" id="title" data-i18n-ph="mPhTitle" placeholder="Senaryo başlığı">
+  <div class="row alanSat" style="margin-top:12px"><label class="alanEt" for="scTags" data-i18n="scTagsL">Etiketler</label></div>
+  <input type="text" id="scTags" data-i18n-ph="scTagsPh" placeholder="Etiket: reels, müşteri A…">
+  <div class="hint" data-i18n="scTagsHint">Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.</div>
   <!-- İki sürümlü senaryo: aynı içeriğin ikinci dildeki hâli. Etiket dil adı
        değil sürüm numarası — uygulama metnin hangi dilde olduğunu bilmiyor. -->
   <div class="row alanSat" style="margin-top:14px"><label class="alanEt" data-i18n="text">Metin</label>
@@ -2101,7 +2182,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.32';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.34';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2221,7 +2302,7 @@ const I18N={
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
-  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  hizliT:'Hızlı erişim',hzKamera:'Kamera',hzIsik:'Işık',hzGuzellik:'Güzellik',hzYaziKucult:'Yazı küçült',hzYaziBuyut:'Yazı büyüt',hzOdak:'Odak',btyL:'Güzellik (yüz yumuşatma)',btyHint:'Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.',vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'Perdenin rengini kameradan ölç',tgMask:'Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'Mikrofon',tgEyeLine:'Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',mapImport:'⬇︎ Profili içe aktar',
@@ -2260,6 +2341,9 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
   /* .docx içe aktarma (D.1) */
+  /* Etiket = klasörün çok üyelikli hâli; gerekçesi cekirdek/etiket.js'te. */
+  scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
+  scTagsHint:'Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.',
   fromFileHint:'Word (.docx), PDF, düz metin, Markdown ve altyazı dosyaları. PDF metni gömülü değilse (taranmış sayfa) uygulama bunu söyler; o zaman metni kopyalayıp Yapıştır ile getir.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'Word veya metin dosyasından',
@@ -2393,7 +2477,7 @@ const I18N={
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
-  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  hizliT:'Quick access',hzKamera:'Camera',hzIsik:'Light',hzGuzellik:'Beauty',hzYaziKucult:'Smaller text',hzYaziBuyut:'Bigger text',hzOdak:'Focus',btyL:'Beauty (skin smoothing)',btyHint:'Softens flat areas such as skin while leaving eyes, brows, hair and lip edges intact. Very high values look doughy — 30 to 50 stays natural.',vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'Sample the screen colour from camera',tgMask:'Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'Microphone',tgEyeLine:'Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',mapImport:'⬇︎ Import profile',
@@ -2432,6 +2516,8 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
+  scTagsHint:'Separate with commas. One script can carry several tags — that is what a folder cannot do. Up to 6 tags.',
   fromFileHint:'Word (.docx), PDF, plain text, Markdown and subtitle files. If a PDF has no embedded text (a scanned page) the app says so; then copy the text and use Paste.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'From a Word or text file',
@@ -3020,7 +3106,7 @@ const HELP={
 let L='tr';
 const t=k=>(I18N[L][k]||I18N.tr[k]||k);
 const m=k=>(MSG[L][k]||MSG.tr[k]||k);
-const ARIA={tr:{vidAmt:'Filtre miktarı',spDown:'Yavaşlat',spUp:'Hızlandır',settingsBtn:'Ayarlar',scriptsBtn:'Senaryolar',readyBtn:'Çekime hazır mıyım',pauseBtn:'Kaydı duraklat',recBtn:'Kayıt başlat/durdur',voiceBtn:'Sesle takip',playBtn:'Başlat/duraklat',tempoBtn:'Ölçülen tempoyu uygula',sheetX:'Kapat',scriptsX:'Kapat',takesX:'Kapat',remoteX:'Kapat',helpX:'Kapat',readyX:'Kapat'},en:{vidAmt:'Filter amount',spDown:'Slower',spUp:'Faster',settingsBtn:'Settings',scriptsBtn:'Scripts',readyBtn:'Readiness check',pauseBtn:'Pause recording',recBtn:'Start or stop recording',voiceBtn:'Voice follow',playBtn:'Play or pause',tempoBtn:'Apply measured pace',sheetX:'Close',scriptsX:'Close',takesX:'Close',remoteX:'Close',helpX:'Close',readyX:'Close'}};
+const ARIA={tr:{vidAmt:'Filtre miktarı',btyAmt:'Güzellik miktarı',hizliBtn:'Hızlı erişim',spDown:'Yavaşlat',spUp:'Hızlandır',settingsBtn:'Ayarlar',scriptsBtn:'Senaryolar',readyBtn:'Çekime hazır mıyım',pauseBtn:'Kaydı duraklat',recBtn:'Kayıt başlat/durdur',voiceBtn:'Sesle takip',playBtn:'Başlat/duraklat',tempoBtn:'Ölçülen tempoyu uygula',sheetX:'Kapat',scriptsX:'Kapat',takesX:'Kapat',remoteX:'Kapat',helpX:'Kapat',readyX:'Kapat'},en:{vidAmt:'Filter amount',btyAmt:'Beauty amount',hizliBtn:'Quick access',spDown:'Slower',spUp:'Faster',settingsBtn:'Settings',scriptsBtn:'Scripts',readyBtn:'Readiness check',pauseBtn:'Pause recording',recBtn:'Start or stop recording',voiceBtn:'Voice follow',playBtn:'Play or pause',tempoBtn:'Apply measured pace',sheetX:'Close',scriptsX:'Close',takesX:'Close',remoteX:'Close',helpX:'Close',readyX:'Close'}};
 function applyLang(){
   document.documentElement.lang=L;
   $$('[data-aria]').forEach(el=>{ const v=ARIA[L][el.dataset.aria]; if(v) el.setAttribute('aria-label',v); });
@@ -3088,7 +3174,7 @@ const DEF={
   eyePos:18, eyeTasindi:0, ilkAkis:0, color:'#ffffff', bg:'#000000', scrim:35, font:'system',
   eye:true, dim:true, hl:true, fade:true, breathe:true, count:true, shadow:true,
   mirrorText:false, flipText:false, backCam:false, grid:false, torch:false,
-  quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true,
+  quality:'1080', asp:'none', vidFx:'natural', vidAmt:100, bty:0, rawAudio:false, safeAudio:true, audioFx:'voice', fxGate:null, fxPres:null, fxWarm:null, forceMime:'', forceNoOpts:false, autoLock:false, wake:true,
   /* B.4: odak modu VARSAYILAN. Tuzak kapandıktan sonra (peekUI) güvenli;
      eski kullanıcının kaydında alan zaten yazılı olduğundan onların
      tercihi değişmez, yalnız yeni kurulumlara etki eder. */
@@ -4554,9 +4640,34 @@ const FS_SRC=
 'uniform float useKey;uniform float useBg;uniform vec3 bgc;'+
 'uniform float spill;uniform float axis;uniform float mask;'+
 'uniform float bri;uniform float con;uniform float sat;uniform float wrm;uniform float shp;uniform vec2 px;'+
+'uniform float bty;'+
+/* GÜZELLİK = KENAR KORUYAN YUMUŞATMA (2026-08-18). Erdal: "yüz maskeleme yok,
+   diğer telepromterlarda var." Düz bulanıklık yüzü hamurlaştırır ve gözle
+   kaşı da siler; burada 8 komşu örneğin AĞIRLIĞI parlaklık farkına göre
+   düşürülüyor (fakir adamın bilateral süzgeci): ten gibi düşük kontrastlı
+   alanlar yumuşuyor, göz-kaş-saç-dudak sınırı olduğu gibi kalıyor.
+   Örnekler elle açıldı — bazı mobil GPU'larda döngü içinde doku örneklemesi
+   güvenilir derlenmiyor. */
+'float wsk(vec3 s,float l0){float d=abs(dot(s,vec3(0.299,0.587,0.114))-l0);'+
+'return 1.0-smoothstep(0.045,0.17,d);}'+
+'vec3 skinSoft(vec2 t,vec3 c0){'+
+'if(bty<=0.0) return c0;'+
+'float R=2.6;'+
+'vec2 a1=vec2(px.x*R,0.0), a2=vec2(0.0,px.y*R);'+
+'vec2 a3=vec2(px.x*R,px.y*R)*0.7071, a4=vec2(px.x*R,-px.y*R)*0.7071;'+
+'vec3 s1=texture2D(tex,t+a1).rgb, s2=texture2D(tex,t-a1).rgb;'+
+'vec3 s3=texture2D(tex,t+a2).rgb, s4=texture2D(tex,t-a2).rgb;'+
+'vec3 s5=texture2D(tex,t+a3).rgb, s6=texture2D(tex,t-a3).rgb;'+
+'vec3 s7=texture2D(tex,t+a4).rgb, s8=texture2D(tex,t-a4).rgb;'+
+'float l0=dot(c0,vec3(0.299,0.587,0.114));'+
+'float w1=wsk(s1,l0),w2=wsk(s2,l0),w3=wsk(s3,l0),w4=wsk(s4,l0);'+
+'float w5=wsk(s5,l0),w6=wsk(s6,l0),w7=wsk(s7,l0),w8=wsk(s8,l0);'+
+'float wt=1.0+w1+w2+w3+w4+w5+w6+w7+w8;'+
+'vec3 bl=(c0+s1*w1+s2*w2+s3*w3+s4*w4+s5*w5+s6*w6+s7*w7+s8*w8)/wt;'+
+'return mix(c0,bl,bty);}'+
 // Keskinlik: unsharp mask — komşu 4 pikselin ortalamasından farkı güçlendir.
 // Telefon kamerasının yumuşak görüntüsünü "net" gösteren şey budur.
-'vec3 sharpen(vec2 t){vec3 c0=texture2D(tex,t).rgb;'+
+'vec3 sharpen(vec2 t,vec3 c0){'+
 'if(shp<=0.0) return c0;'+
 'vec3 b4=(texture2D(tex,t+vec2(px.x,0.0)).rgb+texture2D(tex,t-vec2(px.x,0.0)).rgb+'+
 'texture2D(tex,t+vec2(0.0,px.y)).rgb+texture2D(tex,t-vec2(0.0,px.y)).rgb)*0.25;'+
@@ -4569,7 +4680,8 @@ const FS_SRC=
 'c=clamp(mix(vec3(l),c,sat),0.0,1.0);'+
 'c.r=clamp(c.r+wrm,0.0,1.0); c.b=clamp(c.b-wrm,0.0,1.0);'+
 'return c;}'+
-'void main(){vec2 t=uv*sc+of;vec3 c=grade(sharpen(t));'+
+'void main(){vec2 t=uv*sc+of;'+
+'vec3 c=grade(sharpen(t,skinSoft(t,texture2D(tex,t).rgb)));'+
 'if(useKey<0.5){gl_FragColor=vec4(c,1.0);return;}'+
 'float d=distance(c,key);float a=smoothstep(sim,sim+smo,d);'+
 // despill: saç ve omuz kenarındaki yeşil/mavi saçağı bastır
@@ -4596,10 +4708,19 @@ const VIDP={
 };
 function vidParams(){
   const base=VIDP[st.vidFx||'natural']||VIDP.natural;
-  if(st.vidFx==='off') return base;
+  /* GÜZELLİK FİLTREDEN BAĞIMSIZ. "Kapalı" hazır ayarı seçen kullanıcı renge
+     dokunulmasını istemiyor; ama yüz yumuşatmayı yine isteyebilir. Erken
+     dönüşte `bty` düşerse ayar sessizce ölürdü (deponun 1 numaralı sınıfı). */
+  if(st.vidFx==='off') return Object.assign({},base,{bty:(st.bty==null?0:st.bty)/100});
   const k=(st.vidAmt==null?100:st.vidAmt)/100;      // şiddet: hazır ayarla nötr arası karışım
+  /* KESKİNLİK VE GÜZELLİK BİRBİRİNİ YER. Unsharp mask, yumuşatmanın az önce
+     sildiği yüksek frekansı geri koyar; ikisi tam güçte açıkken görüntü
+     "yumuşak ama gürültülü" oluyordu (ölçüldü). Güzellik arttıkça keskinlik
+     kontrollü şekilde geri çekiliyor — kullanıcı iki sürgüyü birbirine karşı
+     ayarlamak zorunda kalmıyor. */
+  const b=(st.bty==null?0:st.bty)/100;
   return { bri:base.bri*k, con:1+(base.con-1)*k, sat:1+(base.sat-1)*k,
-           wrm:base.wrm*k, shp:base.shp*k };
+           wrm:base.wrm*k, shp:base.shp*k*(1-0.75*b), bty:b };
 }
 function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]; }
 function compSize(){
@@ -4875,6 +4996,7 @@ function drawComp(){
     gl.uniform1f(gl.getUniformLocation(comp.pr,'sat'),V.sat);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'wrm'),V.wrm);
     gl.uniform1f(gl.getUniformLocation(comp.pr,'shp'),V.shp);
+    gl.uniform1f(gl.getUniformLocation(comp.pr,'bty'),V.bty||0);
     gl.uniform2f(gl.getUniformLocation(comp.pr,'px'),1/Math.max(1,cam.videoWidth),1/Math.max(1,cam.videoHeight));
     const b=hex2rgb(st.bgColor||'#101820');
     gl.uniform3f(gl.getUniformLocation(comp.pr,'bgc'),b[0],b[1],b[2]);
@@ -5625,11 +5747,15 @@ function fxLabel(){
   return (st.audioFx||'voice')==='off' ? (L==='tr'?'kapalı':'off') : (L==='tr'?'açık':'on');
 }
 function renderVfx(){
+  if(typeof hizliCiz==='function') hizliCiz();
   $$('#vfxSeg button').forEach(b=>b.classList.toggle('on',b.dataset.vfx===(st.vidFx||'natural')));
   const a=$('#vidAmt'), lab=$('#vFxAmt');
   if(a) a.value=(st.vidAmt==null?100:st.vidAmt);
   if(a) a.style.display=(st.vidFx==='off')?'none':'';
   if(lab) lab.textContent=(st.vidFx==='off')?(L==='tr'?'kapalı':'off'):('%'+(st.vidAmt==null?100:st.vidAmt));
+  const bs=$('#btyAmt'), bl=$('#vBty');
+  if(bs) bs.value=(st.bty==null?0:st.bty);
+  if(bl) bl.textContent=(st.bty>0)?('%'+st.bty):(L==='tr'?'kapalı':'off');
 }
 function renderFx(){
   const st2=$('#fxState'); if(st2) st2.textContent=fxLabel();
@@ -7725,6 +7851,10 @@ function renderTempo(){
 }
 
 /* ============ SENARYOLAR ============ */
+/* ETİKET SÜZGECİ GÖRÜNÜM DURUMUDUR, TERCİH DEĞİL — bilerek `st`ye yazılmıyor.
+   Kalıcı olsaydı süzgeci açık bırakıp uygulamayı kapatan kullanıcı ertesi gün
+   senaryolarının çoğunu göremez ve sebebini arayacağı bir yer olmazdı. */
+let scTagSecili='', scTagKutuId=null;
 function renderScripts(){
   const box=$('#scriptList'); if(!box) return;
   box.innerHTML='';
@@ -7741,13 +7871,37 @@ function renderScripts(){
   const fnd=$('#scriptFind');
   if(fnd) fnd.classList.toggle('hidden', !cok && !fnd.value);
   const srt=$('#scSort'); if(srt) srt.classList.toggle('hidden', !cok);
+  /* ETİKET ÇUBUĞU. Hiç etiket yoksa HİÇ ÇİZİLMEZ — "Tümü" tek başına duran,
+     hiçbir şey yapmayan bir jeton olurdu. Seçili etiket ortadan kalkmışsa
+     (onu taşıyan son senaryo silindi ya da etiketi kaldırıldı) seçim burada
+     düşüyor; yoksa liste sonsuza kadar boş görünür ve kullanıcı senaryolarını
+     kaybettiğini sanardı. */
+  const etTablo=etiketTablo(st.scripts||[]);
+  scTagSecili=etiketSeciliGecerli(scTagSecili, etTablo);
+  const bar=$('#scTagBar');
+  if(bar){
+    bar.classList.toggle('hidden', !etTablo.length);
+    bar.innerHTML='';
+    if(etTablo.length){
+      const jeton=(deger,yazi,acik)=>{
+        const b=document.createElement('button');
+        b.textContent=yazi; if(acik) b.className='on';
+        b.setAttribute('aria-pressed', acik?'true':'false');
+        b.onclick=()=>{ scTagSecili=deger; renderScripts(); };
+        bar.appendChild(b);
+      };
+      jeton('', t('scTagAll'), !scTagSecili);
+      etTablo.forEach(x=>jeton(x.ad, x.ad+' '+x.n, x.anahtar===etiketAnahtar(scTagSecili)));
+    }
+  }
   // Arama: liste uzayınca senaryo bulunamıyordu. Türkçe katlama norm() ile aynı kural.
   const q=norm(($('#scriptFind')&&$('#scriptFind').value)||'');
   // İKİNCİ SÜRÜMDE DE ARA: aradığın cümle o an KAPALI olan sürümdeyse senaryo
   // hiç çıkmıyordu. Kullanıcı o metni bu uygulamaya kendisi yazdı; aramanın
   // "hangi sürüm açık" diye ayrım yapması onun için anlamsız.
-  let list=q ? st.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q)
-                                  ||norm(s.text2||'').includes(q)) : st.scripts.slice();
+  const taban=etiketSuz(st.scripts, scTagSecili);
+  let list=q ? taban.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q)
+                             ||norm(s.text2||'').includes(q)) : taban;
   // 3.2 Sıralama: liste büyüdükçe "en son ne üzerinde çalışıyordum" kaybolur.
   const ss=st.scSort||'used';
   list.sort(ss==='name' ? (a,b)=>(a.title||'').localeCompare(b.title||'','tr')
@@ -7762,6 +7916,13 @@ function renderScripts(){
     if(bg.ts!=null) ek.push(t('scSonDeg').replace('{t}',
       new Date(bg.ts).toLocaleDateString(L==='tr'?'tr-TR':'en-US')));
     if(bg.cekim!=null) ek.push(t('scCekim').replace('{n}', bg.cekim));
+    /* Etiketler yalnız SÜZGEÇ KAPALIYKEN yazılıyor: bir etikete göre
+       süzdüğünde her satırda aynı etiket durur, bilgi taşımaz ve zaten dar
+       olan özet bütçesini yer (aynı bütçe kavgası 2026-08-17'de kart
+       özetinde ölçüldü). İlk iki etiket açık, gerisi sayıyla. */
+    const et=Array.isArray(s.tags)?s.tags:[];
+    if(!scTagSecili && et.length)
+      ek.push(et.slice(0,2).map(x=>'#'+x).join(' ')+(et.length>2?' +'+(et.length-2):''));
     d.innerHTML='<div class="meta"><div class="t">'+esc(s.title||'—')+'</div><div class="s">'+
       statLine(countWords(s.text))+(ek.length?' · '+esc(ek.join(' · ')):'')+
       '</div></div><button class="iconbtn" data-a="dup" aria-label="'+m('scDup')+'">⧉</button>';
@@ -7833,7 +7994,9 @@ function surumRozeti(){
   b.textContent='⇄ '+(s&&s.surum2?'2':'1');
   b.setAttribute('aria-label', m('verSwitch')+' — '+(s&&s.surum2?'2':'1'));
 }
-function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||''; updateStats(); surumRozeti(); }
+function fillEditor(){ const s=active(); $('#title').value=s.title||''; $('#text').value=s.text||'';
+  const te=$('#scTags'); if(te){ te.value=etiketYaz(s.tags); scTagKutuId=s.id; }
+  updateStats(); surumRozeti(); }
 function firstLineTitle(txt){
   const l=(txt||'').split(/\r?\n/).map(x=>x.replace(/^#{1,3}\s*/,'').trim()).find(x=>x.length>1);
   return l ? l.slice(0,40) : '';
@@ -7895,7 +8058,16 @@ function stripInvisible(x){
 function pullEditor(){ const s=active(); if(!s) return;
   // Başlık boşsa "Başlıksız" yığını oluşuyordu; ilk satırdan anlamlı bir ad üret.
   s.title=$('#title').value.trim() || firstLineTitle($('#text').value) || (L==='tr'?'Başlıksız':'Untitled');
-  s.text=stripInvisible($('#text').value); s.up=Date.now(); save(); }
+  s.text=stripInvisible($('#text').value);
+  /* ETİKETLER HER ZAMAN AYRIŞTIRILARAK yazılır: kullanıcının yazdığı ham
+     satır değil, temizlenmiş dizi. Ham satırı saklasaydık aynı etiketin
+     iki yazımı iki ayrı kutu açardı ve sebebi hiçbir ekranda görünmezdi. */
+  /* ⚠️ KUTU BU SENARYO İÇİN DOLDURULMADIYSA YAZMA. `pullEditor` açılışta ve
+     bazı yollarda `fillEditor`den ÖNCE koşuyor; o anda kutu BOŞ olur ve
+     koşulsuz yazsaydık senaryonun etiketleri sessizce silinirdi. Bu deponun
+     3 numaralı hata sınıfı (kayıtlı durumu okumadan sıfırlayan sıra). */
+  const te=$('#scTags'); if(te && scTagKutuId===s.id) s.tags=etiketAyristir(te.value);
+  s.up=Date.now(); save(); }
 
 /* ============ NEFESLE AKIŞ (ses etkinliği algılama) ============
    Sesle takip kelime eşleştiriyor: doğru dil, iyi mikrofon ve tanıma desteği ister.
@@ -8978,6 +9150,87 @@ stage.addEventListener('pointermove',e=>{
     setPos(startPos - dy);
   }
 },{passive:true});
+/* ===== HIZLI ERİŞİM =====
+   Erdal'ın isteği: "bazı hızlı önemli şeylere ulaşmak için üst sağ köşede
+   saydam hızlı ulaşma butonu olması gerekiyor." Ölçülen sorun gerçekti:
+   kamera açıkken fener yakmak Ayarlar → Kamera → satır = üç dokunuş, üstelik
+   panel sahneyi örtüyor, yani kadrajı görmeden ışık ayarlıyorsun.
+
+   ⚠️ HİÇBİR KARO KENDİ MANTIĞINI TAŞIMIYOR. Anahtarlar Ayarlar'daki GERÇEK
+   satırı tıklıyor, yazı boyutu GERÇEK sürgüyü sürüyor. Kopyalasaydım kamera
+   değiştirme kuralları (kayıt sürerken yasak), fenerin yeniden uygulanması ve
+   zum sıfırlama iki yerde yaşar ve zamanla ayrışırdı — bu deponun bilinen
+   "kopya mantık" tuzağı. */
+function hizliKapat(){
+  body.classList.remove('hizliAcik');
+  const b=$('#hizliBtn'); if(b) b.setAttribute('aria-expanded','false');
+}
+function hizliSatir(k){
+  const sw=$('#sheet') && $('#sheet').querySelector('[data-t="'+k+'"]');
+  const row=sw && sw.closest('.tog');
+  if(!row){ logErr('hizli','ayar satırı bulunamadı: '+k); return false; }
+  row.click();                       // TEK yol: Ayarlar'daki gerçek davranış
+  return true;
+}
+/* Yazı boyutu GERÇEK sürgüden değişiyor: `bind('#fs','fs',…)` yeniden ölçümü
+   de tetikliyor. Doğrudan `st.fs` yazsaydım metin yeniden sarılmaz, okuduğun
+   yer kayardı (deponun ölçülmüş kusurlarından). */
+function hizliYazi(d){
+  const f=$('#fs'); if(!f) return;
+  const y=Math.max(+f.min, Math.min(+f.max, (+f.value||46)+d));
+  if(y===+f.value){ toast(L==='tr'?(d>0?'Yazı en büyük boyutta':'Yazı en küçük boyutta')
+                                  :(d>0?'Text is at maximum size':'Text is at minimum size')); return; }
+  f.value=y; f.dispatchEvent(new Event('input',{bubbles:true}));
+}
+/* Güzellik ÜÇ KADEME: kapalı → 35 (doğal) → 60 (belirgin). Sürgüyü sahnenin
+   üstüne koymak yerine kademe seçmek, çekim sırasında tek dokunuşla karar
+   vermeyi sağlıyor; ince ayar Ayarlar'daki sürgüde duruyor. */
+const BTY_KADEME=[0,35,60];
+function hizliGuzellik(){
+  const su=(st.bty==null?0:st.bty);
+  let i=BTY_KADEME.findIndex(v=>v===su);
+  st.bty = BTY_KADEME[(i<0?0:i+1)%BTY_KADEME.length];
+  renderVfx(); save();
+  if(st.bty>0 && !ensureCompVfx()) return;   // ön koşulu KENDİ sağlıyor
+  hizliCiz();
+  toast(st.bty>0 ? (L==='tr'?'✨ Güzellik %'+st.bty:'✨ Beauty '+st.bty+'%')
+                 : (L==='tr'?'Güzellik kapalı':'Beauty off'));
+}
+function hizliCiz(){
+  const yaz=(id,v,acik)=>{ const e=$(id); if(e) e.textContent=v;
+    const k=e&&e.closest('.hkaro'); if(k) k.classList.toggle('on',!!acik); };
+  yaz('#hzKameraV', st.backCam?(L==='tr'?'Arka':'Rear'):(L==='tr'?'Ön':'Front'), !!st.backCam);
+  yaz('#hzIsikV',   st.torch?(L==='tr'?'Açık':'On'):(L==='tr'?'Kapalı':'Off'), !!st.torch);
+  yaz('#hzGuzellikV', st.bty>0?('%'+st.bty):(L==='tr'?'Kapalı':'Off'), st.bty>0);
+  yaz('#hzOdakV',   st.hideUI?(L==='tr'?'Açık':'On'):(L==='tr'?'Kapalı':'Off'), !!st.hideUI);
+  /* Fener karosu YALNIZ cihaz destekliyorsa: desteklemeyen telefonda
+     dokunulup hiçbir şey olmayan bir karo, ölü ayarın ta kendisidir.
+     Ayarlar'daki satır zaten aynı kuralla gizleniyor (#torchRow). */
+  const tr=$('#torchRow'), tk=$('.hkaro[data-hizli="torch"]');
+  if(tk) tk.style.display = (tr && tr.style.display==='none') ? 'none' : '';
+}
+$('#hizliBtn').onclick=()=>{
+  const ac=!body.classList.contains('hizliAcik');
+  body.classList.toggle('hizliAcik',ac);
+  $('#hizliBtn').setAttribute('aria-expanded',ac?'true':'false');
+  if(ac) hizliCiz();
+};
+$$('.hkaro').forEach(k=>k.onclick=()=>{
+  const i=k.dataset.hizli;
+  if(i==='fsUp'){ hizliYazi(+4); return; }
+  if(i==='fsDown'){ hizliYazi(-4); return; }
+  if(i==='bty'){ hizliGuzellik(); return; }
+  if(hizliSatir(i)) setTimeout(hizliCiz,60);   // apply() bitince gerçek durumu oku
+});
+/* Panel açıkken sahneye dokunmak onu kapatır: aksi hâlde panel kadrajın
+   üstünde unutulup çekime giriyordu. Yakalama evresinde dinleniyor ki
+   sahnenin kendi sürükleme/tek-dokunuş yolu bundan etkilenmesin. */
+stage.addEventListener('pointerdown',e=>{
+  if(!body.classList.contains('hizliAcik')) return;
+  if(e.target.closest && (e.target.closest('#hizliPanel')||e.target.closest('#hizliBtn'))) return;
+  hizliKapat();
+},true);
+
 /* ===== SESLİ TAKİPTE "OKUDUĞUM YERİ GÖSTER" =====
    Rozetin ipucu bunu ZATEN vaat ediyordu — `setVoiceBadge('lost')` durumunda
    başlık "Metni bulamıyorum — okuduğun yeri parmakla göster" / "tap where you
@@ -9270,6 +9523,114 @@ function senaryoBilgi(s, sayilar){
   return {ts, cekim};
 }
 /* ==/CEKIRDEK:senaryo.js== */
+/* ==CEKIRDEK:etiket.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/etiket.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SENARYO ETİKETLERİ — "klasör"ün yerine geçen tek kavram.
+
+   NEDEN KLASÖR DEĞİL (karar, eksiklik değil): rakiplerde senaryolar KLASÖRE
+   konuyor. Klasör tek üyelik demektir: "Reels" klasörüne koyduğun senaryo
+   aynı anda "Müşteri A"da olamaz, kullanıcı ikisinden birini seçmek ya da
+   kopya tutmak zorunda kalır — kopya tutmak bu depoda veri kaybının bilinen
+   yolu. Etiket çok üyeliğe izin verir ve tek etiket seçildiğinde ekranda
+   klasörün yaptığı işi aynen yapar. Yani klasör, etiketin dar hâli.
+
+   TUTULAN TEK ALAN `s.tags` (dizi). G.8'in "ölçülebiliyorsa tutma, türet"
+   kuralı burada UYGULANMAZ ve sebebi var: bir senaryonun hangi işe ait
+   olduğu metinden türetilemez — bu kullanıcının kafasındaki bilgidir.
+   Türetilebilen her şey (kelime, süre, son değişiklik, çekim sayısı) zaten
+   türetiliyor; bu alan onların yerine değil, yanına geliyor.
+
+   ⚠️ ANAHTAR DİLDEN BAĞIMSIZ. Karşılaştırma anahtarı `L` (arayüz dili)
+   okumaz. Okusaydı arayüzü TR'den EN'e alan kullanıcının etiketleri
+   SESSİZCE yeniden bölünürdü: `toLocaleLowerCase('tr')` ile "İŞ" → "iş",
+   `('en')` ile "i̇ş" — aynı etiket iki ayrı kutuya düşer ve kimse sebebini
+   bulamaz. Katlama burada elle ve sabit yazılı.
+
+   SINIRLAR VE GEREKÇELERİ:
+     · Senaryo başına en çok 6 etiket: liste satırında etiketler tek satıra
+       sığmalı; 7. etiket satırı ikiye böler ve özet metni ezer (aynı bütçe
+       kavgası 2026-08-17'de kart özetinde ölçüldü).
+     · Etiket en çok 24 karakter: jeton çubuğu yatay kaydırma gerektirmesin.
+     · Boş ve yalnız noktalama olan etiket atılır — anahtarı boş olan bir
+       etiket bütün senaryolarla eşleşirdi.
+     · Aynı etiketin farklı yazımı (İŞ / iş / Iş) TEK etikettir; ekranda
+       kullanıcının İLK yazdığı biçim durur. */
+
+const ETIKET_EN_COK = 6;
+const ETIKET_EN_UZUN = 24;
+
+/* Karşılaştırma anahtarı. Dilden bağımsız, elle katlanmış Türkçe. */
+function etiketAnahtar(x){
+  const kat={'İ':'i','I':'i','ı':'i','Ç':'c','ç':'c','Ğ':'g','ğ':'g',
+             'Ş':'s','ş':'s','Ö':'o','ö':'o','Ü':'u','ü':'u',
+             'Â':'a','â':'a','Î':'i','î':'i','Û':'u','û':'u','É':'e','é':'e'};
+  return String(x||'')
+    .replace(/[İIıÇçĞğŞşÖöÜüÂâÎîÛûÉé]/g, c=>kat[c])
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]/gu,'');
+}
+
+/* Kullanıcının yazdığı satırı etiket dizisine çevir.
+   Ayraç: virgül ya da boşluklu `#` — ikisi de yaygın alışkanlık.
+   Dönen dizi TEMİZ: boşlar atılmış, tekrarlar tek, sayı ve uzunluk sınırlı. */
+function etiketAyristir(ham){
+  const parcalar=String(ham||'').split(/[,\n;]+|\s+#/);
+  const gorulen=new Set(), out=[];
+  for(let p of parcalar){
+    p=String(p).replace(/^\s*#/,'').trim().replace(/\s+/g,' ');
+    if(p.length>ETIKET_EN_UZUN) p=p.slice(0,ETIKET_EN_UZUN).trim();
+    const a=etiketAnahtar(p);
+    if(!a) continue;                       // boş ya da yalnız noktalama
+    if(gorulen.has(a)) continue;           // aynı etiketin ikinci yazımı
+    gorulen.add(a); out.push(p);
+    if(out.length>=ETIKET_EN_COK) break;
+  }
+  return out;
+}
+
+/* Diziyi kullanıcının düzenleyeceği satıra çevir (giriş kutusunun değeri). */
+function etiketYaz(dizi){
+  return (Array.isArray(dizi)?dizi:[]).join(', ');
+}
+
+/* Bütün senaryolardan etiket tablosu: [{ad, n}] — çok kullanılan önde.
+   Eşitlikte ada göre: sıra her çizimde aynı olmalı, yoksa jetonlar
+   kullanıcının gözünün önünde yer değiştirir ve yanlış jetona basılır. */
+function etiketTablo(scripts){
+  const say=new Map(), ad=new Map();
+  for(const s of (Array.isArray(scripts)?scripts:[])){
+    for(const e of etiketAyristir(etiketYaz(s && s.tags))){
+      const a=etiketAnahtar(e);
+      if(!ad.has(a)) ad.set(a,e);          // ilk yazım ekranda kalır
+      say.set(a,(say.get(a)||0)+1);
+    }
+  }
+  return [...say.entries()]
+    .map(([a,n])=>({ad:ad.get(a), anahtar:a, n}))
+    .sort((x,y)=> y.n-x.n || x.ad.localeCompare(y.ad,'tr'));
+}
+
+/* Seçili etikete göre süz. Seçili yoksa liste olduğu gibi döner. */
+function etiketSuz(scripts, secili){
+  const a=etiketAnahtar(secili);
+  const liste=Array.isArray(scripts)?scripts:[];
+  if(!a) return liste.slice();
+  return liste.filter(s=>(Array.isArray(s&&s.tags)?s.tags:[])
+    .some(e=>etiketAnahtar(e)===a));
+}
+
+/* SEÇİLİ ETİKET KAYBOLABİLİR: onu taşıyan son senaryo silinince ya da
+   etiketi kaldırılınca seçim ekranda kalırsa liste SONSUZA KADAR BOŞ
+   görünür ve kullanıcı senaryolarını kaybettiğini sanır — bu deponun
+   "arayüz var olmayan bir şeyi söylüyor" sınıfı. Seçim o anda düşer. */
+function etiketSeciliGecerli(secili, tablo){
+  const a=etiketAnahtar(secili);
+  if(!a) return '';
+  return (Array.isArray(tablo)?tablo:[]).some(x=>x.anahtar===a) ? secili : '';
+}
+/* ==/CEKIRDEK:etiket.js== */
 /* ==CEKIRDEK:klip.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -10120,6 +10481,8 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.34':{tr:'🏷 <b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🏷 <b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},
  '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Prova raporu ve klip önerileri uzadığında oynatıcı sıfır yüksekliğe sıkışıyordu; MP4 ve ses kaydedilmiş olsa da ekranda görüntü alanı kalmıyordu. Oynatıcı artık sonuç ekranının üstünde her zaman görünür, rapor ve diğer işlemler aşağı kayar.',en:'<b>The invisible video player on the Android result screen is fixed.</b> When the rehearsal report and clip suggestions grew, the player could collapse to zero height even though the MP4 and audio had been recorded. The player now always remains visible at the top while the report and actions scroll below it.'},
@@ -10722,13 +11085,21 @@ $$('.tog').forEach(row=>{
    GERİ ALMIYORUZ — kamera yoksa seçim duruyor, gateSettings bloğu soluklaştırıp
    sebebini yazıyor. Sessiz kalmak yasak; ikisinden biri her zaman oluyor. */
 function ensureCompVfx(){
-  if(st.vidFx==='off' || comp.on) return true;
+  /* GÜZELLİK DE KOMPOZİT İSTER. Yalnız `vidFx`e bakan koşul, renk filtresi
+     "Kapalı" iken açılan güzelliği SESSİZCE ÖLÜ bırakıyordu: sürgü hareket
+     ediyor, GL boru hattı hiç kurulmuyor. */
+  if((st.vidFx==='off' && !(st.bty>0)) || comp.on) return true;
   if(!stream){ toast(m('needCam')); apply(); return false; }
   if(!startComp()){ apply(); return false; }
   st.comp=true; apply(); save(); toast(m('needsComp')); return true;
 }
 $$('#vfxSeg button').forEach(b=>b.onclick=()=>{ st.vidFx=b.dataset.vfx; apply(); save(); ensureCompVfx(); });
 $('#vidAmt').oninput=e=>{ st.vidAmt=+e.target.value; renderVfx(); save(); };
+/* Sürgü BIRAKILINCA kompozit kuruluyor: her `input` olayında GL boru hattını
+   kurmaya çalışmak parmak hareket ederken onlarca kez `startComp()` demek
+   olurdu. Değer anında yazılıyor, ön koşul bir kez sağlanıyor. */
+$('#btyAmt').oninput=e=>{ st.bty=+e.target.value; renderVfx(); save(); };
+$('#btyAmt').onchange=()=>{ ensureCompVfx(); };
 $$('#fxSeg button').forEach(b=>b.onclick=()=>{ sonrakiCekimde(); st.audioFx=b.dataset.fx;
   st.fxGate=null; st.fxPres=null; st.fxWarm=null;      // hazır ayara dönerken elle değerleri bırak
   apply(); save(); });
@@ -10910,6 +11281,10 @@ $('#markaUnvan').oninput=e=>{ st.marka=Object.assign({}, st.marka, {unvan:e.targ
 
 // senaryo düzenleyici
 $('#title').oninput=()=>{ pullEditor(); renderScripts(); };
+/* `change`, bilerek `input` DEĞİL: her tuş vuruşunda ayrıştırsaydık kullanıcı
+   "reels" yazarken çubukta "r", "re", "ree" jetonları belirip kaybolurdu.
+   Etiket ancak alandan çıkınca (ya da Enter) yazılıyor. */
+$('#scTags').onchange=()=>{ pullEditor(); renderScripts(); };
 $('#text').oninput=()=>{ pullEditor(); updateStats(); };
 $('#saveScript').onclick=()=>{ pullEditor(); buildContent(); reset(); renderScripts(); closeSheets(); };
 $('#newScript').onclick=()=>{ rememberPos(); pullEditor(); const s={id:uid(),title:L==='tr'?'Yeni senaryo':'New script',text:'',up:Date.now()};

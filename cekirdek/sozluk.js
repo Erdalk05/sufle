@@ -111,7 +111,7 @@ const I18N={
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
-  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  hizliT:'Hızlı erişim',hzKamera:'Kamera',hzIsik:'Işık',hzGuzellik:'Güzellik',hzYaziKucult:'Yazı küçült',hzYaziBuyut:'Yazı büyüt',hzOdak:'Odak',btyL:'Güzellik (yüz yumuşatma)',btyHint:'Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.',vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'Perdenin rengini kameradan ölç',tgMask:'Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'Mikrofon',tgEyeLine:'Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',mapImport:'⬇︎ Profili içe aktar',
@@ -150,6 +150,9 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
   /* .docx içe aktarma (D.1) */
+  /* Etiket = klasörün çok üyelikli hâli; gerekçesi cekirdek/etiket.js'te. */
+  scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
+  scTagsHint:'Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.',
   fromFileHint:'Word (.docx), PDF, düz metin, Markdown ve altyazı dosyaları. PDF metni gömülü değilse (taranmış sayfa) uygulama bunu söyler; o zaman metni kopyalayıp Yapıştır ile getir.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'Word veya metin dosyasından',
@@ -283,7 +286,7 @@ const I18N={
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
-  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  hizliT:'Quick access',hzKamera:'Camera',hzIsik:'Light',hzGuzellik:'Beauty',hzYaziKucult:'Smaller text',hzYaziBuyut:'Bigger text',hzOdak:'Focus',btyL:'Beauty (skin smoothing)',btyHint:'Softens flat areas such as skin while leaving eyes, brows, hair and lip edges intact. Very high values look doughy — 30 to 50 stays natural.',vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'Sample the screen colour from camera',tgMask:'Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'Microphone',tgEyeLine:'Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',mapImport:'⬇︎ Import profile',
@@ -322,6 +325,8 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
+  scTagsHint:'Separate with commas. One script can carry several tags — that is what a folder cannot do. Up to 6 tags.',
   fromFileHint:'Word (.docx), PDF, plain text, Markdown and subtitle files. If a PDF has no embedded text (a scanned page) the app says so; then copy the text and use Paste.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'From a Word or text file',

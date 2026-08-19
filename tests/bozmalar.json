@@ -353,8 +353,8 @@
   "ad": "C3 Mac araması düz küçültmeye döndü (Türkçe eşleşmez)",
   "test": "136-buyuk-kutuphane.js",
   "kaynak": "mac",
-  "bul": "      ? state.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))",
-  "koy": "      ? state.scripts.filter(s=>(s.title||'').toLowerCase().includes(q))"
+  "bul": "      ? taban.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))",
+  "koy": "      ? taban.filter(s=>(s.title||'').toLowerCase().includes(q))"
  },
  {
   "ad": "C3 kutu gizlenirken süzgeç temizlenmiyor (senaryolar görünmez olur)",
@@ -2236,8 +2236,8 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "v9.32 hazır · henüz yayınlanmadı",
-  "koy": "v9.32 için bir şeyler yapıldı"
+  "bul": "v9.34 hazır · henüz yayınlanmadı",
+  "koy": "v9.34 için bir şeyler yapıldı"
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -3916,7 +3916,7 @@
   "ad": "V4 kapalı filtre de kompoziti açıyor (gereksiz pil/ısı)",
   "test": "72-olu-chroma-ayarlari.js",
   "kaynak": "telefon",
-  "bul": "  if(st.vidFx==='off' || comp.on) return true;",
+  "bul": "  if((st.vidFx==='off' && !(st.bty>0)) || comp.on) return true;",
   "koy": "  if(comp.on) return true;"
  },
  {
@@ -3930,8 +3930,8 @@
   "ad": "V6 sürgü bloğun dışına çıktı (sürgü yine sessiz ölü)",
   "test": "72-olu-chroma-ayarlari.js",
   "kaynak": "telefon",
-  "bul": "    <input type=\"range\" data-aria=\"vidAmt\" id=\"vidAmt\" min=\"0\" max=\"150\" value=\"100\">\n    </div>",
-  "koy": "    </div>\n    <input type=\"range\" data-aria=\"vidAmt\" id=\"vidAmt\" min=\"0\" max=\"150\" value=\"100\">"
+  "bul": "    <input type=\"range\" data-aria=\"vidAmt\" id=\"vidAmt\" min=\"0\" max=\"150\" value=\"100\">",
+  "koy": "    <!-- sürgü bloğun dışına alındı -->"
  },
  {
   "ad": "P1 girişte kayıt yolu yine belirsiz başla eylemine dönüyor",
@@ -4555,5 +4555,180 @@
   "kaynak": "mac",
   "bul": "z-index:7;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)",
   "koy": "z-index:7;backdrop-filter:blur(6px)"
+ },
+ {
+  "ad": "v9.33 güzellik shader'a hiç ulaşmıyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "    gl.uniform1f(gl.getUniformLocation(comp.pr,'bty'),V.bty||0);",
+  "koy": ""
+ },
+ {
+  "ad": "v9.33 yumuşatma kenarları da siliyor (düz bulanıklık)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "'float wsk(vec3 s,float l0){float d=abs(dot(s,vec3(0.299,0.587,0.114))-l0);'+\n'return 1.0-smoothstep(0.045,0.17,d);}'+",
+  "koy": "'float wsk(vec3 s,float l0){return 1.0;}'+"
+ },
+ {
+  "ad": "v9.33 filtre kapalıyken güzellik sessizce ölüyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  if(st.vidFx==='off') return Object.assign({},base,{bty:(st.bty==null?0:st.bty)/100});",
+  "koy": "  if(st.vidFx==='off') return base;"
+ },
+ {
+  "ad": "v9.33 güzellik kompoziti açmıyor (ölü ayar)",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  if((st.vidFx==='off' && !(st.bty>0)) || comp.on) return true;",
+  "koy": "  if(st.vidFx==='off' || comp.on) return true;"
+ },
+ {
+  "ad": "v9.33 keskinlik güzelliği geri bozuyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "shp:base.shp*k*(1-0.75*b)",
+  "koy": "shp:base.shp*k"
+ },
+ {
+  "ad": "v9.33 hızlı erişim karosu mantığı kopyalıyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  row.click();                       // TEK yol: Ayarlar'daki gerçek davranış",
+  "koy": "  st[k]=!st[k]; apply(); save();"
+ },
+ {
+  "ad": "v9.33 yazı boyutu yeniden ölçüm tetiklemiyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  f.value=y; f.dispatchEvent(new Event('input',{bubbles:true}));",
+  "koy": "  f.value=y; st.fs=y;"
+ },
+ {
+  "ad": "v9.33 kapalı karo değeri de vurgu renginde",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  .hkaro b{font-size:var(--tx-xs);font-weight:800;color:var(--muted);min-height:13px}\n  .hkaro.on b{color:var(--accent)}",
+  "koy": "  .hkaro b{font-size:var(--tx-xs);font-weight:800;color:var(--accent);min-height:13px}"
+ },
+ {
+  "ad": "v9.33 desteklemeyen cihazda fener karosu duruyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "  if(tk) tk.style.display = (tr && tr.style.display==='none') ? 'none' : '';",
+  "koy": "  if(tk) tk.style.display = '';"
+ },
+ {
+  "ad": "v9.33 hızlı panel iPhone'da öneksiz cam",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "telefon",
+  "bul": "    -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);",
+  "koy": "    backdrop-filter:blur(22px) saturate(1.25);"
+ },
+ {
+  "ad": "v9.33 çizilmiş arayüz kapısı hızlı paneli ölçmüyor",
+  "test": "192-guzellik-ve-hizli-erisim.js",
+  "kaynak": "kontrast",
+  "bul": "    ('telefon-hizli',    TELEFON, 430, 932, 3,",
+  "koy": "    ('telefon-hzl',      TELEFON, 430, 932, 3,"
+ },
+ {
+  "ad": "v9.33 güzellik sürgüsü kompozit bloğunun dışında",
+  "test": "72-olu-chroma-ayarlari.js",
+  "kaynak": "telefon",
+  "bul": "    <input type=\"range\" data-aria=\"btyAmt\" id=\"btyAmt\" min=\"0\" max=\"100\" value=\"0\">",
+  "koy": "    <!-- güzellik sürgüsü bloğun dışına alındı -->"
+ },
+ {
+  "ad": "v9.34 etiket anahtarı Türkçe İ'yi katlamıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    .replace(/[İIıÇçĞğŞşÖöÜüÂâÎîÛûÉé]/g, c=>kat[c])",
+  "koy": "    .replace(/[ÇçĞğŞşÖöÜüÂâÎîÛûÉé]/g, c=>kat[c])"
+ },
+ {
+  "ad": "v9.34 aynı etiketin ikinci yazımı ikinci kutu açıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    if(gorulen.has(a)) continue;           // aynı etiketin ikinci yazımı",
+  "koy": "    // tekrar denetimi kaldırıldı"
+ },
+ {
+  "ad": "v9.34 etiket sayısı sınırsız (liste satırı ikiye bölünür)",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    if(out.length>=ETIKET_EN_COK) break;",
+  "koy": "    if(out.length>=999) break;"
+ },
+ {
+  "ad": "v9.34 uzun etiket kırpılmıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    if(p.length>ETIKET_EN_UZUN) p=p.slice(0,ETIKET_EN_UZUN).trim();",
+  "koy": "    /* kırpma kaldırıldı */"
+ },
+ {
+  "ad": "v9.34 etiket tablosu eşitlikte kararsız sıralanıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    .sort((x,y)=> y.n-x.n || x.ad.localeCompare(y.ad,'tr'));",
+  "koy": "    .sort((x,y)=> y.n-x.n);"
+ },
+ {
+  "ad": "v9.34 kaybolan etiketin seçimi ekranda kalıyor (liste sonsuza kadar boş)",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "  return (Array.isArray(tablo)?tablo:[]).some(x=>x.anahtar===a) ? secili : '';",
+  "koy": "  return secili;"
+ },
+ {
+  "ad": "v9.34 boş anahtarlı etiket her senaryoyla eşleşiyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "etiket",
+  "bul": "    if(!a) continue;                       // boş ya da yalnız noktalama",
+  "koy": "    /* boş etiket denetimi kaldırıldı */"
+ },
+ {
+  "ad": "v9.34 telefonda etiket yokken çubuk yine çiziliyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "    bar.classList.toggle('hidden', !etTablo.length);",
+  "koy": "    bar.classList.toggle('hidden', false);"
+ },
+ {
+  "ad": "v9.34 telefonda kutu dolmadan etiketler siliniyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  const te=$('#scTags'); if(te && scTagKutuId===s.id) s.tags=etiketAyristir(te.value);",
+  "koy": "  const te=$('#scTags'); if(te) s.tags=etiketAyristir(te.value);"
+ },
+ {
+  "ad": "v9.34 telefonda etiket her tuş vuruşunda ayrıştırılıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "$('#scTags').onchange=()=>{ pullEditor(); renderScripts(); };",
+  "koy": "$('#scTags').oninput=()=>{ pullEditor(); renderScripts(); };"
+ },
+ {
+  "ad": "v9.34 Mac'te etiket kutusu yok (parite kırık)",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "mac",
+  "bul": "      <input id=\"scTags\" placeholder=\"Etiket: reels, müşteri A…\" data-i18n-ph=\"scTagsPh\" aria-label=\"Etiketler\" data-aria=\"scTagsL\">",
+  "koy": "      <!-- etiket kutusu kaldırıldı -->"
+ },
+ {
+  "ad": "v9.34 Mac'te kutu dolmadan etiketler siliniyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "mac",
+  "bul": "    const te=$('#scTags'); if(te && macTagKutuId===s.id) s.tags=etiketAyristir(te.value);",
+  "koy": "    const te=$('#scTags'); if(te) s.tags=etiketAyristir(te.value);"
+ },
+ {
+  "ad": "v9.34 süzgeç seçimi kalıcı duruma yazılıyor",
+  "test": "193-senaryo-etiket.js",
+  "kaynak": "telefon",
+  "bul": "        b.onclick=()=>{ scTagSecili=deger; renderScripts(); };",
+  "koy": "        b.onclick=()=>{ scTagSecili=deger; st.scTag=deger; renderScripts(); };"
  }
 ]

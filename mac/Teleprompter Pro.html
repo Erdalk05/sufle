@@ -764,6 +764,10 @@
            taramaktı. Kutu yalnız liste UZUNKEN görünüyor: kısa listede
            fazladan bir alan, B fazında sadeleştirdiğimiz şeyin ta kendisi. -->
       <input type="text" id="scriptFind" class="hidden" placeholder="Senaryolarda ara…" data-i18n-ph="findPh">
+      <!-- ETİKET SÜZGECİ. Telefonla aynı kural: hiç etiket yoksa çubuk
+           HİÇ ÇİZİLMEZ, yoksa "Tümü" tek başına duran ve hiçbir şey
+           yapmayan bir jeton olurdu. -->
+      <div class="selectish hidden" id="scTagBar" role="group" aria-label="Etiketler" data-aria="scTagsL"></div>
       <div class="scripts" id="scriptList"></div>
     </div>
     <div class="sec" id="secWrap" style="display:none">
@@ -772,6 +776,7 @@
     </div>
     <div id="editorWrap">
       <input id="title" placeholder="Senaryo başlığı" data-i18n-ph="mPhTitle" value="Yeni Senaryo">
+      <input id="scTags" placeholder="Etiket: reels, müşteri A…" data-i18n-ph="scTagsPh" aria-label="Etiketler" data-aria="scTagsL">
       <textarea id="editor" placeholder="Okuyacağınız metni buraya yazın veya yapıştırın..." data-i18n-ph="mPhEditor" dir="auto">Merhaba! Bu Teleprompter Pro.
 
 Telefon formatında (9:16) çekim yapıyorsanız sağ üstten formatı seçtiniz bile. Kamerayı açıp doğrudan kayıt da alabilirsiniz.
@@ -1317,7 +1322,7 @@ const I18N={
   profHint:'Tek dokunuşla o iş için denenmiş ayar takımı: hız, oran, okuma şeridi, ses ve görüntü filtresi birlikte ayarlanır. Sonrasında istediğini değiştirebilirsin.',
   vadL:'Nefesle akış',tgVad:'Konuşmayı kesince sufle dursun',vadSens:'Duyarlılık',
   tgHicon:'◐ Yüksek kontrast',newsTitle:'🆕 Ne değişti?',capBtnL:'Altyazı dosyası',pkgBtnL:'Yayın paketi',setFindPh:'Ayarlarda ara…',restoreBk:'Otomatik yedekten dön',vfxTitle:'Görüntü filtresi',vfxOff:'Kapalı',vfxNat:'Doğal',vfxBright:'Aydınlık',vfxWarm:'Sıcak',vfxCrisp:'Net',vfxLow:'Az ışık',
-  vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
+  hizliT:'Hızlı erişim',hzKamera:'Kamera',hzIsik:'Işık',hzGuzellik:'Güzellik',hzYaziKucult:'Yazı küçült',hzYaziBuyut:'Yazı büyüt',hzOdak:'Odak',btyL:'Güzellik (yüz yumuşatma)',btyHint:'Ten gibi düz alanları yumuşatır; göz, kaş, saç ve dudak sınırı olduğu gibi kalır. Yüksek değerde görüntü hamurlaşır — 30-50 arası doğal durur.',vfxHint:'Filtre yalnız <b>kompozit açıkken</b> videoya işlenir — kompozit kapalıysa görüntü ham kaydedilir. Az ışıkta keskinlik gürültüyü büyüttüğü için o hazır ayarda kasten düşük tutuldu.',fxTitle:'Ses Stüdyosu',fxOff:'Kapalı',fxVoice:'Konuşma',fxNoisy:'Gürültülü ortam',fxStudio:'Stüdyo',
   fxGate:'Gürültü kapısı',fxPres:'Netlik (anlaşılırlık)',fxWarm:'Tok ses (gövde)',
   fxAdvHint:'Kapı: bu eşiğin altındaki sesler (klima, uzaktaki konuşma, klavye) kısılır. Çok yüksek tutarsan kendi cümle başların da kesilir.',pickKey:'Perdenin rengini kameradan ölç',tgMask:'Maske önizlemesi (silinen yer mor)',bkSoft:'Yumuşak',brL:'Video kalitesi / dosya boyutu',brLow:'Küçük dosya',brMid:'Dengeli',brHigh:'En iyi',micSel:'Mikrofon',tgEyeLine:'Göz hattı kılavuzu (üçte bir)',
   eyeLineHint:'Gözlerin üstteki çizgide olsun — sinemada ve haberde kullanılan kural. Çok yukarıdaysan kafanın üstünde boşluk kalır, çok aşağıdaysan çene kesilir.',tap1:'Tek basış',tap2:'Çift basış',wakeWordL:'Kendi tetik kelimen',mapExport:'⬆︎ Profili dışa aktar',mapImport:'⬇︎ Profili içe aktar',
@@ -1356,6 +1361,9 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Odak ve pozlamayı kilitle',lockHint:'Kamera çekim ortasında arayış yapmayı bırakır: kıpırdayınca odak nefes almaz, ışık değişince parlaklık zıplamaz. Önce çerçeveni kur, sonra kilitle.',
   /* .docx içe aktarma (D.1) */
+  /* Etiket = klasörün çok üyelikli hâli; gerekçesi cekirdek/etiket.js'te. */
+  scTagsL:'Etiketler',scTagsPh:'Etiket: reels, müşteri A…',scTagAll:'Tümü',
+  scTagsHint:'Virgülle ayır. Aynı senaryo birden çok etikette olabilir — klasörden farkı bu. En çok 6 etiket.',
   fromFileHint:'Word (.docx), PDF, düz metin, Markdown ve altyazı dosyaları. PDF metni gömülü değilse (taranmış sayfa) uygulama bunu söyler; o zaman metni kopyalayıp Yapıştır ile getir.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'Word veya metin dosyasından',
@@ -1489,7 +1497,7 @@ const I18N={
   profHint:'One tap applies a tested set for that job: pace, aspect, reading band, audio and video filter together. You can still change anything afterwards.',
   vadL:'Breath flow',tgVad:'Pause the prompter when you stop speaking',vadSens:'Sensitivity',
   tgHicon:'◐ High contrast',newsTitle:'🆕 What changed?',capBtnL:'Caption file',pkgBtnL:'Publish bundle',setFindPh:'Search settings…',restoreBk:'Restore auto-backup',vfxTitle:'Video filter',vfxOff:'Off',vfxNat:'Natural',vfxBright:'Bright',vfxWarm:'Warm',vfxCrisp:'Crisp',vfxLow:'Low light',
-  vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
+  hizliT:'Quick access',hzKamera:'Camera',hzIsik:'Light',hzGuzellik:'Beauty',hzYaziKucult:'Smaller text',hzYaziBuyut:'Bigger text',hzOdak:'Focus',btyL:'Beauty (skin smoothing)',btyHint:'Softens flat areas such as skin while leaving eyes, brows, hair and lip edges intact. Very high values look doughy — 30 to 50 stays natural.',vfxHint:'The filter is baked into the video only while <b>composite is on</b>. Sharpening is kept low in the low-light preset because it amplifies noise.',fxTitle:'Audio Studio',fxOff:'Off',fxVoice:'Speech',fxNoisy:'Noisy room',fxStudio:'Studio',
   fxGate:'Noise gate',fxPres:'Clarity',fxWarm:'Body',
   fxAdvHint:'Gate: anything below this level (air-con, distant talk, keyboard) is ducked. Too high and your own sentence openings get clipped.',pickKey:'Sample the screen colour from camera',tgMask:'Mask preview (removed area in magenta)',bkSoft:'Soft',brL:'Video quality / file size',brLow:'Small file',brMid:'Balanced',brHigh:'Best',micSel:'Microphone',tgEyeLine:'Eye-line guide (rule of thirds)',
   eyeLineHint:'Keep your eyes on the upper line — the rule used in film and news. Too high leaves headroom; too low crops your chin.',tap1:'Single press',tap2:'Double press',wakeWordL:'Your own trigger word',mapExport:'⬆︎ Export profile',mapImport:'⬇︎ Import profile',
@@ -1528,6 +1536,8 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  scTagsL:'Tags',scTagsPh:'Tags: reels, client A…',scTagAll:'All',
+  scTagsHint:'Separate with commas. One script can carry several tags — that is what a folder cannot do. Up to 6 tags.',
   fromFileHint:'Word (.docx), PDF, plain text, Markdown and subtitle files. If a PDF has no embedded text (a scanned page) the app says so; then copy the text and use Paste.',
   /* Mac dosyadan metin düğmesi (D.1) */
   mTFromFile:'From a Word or text file',
@@ -1985,7 +1995,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.32';   // telefon sürümüyle aynı numaralama
+  const VER='9.34';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -2139,6 +2149,10 @@ const MMSG={
     catch(e){ logErr('cekimSay',e); cekimSayaci=null; }
     renderScripts();
   }
+  /* Süzgeç GÖRÜNÜM durumudur, tercih değil: `state`e yazılmıyor. Kalıcı
+     olsaydı süzgeci açık bırakan kullanıcı ertesi gün senaryolarının
+     çoğunu göremez ve sebebini arayacağı bir yer olmazdı. */
+  let macTagSecili='', macTagKutuId=null;
   function renderScripts(){
     const list=$('#scriptList'); list.innerHTML='';
     /* Arama kutusu listeye ORANTILI görünür: 12'den az senaryoda gözle
@@ -2148,11 +2162,39 @@ const MMSG={
     kutu.classList.toggle('hidden', !uzun);
     if(!uzun) kutu.value='';
     const q = norm(kutu.value||'');
+    /* ETİKET ÇUBUĞU — telefonla birebir aynı kural (cekirdek/etiket.js).
+       Seçili etiket ortadan kalkmışsa seçim burada düşüyor; yoksa liste
+       sonsuza kadar boş görünür ve kullanıcı senaryolarını kaybettiğini sanar. */
+    const etTablo=etiketTablo(state.scripts||[]);
+    macTagSecili=etiketSeciliGecerli(macTagSecili, etTablo);
+    const bar=$('#scTagBar');
+    if(bar){
+      bar.classList.toggle('hidden', !etTablo.length);
+      bar.innerHTML='';
+      if(etTablo.length){
+        const jeton=(deger,yazi,acik)=>{
+          const b=document.createElement('button');
+          b.textContent=yazi; if(acik) b.className='on';
+          b.setAttribute('aria-pressed', acik?'true':'false');
+          b.onclick=()=>{ macTagSecili=deger; renderScripts(); };
+          bar.appendChild(b);
+        };
+        jeton('', t('scTagAll'), !macTagSecili);
+        etTablo.forEach(x=>jeton(x.ad, x.ad+' '+x.n, x.anahtar===etiketAnahtar(macTagSecili)));
+      }
+    }
+    /* Etiket kutusu YALNIZ senaryo değişince tazeleniyor. Her çizimde
+       tazeleseydik kullanıcı yazarken kutusu altından çekilirdi: başlık
+       kutusunun `input` olayı da bu fonksiyonu çağırıyor. */
+    const cur=curScript();
+    if(cur && cur.id!==macTagKutuId){ macTagKutuId=cur.id;
+      const te=$('#scTags'); if(te) te.value=etiketYaz(cur.tags); }
     /* Türkçe katlama telefondakiyle AYNI kural (norm): "Ürün" yazan biri
        "urun" arayınca da bulmalı. */
+    const taban=etiketSuz(state.scripts, macTagSecili);
     const gosterilecek = q
-      ? state.scripts.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))
-      : state.scripts;
+      ? taban.filter(s=>norm(s.title||'').includes(q)||norm(s.text||'').includes(q))
+      : taban;
     if(q && !gosterilecek.length){
       const bos=document.createElement('div');
       bos.className='meta'; bos.style.padding='8px 2px';
@@ -2170,6 +2212,11 @@ const MMSG={
       if(bg.ts!=null) ek.push(t('scSonDeg').replace('{t}',
         new Date(bg.ts).toLocaleDateString(L==='tr'?'tr-TR':'en-US')));
       if(bg.cekim!=null) ek.push(t('scCekim').replace('{n}', bg.cekim));
+      /* Etiketler yalnız süzgeç kapalıyken: bir etikete göre süzdüğünde her
+         satırda aynı etiket durur, bilgi taşımaz ve özet bütçesini yer. */
+      const et=Array.isArray(s.tags)?s.tags:[];
+      if(!macTagSecili && et.length)
+        ek.push(et.slice(0,2).map(x=>'#'+x).join(' ')+(et.length>2?' +'+(et.length-2):''));
       el.innerHTML=`<span class="nm">${escapeHtml(s.title||'(başlıksız)')}</span>
         <span class="meta">${wc} kl${ek.length?' · '+escapeHtml(ek.join(' · ')):''}</span>
         <button class="x" title="Sil">${silBekle===s.id?'⚠︎':'×'}</button>`;
@@ -2231,6 +2278,10 @@ const MMSG={
   function syncEditorToState(){
     const s=curScript(); if(!s) return;
     s.title=$('#title').value; s.text=$('#editor').value;
+    /* ⚠️ KUTU BU SENARYO İÇİN DOLDURULMADIYSA YAZMA: `syncEditorToState`
+       senaryo değişiminde kutu tazelenmeden önce de koşuyor ve koşulsuz
+       yazsaydık etiketler sessizce silinirdi. */
+    const te=$('#scTags'); if(te && macTagKutuId===s.id) s.tags=etiketAyristir(te.value);
   }
 
   /* ---------- METİN ARAÇLARI (senaryoyu değiştirir, tek adım geri al) ---------- */
@@ -4887,6 +4938,8 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.34':{tr:'🏷 <b>Senaryo etiketleri masaüstünde de.</b> Başlığın altındaki kutuya virgülle yaz; listenin üstündeki jetonlardan birine tıklayınca yalnız o etiketin senaryoları kalır. Etiket katlaması telefonla birebir aynı — yedeği telefonda alıp burada açtığında "İş" ile "iş" aynı etikette kalıyor.',en:'🏷 <b>Script tags on the desktop too.</b> Type them comma-separated under the title; click a chip above the list and only that tag\'s scripts remain. Tag folding is identical to the phone, so a backup taken on the phone and opened here keeps "İş" and "iş" in the same tag.'},
+   '9.33':{tr:'<b>Telefon sürümüne güzellik (yüz yumuşatma) ve sağ üstte hızlı erişim paneli geldi.</b> Masaüstünde kompozit görüntü boru hattı bulunmadığı için bu tur telefona özgü; masaüstü davranışı değişmedi.',en:'<b>The phone version gained beauty (skin smoothing) and a quick-access panel in the top right.</b> The desktop build has no composite image pipeline, so this round is phone-only; desktop behaviour is unchanged.'},
    '9.32':{tr:'<b>Arayüz metinlerindeki yol tarifleri artık denetleniyor.</b> Uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var olan bir bölümü göstermek zorunda; göstermiyorsa sürüm yayına çıkamıyor. Masaüstü metinleri bu denetimden temiz geçti.',en:'<b>Navigation paths inside interface texts are now checked.</b> Any path describing our own screens (Settings → … → …) must point at a section that really exists, otherwise the release is blocked. The desktop texts passed this check with no findings.'},
    '9.31':{tr:'<b>Sesle takip: okuduğun kelimeye tıklayarak hizalayabiliyorsun.</b> Sürükleyerek sarmak takibi zaten yeni konumdan devam ettiriyordu, ama tek tık yalnız akışı başlatıp durduruyordu — sesle takip yanlış yere kilitlendiğinde yerini gösterecek bir yol yoktu. Artık sesle takip açıkken bir kelimeye tıklamak sufleyi oraya taşıyor, kelimeyi bir an çerçeveliyor ve takip oradan devam ediyor. Sesle takip kapalıyken tık eskisi gibi akışı başlatıp durduruyor. Aynı eksik telefonda da vardı, iki sürümde birlikte kapatıldı.',en:'<b>Voice follow: click the word you are on to realign.</b> Dragging to scroll already resumed following from the new position, but a plain click only started or stopped the scroll — there was no way to show the prompter where you actually were. Now, while voice follow is on, clicking a word moves the prompter there, outlines it briefly and follows from that point. With voice follow off a click starts and stops the scroll exactly as before. The same gap existed on the phone and both were closed together.'},
    '9.30':{tr:'<b>Android sonuç ekranındaki görünmez video oynatıcı düzeltildi.</b> Uzun prova raporu oynatıcıyı sıfır yüksekliğe sıkıştırabiliyordu. Telefonda video artık sonuç ekranının üstünde garanti edilmiş bir alanda görünür; rapor aşağı kayar. Masaüstü sonuç yerleşimi değişmedi.',en:'<b>The invisible video player on the Android result screen is fixed.</b> A long rehearsal report could collapse the player to zero height. On phones the video now has guaranteed space at the top and the report scrolls below it. The desktop result layout is unchanged.'},
@@ -5027,6 +5080,10 @@ function provaRapor(kaynak, sesle){
   $('#backdrop').onclick=()=>app.classList.remove('showLeft','showRight');
 
   $('#title').addEventListener('input',()=>{ syncEditorToState(); renderScripts(); save(); });
+  /* `change`, bilerek `input` DEĞİL: her tuş vuruşunda ayrıştırsaydık
+     kullanıcı "reels" yazarken çubukta "r", "re", "ree" jetonları
+     belirip kaybolurdu. Etiket ancak alandan çıkınca (ya da Enter) yazılır. */
+  $('#scTags').addEventListener('change',()=>{ syncEditorToState(); renderScripts(); save(); });
   $('#editor').addEventListener('input',()=>{ syncEditorToState(); buildWords(); updateStats(); save(); });
 
   // sürgüler
@@ -5573,6 +5630,114 @@ function senaryoBilgi(s, sayilar){
   return {ts, cekim};
 }
 /* ==/CEKIRDEK:senaryo.js== */
+/* ==CEKIRDEK:etiket.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/etiket.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* SENARYO ETİKETLERİ — "klasör"ün yerine geçen tek kavram.
+
+   NEDEN KLASÖR DEĞİL (karar, eksiklik değil): rakiplerde senaryolar KLASÖRE
+   konuyor. Klasör tek üyelik demektir: "Reels" klasörüne koyduğun senaryo
+   aynı anda "Müşteri A"da olamaz, kullanıcı ikisinden birini seçmek ya da
+   kopya tutmak zorunda kalır — kopya tutmak bu depoda veri kaybının bilinen
+   yolu. Etiket çok üyeliğe izin verir ve tek etiket seçildiğinde ekranda
+   klasörün yaptığı işi aynen yapar. Yani klasör, etiketin dar hâli.
+
+   TUTULAN TEK ALAN `s.tags` (dizi). G.8'in "ölçülebiliyorsa tutma, türet"
+   kuralı burada UYGULANMAZ ve sebebi var: bir senaryonun hangi işe ait
+   olduğu metinden türetilemez — bu kullanıcının kafasındaki bilgidir.
+   Türetilebilen her şey (kelime, süre, son değişiklik, çekim sayısı) zaten
+   türetiliyor; bu alan onların yerine değil, yanına geliyor.
+
+   ⚠️ ANAHTAR DİLDEN BAĞIMSIZ. Karşılaştırma anahtarı `L` (arayüz dili)
+   okumaz. Okusaydı arayüzü TR'den EN'e alan kullanıcının etiketleri
+   SESSİZCE yeniden bölünürdü: `toLocaleLowerCase('tr')` ile "İŞ" → "iş",
+   `('en')` ile "i̇ş" — aynı etiket iki ayrı kutuya düşer ve kimse sebebini
+   bulamaz. Katlama burada elle ve sabit yazılı.
+
+   SINIRLAR VE GEREKÇELERİ:
+     · Senaryo başına en çok 6 etiket: liste satırında etiketler tek satıra
+       sığmalı; 7. etiket satırı ikiye böler ve özet metni ezer (aynı bütçe
+       kavgası 2026-08-17'de kart özetinde ölçüldü).
+     · Etiket en çok 24 karakter: jeton çubuğu yatay kaydırma gerektirmesin.
+     · Boş ve yalnız noktalama olan etiket atılır — anahtarı boş olan bir
+       etiket bütün senaryolarla eşleşirdi.
+     · Aynı etiketin farklı yazımı (İŞ / iş / Iş) TEK etikettir; ekranda
+       kullanıcının İLK yazdığı biçim durur. */
+
+const ETIKET_EN_COK = 6;
+const ETIKET_EN_UZUN = 24;
+
+/* Karşılaştırma anahtarı. Dilden bağımsız, elle katlanmış Türkçe. */
+function etiketAnahtar(x){
+  const kat={'İ':'i','I':'i','ı':'i','Ç':'c','ç':'c','Ğ':'g','ğ':'g',
+             'Ş':'s','ş':'s','Ö':'o','ö':'o','Ü':'u','ü':'u',
+             'Â':'a','â':'a','Î':'i','î':'i','Û':'u','û':'u','É':'e','é':'e'};
+  return String(x||'')
+    .replace(/[İIıÇçĞğŞşÖöÜüÂâÎîÛûÉé]/g, c=>kat[c])
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]/gu,'');
+}
+
+/* Kullanıcının yazdığı satırı etiket dizisine çevir.
+   Ayraç: virgül ya da boşluklu `#` — ikisi de yaygın alışkanlık.
+   Dönen dizi TEMİZ: boşlar atılmış, tekrarlar tek, sayı ve uzunluk sınırlı. */
+function etiketAyristir(ham){
+  const parcalar=String(ham||'').split(/[,\n;]+|\s+#/);
+  const gorulen=new Set(), out=[];
+  for(let p of parcalar){
+    p=String(p).replace(/^\s*#/,'').trim().replace(/\s+/g,' ');
+    if(p.length>ETIKET_EN_UZUN) p=p.slice(0,ETIKET_EN_UZUN).trim();
+    const a=etiketAnahtar(p);
+    if(!a) continue;                       // boş ya da yalnız noktalama
+    if(gorulen.has(a)) continue;           // aynı etiketin ikinci yazımı
+    gorulen.add(a); out.push(p);
+    if(out.length>=ETIKET_EN_COK) break;
+  }
+  return out;
+}
+
+/* Diziyi kullanıcının düzenleyeceği satıra çevir (giriş kutusunun değeri). */
+function etiketYaz(dizi){
+  return (Array.isArray(dizi)?dizi:[]).join(', ');
+}
+
+/* Bütün senaryolardan etiket tablosu: [{ad, n}] — çok kullanılan önde.
+   Eşitlikte ada göre: sıra her çizimde aynı olmalı, yoksa jetonlar
+   kullanıcının gözünün önünde yer değiştirir ve yanlış jetona basılır. */
+function etiketTablo(scripts){
+  const say=new Map(), ad=new Map();
+  for(const s of (Array.isArray(scripts)?scripts:[])){
+    for(const e of etiketAyristir(etiketYaz(s && s.tags))){
+      const a=etiketAnahtar(e);
+      if(!ad.has(a)) ad.set(a,e);          // ilk yazım ekranda kalır
+      say.set(a,(say.get(a)||0)+1);
+    }
+  }
+  return [...say.entries()]
+    .map(([a,n])=>({ad:ad.get(a), anahtar:a, n}))
+    .sort((x,y)=> y.n-x.n || x.ad.localeCompare(y.ad,'tr'));
+}
+
+/* Seçili etikete göre süz. Seçili yoksa liste olduğu gibi döner. */
+function etiketSuz(scripts, secili){
+  const a=etiketAnahtar(secili);
+  const liste=Array.isArray(scripts)?scripts:[];
+  if(!a) return liste.slice();
+  return liste.filter(s=>(Array.isArray(s&&s.tags)?s.tags:[])
+    .some(e=>etiketAnahtar(e)===a));
+}
+
+/* SEÇİLİ ETİKET KAYBOLABİLİR: onu taşıyan son senaryo silinince ya da
+   etiketi kaldırılınca seçim ekranda kalırsa liste SONSUZA KADAR BOŞ
+   görünür ve kullanıcı senaryolarını kaybettiğini sanır — bu deponun
+   "arayüz var olmayan bir şeyi söylüyor" sınıfı. Seçim o anda düşer. */
+function etiketSeciliGecerli(secili, tablo){
+  const a=etiketAnahtar(secili);
+  if(!a) return '';
+  return (Array.isArray(tablo)?tablo:[]).some(x=>x.anahtar===a) ? secili : '';
+}
+/* ==/CEKIRDEK:etiket.js== */
 /* ==CEKIRDEK:klip.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
    Değişiklik oraya yazılır, sonra: python3 derle.py

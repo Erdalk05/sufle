@@ -173,7 +173,11 @@ const tE = norm(etiketler(jsT)), mE = norm(etiketler(jsM));
    masaüstüne de geldi; muafiyet listesi KÜÇÜLDÜ. Liste yalnız büyüdüğünde
    şüphelidir — burada boşluk örtülmedi, KAPATILDI (restore/otomatik yedek
    maddesiyle aynı sınıf). */
-const SADECE_TELEFON = new Set(['persist','quota','mics','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
+const SADECE_TELEFON = new Set([
+  /* 'hizli': hızlı erişim paneli TELEFONA ÖZGÜ. Masaüstünde sahnenin
+     üstünde duran bir panel yok — pencere geniş, ayarlar sağ panelde açık
+     duruyor ve kadrajı örtmüyor. Kavram karşı platformda YOK; eksiklik değil. */
+  'hizli','persist','quota','mics','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
 /* camLock: ODAK/POZLAMA KİLİDİ TELEFONA ÖZGÜ. Kilit MediaStreamTrack
    yeteneklerine dayanıyor (focusMode/exposureMode) ve bunları yalnız mobil
    kameralar sunuyor; Mac'te getCapabilities/zoom/torch da HİÇ YOK — ölçüldü,

@@ -127,8 +127,11 @@ function calistir(senaryo, {kayitta=false}={}){
 ok('editörde sürüm düğmesi var', /id="verBtn"/.test(tel));
 ok('düğme surumDegistir\'e bağlı', /\$\('#verBtn'\)\.onclick=surumDegistir/.test(tel));
 ok('düğme adlandırılmış (ekran okuyucu)', /id="verBtn" aria-label="/.test(tel));
+/* ⚠️ Eskiden bu iddia `[^\n]*` ile fillEditor'ün TEK SATIR olmasını şart
+   koşuyordu — davranışı değil BİÇİMİ kilitleyen test (F2 borcu). Fonksiyona
+   ikinci bir satır eklendiğinde ürün doğruyken kapı kırmızıya döndü. */
 ok('rozet senaryo değişince de tazeleniyor (fillEditor)',
-   /function fillEditor\(\)\{[^\n]*surumRozeti\(\)/.test(tel));
+   /function fillEditor\(\)\{[\s\S]{0,400}?surumRozeti\(\)/.test(tel));
 ok('metinler iki dilde tanımlı',
    (tel.match(/verSwitch:'/g)||[]).length >= 2 && (tel.match(/verEmpty:'/g)||[]).length >= 2);
 

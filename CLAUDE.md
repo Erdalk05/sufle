@@ -6,6 +6,14 @@ Erdal CTO yetkisi verdi: sırayı sen belirle, kapıda durup sorma — **aşağ�
 
 ## Kanon depo ve aynalar
 
+> 🔴 **19 Ağustos 2026: kanon depo `~/Desktop/.sufle-deploy` → `~/sufle` taşındı.**
+> Sebep `OLAY_20260819_ICLOUD.md`'de: disk %98 dolunca macOS, `~/Desktop`
+> altındaki 60 dosyanın yerel içeriğini attı (`dataless`), geri indiremedi ve
+> dosyalar **hata vermeden 0 bayt** okunmaya başladı — biri bir TESTTİ ve boş
+> test "geçti" der. Depo GitHub'dan temiz klonlandı. `~/Desktop` bu makinede
+> iCloud'a senkronlanıyor; **kod deposu orada durmamalı.** Eski dizin silinmedi,
+> kararı Erdal'da. `tests/194` deponun iCloud dizininde olmasını da ölçüyor.
+
 **Tek kaynak bu depodur.** Masaüstündeki klasörler AYNADIR, kaynak değil:
 
 | Kanon (burada düzenle) | Ayna (kopyala) |

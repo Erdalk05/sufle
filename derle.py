@@ -110,6 +110,11 @@ PLAN = [
     # sayısı). Kural iki kabukta aynı olmalı: biri "3 çekim" derken diğeri
     # başka sayı gösterirse kullanıcı hangisine güveneceğini bilemez.
     ('senaryo.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Senaryo etiketleri (2026-08-19). Anahtar katlaması İKİ kabukta da
+    # birebir aynı olmak zorunda: yedeği telefonda alıp masaüstünde açan
+    # kullanıcının "İş" etiketi orada ikinci bir kutuya düşerse etiketleri
+    # sessizce ikiye bölünür ve sebebini hiçbir ekranda göremez.
+    ('etiket.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

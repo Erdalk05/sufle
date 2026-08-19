@@ -70,7 +70,7 @@
  "69-yeniden-olcum-kare-basina.js": 18,
  "70-cok-kelimeli-vurgu.js": 57,
  "71-kamera-fener-zoom.js": 25,
- "72-olu-chroma-ayarlari.js": 57,
+ "72-olu-chroma-ayarlari.js": 59,
  "73-tetik-kelimesi.js": 30,
  "74-kaydirma-altin-test.js": 29,
  "75-iphone-sunucu.js": 31,
@@ -159,7 +159,7 @@
  "158-yazi-tipi-erisilebilirlik.js": 66,
  "159-kumanda-yollari.js": 67,
  "160-klip-kaynak-korunuyor.js": 41,
- "161-cekirdek-zinciri.js": 131,
+ "161-cekirdek-zinciri.js": 140,
  "162-senaryo-turetilmis-bilgi.js": 58,
  "163-deneme-kilavuzu.js": 46,
  "164-magaza-kabugu.js": 40,
@@ -189,5 +189,8 @@
  "188-kapat-durustlugu.js": 16,
  "189-sesle-yeniden-senkron.js": 20,
  "190-yol-tarifi-dedektoru.js": 11,
- "191-ios-css-onek.js": 10
+ "191-ios-css-onek.js": 10,
+ "192-guzellik-ve-hizli-erisim.js": 38,
+ "193-senaryo-etiket.js": 51,
+ "194-bos-dosya-nobetcisi.js": 15
 }

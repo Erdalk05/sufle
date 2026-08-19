@@ -2,6 +2,140 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🔴🔴 19 Ağustos — **DEPO ~/Desktop'TA ÇÖZÜLDÜ, `~/sufle`'YE TAŞINDI**
+
+Ayrıntı: `OLAY_20260819_ICLOUD.md`. Kısası: disk **%98 dolu**, macOS `~/Desktop`
+altındaki 60 dosyanın yerel içeriğini attı (`dataless`) ve o dosyalar **hata
+vermeden 0 bayt okunmaya başladı**. `ls` doğru boyutu gösteriyor, `git status`
+temiz diyor, okuma boş dönüyor.
+**✅ VERİ KAYBI YOK:** ilk teşhisim "içerik geri indirilemiyor" idi ve ölçünce
+ÇÜRÜDÜ — sabırla okununca (dakikalarca bloklayan indirme) hepsi geri geldi;
+eski depo 304 dosyayla sağlam ve dokunulmadı. Asıl tuzak şu: **Claude Code'un
+kum havuzu içinde dataless dosya okuması bloklamak yerine anında 0 bayt
+döndürüyor, hata da vermiyor** — araç zinciri hatasız çalışıp boş dosyaları
+ölçüyor.
+
+**Bunu yakalayan şey bir tesadüftü ve bu en rahatsız edici kısmı:** boşalan
+dosyalardan biri `tests/116-sabah-raporu.js` idi. **Boş test hiçbir iddia
+koşmaz, hiçbir satır basmaz ve çıkış kodu 0 döner** — koşturucu onu "geçti"
+sayar. Kusur ancak o teste inen bir kasıtlı bozmanın YAKALANMAMASIYLA ortaya
+çıktı. Yani kapı, kendi ölçüm aletinin boşaldığını göremiyordu.
+
+Yapılanlar: okunabilir 244 dosya kurtarıldı · GitHub'dan temiz klon (`~/sufle`) ·
+kurtarılan iş bindirildi · okunamayan dosyalardaki kayıp düzenlemeler yeniden
+yazıldı (`mac/Teleprompter Pro.html`, `kontrast.py`, `bozma.py`, `DENEME.md`,
+`tests/33`, `tests/43`, `tests/parite-taban.json`) · kapı **10/10 yeşil**.
+
+**Kapıya nöbetçi eklendi:** `tests/194-bos-dosya-nobetcisi.js` her dosyanın
+`stat` boyutuyla gerçekten okunan bayt sayısını karşılaştırıyor, boş test
+dosyası arıyor ve **deponun iCloud senkronlu bir dizinde olmasını da ihlal
+sayıyor**. Bir dahaki sefere tesadüfe gerek kalmayacak.
+
+**Erdal'ın karar vermesi gerekenler:** ① disk açılmalı (854 GB dolu) ②
+iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
+`~/Documents` dışında tutulmalı ③ aynalar hâlâ iCloud altında ④ eski dizin
+`~/Desktop/.sufle-deploy` **silinmedi**, dokunulmadı.
+
+## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
+
+Erdal "eksikleri bul ve kapat" dedi ve çıktı; `git push` yok, yayın kararı onda.
+Depoda şu an **iki** yayınlanmamış sürüm var: v9.33 ve v9.34.
+
+### ⚠️ Turun ilk bulgusu: EKSİK LİSTESİNİN KENDİSİ BAYATTI
+
+`EKSIKLER_20260816.md`'yi uygulamadan önce **bugünkü koda karşı ölçtüm** ve
+dört maddesi zaten kapanmış çıktı. Eski dokümanın "D" tablosu grep SAYIMIYLA
+yazılmıştı (`rememberPos` telefonda 8, Mac'te 1 → "Mac'te yok"); oysa Mac
+`selectScript` içinde `s.pos`u okuyup `setPos` ediyor ve `resumed` bildirimi
+gösteriyor. Aynı şekilde Mac'te çekim arşivi (`indexedDB.open('teleprompter_pro')`)
+**var**, PDF içe aktarma **var** (`tests/167`), elle pozlama telefonda **var**
+(`tests/168`). Deponun kendi kuralı bir kez daha doğrulandı: **grep sayımı kanıt
+değil.** Üç günlük sekiz yayın (v9.17→v9.33) listeyi geçersiz kılmış, kimse
+listeyi güncellememişti. Yeni sıra `GECE_PLANI_20260819.md`'de ve **ölçülerek**
+yazıldı.
+
+### 🏷 Senaryo etiketleri — iki kabukta da (v9.34)
+
+Rubriğin 7. kategorisini 4'te tutan tek eksikti. **Klasör değil etiket**, ve bu
+bir karar: klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A"
+olamaz — kullanıcı ya birini seçer ya kopya tutar, kopya tutmak da metnin iki
+yerde ayrışması demek. Etiket çoklu üyeliğe izin veriyor ve **tek etiket
+seçildiğinde ekranda klasörün yaptığı işi aynen yapıyor**; yani klasör,
+etiketin dar hâli.
+
+Kural tek kaynakta: `cekirdek/etiket.js`, iki kabuğa da gömülü.
+
+**Yazarken kaçınılan dört tuzak, dördü de deponun kendi hata sınıfları:**
+① **Anahtar arayüz dilini OKUMUYOR.** `toLocaleLowerCase('tr')` ile "İŞ" → "iş",
+`('en')` ile başka bir dize çıkıyor; anahtar `L`ye bağlı olsaydı arayüzü
+İngilizceye alan kullanıcının etiketleri sessizce ikiye bölünürdü. Katlama elle
+ve sabit yazılı, testi de kaynakta `L` aramasını yasaklıyor.
+② **Kutu doldurulmadan etiket YAZILMIYOR.** `pullEditor` bazı yollarda
+`fillEditor`den önce koşuyor; koşulsuz yazsaydım açılışta kutu boşken
+senaryonun etiketleri silinirdi (3 numaralı hata sınıfı: kayıtlı durumu
+okumadan sıfırlayan sıra).
+③ **Kaybolan seçim düşüyor.** Etiketi taşıyan son senaryo silinince seçim
+ekranda kalsaydı liste sonsuza kadar boş görünür, kullanıcı senaryolarını
+kaybettiğini sanardı.
+④ **Süzgeç kalıcı DEĞİL.** Görünüm durumu, tercih değil: açık bırakılıp
+uygulama kapatılsa ertesi gün senaryoların çoğu görünmez ve sebebi aranacak
+bir yer olmazdı.
+Ek olarak: hiç etiket yokken jeton çubuğu **hiç çizilmiyor** (ölü denetim
+sınıfının liste hâli) ve etiket `change` olayında yazılıyor — `input` olsaydı
+kullanıcı "reels" yazarken çubukta "r", "re", "ree" jetonları yanıp sönerdi.
+
+**Kapı iki gerçek sorun yakaladı, ikisi de haklıydı:** `tests/43`ün arama
+tezgâhı eski blok şeklini arıyordu (etiket süzgeci araya girince çöktü,
+36 → 18 iddiaya düştü — *çöken test iddia BASMAZ*, çıkış koduna bakmasaydım
+"yeşil" sanırdım) ve `tests/33`ün bir iddiası `fillEditor`ün **tek satır**
+olmasını şart koşuyordu: davranışı değil biçimi kilitleyen test, yani F2
+borcunun ta kendisi. Biçim şartı kaldırıldı, davranış şartı kaldı.
+
+Yeni test dosyası **193** (51 iddia) · **13 yeni kasıtlı bozma** · toplam
+**676 bozma kanıtlı**.
+
+## 🔴 18 Ağustos — **v9.33 hazır · henüz yayınlanmadı** — ÖN YÜZ TURU 1
+
+Erdal gerçek cihazla üç madde bildirdi. Üçü de doğrulandı, üçü de kapandı.
+
+**① "Görüntünün üzerine cam/şeffaf değişiklik hiçbirinde yok."** Sebep tasarım
+değil, iOS önekiydi → v9.32'de kapandı (yukarıda).
+
+**② "Yüz maskeleme yok, diğer birçok telepromterda var."** Doğru: renk
+düzeltme (parlaklık/kontrast/doygunluk/**sıcaklık**/keskinlik) vardı, **cilt
+yumuşatma yoktu.** WebGL shader'ına eklendi. Düz bulanıklık DEĞİL: 8 komşu
+örneğin ağırlığı parlaklık farkına göre düşüyor (fakir adamın bilateral
+süzgeci), yani ten yumuşarken göz-kaş-saç-dudak sınırı duruyor. Örnekler elle
+açıldı — bazı mobil GPU'larda döngü içinde doku örneklemesi güvenilir
+derlenmiyor. **Keskinlik ile güzellik birbirini yiyordu** (unsharp mask, az
+önce silinen yüksek frekansı geri koyuyor): güzellik arttıkça keskinlik
+kontrollü geri çekiliyor, kullanıcı iki sürgüyü birbirine karşı ayarlamıyor.
+Güzellik renk filtresinden BAĞIMSIZ — "Kapalı" seçiliyken de çalışır ve
+gerekli boru hattını **kendisi açar** (yoksa sessiz ölü ayar olurdu).
+
+**③ "Sağ üst köşede saydam hızlı ulaşma butonu olmalı."** Eklendi: cam düğme +
+altı karolu cam panel (kamera çevir · ışık · güzellik · yazı küçült/büyüt ·
+odak). **Hiçbir karo kendi mantığını taşımıyor** — her biri Ayarlar'daki
+GERÇEK satırı tıklıyor, yazı boyutu GERÇEK sürgüyü sürüyor. Kopyalasaydım
+kayıt sırasındaki kamera yasağı, fenerin yeniden uygulanması ve zum sıfırlama
+iki yerde yaşar, zamanla ayrışırdı.
+
+**Çizilmiş ekranda görülen kusur:** karo değerleri "Kapalı" iken de vurgu
+yeşiliyle yazılıyordu — kapalı karo AÇIK gibi okunuyordu. Renk bilgi taşımak
+yerine yanlış bilgi taşıyordu. Kaynakta görünmeyen, yalnız ekrana bakınca
+görülen sınıf.
+
+**Kapı sekiz gerçek sorun yakaladı ve sekizi de haklıydı:** `st.bty`
+varsayılanda yoktu · `font-size:11px` ölçek dışı çıplak puntoydu (jetona
+çevrildi) · `ensureCompVfx`in eski değişmezi `tests/72`de kilitliydi (kural
+genişletildi, gerekçesi yazıldı) · `hizli` anahtarları Mac paritesinde
+gerekçesiz eksik görünüyordu (telefona özgü olduğu yazıldı) · kapsam tabanı
+düşüyordu (yeni fonksiyonların hepsi adıyla ölçüldü, taban 38 → 36) · üç
+bozma hedefi bayatlamıştı · `tests/192`nin kontrast iddiası gevşekti.
+
+Yeni test dosyası **192** (38 iddia) · 11 yeni kasıtlı bozma ·
+çizilmiş arayüz durumu 11 → **12** (`telefon-hizli`).
+
 ## 🟢 18 Ağustos — **v9.32 YAYINLANDI ve canlıdan doğrulandı**
 
 ### 🔴 iPHONE'DA CAM/ŞEFFAF YÜZEYLERİN HİÇBİRİ ÇALIŞMIYORMUŞ
@@ -1855,7 +1989,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7261 test** (gece başında 732) · yeni test dosyası: 39–191
+- **7367 test** (gece başında 732) · yeni test dosyası: 39–194
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

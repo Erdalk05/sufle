@@ -50,7 +50,11 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
      de geldi, yani hata yolu artık iki kabukta da var. "Muafiyet listesi
      boşuna geniş değil" iddiası bunu kendiliğinden yakaladı — listenin
      var olma sebebi tam olarak bu. */
-  const MUAF=new Set(['persist','quota','mics','softBg','voiceTest','measure',
+  /* 'hizli': hızlı erişim paneli TELEFONA ÖZGÜ. Masaüstünde sahnenin üstünde
+     duran bir panel yok — pencere zaten geniş, ayarlar sağ panelde açık
+     duruyor ve kadrajı örtmüyor. Yani eksiklik değil, kavramın karşı
+     platformda bulunmaması. */
+  const MUAF=new Set(['hizli','persist','quota','mics','softBg','voiceTest','measure',
                       'audmon','meter','bg','autoSave','mapIn','camLock','poz','wb']);
   const beklenmeyen=eksik.filter(x=>!MUAF.has(x));
   ok('Macte eksik her etiket gerekçeli'+(beklenmeyen.length?' — beklenmeyen: '+beklenmeyen.join(', '):'')+

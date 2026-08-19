@@ -169,13 +169,25 @@ function kapiKos({chroma, burnCaps, comp, compOn}){
   ok('blok kesilebildi', !!icerik);
   ok('segment bloğun içinde', /id="vfxSeg"/.test(icerik));
   ok('sürgü de bloğun içinde', /id="vidAmt"/.test(icerik));
+  /* v9.33: güzellik sürgüsü de AYNI bloğun içinde olmalı. Dışına çıkarsa
+     kompozit kapalıyken sürüklenebilir ama hiçbir şey yapmaz — segment ve
+     `vidAmt` için düzeltilen kusurun aynısı, yeni denetimde tekrar ederdi. */
+  ok('güzellik sürgüsü de bloğun içinde', /id="btyAmt"/.test(icerik));
   ok('blok kuralı kompozitin gerçekten koştuğuna bakıyor',
      /'#vfxDeps',\s+\(\)=>!!\(st\.comp&&comp\.on\)/.test(mGate[0]));
   /* Seçim yapmak AÇIK bir istektir: koşulu kendimiz sağlıyoruz (burnCaps ve
      chroma ile aynı karar). Fark: seçim geri ALINMIYOR, çünkü anahtar değil. */
   ok('filtre seçilince kompozit açılmaya çalışılıyor',
      /vfxSeg button'\)\.forEach\(b=>b\.onclick=\(\)=>\{[^}]*ensureCompVfx\(\)/.test(tel2.replace(/\/\*[\s\S]*?\*\//g,'')));
-  ok('kapalı seçilirse kompozit açılmıyor', /if\(st\.vidFx==='off' \|\| comp\.on\) return true;/.test(tel2));
+  /* DEĞİŞMEZ v9.33'te GENİŞLEDİ: kural "filtre kapalıysa boşuna kompozit
+     açma" (pil ve ısı) idi ve geçerliliğini koruyor. Ama güzellik de aynı GL
+     boru hattında çiziliyor ve renk filtresinden BAĞIMSIZ açılabiliyor —
+     eski koşul onu sessizce ölü bırakırdı. Yeni koşul ikisini birden tutuyor:
+     boru hattı YALNIZ gerçekten çizilecek bir şey varken kuruluyor. */
+  ok('kapalı seçilirse ve güzellik de kapalıysa kompozit açılmıyor',
+     /if\(\(st\.vidFx==='off' && !\(st\.bty>0\)\) \|\| comp\.on\) return true;/.test(tel2));
+  ok('güzellik açıkken filtre kapalı olsa da boru hattı kuruluyor',
+     /!\(st\.bty>0\)/.test(tel2));
   ok('kamera yoksa sebebi söyleniyor', /if\(!stream\)\{ toast\(m\('needCam'\)\); apply\(\); return false; \}/.test(tel2));
 }
 

@@ -1,6 +1,10 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,oku,cikar,cekirdekOku}=require('./kaynak');
 const tel=oku(telefonYolu());
+/* Arama artık ETİKET SÜZGECİNİN çıktısı üzerinde koşuyor (v9.34).
+   Süzgeci taklit etmiyoruz, gerçek çekirdeği koşturuyoruz: taklit,
+   kural değişince sessizce yalan söyleyen kopyadır. */
+const ETIKET=cekirdekOku('etiket.js','SUFLE_ETIKET');
 
 /* İKİNCİ SÜRÜM BÜTÜN TAŞIMA YOLLARINDA HAYATTA KALIYOR MU
    İki sürümlü senaryo (⇄) dün eklendi: aynı senaryonun ikinci dildeki hâli
@@ -80,11 +84,13 @@ function cogalt(kaynak){
 
 /* ---------- ARAMA ---------- */
 function ara(sorgu, liste){
-  const parca = cikar(rs, /let list=q \? st\.scripts\.filter\([\s\S]*?st\.scripts\.slice\(\);/, 'arama');
+  const parca = cikar(rs, /const taban=etiketSuz\([\s\S]*?: taban;/, 'arama');
   return new Function('__q','__l', `
     const q=__q;
     const st={scripts:__l};
+    const scTagSecili='';
     const norm=s=>String(s||'').toLocaleLowerCase('tr');
+    ${ETIKET}
     ${parca}
     return list;
   `)(sorgu, liste);

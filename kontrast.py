@@ -50,6 +50,12 @@ DURUMLAR = [
     # panelin kendi koyu yüzeyi ise gerçek alfa bileşimiyle ölçülür.
     ('telefon-canli-ayarlar', TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startCam').click();"),
+    # v9.33 HIZLI ERİŞİM: sahnenin üstünde duran cam panel. Kamerasız kipte
+    # ölçülüyor çünkü sorumuz panelin KENDİ yüzeyi — karo etiketleri çevrili
+    # mi, adı var mı, cam zeminde kontrastı yetiyor mu. Kamera karesi
+    # değişken olduğu için aracın dürüstlük sınırı gereği zaten atlanırdı.
+    ('telefon-hizli',    TELEFON, 430, 932, 3,
+     KAPAT_ONB + "document.querySelector('#startNoCam').click();"),
     ('telefon-senaryo',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#scriptsBtn').click();"),
@@ -135,6 +141,10 @@ SONRA = {
     # adı var mı, kontrastı yeterli mi. O yüzden kutu doğrudan görünür
     # kılınıyor ve sınır bu yorumda yazılı — ölçtüğümüzü olduğundan fazla
     # göstermemek için.
+    'telefon-hizli': (
+        "await new Promise(r=>setTimeout(r,400));"
+        " document.querySelector('#hizliBtn').click();"
+        " await new Promise(r=>setTimeout(r,300));"),
     'telefon-kompozit': (
         "document.querySelector('#settingsBtn').click();"
         " await new Promise(r=>setTimeout(r,400));"
@@ -160,6 +170,12 @@ BEKLE = {
                         " && r.scrollTop===0 && v.getBoundingClientRect().height>=260;})()"),
     # Kompozit kutusu gerçekten açıldı mı: kutu görünür VE tema kartları
     # çizilmiş olmalı. Yalnız "kutu var" demek, boş kart şeridini ölçmek olurdu.
+    # Panel gerçekten AÇIK ve karolar çizilmiş olmalı. "Düğme var" demek
+    # kapalı paneli ölçmek olurdu — ölçmeyen denetim.
+    'telefon-hizli': ("(()=>{const p=document.querySelector('#hizliPanel');"
+                      "return !!p && !!p.offsetParent"
+                      " && p.querySelectorAll('.hkaro').length>=5"
+                      " && p.getBoundingClientRect().width>0;})()"),
     'telefon-kompozit': ("(()=>{const k=document.querySelector('#capTemaKart');"
                          "return !!k && !!k.offsetParent && k.querySelectorAll('.kart').length>0;})()"),
 }
