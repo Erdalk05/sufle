@@ -5380,6 +5380,13 @@ function provaRapor(kaynak, sesle){
     macPozYaz(); macPozUygula(); save(); });
   $('#macWb').addEventListener('input',e=>{ state.wb=+e.target.value;
     macWbYaz(); macWbUygula(); save(); });
+  /* 🔴 ARAYÜZ VAADİ: `wbHint` iki dilde de "otomatiğe dönmek için sürgüye çift
+     dokun" diyor ve bu metin ORTAK sözlükten geliyor. Masaüstünde karşılığı
+     yoktu — metin var olmayan bir hareketi tarif ediyordu (deponun v9.31'de
+     adı konan sınıfı). Telefonda aynı sürgünün çift dokunuş yolu zaten vardı. */
+  $('#macWb').addEventListener('dblclick',()=>{ state.wb=0;
+    $('#macWb').value=Math.round((+$('#macWb').min + +$('#macWb').max)/2);
+    macWbYaz(); macWbUygula(); save(); });
   $('#keySim').addEventListener('input',e=>{ state.keySim=+e.target.value; applyAll(); save(); });
   $('#keySmooth').addEventListener('input',e=>{ state.keySmooth=+e.target.value; applyAll(); save(); });
   /* "Şimdi denetle" — kamera zaten açıksa nabız sürüyor, bu düğme ARADAKİ

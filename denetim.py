@@ -363,6 +363,7 @@ def audit(path, msg_var="const MSG", i18n_var="const I18N", genel_kullanim=None)
     if olu_i18n: problems.append(("I18N'de tanımlı ama hiç kullanılmayan anahtar", olu_i18n))
 
     problems += yol_tarifi_denetimi(src, js)
+    problems += jest_vaadi_denetimi(src, js, genel_kullanim)
     problems += ios_onek_denetimi(src)
 
     return problems
@@ -527,6 +528,80 @@ def yol_tarifi_denetimi(src, js):
         return [("arayüz metni var olmayan bir yere gönderiyor", bulunmayan)]
     return []
 
+
+
+# --------------------------------------------------------------------------
+# JEST VAADİ DEDEKTÖRÜ (2026-08-19)
+#
+# Deponun v9.31'de adı konan ama yazılmayan dedektörü: **arayüz metni bir
+# HAREKET vaat ediyor, kodda karşılığı yok.** "Ölü ayar"ın metin tarafı.
+# O gün iki vaka çıkmıştı — sesli takip rozeti "okuduğun yeri parmakla göster"
+# diyordu ama tek dokunuş yolu hiç yazılmamıştı; aynı boşluk Mac'te de vardı.
+# Bugün üçüncüsü çıktı: masaüstünde beyaz ayarı ipucu "otomatiğe dönmek için
+# sürgüye çift dokun" diyordu, `dblclick` işleyicisi YOKTU.
+#
+# ÖLÇÜT SEÇİMİ — neden yalnız NADİR hareketler:
+#   "dokun/tap" her ekranda var; onu aramak her kabukta hep yeşil verir, yani
+#   ölçmeyen bir kapı olurdu. Ayırt eden hareketler nadir olanlar: çift
+#   dokunuş, sürükleme, basılı tutma, iki parmak, sallama. Bunlardan birini
+#   VAAT EDEN bir metin varsa, o kabukta karşılığı da OLMALI.
+#
+# İKİ YANLIŞ ALARM KAYNAĞI ve kapatılışları:
+#   1) `threshold` içindeki "hold" gibi kelime PARÇALARI  → sınır (\b) şart.
+#   2) İŞLETİM SİSTEMİ hareketleri ("HTML dosyasına çift tıklayarak açtıysan",
+#      "Fotoğraflar'da kırp") bizim arayüzümüzün vaadi değil → bunlar için
+#      dar bir bağlam listesi var.
+#   3) O kabukta KULLANILMAYAN sözlük anahtarı hiçbir şey vaat etmez; ortak
+#      sözlükte telefona özgü anahtarlar duruyor. Yalnız kullanılan anahtarlar
+#      ölçülüyor — `kullanilan_anahtarlar` zaten bu bilgiyi topluyor.
+
+JESTLER = {
+    "çift dokunuş": (
+        r"(?:\bçift (?:dokun|bas|tıkla)|\bdouble[- ]?(?:tap|click|press))",
+        r"dblclick|ondblclick|ciftDokunus|doubleTap|sonDokunusZamani",
+    ),
+    "sürükleme": (
+        r"(?:\bsürükle|\bparmakla kaydır|\bdrag\b|\bswipe\b)",
+        r"touchmove|pointermove|onmousemove|dragstart",
+    ),
+    "basılı tutma": (
+        r"(?:\bbasılı tut|\buzun bas|\blong[- ]press|\bpress and hold\b)",
+        r"uzunBas|longPress|basiliTut",
+    ),
+    "iki parmak": (
+        r"(?:\biki parmak|\bpinch\b|\bkıstır)",
+        r"touches\.length|gesturechange",
+    ),
+    "sallama": (r"(?:\bsalla\b|\bsarsarak\b|\bshake\b)", r"devicemotion"),
+}
+
+# Bizim arayüzümüzün değil, İŞLETİM SİSTEMİNİN hareketi. Dar tutuluyor:
+# geniş bir muafiyet listesi dedektörü sessizce kapatır.
+JEST_MUAF = (
+    r"dosyasına çift tıkla", r"double-click", r"Double-click",
+    r"masaüstünde çift tıkla",
+)
+
+
+def jest_vaadi_denetimi(src, js, kullanilan):
+    """Metin bir hareket vaat ediyorsa, o kabukta karşılığı var mı?"""
+    sonuc = []
+    for ad, (vaat, karsilik) in JESTLER.items():
+        vaat_edenler = []
+        for m in re.finditer(r"([A-Za-z_$][\w$]*):'((?:[^'\\]|\\.)*)'", js):
+            anahtar, deger = m.group(1), m.group(2)
+            # Bu kabukta hiç kullanılmayan anahtar hiçbir şey vaat etmez.
+            if kullanilan is not None and anahtar not in kullanilan:
+                continue
+            if any(re.search(mu, deger) for mu in JEST_MUAF):
+                continue
+            if re.search(vaat, deger, re.I):
+                vaat_edenler.append(anahtar)
+        if vaat_edenler and not re.search(karsilik, src, re.I):
+            sonuc.append(
+                ("arayüz metni karşılığı olmayan bir hareket vaat ediyor (%s)" % ad,
+                 sorted(set(vaat_edenler))))
+    return sonuc
 
 if __name__ == "__main__":
     bad = 0

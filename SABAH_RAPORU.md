@@ -38,6 +38,31 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🕵️ v9.31'de ADI KONAN ama yazılmayan dedektör yazıldı — ve ilk vakasını yakaladı
+
+v9.31'in notunda şu duruyordu: *"Dedektör fikri (henüz yazılmadı): arayüz
+metinlerindeki VAADİ koddaki karşılığıyla eşleştir."* Yazıldı
+(`denetim.py` → `jest_vaadi_denetimi`, testi `tests/196`).
+
+**İlk koşuşta gerçek bir kusur buldu ve kusur BENİMDİ:** ortak sözlükteki
+`wbHint` iki dilde de *"otomatiğe dönmek için sürgüye çift dokun"* diyor;
+telefonda `ondblclick` vardı, **az önce eklediğim masaüstü sürgüsünde yoktu**.
+Yani metin, masaüstünde var olmayan bir hareketi tarif ediyordu — v9.31'in
+sınıfının üçüncü vakası. Eklendi.
+
+**Ölçüt neden yalnız NADİR hareketler:** "dokun/tap" her ekranda var; onu
+aramak her kabukta hep yeşil verir — ölçmeyen bir kapı. Ayırt eden hareketler
+çift dokunuş, sürükleme, basılı tutma, iki parmak ve sallama. Bu sınır
+`tests/196`da **kasıtlı** olarak yazılı.
+
+**Dedektörün kendi üç yanlış alarm kaynağı da kilitli:** ① `threshold`
+içindeki *hold* gibi kelime parçaları (ilk denemem tam da buna takıldı ve
+masum bir etiketi suçladı) ② işletim sisteminin hareketi ("HTML dosyasına
+çift tıklayarak açtıysan") bizim vaadimiz değil ③ o kabukta kullanılmayan
+sözlük anahtarı hiçbir şey vaat etmez. Üçü de sentetik kabukla ölçülüyor;
+**test dedektörü KOŞTURUYOR, şeklini okumuyor** (grep, dedektörün
+çalıştığını değil yazıldığını kanıtlar).
+
 ### 🎛 Masaüstünde elle kamera denetimleri (aynı sürümde)
 
 16 Ağustos'un eksik listesi masaüstü için **üç** madde yazıyordu; ölçünce
@@ -2022,7 +2047,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7428 test** (gece başında 732) · yeni test dosyası: 39–195
+- **7442 test** (gece başında 732) · yeni test dosyası: 39–196
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

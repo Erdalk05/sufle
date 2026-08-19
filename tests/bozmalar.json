@@ -4821,5 +4821,47 @@
   "kaynak": "telefon",
   "bul": "  const kipler = kamKilitKipleri(caps);",
   "koy": "  const kipler = {odak:((caps&&caps.focusMode)||[]).find(k=>k==='manual'||k==='single-shot'), poz:undefined, var:true};"
+ },
+ {
+  "ad": "v9.34 jest vaadi dedektörü hiç koşmuyor",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "    problems += jest_vaadi_denetimi(src, js, genel_kullanim)",
+  "koy": "    pass  # dedektör kapatıldı"
+ },
+ {
+  "ad": "v9.34 dedektör kelime PARÇASINI da vaat sayıyor (threshold ≠ hold)",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "        r\"(?:\\bbasılı tut|\\buzun bas|\\blong[- ]press|\\bpress and hold\\b)\",",
+  "koy": "        r\"(?:basılı tut|uzun bas|long[- ]press|hold)\","
+ },
+ {
+  "ad": "v9.34 dedektör işletim sistemi hareketini de suçluyor",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "            if any(re.search(mu, deger) for mu in JEST_MUAF):\n                continue",
+  "koy": "            pass"
+ },
+ {
+  "ad": "v9.34 dedektör kullanılmayan anahtarı da suçluyor",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "            if kullanilan is not None and anahtar not in kullanilan:\n                continue",
+  "koy": "            pass"
+ },
+ {
+  "ad": "v9.34 dedektör çift dokunuş karşılığını görmüyor (her kabuk kırmızı)",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "denetim",
+  "bul": "        r\"dblclick|ondblclick|ciftDokunus|doubleTap|sonDokunusZamani\",",
+  "koy": "        r\"buOlayHicYok\","
+ },
+ {
+  "ad": "v9.34 Mac'te beyaz ayarı çift dokunuşu yine yok (metin var olmayan hareketi tarif ediyor)",
+  "test": "196-jest-vaadi-dedektoru.js",
+  "kaynak": "mac",
+  "bul": "  $('#macWb').addEventListener('dblclick',()=>{ state.wb=0;",
+  "koy": "  $('#macWb').addEventListener('mouseenter',()=>{ state.wb=0;"
  }
 ]
