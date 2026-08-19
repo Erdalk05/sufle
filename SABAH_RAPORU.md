@@ -2,7 +2,29 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🟢 20 Ağustos gecesi — v9.38 YAYINLANDI ve canlıdan doğrulandı (`sufle-v110`) — CIRCIR 50 → 30
+## 🔴 20 Ağustos gecesi — **v9.39 hazır · henüz yayınlanmadı** — TAŞIMA BİTTİ: 172 → 4
+
+Sözlüğü atlayan kullanıcı metni **172'den 4'e** indi. Kalan dördü metin
+değil, sisteme verilen **dil kodu** (`tr-TR`, `en-US`, `tr`) — cırcırın
+yazılı ve kasıtlı sınırı buydu.
+
+**Kullanıcı için anlamı:** uygulamadaki her cümle tek kaynaktan geliyor, yani
+dil değiştirince ekranların tamamı anında güncelleniyor ve bir dilde olup
+diğerinde olmayan bilgi kalmıyor. **Üçüncü arayüz dilinin önü tamamen açıldı**
+— artık iş çeviri yazmak, kod taramak değil.
+
+**Kapı bu turda bir ölçüm boşluğu daha gösterdi:** `tests/25`in tezgâhı
+sözlüğü **çekirdek dosyasından** okuyor, oysa kasıtlı bozma **gömülü kopyayı**
+bozuyordu — yani bozma teste hiç ulaşmıyordu ve kanıt sahteydi. Bozmanın
+kaynağı `sozluk`a çevrildi. *Ders: tezgâhın okuduğu dosya ile bozmanın indiği
+dosya aynı olmak zorunda.*
+
+**On tezgâh gerçek sözlüğü yükler hâle geldi** bu gece. Emoji kuralı korundu:
+süs emojisi sözlükte yasak, durum simgesi kodda kaldı — ama karşılama
+metnindeki **adım numaraları** (1️⃣2️⃣3️⃣) yasak aralıkta olmadığı için
+sözlükte durabiliyor ve geri kondu.
+
+## 20 Ağustos gecesi — v9.38 turu: cırcır 50 → 30 (yayınlandı)
 
 Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü,
 nefesle akış durumu ve senaryo adı yedekleri sözlüğe taşındı.

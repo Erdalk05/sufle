@@ -41,10 +41,13 @@ const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'');
   const m=kod.match(/function shareCancelled\(\)\{[\s\S]*?\n[^\n]*\}/);
   ok('iptal mesajı fonksiyonu var', !!m);
   if(m){
-    ok('iptal mesajı iki dilde', /L==='tr'\?/.test(m[0]));
-    ok('mesaj dosyanın durduğunu söylüyor', /dosya duruyor/.test(m[0]));
-    ok('mesaj tekrar denenebileceğini söylüyor', /tekrar deneyebilirsin/.test(m[0]));
-    ok('İngilizcesi de dosyanın durduğunu söylüyor', /the file is still here/.test(m[0]));
+    /* v9.39: mesaj sözlüğe taşındı. Ölçüt aynı; yeri değişti. */
+    ok('iptal mesajı iki dilde', /t\('paylasIptal'\)/.test(m[0]) &&
+       /paylasIptal:'[^']*Paylaşım iptal edildi/.test(kod) &&
+       /paylasIptal:'[^']*Sharing cancelled/.test(kod));
+    ok('mesaj dosyanın durduğunu söylüyor', /paylasIptal:'[^']*dosya duruyor/.test(kod));
+    ok('mesaj tekrar denenebileceğini söylüyor', /paylasIptal:'[^']*tekrar deneyebilirsin/.test(kod));
+    ok('İngilizcesi de dosyanın durduğunu söylüyor', /paylasIptal:'[^']*the file is still here/.test(kod));
     /* İptal HATA DEĞİL: mesajda başarısızlık dili olmamalı. */
     ok('iptal mesajında başarısızlık dili yok',
        !/başarısız/i.test(m[0]) && !/failed/i.test(m[0]) && !/hata/i.test(m[0]));

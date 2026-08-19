@@ -1,5 +1,13 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu, oku} = require('./kaynak.js');
+/* v9.39: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK sözlüğü
+   yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co4}=require('./kaynak.js');
+const SOZ_T=_co4('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
+eval(SOZ_T);
 
 /* İKİ KUSUR, TEK KAYNAK: "yapıldı sayılan ama yarım kalmış düzeltme"
    (2026-08-17 akşamı, uygulama gerçek tarayıcıda açılarak bulundu)
@@ -85,6 +93,7 @@ const mKisa = kod.match(/function mimeKisa\(\)\{[\s\S]*?\n\}/);
 ok('renderMime ve mimeKisa çıkarılabildi', !!mRender && !!mKisa);
 if(mRender && mKisa){
   function renderKos(st, L){
+    globalThis.L = L;   // sözlük fonksiyonu dili genel kapsamdan alıyor
     return new Function('__st','__L', `
       const st=__st, L=__L;
       const mk=()=>({ hidden:false, sinif:{},

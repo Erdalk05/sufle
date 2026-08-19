@@ -1,5 +1,13 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu, oku}=require('./kaynak.js');
+/* v9.39: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK sözlüğü
+   yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co4}=require('./kaynak.js');
+const SOZ_T=_co4('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
+eval(SOZ_T);
 
 /* BUDAMA SINIRLARI — B4 turunun ilk kalemi (2026-08-15).
 
@@ -39,7 +47,11 @@ if (fn) {
      /Math\.min\(Math\.max\([\s\S]*?trimA\+0\.3\), d\)/.test(fn));
   ok('alt sınır korundu (en az 0,3 sn)', /trimA\+0\.3/.test(fn));
   ok('kısa videoda başlangıç geri çekiliyor', /trimB-trimA<0\.3\) trimA=Math\.max\(0, trimB-0\.3\)/.test(fn));
-  ok('birim dile göre seçiliyor', /L==='tr' \? ' sn' : ' s'/.test(fn));
+  /* v9.39: birim sözlüğe taşındı. Ölçüt aynı — birim DİLE GÖRE seçiliyor mu
+     — ama artık biçim değil davranış kilitli: iki dilde farklı değer var mı
+     ve fonksiyon onu sözlükten mi okuyor. */
+  ok('birim dile göre seçiliyor', /t\('srSn'\)/.test(fn) &&
+     /srSn:' sn'/.test(tel) && /srSn:' s'/.test(tel));
   ok('etiketler sabit " sn" yazmıyor', !/toFixed\(1\)\+' sn'/.test(fn));
 }
 
@@ -47,6 +59,9 @@ if (fn) {
    Tek tek sınır örneği yetmez; iki kaydırıcının bütün birleşimleri taranıyor.
    Aranan şey üç değişmez: 0 ≤ A ≤ B ≤ süre. */
 function kur(d, aVal, bVal, L) {
+  /* v9.39: metinler sözlükten okunuyor; sözlük fonksiyonu dili genel
+     kapsamdan alıyor, bu yüzden çağrı başına ayarlanıyor. */
+  globalThis.L = L;
   const store = {};
   const $ = sel => {
     if (sel === '#trimA') return { value: aVal };

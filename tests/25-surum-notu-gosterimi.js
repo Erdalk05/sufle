@@ -1,5 +1,13 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,macYolu,oku,cikar}=require('./kaynak');
+/* v9.39: bu fonksiyonların metinleri sözlüğe taşındı; tezgâh GERÇEK sözlüğü
+   yükleyip t() ve yer tutucu yardımcısını sağlıyor.
+   (Yorumda ters tırnak yok: şablon dizelerinin içine giriyor.) */
+const {cekirdekOku:_co4}=require('./kaynak.js');
+const SOZ_T=_co4('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'')+
+  "\nglobalThis.I18N=I18N; globalThis.t=(k)=>I18N[globalThis.L||'tr'][k];"+
+  "\nglobalThis.srY=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };";
+eval(SOZ_T);
 const tel=oku(telefonYolu());
 const mac=oku(macYolu());
 
@@ -217,7 +225,8 @@ ok('seenVer yazımı setTimeout bloğunun içinde',
    ayrı bir fonksiyona alındı; burası hem içeriği hem tazelemeyi kilitliyor. */
 {
   const govde = cikar(tel, /function onbGovde\(\)\{[\s\S]*?\n\}/, 'onbGovde');
-  const yap = (dil) => new Function('L', govde + '\n return onbGovde();')(dil);
+  /* v9.39: metin sözlüğe taşındı; sözlük dili genel kapsamdan okunuyor. */
+  const yap = (dil) => { globalThis.L=dil; return new Function('L', govde + '\n return onbGovde();')(dil); };
   const tr = yap('tr'), en = yap('en');
   ok('karşılama metni Türkçe üretiliyor', /Üç adımda başla/.test(tr));
   ok('karşılama metni İngilizce üretiliyor', /Three steps/.test(en));

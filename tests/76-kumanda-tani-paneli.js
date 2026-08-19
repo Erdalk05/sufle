@@ -121,8 +121,12 @@ const mNote=kod.match(/function noteKey\(k\)\{[\s\S]*?\n\}/);
 ok('noteKey çıkarılabildi', !!mNote);
 if(mNote){
   ok('gelen tuş ekranda gösteriliyor', /el\.textContent=keyLabel\(k\)/.test(mNote[0]));
-  ok('bağlandı mesajı veriliyor', /Kumanda bağlı/.test(mNote[0]));
-  ok('sonraki adım söyleniyor (tuş öğret)', /Tuş öğret/.test(mNote[0]));
-  ok('mesaj iki dilde', /Remote connected/.test(mNote[0]));
+  /* v9.39: mesaj sözlüğe taşındı. Ölçüt aynı — bağlandığını SÖYLÜYOR ve
+     sonraki adımı veriyor mu — ama artık doğru yerde aranıyor; ayrıca
+     panelin o anahtarı gerçekten okuduğu da ölçülüyor. */
+  ok('bağlandı mesajı veriliyor',
+     /krBagli:'[^']*Kumanda bağlı/.test(kod) && /t\('krBagli'\)/.test(mNote[0]));
+  ok('sonraki adım söyleniyor (tuş öğret)', /krBagli:'[^']*Tuş öğret/.test(kod));
+  ok('mesaj iki dilde', /krBagli:'[^']*Remote connected/.test(kod));
 }
 ok('yutulma mesajı iki dilde', /Keys are going into a text box/.test(kod));

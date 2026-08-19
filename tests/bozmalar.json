@@ -464,9 +464,9 @@
  {
   "ad": "i18n telefon karşılama metni tek dile indi",
   "test": "25-surum-notu-gosterimi.js",
-  "kaynak": "telefon",
-  "bul": "function onbGovde(){ return L==='tr'",
-  "koy": "function onbGovde(){ return true"
+  "kaynak": "sozluk",
+  "bul": "  onbGovdeM:'<b>Three steps:</b>",
+  "koy": "  onbGovdeMX:'<b>Three steps:</b>"
  },
  {
   "ad": "B1 tipografi ölçeği tekrar ölü jetona döndü (telefon)",
@@ -885,8 +885,8 @@
   "ad": "T59 birim yine sabit Türkçe (İngilizce arayüzde 'sn' görünür)",
   "test": "148-budama-siniri.js",
   "kaynak": "telefon",
-  "bul": "const br = L==='tr' ? ' sn' : ' s';",
-  "koy": "const br = ' sn';"
+  "bul": "  srSn:' s',",
+  "koy": "  srSnX:' s',"
  },
  {
   "ad": "T59 en az 0,3 sn kuralı kalktı (boş seçim kesilebilir)",
@@ -2236,7 +2236,7 @@
   "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 20 Ağustos gecesi — v9.38 YAYINLANDI ve canlıdan doğrulandı",
+  "bul": "## 🔴 20 Ağustos gecesi — **v9.39 hazır · henüz yayınlanmadı**",
   "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
  },
  {
@@ -4014,7 +4014,7 @@
   "ad": "B3 cihaz varsayılanı durumu okunmuyor (seçim görünmez kalır)",
   "test": "178-karsilama-basligi-ve-kayit-bicimi.js",
   "kaynak": "telefon",
-  "bul": "  if(st.forceNoOpts) return L==='tr' ? 'cihaz varsayılanı' : 'device default';",
+  "bul": "  if(st.forceNoOpts) return t('mimeVars');",
   "koy": "  "
  },
  {
