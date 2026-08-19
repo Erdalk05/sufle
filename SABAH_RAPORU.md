@@ -2,7 +2,10 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 20 Ağustos gecesi — **v9.40 hazır · henüz yayınlanmadı** — MASAÜSTÜ METİNLERİ + MAĞAZA
+## 🟢 20 Ağustos gecesi — v9.40 YAYINLANDI ve canlıdan doğrulandı (`sufle-v112`) — MASAÜSTÜ METİNLERİ + MAĞAZA
+
+**Canlı doğrulama:** md5 birebir (`e9ff09cd…` / `5e5e49eb…`) · `canli.py` üç
+genişlikte temiz. `.son-yayin` sonra yazıldı.
 
 Masaüstündeki son 4 sözlük dışı metin de taşındı (**Mac 17 → 1**; kalan tek
 satır dil kodu). Telefon 4, Mac 1 — ikisi de metin değil, sisteme verilen
