@@ -2,10 +2,14 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-## 🔴 20 Ağustos gecesi — **v9.38 hazır · henüz yayınlanmadı** — CIRCIR 50 → 30 + BİR ÇÖKME
+## 🟢 20 Ağustos gecesi — v9.38 YAYINLANDI ve canlıdan doğrulandı (`sufle-v110`) — CIRCIR 50 → 30
 
 Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü,
 nefesle akış durumu ve senaryo adı yedekleri sözlüğe taşındı.
+
+**Canlı doğrulama:** md5 birebir (`9026aba6…` / `c9a7ef46…`) · `canli.py` üç
+genişlikte temiz · izler canlıdan sayıldı (`krYok` 3 · `izIos` 3 · `vbKayip` 3 ·
+`tpOlculen` 3 · gölgelemeyi kaldıran `const tar=` 1). `.son-yayin` sonra yazıldı.
 
 **🔴 Taşırken gerçek bir ÇÖKME hatası yakalandı.** `izinYolu()` içinde yerel
 bir değişkenin adı `t` idi ve **sözlük fonksiyonunu gölgeliyordu**. Metni
