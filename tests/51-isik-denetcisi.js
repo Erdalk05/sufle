@@ -229,3 +229,36 @@ ok('bilgi satırları hazırlık kontrolüne taşınmıyor (gürültü olmasın)
   ok('nabız kurulmadan önce eskisi durduruluyor (çift zamanlayıcı olmasın)',
      /function macIsikBaslat\(\)\{\s*\n?\s*macIsikDurdur\(\);/.test(macKod));
 }
+
+/* ---------- YER TUTUCU VE BOŞ METİN SIZINTISI (v9.34) ----------
+   Cümleler sözlüğe taşınınca yeni bir kusur sınıfı doğdu: anahtar
+   bulunamazsa `undefined`, yer tutucu doldurulmazsa ekranda `{y}` görünür.
+   İkisi de kaynakta görünmez, yalnız ÜRETİLEN metinde belli olur — o yüzden
+   ölçüt üretilen metnin kendisi. Her iki dilde ve kusur üreten beş ayrı
+   karede sınanıyor. */
+{
+  const kareler=[
+    {ad:'karanlık', ton:20},
+    {ad:'patlak', ton:255},
+    {ad:'yassı', ton:128},
+    {ad:'arkadan ışık', desen:(x,y)=>(x>=8&&x<24&&y>=8&&y<34)?40:200},
+    {ad:'iyi', desen:(x,y)=>110+((x*7+y*13)%60)},
+  ];
+  for(const dil of ['tr','en']){
+    for(const k of kareler){
+      const r=kos({ton:k.ton, desen:k.desen||null, tilt:9, dil});
+      const hepsi=r.out.map(o=>String(o.t)+' | '+String(o.d)).join(' ‖ ');
+      ok(dil+'/'+k.ad+': başlık ve açıklama dolu',
+         r.out.length>0 && r.out.every(o=>o.t && o.d));
+      ok(dil+'/'+k.ad+': undefined sızmıyor', !/undefined/.test(hepsi));
+      /* Doldurulmamış yer tutucu: `{y}` gibi. Emoji ve noktalama serbest. */
+      ok(dil+'/'+k.ad+': doldurulmamış yer tutucu yok'+(/\{\w+\}/.test(hepsi)?' — '+hepsi.match(/\{\w+\}/g).join(','):''),
+         !/\{\w+\}/.test(hepsi));
+    }
+  }
+  /* İki dil GERÇEKTEN farklı çıkmalı: `t` yanlış bağlanırsa ikisi de aynı
+     dilde döner ve test "dolu" diye geçerdi. */
+  const tr=kos({ton:20, dil:'tr'}).out.map(o=>o.t).join('|');
+  const en=kos({ton:20, dil:'en'}).out.map(o=>o.t).join('|');
+  ok('iki dil farklı metin üretiyor', tr!==en && tr.length>0 && en.length>0);
+}

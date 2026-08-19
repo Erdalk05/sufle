@@ -4884,5 +4884,19 @@
   "kaynak": "telefon",
   "bul": "  isikSiyah:'The camera is sending a black frame',",
   "koy": "  isikSiyahX:'The camera is sending a black frame',"
+ },
+ {
+  "ad": "v9.34 ışık açıklamasındaki sayı yer tutucusu doldurulmuyor (ekranda {y} kalır)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "  for(const k in (degerler||{})) m=m.split('{'+k+'}').join(degerler[k]);",
+  "koy": "  /* yer tutucu doldurma kaldırıldı */"
+ },
+ {
+  "ad": "v9.34 ışık anahtarı sözlükte bulunamıyor (ekranda undefined)",
+  "test": "51-isik-denetcisi.js",
+  "kaynak": "isik",
+  "bul": "  let m=String(tt(anahtar)||'');",
+  "koy": "  let m=String(tt(anahtar+'Yok'));"
  }
 ]
