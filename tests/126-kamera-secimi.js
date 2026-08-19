@@ -1,5 +1,11 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu, macYolu, oku, cikar, macMetni}=require('./kaynak.js');
+/* v9.34: kilit KİPLERİNİN seçimi ve kısıt üretimi cekirdek/kamera.js'te
+   (Mac de aynı kuralı kullanıyor). Kabukta desen aramak yerine kuralı
+   çekirdekten koşturuyoruz. */
+const {cekirdekOku}=require('./kaynak.js');
+const KAM=cekirdekOku('kamera.js','SUFLE_KAMERA');
+const kam=(()=>new Function(KAM+'\nreturn {kamKilitKipleri,kamKilitKisiti};')())();
 
 /* D.2 — KAMERA SEÇİMİ.
 
@@ -97,16 +103,22 @@ const kodMac = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
   ok('desteklenmiyorsa durum da temizleniyor', /if\(!hasLock\) st\.camLock=false;/.test(sc));
   /* iOS ve Android farklı kip adları veriyor; tek ada kilitlemek özelliği
      bir platformda tümden ölü bırakırdı. */
+  ok('kilit kipleri çekirdekten soruluyor', /kamKilitKipleri\(caps\)/.test(sc));
   ok('iki kip adı da aranıyor (manual / single-shot)',
-     /k==='manual'\|\|k==='single-shot'/.test(sc));
+     kam.kamKilitKipleri({focusMode:['continuous','manual']}).odak==='manual' &&
+     kam.kamKilitKipleri({focusMode:['continuous','single-shot']}).odak==='single-shot');
 
   const ap = cikar(kodTel, /function applyCamLock\([\s\S]*?\n\}/, 'applyCamLock');
   /* Desteksiz bir alanı istemek bazı tarayıcılarda TÜM kısıtı reddettiriyor
      ve kilit sessizce hiç uygulanmıyordu — yalnız desteklenen alan gönderiliyor. */
+  ok('kısıt çekirdekten üretiliyor', /kamKilitKisiti\(\{odak:kilitOdak, poz:kilitPoz\}, st\.camLock\)/.test(ap));
   ok('yalnız desteklenen alan gönderiliyor',
-     /if\(kilitOdak\) ileri\.focusMode/.test(ap) && /if\(kilitPoz\)  ileri\.exposureMode/.test(ap));
-  ok('kapatınca sürekli kipe dönülüyor', /'continuous'/.test(ap));
-  ok('gönderilecek bir şey yoksa çağrı yapılmıyor', /if\(!Object\.keys\(ileri\)\.length\) return;/.test(ap));
+     !('exposureMode' in kam.kamKilitKisiti({odak:'manual'}, true)) &&
+     kam.kamKilitKisiti({odak:'manual'}, true).focusMode==='manual');
+  ok('kapatınca sürekli kipe dönülüyor',
+     kam.kamKilitKisiti({odak:'manual', poz:'manual'}, false).focusMode==='continuous');
+  ok('gönderilecek bir şey yoksa çağrı yapılmıyor',
+     kam.kamKilitKisiti({}, true)===null && /if\(!ileri\) return;/.test(ap));
   /* Kamera reddederse anahtar AÇIK kalmamalı: kullanıcı kilitli sanır,
      kamera arayışa devam eder — sessiz yalan. */
   ok('kamera reddederse anahtar geri alınıp sebebi söyleniyor',

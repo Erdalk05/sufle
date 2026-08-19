@@ -1,5 +1,10 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku}=require('./kaynak');
+/* v9.34: setupCaps yetenek KARARLARINI cekirdek/kamera.js'ten soruyor;
+   tezgâh o modülü de yüklemeli, yoksa çıkarılan kod tanımsız fonksiyon
+   çağırır ve test ÜRÜN DOĞRUYKEN çöker. */
+const {cekirdekOku}=require('./kaynak');
+const KAM=cekirdekOku('kamera.js','SUFLE_KAMERA');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -34,6 +39,7 @@ if(!mCaps || !mTog) return;
 function capsKos({torch, zoom, odak, poz}){
   const iz=[];
   return new Function('__iz','__t','__z','__o','__p', `
+    ${KAM}
     const st={torch:true, zoom:250, camLock:true};
     let vTrack={};
     const caps={}; if(__t) caps.torch=true; if(__z) caps.zoom={min:1,max:3};
@@ -90,6 +96,7 @@ function capsKos({torch, zoom, odak, poz}){
 function anahtarKos(k){
   const iz=[];
   return new Function('__iz','__k', `
+    ${KAM}
     const st={backCam:false, zoom:250, torch:true, vad:false, wake:false, bionic:false};
     let stream=null, rec=null, comp={on:false};
     const apply=()=>__iz.push('cizildi:zoom='+st.zoom+',torch='+st.torch);

@@ -3026,9 +3026,9 @@
  {
   "ad": "pozlamada kip gönderilmiyor (değer sessizce uygulanmaz)",
   "test": "168-elle-pozlama.js",
-  "kaynak": "telefon",
-  "bul": "    ? {exposureMode:'continuous', exposureCompensation:st.poz}\n    : {exposureMode:'manual', exposureTime:st.poz};",
-  "koy": "    ? {exposureCompensation:st.poz}\n    : {exposureTime:st.poz};"
+  "kaynak": "kamera",
+  "bul": "  return yol==='sapma' ? {exposureMode:'continuous', exposureCompensation:deger}\n                       : {exposureMode:'manual', exposureTime:deger};",
+  "koy": "  return yol==='sapma' ? {exposureCompensation:deger} : {exposureTime:deger};"
  },
  {
   "ad": "cihaz pozlamayı reddedince sessiz kalınıyor",
@@ -3040,9 +3040,9 @@
  {
   "ad": "beyaz ayarı yalnız aralığa bakıyor (kip manual olmadan uygulanmaz)",
   "test": "168-elle-pozlama.js",
-  "kaynak": "telefon",
-  "bul": "  const wbVar = !!(wbKip && wbYet);",
-  "koy": "  const wbVar = !!wbYet;"
+  "kaynak": "kamera",
+  "bul": "  if(!(kip && yet)) return {var:false};",
+  "koy": "  if(!yet) return {var:false};"
  },
  {
   "ad": "beyaz ayarında otomatiğe dönüş yolu kapandı",
@@ -4730,5 +4730,96 @@
   "kaynak": "telefon",
   "bul": "        b.onclick=()=>{ scTagSecili=deger; renderScripts(); };",
   "koy": "        b.onclick=()=>{ scTagSecili=deger; st.scTag=deger; renderScripts(); };"
+ },
+ {
+  "ad": "v9.34 iOS'un single-shot kilidi tanınmıyor (kilit iPhone'da hiç görünmez)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  const odak=[...odakK].find(k=>k==='manual'||k==='single-shot');",
+  "koy": "  const odak=[...odakK].find(k=>k==='manual');"
+ },
+ {
+  "ad": "v9.34 desteksiz alan da kısıta konuyor (tüm kısıt reddedilir)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  if(kipler && kipler.odak) ileri.focusMode = acik ? kipler.odak : 'continuous';",
+  "koy": "  ileri.focusMode = acik ? (kipler&&kipler.odak) : 'continuous';"
+ },
+ {
+  "ad": "v9.34 manual kip olmadan da süre yolu açılıyor (sürgü hiçbir şey yapmaz)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  const yol = sapma ? 'sapma' : (elleKip && sure ? 'sure' : null);",
+  "koy": "  const yol = sapma ? 'sapma' : (sure ? 'sure' : null);"
+ },
+ {
+  "ad": "v9.34 pozlama kısıtı kipi taşımıyor (değer sessizce uygulanmaz)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  return yol==='sapma' ? {exposureMode:'continuous', exposureCompensation:deger}\n                       : {exposureMode:'manual', exposureTime:deger};",
+  "koy": "  return yol==='sapma' ? {exposureCompensation:deger} : {exposureTime:deger};"
+ },
+ {
+  "ad": "v9.34 beyaz ayarı kipi manual'a alınmıyor (sıcaklık uygulanmaz)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  return deger ? {whiteBalanceMode:'manual', colorTemperature:deger}",
+  "koy": "  return deger ? {colorTemperature:deger}"
+ },
+ {
+  "ad": "v9.34 kip yokken beyaz ayarı sürgüsü yine gösteriliyor (ölü ayar)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  if(!(kip && yet)) return {var:false};",
+  "koy": "  if(!yet) return {var:false};"
+ },
+ {
+  "ad": "v9.34 pozlama süresi kullanıcıya ham sayı olarak yazılıyor",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  return Math.round((deger-min)/aralik*100)+'%';",
+  "koy": "  return String(deger);"
+ },
+ {
+  "ad": "v9.34 sıfır pozlama 'değer yok' sayılıyor (nötr ayar uygulanmaz)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "kamera",
+  "bul": "  if(!yol || deger===undefined || deger===null) return null;",
+  "koy": "  if(!yol || !deger) return null;"
+ },
+ {
+  "ad": "v9.34 Mac'te pozlama sürgüsü yetenek olmadan da çiziliyor",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "mac",
+  "bul": "    $('#macPozRow').style.display = pozVar ? 'flex' : 'none';",
+  "koy": "    $('#macPozRow').style.display = 'flex';"
+ },
+ {
+  "ad": "v9.34 Mac'te kullanıcı istemeden kamera manual kipe alınıyor",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "mac",
+  "bul": "      if(state.pozElle) macPozUygula();",
+  "koy": "      macPozUygula();"
+ },
+ {
+  "ad": "v9.34 Mac'te kilit anahtarı kameraya hiç ulaşmıyor",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "mac",
+  "bul": "    if(k==='camLock'){ macKilitUygula(); }",
+  "koy": "    /* kilit uygulaması kaldırıldı */"
+ },
+ {
+  "ad": "v9.34 Mac'te desteksizken fener 'açık' kalıyor",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "mac",
+  "bul": "    if(!fener) state.torch=false; else macFenerUygula();",
+  "koy": "    if(fener) macFenerUygula();"
+ },
+ {
+  "ad": "v9.34 telefon kendi kip listesine dönüyor (kural iki yerde yaşar)",
+  "test": "195-elle-kamera-masaustu.js",
+  "kaynak": "telefon",
+  "bul": "  const kipler = kamKilitKipleri(caps);",
+  "koy": "  const kipler = {odak:((caps&&caps.focusMode)||[]).find(k=>k==='manual'||k==='single-shot'), poz:undefined, var:true};"
  }
 ]

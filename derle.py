@@ -115,6 +115,11 @@ PLAN = [
     # kullanıcının "İş" etiketi orada ikinci bir kutuya düşerse etiketleri
     # sessizce ikiye bölünür ve sebebini hiçbir ekranda göremez.
     ('etiket.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Elle kamera denetimlerinin KARARLARI (2026-08-19). Hangi cihazda hangi
+    # denetim gösterilir sorusu; yanlış cevap her seferinde aynı kusuru üretiyor
+    # (ön koşulu olan ayar = sessiz ölü özellik). Telefonda vardı, Mac'te hiç
+    # yoktu; kopyalamak yerine karar tek kaynağa alındı.
+    ('kamera.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Mac mesajları YALNIZ Mac'te: telefonunkini gömmek telefona özgü
     # metin sızdırmıştı (tests/52). Kabuk kullandığını gömer.
     ('mac-mesajlar.js', ['mac/Teleprompter Pro.html']),

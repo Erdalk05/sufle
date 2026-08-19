@@ -1,7 +1,13 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,cekirdekOku}=require('./kaynak');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
+/* v9.34: yetenek KARARLARI cekirdek/kamera.js'e taşındı (Mac de aynı kuralı
+   kullanıyor). Kabuk artık kararı SORUYOR; bu test de kararın kendisini
+   çekirdekten koşturuyor — kabuktaki kısıt nesnesini aramak, kuralın
+   taşındığı gün ürün doğruyken kırılırdı. */
+const KAM=cekirdekOku('kamera.js','SUFLE_KAMERA');
+const kam=(()=>new Function(KAM+'\nreturn {kamPozKisiti,kamWbKisiti,kamPozYolu,kamWbAralik};')())();
 
 /* ELLE POZLAMA VE BEYAZ AYARI (2026-08-17).
 
@@ -23,19 +29,22 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* ---------- YETENEĞE BAĞLI GÖSTERİM ---------- */
 {
-  const m=kod.match(/const sapma = caps && caps\.exposureCompensation;[\s\S]*?\} else \{ st\.poz=undefined; st\.pozElle=false; \}/);
+  const m=kod.match(/const pozBilgi = kamPozYolu\(caps\);[\s\S]*?\} else \{ st\.poz=undefined; st\.pozElle=false; \}/);
   ok('pozlama kurulumu çıkarılabildi', !!m);
   if(m){
+    /* v9.34: iki yolun SEÇİMİ çekirdekte. Kabuk kararı soruyor, kuralı
+       kendisi yazmıyor — Mac de aynı kuralı kullanıyor. */
+    ok('yol çekirdekten soruluyor', /kamPozYolu\(caps\)/.test(m[0]));
     ok('iki yol da aranıyor (sapma ve süre)',
-       /caps\.exposureCompensation/.test(m[0]) && /exposureMode[\s\S]*?includes\('manual'\)/.test(m[0]) &&
-       /caps\.exposureTime/.test(m[0]));
+       kam.kamPozYolu({exposureCompensation:{min:-2,max:2}}).yol==='sapma' &&
+       kam.kamPozYolu({exposureMode:['manual'],exposureTime:{min:1,max:9}}).yol==='sure');
     ok('desteklenmiyorsa satır gizleniyor', /\$\('#pozRow'\)\.style\.display = pozYet \? 'flex' : 'none'/.test(m[0]));
     ok('desteklenmiyorsa durum da sıfırlanıyor (ölü ayar kalmasın)',
        /else \{ st\.poz=undefined; st\.pozElle=false; \}/.test(m[0]));
     ok('sınırlar cihazdan okunuyor (sabit değer değil)',
-       /yet\.min/.test(m[0]) && /yet\.max/.test(m[0]));
+       kam.kamPozYolu({exposureCompensation:{min:-7,max:7}}).min===-7);
   }
-  const w=kod.match(/const wbKip = [\s\S]*?\} else \{ st\.wb=0; \}/);
+  const w=kod.match(/const wbBilgi = kamWbAralik\(caps\);[\s\S]*?\} else \{ st\.wb=0; \}/);
   ok('beyaz ayarı kurulumu çıkarılabildi', !!w);
   if(w){
     /* Kip VE aralık BİRLİKTE gerekiyor: yalnız biri varsa uygulanamaz. */
@@ -43,9 +52,10 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
        İlk yazımda iddia yalnız iki ifadenin VARLIĞINI arıyordu; kasıtlı
        bozma "ikisini VE ile bağla" kuralını söküp geçti — gevşek desen. */
     ok('beyaz ayarı hem kip hem aralık istiyor',
-       /whiteBalanceMode\) \|\| \[\]\)\.includes\('manual'\)/.test(w[0]) && /caps\.colorTemperature/.test(w[0]));
+       kam.kamWbAralik({whiteBalanceMode:['manual'],colorTemperature:{min:3000,max:7000}}).var===true);
     ok('kip ve aralık VE ile bağlı (biri yetmez)',
-       /const wbVar = !!\(wbKip && wbYet\);/.test(kod));
+       kam.kamWbAralik({colorTemperature:{min:3000,max:7000}}).var===false &&
+       kam.kamWbAralik({whiteBalanceMode:['manual']}).var===false);
     ok('desteklenmiyorsa beyaz ayarı satırı gizleniyor',
        /\$\('#wbRow'\)\.style\.display = wbVar \? 'flex' : 'none'/.test(w[0]));
     ok('desteklenmiyorsa beyaz ayarı otomatiğe dönüyor', /else \{ st\.wb=0; \}/.test(w[0]));
@@ -57,10 +67,16 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
   const p=kod.match(/function applyPoz\(\)\{[\s\S]*?\n\}/);
   ok('applyPoz çıkarılabildi', !!p);
   if(p){
+    ok('kısıt çekirdekten üretiliyor (kural iki yerde yaşamıyor)',
+       /kamPozKisiti\(pozYolu, st\.poz\)/.test(p[0]));
+    /* Kuralın KENDİSİ burada koşturuluyor: kip ile değer birlikte gitmezse
+       kamera otomatik kalır ve sürgü sessizce hiçbir şey yapmaz. */
     ok('sapma yolunda kip continuous, değer sapma',
-       /exposureMode:'continuous', exposureCompensation:st\.poz/.test(p[0]));
+       kam.kamPozKisiti('sapma',2).exposureMode==='continuous' &&
+       kam.kamPozKisiti('sapma',2).exposureCompensation===2);
     ok('süre yolunda kip manual, değer süre',
-       /exposureMode:'manual', exposureTime:st\.poz/.test(p[0]));
+       kam.kamPozKisiti('sure',300).exposureMode==='manual' &&
+       kam.kamPozKisiti('sure',300).exposureTime===300);
     /* Cihaz reddederse ayar SESSİZCE kalmamalı: sürgü kaldırılıyor ve
        sebebi söyleniyor — yoksa "çekiyorum ama değişmiyor" olurdu. */
     ok('cihaz reddederse ayar kaldırılıyor ve söyleniyor',
@@ -70,9 +86,11 @@ const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
   const w=kod.match(/function applyWb\(\)\{[\s\S]*?\n\}/);
   ok('applyWb çıkarılabildi', !!w);
   if(w){
+    ok('beyaz ayarı kısıtı çekirdekten üretiliyor', /kamWbKisiti\(st\.wb\)/.test(w[0]));
     ok('elle değer verilince kip de manual oluyor',
-       /whiteBalanceMode:'manual', colorTemperature:st\.wb/.test(w[0]));
-    ok('sıfır değer otomatiğe dönüyor', /whiteBalanceMode:'continuous'/.test(w[0]));
+       kam.kamWbKisiti(5000).whiteBalanceMode==='manual' &&
+       kam.kamWbKisiti(5000).colorTemperature===5000);
+    ok('sıfır değer otomatiğe dönüyor', kam.kamWbKisiti(0).whiteBalanceMode==='continuous');
     ok('cihaz reddederse söyleniyor', /toast\(m\('wbNo'\)\)/.test(w[0]));
   }
 }

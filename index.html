@@ -4311,15 +4311,17 @@ let kilitOdakKipi, kilitPozKipi;
    sessizce hiç uygulanmıyordu. */
 function applyCamLock(kilitOdak,kilitPoz){
   if(!vTrack||!vTrack.applyConstraints) return;
-  const ileri={};
-  if(kilitOdak) ileri.focusMode = st.camLock ? kilitOdak : 'continuous';
-  if(kilitPoz)  ileri.exposureMode = st.camLock ? kilitPoz : 'continuous';
-  if(!Object.keys(ileri).length) return;
+  const ileri=kamKilitKisiti({odak:kilitOdak, poz:kilitPoz}, st.camLock);
+  if(!ileri) return;
   vTrack.applyConstraints({advanced:[ileri]})
     .catch(e=>{ logErr('camLock',e); if(st.camLock){ st.camLock=false; save(); apply(); toast(m('lockNo')); } });
 }
 function setupCaps(){
-  let caps={}; try{ caps=vTrack&&vTrack.getCapabilities?vTrack.getCapabilities():{}; }catch(e){}
+  /* `getCapabilities` bazı sürücülerde atıyor; yutmuyoruz, kaydediyoruz —
+     yetenek okunamadıysa hiçbir denetim çizilmez ve sebebi günlükte durur.
+     (Mac'te bu yol zaten kayıtlıydı; parite kapısı telefondaki sessiz
+     yutmayı bu yüzden yakaladı.) */
+  let caps={}; try{ caps=vTrack&&vTrack.getCapabilities?vTrack.getCapabilities():{}; }catch(e){ logErr('caps',e); }
   const hasZoom = caps && caps.zoom;
   $('#zoomRow').style.display=hasZoom?'flex':'none';
   $('#zoom').style.display=hasZoom?'block':'none';
@@ -4344,11 +4346,9 @@ function setupCaps(){
      (ön koşulu olan ayar = ölü ayar): kullanıcı açar, hiçbir şey olmaz.
      'manual' yoksa 'single-shot'/'continuous' dışındaki kilitleyici kip
      aranıyor — iOS ve Android farklı adlar veriyor. */
-  const odakKipleri = (caps && caps.focusMode) || [];
-  const pozKipleri  = (caps && caps.exposureMode) || [];
-  kilitOdakKipi = [...odakKipleri].find(k=>k==='manual'||k==='single-shot');
-  kilitPozKipi  = [...pozKipleri].find(k=>k==='manual');
-  const hasLock = !!(kilitOdakKipi || kilitPozKipi);
+  const kipler = kamKilitKipleri(caps);
+  kilitOdakKipi = kipler.odak; kilitPozKipi = kipler.poz;
+  const hasLock = kipler.var;
   $('#lockRow').style.display=hasLock?'flex':'none';
   $('#lockHint').classList.toggle('hidden',!hasLock);
   /* Desteklenmiyorsa durumu da temizle: cihaz değiştiren kullanıcıda
@@ -4370,24 +4370,16 @@ function setupCaps(){
          (daha yaygın; Chrome'un sahte kamerası da bunu veriyor)
      Yalnız birine bakmak, desteği olan cihazların yarısını dışarıda
      bırakırdı. Kullanıcıya gösterilen şey ikisinde de aynı: "parlaklık". */
-  const sapma = caps && caps.exposureCompensation;
-  const elleKip = ((caps && caps.exposureMode) || []).includes('manual');
-  const sure = caps && caps.exposureTime;
-  pozYolu = sapma ? 'sapma' : (elleKip && sure ? 'sure' : null);
+  const pozBilgi = kamPozYolu(caps);
+  pozYolu = pozBilgi.yol;
   const pozYet = !!pozYolu;
   $('#pozRow').style.display = pozYet ? 'flex' : 'none';
   $('#poz').style.display   = pozYet ? 'block' : 'none';
   $('#pozHint').classList.toggle('hidden', !pozYet);
   if(pozYet){
-    const yet = pozYolu==='sapma' ? sapma : sure;
-    const mn=(yet.min!==undefined?yet.min:-3), mx=(yet.max!==undefined?yet.max:3);
-    const ad=(yet.step||((mx-mn)/12)||1);
-    $('#poz').min=mn; $('#poz').max=mx; $('#poz').step=ad;
-    /* Varsayılan: sapmada 0 (nötr), sürede aralığın ortası — cihazın kendi
-       otomatik değeri bilinmiyor, orta değer en az sürprizli başlangıç. */
-    const varsayilan = pozYolu==='sapma' ? Math.min(Math.max(0,mn),mx)
-                                         : Math.round((mn+mx)/2);
-    if(st.poz===undefined || st.poz<mn || st.poz>mx) st.poz=varsayilan;
+    const mn=pozBilgi.min, mx=pozBilgi.max;
+    $('#poz').min=mn; $('#poz').max=mx; $('#poz').step=pozBilgi.adim;
+    if(st.poz===undefined || st.poz<mn || st.poz>mx) st.poz=pozBilgi.varsayilan;
     $('#poz').value=st.poz; yazPoz();
     /* KULLANICI İSTEMEDEN KAMERAYA DOKUNULMAZ (kapı yakaladı, 2026-08-17).
        İlk hâli açılışta applyPoz() çağırıyordu: kullanıcı sürgüye hiç
@@ -4403,15 +4395,14 @@ function setupCaps(){
   /* BEYAZ AYARI. Kip 'manual'a alınmadan renk sıcaklığı uygulanmıyor —
      ikisi BİRLİKTE gerekiyor; yalnız birini istemek sessizce hiçbir şey
      yapmaz (bu deponun "yarım kalmış düzeltme" sınıfı). */
-  const wbKip = ((caps && caps.whiteBalanceMode) || []).includes('manual');
-  const wbYet = caps && caps.colorTemperature;
-  const wbVar = !!(wbKip && wbYet);
+  const wbBilgi = kamWbAralik(caps);
+  const wbVar = wbBilgi.var;
   $('#wbRow').style.display = wbVar ? 'flex' : 'none';
   $('#wb').style.display   = wbVar ? 'block' : 'none';
   $('#wbHint').classList.toggle('hidden', !wbVar);
   if(wbVar){
-    const mn=wbYet.min||2800, mx=wbYet.max||7500;
-    $('#wb').min=mn; $('#wb').max=mx; $('#wb').step=wbYet.step||100;
+    const mn=wbBilgi.min, mx=wbBilgi.max;
+    $('#wb').min=mn; $('#wb').max=mx; $('#wb').step=wbBilgi.adim;
     if(st.wb && (st.wb<mn || st.wb>mx)) st.wb=0;
     $('#wb').value=st.wb||Math.round((mn+mx)/2);
     yazWb();
@@ -4426,9 +4417,8 @@ function setupCaps(){
 let pozYolu=null;
 function applyPoz(){
   if(!vTrack || !vTrack.applyConstraints || st.poz===undefined || !pozYolu) return;
-  const ileri = pozYolu==='sapma'
-    ? {exposureMode:'continuous', exposureCompensation:st.poz}
-    : {exposureMode:'manual', exposureTime:st.poz};
+  const ileri = kamPozKisiti(pozYolu, st.poz);
+  if(!ileri) return;
   vTrack.applyConstraints({advanced:[ileri]})
     .catch(e=>{ logErr('poz',e); toast(m('pozNo')); $('#pozRow').style.display='none';
       $('#poz').style.display='none'; st.poz=undefined; pozYolu=null; save(); });
@@ -4437,16 +4427,12 @@ function applyPoz(){
    Kullanıcıya ikisinde de ANLAŞILIR bir şey yazılmalı. */
 function yazPoz(){
   if(st.poz===undefined){ $('#vPoz').textContent='—'; return; }
-  $('#vPoz').textContent = pozYolu==='sapma'
-    ? (st.poz>0?'+':'')+st.poz
-    : Math.round((st.poz - +$('#poz').min) /
-        Math.max(1,(+$('#poz').max - +$('#poz').min)) * 100) + '%';
+  $('#vPoz').textContent = kamPozYazi(pozYolu, st.poz, +$('#poz').min, +$('#poz').max);
 }
 /* Beyaz ayarı: 0 = otomatik. Elle değer verilmişse kip de manual olmalı. */
 function applyWb(){
   if(!vTrack || !vTrack.applyConstraints) return;
-  const ileri = st.wb ? {whiteBalanceMode:'manual', colorTemperature:st.wb}
-                      : {whiteBalanceMode:'continuous'};
+  const ileri = kamWbKisiti(st.wb);
   vTrack.applyConstraints({advanced:[ileri]})
     .catch(e=>{ logErr('wb',e); toast(m('wbNo')); $('#wbRow').style.display='none';
       $('#wb').style.display='none'; st.wb=0; save(); });
@@ -9631,6 +9617,98 @@ function etiketSeciliGecerli(secili, tablo){
   return (Array.isArray(tablo)?tablo:[]).some(x=>x.anahtar===a) ? secili : '';
 }
 /* ==/CEKIRDEK:etiket.js== */
+/* ==CEKIRDEK:kamera.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/kamera.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* ELLE KAMERA DENETİMLERİNİN KARARLARI — tek kaynak, iki kabuk.
+
+   NEDEN ÇEKİRDEKTE: bu kurallar "hangi cihazda hangi denetim GÖSTERİLİR"
+   sorusunu cevaplıyor ve yanlış cevap her seferinde aynı kusuru üretiyor:
+   **ön koşulu olan ayar = sessiz ölü özellik.** Kullanıcı sürgüyü oynatıyor,
+   kamera hiç değişmiyor, sebebi hiçbir yerde yazmıyor. Kural iki kabukta
+   kopya yaşasaydı biri düzeltilip diğeri unutulurdu; bu depoda o sınıf
+   defalarca çıktı.
+
+   ÖLÇÜLMÜŞ GERÇEK: cihazlar pozlamayı İKİ ayrı yoldan veriyor —
+     · `exposureCompensation` → otomatik pozlamaya ±sapma (bazı Android'ler)
+     · `exposureMode:'manual'` + `exposureTime` → pozlamanın kendisi
+   Yalnız birine bakmak, desteği olan cihazların yarısını dışarıda bırakır.
+   Kullanıcıya gösterilen şey ikisinde de aynı: "parlaklık".
+
+   BEYAZ AYARINDA KİP VE DEĞER BİRLİKTE GİDER: yalnız `colorTemperature`
+   istemek, kip `continuous` kalırken sessizce hiçbir şey yapmaz (deponun
+   "yarım kalmış düzeltme" sınıfı). */
+
+/* Odak/pozlama kilidi hangi kiplerle yapılabilir?
+   'manual' yoksa 'single-shot' da kilitler; iOS ve Android farklı ad veriyor.
+   Hiçbiri yoksa `var:false` → anahtar HİÇ gösterilmemeli. */
+function kamKilitKipleri(caps){
+  const odakK=(caps && caps.focusMode) || [];
+  const pozK =(caps && caps.exposureMode) || [];
+  const odak=[...odakK].find(k=>k==='manual'||k==='single-shot');
+  const poz =[...pozK].find(k=>k==='manual');
+  return {odak, poz, var:!!(odak||poz)};
+}
+
+/* Kilidi kameraya gönderilecek kısıta çevir.
+   YALNIZ DESTEKLENEN ALAN GÖNDERİLİYOR: desteksiz bir alanı istemek bazı
+   tarayıcılarda TÜM kısıtı reddettiriyor ve kilit sessizce hiç uygulanmıyordu. */
+function kamKilitKisiti(kipler, acik){
+  const ileri={};
+  if(kipler && kipler.odak) ileri.focusMode = acik ? kipler.odak : 'continuous';
+  if(kipler && kipler.poz)  ileri.exposureMode = acik ? kipler.poz : 'continuous';
+  return Object.keys(ileri).length ? ileri : null;
+}
+
+/* Pozlama yolu ve sürgü aralığı. `yol:null` → sürgü HİÇ gösterilmemeli. */
+function kamPozYolu(caps){
+  const sapma = caps && caps.exposureCompensation;
+  const elleKip = ((caps && caps.exposureMode) || []).includes('manual');
+  const sure = caps && caps.exposureTime;
+  const yol = sapma ? 'sapma' : (elleKip && sure ? 'sure' : null);
+  if(!yol) return {yol:null};
+  const yet = yol==='sapma' ? sapma : sure;
+  const min=(yet.min!==undefined?yet.min:-3), max=(yet.max!==undefined?yet.max:3);
+  const adim=(yet.step||((max-min)/12)||1);
+  /* Varsayılan: sapmada 0 (nötr), sürede aralığın ortası — cihazın kendi
+     otomatik değeri bilinmiyor, orta değer en az sürprizli başlangıç. */
+  const varsayilan = yol==='sapma' ? Math.min(Math.max(0,min),max)
+                                   : Math.round((min+max)/2);
+  return {yol, min, max, adim, varsayilan};
+}
+
+/* Pozlama kısıtı. Kip ile değer BİRLİKTE gidiyor. */
+function kamPozKisiti(yol, deger){
+  if(!yol || deger===undefined || deger===null) return null;
+  return yol==='sapma' ? {exposureMode:'continuous', exposureCompensation:deger}
+                       : {exposureMode:'manual', exposureTime:deger};
+}
+
+/* Kullanıcıya yazılacak değer. Sapma nötre göre ±, süre ham sayı olduğu için
+   yüzdeye çevriliyor — ham mikrosaniye kimseye bir şey anlatmaz. */
+function kamPozYazi(yol, deger, min, max){
+  if(!yol || deger===undefined || deger===null) return '—';
+  if(yol==='sapma') return (deger>0?'+':'')+deger;
+  const aralik=Math.max(1,(max-min));
+  return Math.round((deger-min)/aralik*100)+'%';
+}
+
+/* Beyaz ayarı aralığı. Kip 'manual' YOKSA `var:false` — sıcaklık tek başına
+   uygulanmaz, o yüzden sürgüyü göstermek ölü ayar olur. */
+function kamWbAralik(caps){
+  const kip = ((caps && caps.whiteBalanceMode) || []).includes('manual');
+  const yet = caps && caps.colorTemperature;
+  if(!(kip && yet)) return {var:false};
+  return {var:true, min:yet.min||2800, max:yet.max||7500, adim:yet.step||100};
+}
+
+/* Beyaz ayarı kısıtı. 0 = otomatik (kullanıcı elle bir değer seçmedi). */
+function kamWbKisiti(deger){
+  return deger ? {whiteBalanceMode:'manual', colorTemperature:deger}
+               : {whiteBalanceMode:'continuous'};
+}
+/* ==/CEKIRDEK:kamera.js== */
 /* ==CEKIRDEK:klip.js== */
 /* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/klip.js
    Değişiklik oraya yazılır, sonra: python3 derle.py
@@ -10481,7 +10559,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
- '9.34':{tr:'🏷 <b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🏷 <b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
+ '9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},
  '9.31':{tr:'<b>Sesle takip: okuduğun yere parmakla dokunarak hizalayabiliyorsun.</b> Uygulama bunu zaten öneriyordu (mikrofon rozeti "okuduğun yeri parmakla göster" diyor) ama karşılığı yoktu: kelimeye dokunmak yalnız akışı açıp kapatıyordu. Artık sesle takip açıkken bir kelimeye dokunduğunda sufle oraya geçiyor, kelime bir an çerçeveleniyor ve takip o noktadan devam ediyor. Sesle takip kapalıyken dokunuş eskisi gibi akışı başlatıp durduruyor.<br><b>Çekim ekranındaki "Kapat" artık yalan söylemiyor.</b> Depo dolduğunda ya da tarayıcı deposu kapalıyken çekim arşive yazılamıyor; düğme buna rağmen "Çekimlerim\'e kaydedildi" diyor ve kapanınca video gidiyordu — kaydettiğini sanarak siliyordun. Artık sebebi söylüyor ve kapatmak için ikinci kez dokunman gerekiyor.',en:'<b>Voice follow: tap the word you are on to realign.</b> The app already suggested this (the mic badge says "tap where you are") but nothing happened: tapping a word only started or stopped the timed scroll. Now, while voice follow is on, tapping a word moves the teleprompter there, outlines it briefly and continues following from that point. With voice follow off, a tap starts and stops the scroll exactly as before.<br><b>The result screen \'Close\' button no longer lies.</b> When storage is full or browser storage is switched off the take cannot be archived, yet the button still said "Saved to My takes" and closing discarded the video — you deleted it believing it was saved. It now states the reason and requires a second tap to close.'},

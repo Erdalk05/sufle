@@ -38,6 +38,39 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🎛 Masaüstünde elle kamera denetimleri (aynı sürümde)
+
+16 Ağustos'un eksik listesi masaüstü için **üç** madde yazıyordu; ölçünce
+üçü de yanlış çıktı. Masaüstünde gerçekten eksik olan **tek** şey buydu:
+`applyConstraints` telefonda 8 iz, Mac'te **0**. Pozlama (parlaklık), beyaz
+ayarı, odak-pozlama kilidi ve fener geldi.
+
+**Kural KOPYALANMADI, çekirdeğe alındı** (`cekirdek/kamera.js`) ve telefonun
+`setupCaps`i de artık aynı fonksiyonları çağırıyor. Kopyalasaydım iki kabuk
+aynı cihazda farklı denetim gösterirdi ve fark ancak kullanıcı ikisini yan
+yana koyunca görünürdü. Hepsi **yeteneğe bağlı**: macOS'ta çoğu web kamerası
+bu alanları vermez ve desteksiz cihazda sürgü göstermek deponun 1 numaralı
+hata sınıfı olurdu.
+
+**Parite kapısı bir gerçek kusur yakaladı:** Mac'te `getCapabilities` hatasını
+kaydederken telefonun aynı yeri **boş `catch` ile yutuyordu** — yani telefonda
+yetenek okunamadığında hiçbir iz kalmıyordu. İki kabuk hizalandı.
+
+**Beş test bu turda düzeltildi ve hepsi aynı sınıftandı — BİÇİM KİLİDİ (F2):**
+`tests/71` çıkarılan kodu koştururken çekirdeği yüklemiyordu ve **ÜRÜN
+DOĞRUYKEN ÇÖKÜYORDU** (25 iddiadan 2'ye düştü; çöken test iddia basmaz) ·
+`tests/126` ve `tests/168` kabuktaki kısıt nesnesinin birebir metnini
+arıyordu, oysa kural çekirdeğe taşındı — ikisi de artık **kuralın kendisini**
+çekirdekten koşturuyor · `tests/33` `fillEditor`ün tek satır olmasını şart
+koşuyordu · `tests/43` arama bloğunun eski şeklini arıyordu.
+Ders yine aynı: *desen bozulunca kullanıcı için ne değişir?* Cevap "hiçbir
+şey" ise desen yanlış yere bakıyor.
+
+Yeni test dosyası **195** (61 iddia) · **13 yeni kasıtlı bozma** ·
+`tests/143` bir gerçek ihlal yakaladı (sürüm notunda `<br>` sonrası
+emoji-önekli etiket) ve not kurala uyduruldu, kural gevşetilmedi.
+
+
 Erdal "eksikleri bul ve kapat" dedi ve çıktı; `git push` yok, yayın kararı onda.
 Depoda şu an **iki** yayınlanmamış sürüm var: v9.33 ve v9.34.
 
@@ -1989,7 +2022,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7367 test** (gece başında 732) · yeni test dosyası: 39–194
+- **7428 test** (gece başında 732) · yeni test dosyası: 39–195
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

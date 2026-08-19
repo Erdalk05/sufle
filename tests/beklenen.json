@@ -124,7 +124,7 @@
  "123-tasarim-yuzeyi.js": 83,
  "124-odak-modu.js": 14,
  "125-cihaz-disi-yedek.js": 24,
- "126-kamera-secimi.js": 31,
+ "126-kamera-secimi.js": 33,
  "127-video-budama.js": 20,
  "128-docx-ice-aktarma.js": 24,
  "129-yayin-kipi.js": 19,
@@ -159,14 +159,14 @@
  "158-yazi-tipi-erisilebilirlik.js": 66,
  "159-kumanda-yollari.js": 67,
  "160-klip-kaynak-korunuyor.js": 41,
- "161-cekirdek-zinciri.js": 140,
+ "161-cekirdek-zinciri.js": 148,
  "162-senaryo-turetilmis-bilgi.js": 58,
  "163-deneme-kilavuzu.js": 46,
  "164-magaza-kabugu.js": 40,
  "165-masaustu-uctan-uca.js": 13,
  "166-ayar-kartlari.js": 77,
  "167-pdf-okuma.js": 29,
- "168-elle-pozlama.js": 37,
+ "168-elle-pozlama.js": 40,
  "169-giris-ekrani.js": 21,
  "170-cekim-silme-onayi.js": 35,
  "171-ayar-ikon-bolum.js": 53,
@@ -192,5 +192,6 @@
  "191-ios-css-onek.js": 10,
  "192-guzellik-ve-hizli-erisim.js": 38,
  "193-senaryo-etiket.js": 51,
- "194-bos-dosya-nobetcisi.js": 15
+ "194-bos-dosya-nobetcisi.js": 15,
+ "195-elle-kamera-masaustu.js": 72
 }
