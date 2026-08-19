@@ -5185,5 +5185,33 @@
   "kaynak": "denetim",
   "bul": "        if any(\"{\" in p and \"}\" in p for p in parcalar):\n            continue",
   "koy": "        pass"
+ },
+ {
+  "ad": "v9.40 matris var olmayan bir testi kanıt gösteriyor",
+  "test": "199-guvenilirlik-matrisi.js",
+  "kaynak": "matris",
+  "bul": "`37-kamera-kurtarma.js`, `52-izin-kurtarma-yolu.js`",
+  "koy": "`37-kamera-kurtarma.js`, `52-izin-kurtarma-yolux.js`"
+ },
+ {
+  "ad": "v9.40 matris var olmayan bir mesajı 'kullanıcı görür' diyor",
+  "test": "199-guvenilirlik-matrisi.js",
+  "kaynak": "matris",
+  "bul": "`msg:camDenied`",
+  "koy": "`msg:camDeniedYok`"
+ },
+ {
+  "ad": "v9.40 ölçülmemiş satırlar matristen siliniyor (hepsi yeşil görünür)",
+  "test": "199-guvenilirlik-matrisi.js",
+  "kaynak": "matris",
+  "bul": "| B1 | 5 ve 15 dakikalık gerçek iPhone çekimi",
+  "koy": "| X1 | (silindi)"
+ },
+ {
+  "ad": "v9.40 matris sürümü bayatlıyor",
+  "test": "199-guvenilirlik-matrisi.js",
+  "kaynak": "matris",
+  "bul": "sürüm 9.39",
+  "koy": "sürüm 9.1"
  }
 ]

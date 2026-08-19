@@ -2,6 +2,35 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+## 🧾 20 Ağustos gecesi — ÇEKİM GÜVENİLİRLİĞİ MATRİSİ (yol haritasının kalan P0'ı)
+
+Rakip yol haritasının ikinci P0'ı *"izin, depolama, arka plan, Bluetooth
+kopması ve uzun çekim senaryoları KAYITLI"* diyordu. Kayıt tutuldu:
+`GUVENILIRLIK_MATRISI.md` — **her satır koddan ölçüldü**: hangi olay
+yakalanıyor, kullanıcıya ne söyleniyor, hangi test kilitliyor.
+
+**Belge değil, denetlenen kayıt.** `tests/199` matrisin kendisini ölçüyor:
+adı geçen her test dosyası var mı · "kullanıcı şunu görür" denen her mesaj
+anahtarı gerçekten tanımlı mı · sürüm güncel mi · ve **"AÇIK" bölümü
+korunuyor mu**. Sonuncusu bilerek: bir güvenilirlik matrisinin en tehlikeli
+hâli, ölçülmemiş satırların silinip her şey yeşilmiş gibi görünmesidir.
+
+**Matris yazarken iki hatamı kendi testi yakaladı:** var olmayan bir test
+dosyasını kanıt göstermişim (`39-kayitta-kamera-degisimi.js` — doğrusu
+`-degistirme`), ve ilk desen API adlarını (`getUserMedia`, `NotAllowedError`)
+mesaj anahtarı sanıp yalancı kırmızı verdi. Anahtarlar artık belgede `msg:`
+önekiyle işaretli — hem test kesinleşti hem belge okunurken neyin kullanıcı
+metni olduğu ayrıldı.
+
+**Kasıtlı bozma turu da iki kez beni düzeltti:** silinen bir açık satırı
+yalnız SAYIYA bakan iddia yakalamıyordu (P0 satırı artık adıyla aranıyor) ve
+bozulmuş dosya adındaki büyük harf, desenimin dışında kaldığı için tarama
+onu hiç görmüyordu.
+
+**Açık kalan beş satır** (hepsi gerçek cihaz gerektiriyor, sebebi yazılı):
+5/15 dk iPhone çekimi · gelen arama/kulaklık değişimi · kayıt sürerken arka
+plan · Android PWA çevrimdışı açılış · Windows yerel sunucu.
+
 ## 🟢 20 Ağustos gecesi — v9.39 YAYINLANDI ve canlıdan doğrulandı (`sufle-v111`) — TAŞIMA BİTTİ: 172 → 4
 
 **Canlı doğrulama:** md5 birebir (`5e3213a5…` / `1ac85e4a…`) · `canli.py` üç
@@ -2394,7 +2423,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7540 test** (gece başında 732) · yeni test dosyası: 39–198
+- **7540 test** (gece başında 732) · yeni test dosyası: 39–199
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

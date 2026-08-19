@@ -119,6 +119,7 @@ KAYNAK = {
     # "rapor gerçekte ne olduysa onu söylüyor mu" diye ölçüyor ve bu iddianın
     # kendisi kanıtlanmalı. Kanıtsız kapı, kapı değildir.
     'rapor': (os.path.join(REPO, 'SABAH_RAPORU.md'), 'SUFLE_RAPOR'),
+    'matris': (os.path.join(REPO, 'GUVENILIRLIK_MATRISI.md'), 'SUFLE_MATRIS'),
     # Vitrin sayfası da: kullanıcının uygulamayı açmadan ÖNCE okuduğu
     # sözler burada; abartma engeli ancak abartarak kanıtlanır.
     'vitrin': (os.path.join(REPO, 'tanitim.html'), 'SUFLE_VITRIN'),
