@@ -139,9 +139,13 @@ ok('kalan yer üç seviyede bildiriliyor',
 /* Desen SÜRÜM NOTUNA takılmasın: aynı ifade v9.5 notunda da geçiyor ve ilk
    yazışımda kasıtlı bozma oradan geçip kaçtı. Canlı dizeyi, hesabın yanında
    ara — kullanıcı bu satırı hazırlık kontrolünde görüyor. */
+/* v9.34: dize sözlüğe taşındı (`rcYer`, {n} yer tutucusuyla). Ölçüt aynı
+   kaldı: kullanıcıya MEGABAYT değil DAKİKA söyleniyor mu — ve sayı gerçekten
+   dakikaya çevrilip yerine oturuyor mu. */
 ok('uyarı MB değil DAKİKA söylüyor (canlı dize)',
-   /'≈'\+Math\.floor\(kdk\)\+' dk çekim yeri'/.test(kod) &&
-   /'≈'\+Math\.floor\(kdk\)\+' min of recording'/.test(kod));
+   /rcYer:'≈\{n\} dk çekim yeri'/.test(tel) &&
+   /rcYer:'≈\{n\} min of recording'/.test(tel) &&
+   /yz\(t\('rcYer'\),\{n:Math\.floor\(kdk\)\}\)/.test(kod));
 ok('uyarı ne yapılacağını da söylüyor', /arşivden çekim sil/.test(tel));
 ok('kota okunamıyorsa hiç konuşulmuyor', /if\(kdk!=null\)\{/.test(kod));
 

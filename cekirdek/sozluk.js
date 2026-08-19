@@ -157,6 +157,29 @@ const I18N={
      birden kör noktası — i18n kapsamı, çeviri kaçağı taraması ve arayüz
      kontrast denetimi hiçbiri oraya bakmıyor — ve üçüncü arayüz dilinin
      önündeki asıl engel de bu. Sayılar `{}` yer tutucularıyla giriyor. */
+  /* HAZIRLIK KONTROLÜ CÜMLELERİ. 2026-08-19'da `readyChecks` içinden buraya
+     taşındı — orada `L==='tr'?…:…` ile yazılıyorlardı, yani sözlüğün
+     dışındaydılar (bkz. tests/197). Sayılar `{}` yer tutucularıyla giriyor ve
+     yer tutucular İKİ DİLDE aynı: biri `{s}` diğeri `{time}` derse sayı bir
+     dilde süslü parantez olarak görünür. */
+  rcIosSes:'Bu tarayıcı ses kaydetmiyor',rcIosSesD:'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç',
+  rcKamKapali:'Kamera kapalı',rcKamKapaliD:'Başlangıç ekranından kamerayı aç',
+  rcKamAcik:'Kamera açık',
+  rcMikYok:'Mikrofon yok',rcMikYokD:'Video sessiz kaydedilecek — izinleri kontrol et',
+  rcMikHazir:'Mikrofon hazır',rcMikHazirD:'Ayarlar → Kamera\'da seviyeyi görebilirsin',
+  rcMetinBos:'Metin boş',rcMetinBosD:'Senaryolar sayfasından metnini yapıştır',
+  rcSinirAsim:'Metin sınırı aşıyor',rcSinirAsimD:'~{s} / sınır {l} — yaklaşık {k} kelime fazla',
+  rcSureUygun:'Metin ve süre uygun',rcSureUygunD:'{w} kelime · ~{s}',rcSinirEk:' / sınır {l}',
+  rcKompYavas:'Kompozit yavaş: {f} fps',rcKompYavasD:'Çözünürlüğü 720p yap ya da kompoziti kapat — takılmalı video kaydedebilirsin',
+  rcKompAkici:'Kompozit akıcı: {f} fps',
+  rcGozZayif:'Göz teması zayıf',rcGozZayifD:'Bakış sapması ≈{a}° — okuma çizgisini yukarı al ya da geri çekil',
+  rcGozIyi:'Göz teması iyi',
+  rcKomut:'Metin sesli komut tetikleyecek',rcKomutD:'“{k}” okununca komut çalışır — sesli komut açıkken çekimi durdurabilir. Sesli komutu kapat ya da cümleyi değiştir.',
+  rcYer:'≈{n} dk çekim yeri',
+  rcDepoDolu:'Depoda yer kalmadı',rcDepoDoluD:'{s} — arşivden çekim sil, yoksa bu çekim kaydedilemez',
+  rcDepoAz:'Depo yer azalıyor',rcDepoAzD:'{s} — uzun çekim yapacaksan önce arşivi boşalt',
+  rcDepoVar:'Depoda yer var',
+  rcBastaDegil:'Metin baştan başlamıyor',rcBastaDegilD:'Başa sarmak için ⟲ (Home) — ya da kaldığın yerden devam et',
   isikSiyah:'Kamera siyah kare veriyor',
   isikSiyahD:'Bu bir ışık sorunu değil — görüntü hiç gelmiyor. Mercek kapağını/parmağını kontrol et; uygulamayı arka plandan yeni getirdiysen birkaç saniye bekle ya da kamerayı kapatıp aç.',
   isikKaranlik:'Yüzün karanlık',isikKaranlikD:'Işığı yüzünün önüne al; pencereye dönük otur. Ortalama parlaklık {y}/255',
@@ -341,6 +364,24 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  rcIosSes:'This browser records no audio',rcIosSesD:'On iPhone only Safari writes audio — open it in Safari',
+  rcKamKapali:'Camera off',rcKamKapaliD:'Open the camera from the start screen',
+  rcKamAcik:'Camera on',
+  rcMikYok:'No microphone',rcMikYokD:'The video will be silent — check permissions',
+  rcMikHazir:'Microphone ready',rcMikHazirD:'See the level in Settings → Camera',
+  rcMetinBos:'Script is empty',rcMetinBosD:'Paste your script from the Scripts page',
+  rcSinirAsim:'Script exceeds the limit',rcSinirAsimD:'~{s} / limit {l} — about {k} words over',
+  rcSureUygun:'Script and duration fine',rcSureUygunD:'{w} words · ~{s}',rcSinirEk:' / limit {l}',
+  rcKompYavas:'Composite is slow: {f} fps',rcKompYavasD:'Drop to 720p or turn composite off',
+  rcKompAkici:'Composite smooth: {f} fps',
+  rcGozZayif:'Weak eye contact',rcGozZayifD:'≈{a}° — raise the reading line or move back',
+  rcGozIyi:'Eye contact good',
+  rcKomut:'The script will trigger a voice command',rcKomutD:'Reading “{k}” runs a command and can stop the take while voice commands are on. Turn them off or reword.',
+  rcYer:'≈{n} min of recording',
+  rcDepoDolu:'Storage is full',rcDepoDoluD:'{s} — delete takes from the archive or this one cannot be saved',
+  rcDepoAz:'Storage is running low',rcDepoAzD:'{s} — clear the archive before a long take',
+  rcDepoVar:'Storage is fine',
+  rcBastaDegil:'Script is not at the start',rcBastaDegilD:'Press Home to rewind, or continue where you left off',
   isikSiyah:'The camera is sending a black frame',
   isikSiyahD:'This is not a lighting problem — no image is arriving. Check the lens cover or your finger; if you just returned from the background, wait a moment or reopen the camera.',
   isikKaranlik:'Your face is dark',isikKaranlikD:'Move the light in front of you. Center brightness {y}/255',

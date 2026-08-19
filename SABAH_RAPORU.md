@@ -38,6 +38,30 @@ iCloud "Mac depolamasını iyileştir" kapatılmalı ya da depolar `~/Desktop` /
 
 ## 🔴 19 Ağustos — **v9.34 hazır · henüz yayınlanmadı** — SENARYO ETİKETLERİ
 
+### 🌍 İkinci grup taşındı: hazırlık kontrolü (telefon 160 → 137)
+
+`readyChecks`in **23 cümlesi** sözlüğe alındı — sözlük dışı metnin tek
+fonksiyondaki en büyük yığınıydı. Sayılar `{s}` `{l}` `{k}` `{w}` `{f}` `{a}`
+`{n}` yer tutucularıyla giriyor ve yer tutucular iki dilde aynı.
+
+**Yan kazanç — İngilizce eksik bilgi veriyordu:** süre sınırı aşıldığında
+Türkçe *"~1:20 / sınır 1:00 — yaklaşık 12 kelime fazla"* derken İngilizce
+yalnız *"~1:20 / limit 1:00"* diyordu; kaç kelime fazla olduğu söylenmiyordu.
+İki dil aynı anahtarı paylaşınca fark görünür oldu ve İngilizce tamamlandı.
+**Sözlük dışı metnin gizli bedeli tam olarak bu:** iki dil ayrı ayrı yazılınca
+biri sessizce geride kalıyor ve hiçbir kapı bunu göremiyor.
+
+**Ayrıca `tests/143` bir gerçek ihlal yakaladı:** taşınan cümlelerden ikisi
+emoji taşıyordu (*"📝 Senaryolar'dan yapıştır"*, *"🎤 açıkken"*). Kural
+gevşetilmedi, metinler kurala uyduruldu — üstelik biri **yanlıştı**: ekrandaki
+Senaryolar düğmesinde 📝 diye bir simge yok, SVG ikon var.
+
+**Beş test daha güncellendi** (41, 49, 97, 102, 143) ve hepsi aynı sınıftandı:
+cümlenin BİREBİR metnini arıyorlardı. Yenileri hem anahtarın sözlükte iki
+dilde durduğunu hem de **sayının gerçekten yerine oturduğunu** ölçüyor —
+yani daha fazlasını. Bu turda **CLAUDE.md'de yazılı tuzağa yine düştüm:**
+şablon dizesinin içine koyduğum yorumdaki ters tırnak tezgâhı ortadan kesti.
+
 ### 🌍 ÜÇÜNCÜ ARAYÜZ DİLİNİN ÖNÜNDEKİ ASIL ENGEL ÖLÇÜLDÜ — ve engel çeviri değil
 
 Eksik listesindeki "arayüz dili yalnız TR/EN" maddesine el atmadan önce
@@ -2084,7 +2108,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7469 test** (gece başında 732) · yeni test dosyası: 39–197
+- **7539 test** (gece başında 732) · yeni test dosyası: 39–197
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

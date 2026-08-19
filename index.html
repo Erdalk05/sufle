@@ -2348,6 +2348,29 @@ const I18N={
      birden kör noktası — i18n kapsamı, çeviri kaçağı taraması ve arayüz
      kontrast denetimi hiçbiri oraya bakmıyor — ve üçüncü arayüz dilinin
      önündeki asıl engel de bu. Sayılar `{}` yer tutucularıyla giriyor. */
+  /* HAZIRLIK KONTROLÜ CÜMLELERİ. 2026-08-19'da `readyChecks` içinden buraya
+     taşındı — orada `L==='tr'?…:…` ile yazılıyorlardı, yani sözlüğün
+     dışındaydılar (bkz. tests/197). Sayılar `{}` yer tutucularıyla giriyor ve
+     yer tutucular İKİ DİLDE aynı: biri `{s}` diğeri `{time}` derse sayı bir
+     dilde süslü parantez olarak görünür. */
+  rcIosSes:'Bu tarayıcı ses kaydetmiyor',rcIosSesD:'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç',
+  rcKamKapali:'Kamera kapalı',rcKamKapaliD:'Başlangıç ekranından kamerayı aç',
+  rcKamAcik:'Kamera açık',
+  rcMikYok:'Mikrofon yok',rcMikYokD:'Video sessiz kaydedilecek — izinleri kontrol et',
+  rcMikHazir:'Mikrofon hazır',rcMikHazirD:'Ayarlar → Kamera\'da seviyeyi görebilirsin',
+  rcMetinBos:'Metin boş',rcMetinBosD:'Senaryolar sayfasından metnini yapıştır',
+  rcSinirAsim:'Metin sınırı aşıyor',rcSinirAsimD:'~{s} / sınır {l} — yaklaşık {k} kelime fazla',
+  rcSureUygun:'Metin ve süre uygun',rcSureUygunD:'{w} kelime · ~{s}',rcSinirEk:' / sınır {l}',
+  rcKompYavas:'Kompozit yavaş: {f} fps',rcKompYavasD:'Çözünürlüğü 720p yap ya da kompoziti kapat — takılmalı video kaydedebilirsin',
+  rcKompAkici:'Kompozit akıcı: {f} fps',
+  rcGozZayif:'Göz teması zayıf',rcGozZayifD:'Bakış sapması ≈{a}° — okuma çizgisini yukarı al ya da geri çekil',
+  rcGozIyi:'Göz teması iyi',
+  rcKomut:'Metin sesli komut tetikleyecek',rcKomutD:'“{k}” okununca komut çalışır — sesli komut açıkken çekimi durdurabilir. Sesli komutu kapat ya da cümleyi değiştir.',
+  rcYer:'≈{n} dk çekim yeri',
+  rcDepoDolu:'Depoda yer kalmadı',rcDepoDoluD:'{s} — arşivden çekim sil, yoksa bu çekim kaydedilemez',
+  rcDepoAz:'Depo yer azalıyor',rcDepoAzD:'{s} — uzun çekim yapacaksan önce arşivi boşalt',
+  rcDepoVar:'Depoda yer var',
+  rcBastaDegil:'Metin baştan başlamıyor',rcBastaDegilD:'Başa sarmak için ⟲ (Home) — ya da kaldığın yerden devam et',
   isikSiyah:'Kamera siyah kare veriyor',
   isikSiyahD:'Bu bir ışık sorunu değil — görüntü hiç gelmiyor. Mercek kapağını/parmağını kontrol et; uygulamayı arka plandan yeni getirdiysen birkaç saniye bekle ya da kamerayı kapatıp aç.',
   isikKaranlik:'Yüzün karanlık',isikKaranlikD:'Işığı yüzünün önüne al; pencereye dönük otur. Ortalama parlaklık {y}/255',
@@ -2532,6 +2555,24 @@ const I18N={
   /* Odak ve pozlama kilidi (D.2) */
   tgLock:'Lock focus and exposure',lockHint:'The camera stops hunting mid-take: no focus breathing when you move, no brightness jumps when the light shifts. Set your frame first, then lock.',
   /* .docx içe aktarma (D.1) */
+  rcIosSes:'This browser records no audio',rcIosSesD:'On iPhone only Safari writes audio — open it in Safari',
+  rcKamKapali:'Camera off',rcKamKapaliD:'Open the camera from the start screen',
+  rcKamAcik:'Camera on',
+  rcMikYok:'No microphone',rcMikYokD:'The video will be silent — check permissions',
+  rcMikHazir:'Microphone ready',rcMikHazirD:'See the level in Settings → Camera',
+  rcMetinBos:'Script is empty',rcMetinBosD:'Paste your script from the Scripts page',
+  rcSinirAsim:'Script exceeds the limit',rcSinirAsimD:'~{s} / limit {l} — about {k} words over',
+  rcSureUygun:'Script and duration fine',rcSureUygunD:'{w} words · ~{s}',rcSinirEk:' / limit {l}',
+  rcKompYavas:'Composite is slow: {f} fps',rcKompYavasD:'Drop to 720p or turn composite off',
+  rcKompAkici:'Composite smooth: {f} fps',
+  rcGozZayif:'Weak eye contact',rcGozZayifD:'≈{a}° — raise the reading line or move back',
+  rcGozIyi:'Eye contact good',
+  rcKomut:'The script will trigger a voice command',rcKomutD:'Reading “{k}” runs a command and can stop the take while voice commands are on. Turn them off or reword.',
+  rcYer:'≈{n} min of recording',
+  rcDepoDolu:'Storage is full',rcDepoDoluD:'{s} — delete takes from the archive or this one cannot be saved',
+  rcDepoAz:'Storage is running low',rcDepoAzD:'{s} — clear the archive before a long take',
+  rcDepoVar:'Storage is fine',
+  rcBastaDegil:'Script is not at the start',rcBastaDegilD:'Press Home to rewind, or continue where you left off',
   isikSiyah:'The camera is sending a black frame',
   isikSiyahD:'This is not a lighting problem — no image is arriving. Check the lens cover or your finger; if you just returned from the background, wait a moment or reopen the camera.',
   isikKaranlik:'Your face is dark',isikKaranlikD:'Move the light in front of you. Center brightness {y}/255',
@@ -7508,15 +7549,24 @@ function komutKaliplari(){
 }
 function readyChecks(){
   const out=[];
-  if(IS_IOS_ALT) out.push({lv:'bad',t:(L==='tr'?'Bu tarayıcı ses kaydetmiyor':'This browser records no audio'),
-    d:(L==='tr'?'iPhone\'da yalnız Safari videoya ses yazabiliyor — adresi Safari\'de aç':'On iPhone only Safari writes audio — open it in Safari')});
+  /* CÜMLELER SÖZLÜKTE (2026-08-19). Önce burada `L==='tr'?…:…` ile
+     yazılıyorlardı — 23 tanesi — ve sözlüğün dışında kalan kullanıcı metni
+     i18n kapsamı, çeviri kaçağı ve çizilmiş arayüz kapılarının kör noktası
+     (ölçümü ve gerekçesi tests/197'de). Sayılar `{}` yer tutucularıyla
+     giriyor; `t()` doğrudan çağrıldığı için anahtar kullanımı denetimin
+     tanıdığı biçimde kalıyor. */
+  /* Yardımcı ANAHTARI DEĞİL ÇÖZÜLMÜŞ METNİ alıyor. `t(değişken)` biçimi
+     denetimin ölü anahtar taramasını kör eder ve zaten uyarı veriyor;
+     `t('rcYer')` yazınca hem anahtar sayılıyor hem de tarama sağlam kalıyor. */
+  const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
+  if(IS_IOS_ALT) out.push({lv:'bad',t:t('rcIosSes'),d:t('rcIosSesD')});
   // kamera
-  if(!stream){ out.push({lv:'bad',t:(L==='tr'?'Kamera kapalı':'Camera off'),d:(L==='tr'?'Başlangıç ekranından kamerayı aç':'Open the camera from the start screen')}); }
-  else out.push({lv:'ok',t:(L==='tr'?'Kamera açık':'Camera on'),d:(realRes()||'?')+resNote()});
+  if(!stream){ out.push({lv:'bad',t:t('rcKamKapali'),d:t('rcKamKapaliD')}); }
+  else out.push({lv:'ok',t:t('rcKamAcik'),d:(realRes()||'?')+resNote()});
   // ses
   if(stream){
-    if(!aTrack) out.push({lv:'bad',t:(L==='tr'?'Mikrofon yok':'No microphone'),d:(L==='tr'?'Video sessiz kaydedilecek — izinleri kontrol et':'The video will be silent — check permissions')});
-    else out.push({lv:'ok',t:(L==='tr'?'Mikrofon hazır':'Microphone ready'),d:(L==='tr'?'Ayarlar → Kamera\'da seviyeyi görebilirsin':'See the level in Settings → Camera')});
+    if(!aTrack) out.push({lv:'bad',t:t('rcMikYok'),d:t('rcMikYokD')});
+    else out.push({lv:'ok',t:t('rcMikHazir'),d:t('rcMikHazirD')});
   }
   // ışık + eğim (kamera açıksa)
   if(stream) lightCheck().forEach(o=>{ if(o.lv!=='info') out.push(o); });
@@ -7524,41 +7574,33 @@ function readyChecks(){
   const _mt2=$('#text').value||active().text||'';
   const wc=countWords(_mt2), lim=curMode().limit;
   const secs=wc/st.wpm*60 + duraklamaSn(_mt2);
-  if(!wc) out.push({lv:'bad',t:(L==='tr'?'Metin boş':'Script is empty'),d:(L==='tr'?'📝 Senaryolar\'dan metnini yapıştır':'Paste your script in 📝 Scripts')});
-  else if(lim && secs>lim) out.push({lv:'warn',t:(L==='tr'?'Metin sınırı aşıyor':'Script exceeds the limit'),
-    d:(L==='tr'?'~'+clock(secs)+' / sınır '+clock(lim)+' — yaklaşık '+Math.ceil((secs-lim)*st.wpm/60)+' kelime fazla':'~'+clock(secs)+' / limit '+clock(lim))});
-  else out.push({lv:'ok',t:(L==='tr'?'Metin ve süre uygun':'Script and duration fine'),
-    d:wc+(L==='tr'?' kelime · ~':' words · ~')+clock(secs)+(lim?(L==='tr'?' / sınır '+clock(lim):' / limit '+clock(lim)):'')});
+  if(!wc) out.push({lv:'bad',t:t('rcMetinBos'),d:t('rcMetinBosD')});
+  else if(lim && secs>lim) out.push({lv:'warn',t:t('rcSinirAsim'),
+    d:yz(t('rcSinirAsimD'),{s:clock(secs),l:clock(lim),k:Math.ceil((secs-lim)*st.wpm/60)})});
+  else out.push({lv:'ok',t:t('rcSureUygun'),
+    d:yz(t('rcSureUygunD'),{w:wc,s:clock(secs)})+(lim?yz(t('rcSinirEk'),{l:clock(lim)}):'')});
   // kompozit performansı: ölçülmeden "ısınıyor mu" sorusuna cevap verilemez
   if(comp.on && compFps.v){
-    if(compFps.v<20) out.push({lv:'warn',t:(L==='tr'?'Kompozit yavaş: '+compFps.v+' fps':'Composite is slow: '+compFps.v+' fps'),
-      d:(L==='tr'?'Çözünürlüğü 720p yap ya da kompoziti kapat — takılmalı video kaydedebilirsin':'Drop to 720p or turn composite off')});
-    else out.push({lv:'ok',t:(L==='tr'?'Kompozit akıcı: '+compFps.v+' fps':'Composite smooth: '+compFps.v+' fps'),d:''});
+    if(compFps.v<20) out.push({lv:'warn',t:yz(t('rcKompYavas'),{f:compFps.v}),d:t('rcKompYavasD')});
+    else out.push({lv:'ok',t:yz(t('rcKompAkici'),{f:compFps.v}),d:''});
   }
   // göz teması
   const ga=gazeAngle();
-  if(ga>=9) out.push({lv:'warn',t:(L==='tr'?'Göz teması zayıf':'Weak eye contact'),
-    d:(L==='tr'?'Bakış sapması ≈'+Math.round(ga)+'° — okuma çizgisini yukarı al ya da geri çekil':'≈'+Math.round(ga)+'° — raise the reading line or move back')});
-  else out.push({lv:'ok',t:(L==='tr'?'Göz teması iyi':'Eye contact good'),d:'≈'+Math.round(ga)+'°'});
+  if(ga>=9) out.push({lv:'warn',t:t('rcGozZayif'),d:yz(t('rcGozZayifD'),{a:Math.round(ga)})});
+  else out.push({lv:'ok',t:t('rcGozIyi'),d:'≈'+Math.round(ga)+'°'});
   // senaryonun kendisi sesli komut tetikliyor mu
   const kal=komutKaliplari();
-  if(kal.length) out.push({lv:'bad',
-    t:(L==='tr'?'Metin sesli komut tetikleyecek':'The script will trigger a voice command'),
-    d:(L==='tr'?'“'+kal[0]+'” okununca komut çalışır — 🎤 açıkken çekimi durdurabilir. Sesli komutu kapat ya da cümleyi değiştir.'
-              :'Reading “'+kal[0]+'” runs a command and can stop the take while 🎤 is on. Turn voice commands off or reword.')});
+  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:yz(t('rcKomutD'),{k:kal[0]})});
   // depoda kalan yer
   const kdk=kalanDk();
   if(kdk!=null){
-    const sure=(L==='tr'?'≈'+Math.floor(kdk)+' dk çekim yeri':'≈'+Math.floor(kdk)+' min of recording');
-    if(kdk<3) out.push({lv:'bad',t:(L==='tr'?'Depoda yer kalmadı':'Storage is full'),
-      d:(L==='tr'?sure+' — arşivden çekim sil, yoksa bu çekim kaydedilemez':sure+' — delete takes from the archive or this one cannot be saved')});
-    else if(kdk<10) out.push({lv:'warn',t:(L==='tr'?'Depo yer azalıyor':'Storage is running low'),
-      d:(L==='tr'?sure+' — uzun çekim yapacaksan önce arşivi boşalt':sure+' — clear the archive before a long take')});
-    else out.push({lv:'ok',t:(L==='tr'?'Depoda yer var':'Storage is fine'),d:sure});
+    const sure=yz(t('rcYer'),{n:Math.floor(kdk)});
+    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:yz(t('rcDepoDoluD'),{s:sure})});
+    else if(kdk<10) out.push({lv:'warn',t:t('rcDepoAz'),d:yz(t('rcDepoAzD'),{s:sure})});
+    else out.push({lv:'ok',t:t('rcDepoVar'),d:sure});
   }
   // konum
-  if(pos>2) out.push({lv:'warn',t:(L==='tr'?'Metin baştan başlamıyor':'Script is not at the start'),
-    d:(L==='tr'?'Başa sarmak için ⟲ (Home) — ya da kaldığın yerden devam et':'Press Home to rewind, or continue where you left off')});
+  if(pos>2) out.push({lv:'warn',t:t('rcBastaDegil'),d:t('rcBastaDegilD')});
   return out;
 }
 function renderReady(){

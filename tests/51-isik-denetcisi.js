@@ -7,7 +7,10 @@ const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
    dosyasını okusaydı kasıtlı bozma turu bu dosyada SESSİZCE etkisiz kalırdı
    (bu depoda dört kez yaşanmış hata sınıfı). */
 const cek=cekirdekOku('isik.js','SUFLE_ISIK').replace(/\/\*[\s\S]*?\*\//g,'');
-const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK');
+/* Sözlük şablon dizesinin İÇİNE gömülüyor; kaynaktaki blok yorumlarda
+   ters tırnak var ve tezgâhı ortadan kesiyor (CLAUDE.md'de kayıtlı,
+   bu gece üçüncü kez). Yorumlar atılıyor — ölçtüğümüz şey değerler. */
+const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* IŞIK DENETÇİSİ — İKİ SORU
    1) Boş/siyah karede NaN üretiyor mu?  → HAYIR, hipotez çürüdü.

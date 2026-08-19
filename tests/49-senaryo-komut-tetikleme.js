@@ -1,5 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku,cikar}=require('./kaynak');
+const {cekirdekOku}=require('./kaynak');
 const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* SENARYONUN KENDİSİ SESLİ KOMUT TETİKLİYOR
@@ -83,11 +84,19 @@ const ready=cikar(kod,/function readyChecks\(\)\{[\s\S]*?\n\}/,'readyChecks');
 ok('hazırlık kontrolü kalıpları soruyor', /const kal=komutKaliplari\(\);/.test(ready));
 /* Çıkarım çökerse ADI OLAN iddialar görülsün — tek yığın izi bütün satır
    kontrollerini yutmasın. */
-const komutSatiri=(ready.match(/const kal=komutKaliplari\(\);[\s\S]*?reword\.'\)\}\);/)||[])[0];
+/* v9.34: cümle sözlüğe taşındı, satır artık `t('rcKomut')` çağırıyor.
+   Tezgâh GERÇEK sözlüğü yüklüyor — sahte metin uydursaydı sözlükten silinen
+   bir anahtar burada sessizce geçerdi. Yorumda ters tırnak yok: aşağıdaki
+   şablon dizesinin içine giriyor. */
+const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'');
+const komutSatiri=(ready.match(/const kal=komutKaliplari\(\);[\s\S]*?rcKomutD'\),\{k:kal\[0\]\}\)\}\);/)||[])[0];
 function satir(kaliplarListe){
   if(!komutSatiri) return null;
   const out=new Function('__k', `
     const out=[]; const L='tr';
+    ${SOZ}
+    const t=(k)=>I18N[L][k];
+    const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
     const komutKaliplari=()=>__k;
     ${komutSatiri}
     return out;

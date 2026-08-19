@@ -33,9 +33,16 @@ ok('kompozit başlarken sayaç sıfırlanıyor',
    /comp\.on=true; compFps\.n=0; compFps\.t0=performance\.now\(\); compFps\.v=0; compFps\.son=0;/.test(kod));
 ok('hazırlık kontrolü fpsi okuyor', /if\(comp\.on && compFps\.v\)\{/.test(kod));
 ok('eşik 20 fps', /if\(compFps\.v<20\)/.test(kod));
+/* v9.34: cümleler sözlüğe taşındı ({f} yer tutucusuyla). İki dilde de
+   varlıkları ve sayının GERÇEKTEN yerine oturduğu ölçülüyor. */
 ok('yavaşsa ne yapılacağı yazıyor (720p ya da kompoziti kapat)',
    /720p yap ya da kompoziti kapat/.test(tel) && /Drop to 720p or turn composite off/.test(tel));
-ok('akıcıysa da sayı gösteriliyor', /Kompozit akıcı: '\+compFps\.v\+' fps/.test(tel));
+ok('akıcıysa da sayı gösteriliyor',
+   /rcKompAkici:'Kompozit akıcı: \{f\} fps'/.test(tel) &&
+   /rcKompAkici:'Composite smooth: \{f\} fps'/.test(tel) &&
+   /yz\(t\('rcKompAkici'\),\{f:compFps\.v\}\)/.test(kod));
+ok('yavaş satırında da sayı yerine oturuyor',
+   /yz\(t\('rcKompYavas'\),\{f:compFps\.v\}\)/.test(kod));
 /* Ölçüm penceresi 2 saniye: daha kısa olsa gürültülü, daha uzun olsa geç kalır. */
 ok('ölçüm penceresi 2 saniye', /if\(nowF-compFps\.t0>=2000\)\{/.test(kod));
 

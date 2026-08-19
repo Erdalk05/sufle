@@ -1,5 +1,10 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
 const {telefonYolu,oku,cikar}=require('./kaynak');
+const {cekirdekOku}=require('./kaynak');
+/* Sözlük şablon dizesinin İÇİNE gömülüyor; kaynaktaki blok yorumlarda
+   ters tırnak var ve tezgâhı ortadan kesiyor (CLAUDE.md'de kayıtlı,
+   bu gece üçüncü kez). Yorumlar atılıyor — ölçtüğümüz şey değerler. */
+const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'');
 const tel=oku(telefonYolu());
 
 /* DİSK DOLUNCA — İKİ AYRI DELİK
@@ -92,6 +97,14 @@ function satir(kdkDeger){
   const out=new Function('__k', `
     const out=[];
     const L='tr';
+    ${SOZ}
+    const t=(k)=>I18N[L][k];
+    /* v9.34: cümleler sözlüğe taşındı; yer tutucu dolduran yardımcı
+       readyChecks'in İÇİNDE tanımlı. Çıkarılan parça onu görmediği için
+       tezgâh aynısını sağlıyor — sahte metin uydurmak yerine GERÇEK sözlüğü
+       yüklüyoruz ki sözlükten silinen bir anahtar burada da kırmızı versin.
+       (Bu yorumda ters tırnak YOK: şablon dizesinin içinde tezgâhı keser.) */
+    const yz=(m,d)=>{ for(const x in (d||{})) m=m.split('{'+x+'}').join(d[x]); return m; };
     const kalanDk=()=>__k;
     ${cikar(ready, /const kdk=kalanDk\(\);[\s\S]*?\n  \}/, 'yer satırı')}
     return out;

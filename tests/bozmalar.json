@@ -4898,5 +4898,40 @@
   "kaynak": "isik",
   "bul": "  let m=String(tt(anahtar)||'');",
   "koy": "  let m=String(tt(anahtar+'Yok'));"
+ },
+ {
+  "ad": "v9.34 hazırlık kontrolü cümlesi tekrar koda dönüyor (sözlük dışı metin artar)",
+  "test": "197-sozluk-disi-etiket.js",
+  "kaynak": "telefon",
+  "bul": "  if(!wc) out.push({lv:'bad',t:t('rcMetinBos'),d:t('rcMetinBosD')});",
+  "koy": "  if(!wc) out.push({lv:'bad',t:(L==='tr'?'Metin boş':'Script is empty'),d:(L==='tr'?'Senaryolardan yapıştır':'Paste from Scripts')});"
+ },
+ {
+  "ad": "v9.34 kalan yer dakikaya çevrilmiyor (yer tutucu ekranda kalır)",
+  "test": "102-uzun-kayit-bellek.js",
+  "kaynak": "telefon",
+  "bul": "    const sure=yz(t('rcYer'),{n:Math.floor(kdk)});",
+  "koy": "    const sure=t('rcYer');"
+ },
+ {
+  "ad": "v9.34 kompozit fps sayısı yerine oturmuyor",
+  "test": "97-kompozit-fps-olcumu.js",
+  "kaynak": "telefon",
+  "bul": "    else out.push({lv:'ok',t:yz(t('rcKompAkici'),{f:compFps.v}),d:''});",
+  "koy": "    else out.push({lv:'ok',t:t('rcKompAkici'),d:''});"
+ },
+ {
+  "ad": "v9.34 sesli komut uyarısı hangi ifadeyi söylemiyor",
+  "test": "49-senaryo-komut-tetikleme.js",
+  "kaynak": "telefon",
+  "bul": "  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:yz(t('rcKomutD'),{k:kal[0]})});",
+  "koy": "  if(kal.length) out.push({lv:'bad',t:t('rcKomut'),d:t('rcKomutD')});"
+ },
+ {
+  "ad": "v9.34 depo uyarısında kalan süre yazılmıyor",
+  "test": "41-disk-dolu.js",
+  "kaynak": "telefon",
+  "bul": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:yz(t('rcDepoDoluD'),{s:sure})});",
+  "koy": "    if(kdk<3) out.push({lv:'bad',t:t('rcDepoDolu'),d:t('rcDepoDoluD')});"
  }
 ]
