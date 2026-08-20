@@ -2233,11 +2233,11 @@
   "koy": "    catch(e){ logErr('cekimSay',e); }"
  },
  {
-  "ad": "rapor yayın durumunu gizliyor (Erdal yanlış karar verir)",
+  "ad": "rapor yayın durumunun ÇAPASINI kaldırıyor (sürümden bağımsız bozma)",
   "test": "116-sabah-raporu.js",
   "kaynak": "rapor",
-  "bul": "## 🟢 20 Ağustos gecesi — v9.40 YAYINLANDI ve canlıdan doğrulandı",
-  "koy": "## 20 Ağustos gecesi — bir şeyler yapıldı"
+  "bul": "**DURUM — ",
+  "koy": "**Gece notu — "
  },
  {
   "ad": "senaryodaki komut kalıbı uyarısı sesli komut kapalıyken de çıkıyor",
@@ -5208,10 +5208,52 @@
   "koy": "| X1 | (silindi)"
  },
  {
-  "ad": "v9.40 matris sürümü bayatlıyor",
+  "ad": "v9.40 matris sürümü bayatlıyor (sürümden bağımsız bozma)",
   "test": "199-guvenilirlik-matrisi.js",
   "kaynak": "matris",
-  "bul": "sürüm 9.40",
-  "koy": "sürüm 9.1"
+  "bul": "· sürüm ",
+  "koy": "· eski sürüm 9.1 yerine "
+ },
+ {
+  "ad": "v9.41 duraklama zarfı sert basamağa dönüyor (her paragraf sonunda takılma)",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "akis",
+  "bul": "if(g < pencere) return 1-yumusakAdim(g/pencere);",
+  "koy": "if(g < pencere) return 0;"
+ },
+ {
+  "ad": "v9.41 zarf duraklamanın ölü süresini kısaltıyor (süre tahmini ayrışır)",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "akis",
+  "bul": "return m + Math.min(AKIS_GECIS, m);",
+  "koy": "return m;"
+ },
+ {
+  "ad": "v9.41 hız rampası kare SAYISINA bağlanıyor (120 Hz ekranda iki kat hızlı)",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "akis",
+  "bul": "const k = 1-Math.exp(-Math.max(0,dtSn)/tau);",
+  "koy": "const k = 0.1;"
+ },
+ {
+  "ad": "v9.41 telefonda duraklama zarfı akışa uygulanmıyor",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "telefon",
+  "bul": "const next=pos+curPPS*brake*zarf*dt;",
+  "koy": "const next=pos+curPPS*brake*dt;"
+ },
+ {
+  "ad": "v9.41 masaüstünde yumuşak duruş geri alınıyor",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "mac",
+  "bul": "const brake = frenCarpani(maxPos-pos, 60);",
+  "koy": "const brake = 1;"
+ },
+ {
+  "ad": "v9.41 masaüstünde uzun donmadan sonra metin fırlıyor (dt sınırı yok)",
+  "test": "200-altin-kaydirma.js",
+  "kaynak": "mac",
+  "bul": "const dt=Math.min(0.1,(ts-lastTs)/1000); lastTs=ts;",
+  "koy": "const dt=(ts-lastTs)/1000; lastTs=ts;"
  }
 ]

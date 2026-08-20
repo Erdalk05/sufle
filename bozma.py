@@ -57,6 +57,10 @@ KAYNAK = {
     # burada yaşıyor, yani bozulabilmesi şart.
     'altyazi': (os.path.join(REPO, 'cekirdek', 'altyazi.js'), 'SUFLE_ALTYAZI'),
     'tempo': (os.path.join(REPO, 'cekirdek', 'tempo.js'), 'SUFLE_TEMPO'),
+    # Kaydırma pürüzsüzlüğünün eğrisi. İki kabukta da gömülü: burada bir
+    # gevşeme her paragraf sonunda GÖRÜNÜR takılma demek ve hiçbir ekran
+    # görüntüsü bunu göstermez — yalnız zaman ekseninde ölçülür.
+    'akis': (os.path.join(REPO, 'cekirdek', 'akis.js'), 'SUFLE_AKIS'),
     'marka': (os.path.join(REPO, 'cekirdek', 'marka.js'), 'SUFLE_MARKA'),
     'klip': (os.path.join(REPO, 'cekirdek', 'klip.js'), 'SUFLE_KLIP'),
     'muzik': (os.path.join(REPO, 'cekirdek', 'muzik.js'), 'SUFLE_MUZIK'),

@@ -2221,7 +2221,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.40';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.41';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -3905,9 +3905,106 @@ function introSenaryoYaz(){
   k.classList.remove('hidden');
 }
 
+/* ==CEKIRDEK:akis.js== */
+/* ÜRETİLDİ — ELLE DÜZENLEME. Kaynak: cekirdek/akis.js
+   Değişiklik oraya yazılır, sonra: python3 derle.py
+   (kapı bayat çıktıyı yakalar, elle düzenlemen sessizce kaybolur) */
+/* AKIŞ — kaydırmanın PÜRÜZSÜZLÜĞÜ. Tek kaynak, iki kabuk (2026-08-20).
+
+   NEDEN AYRI BİR MODÜL: "altın kaydırma" `EKSIKLER` listesinde aylardır
+   "ölçütü tanımsız" diye duruyordu. Tanımsız bir eksiği kapatmaya çalışmak
+   olmayan hatayı onarmaktır; önce ÖLÇÜT yazıldı, sonra kusur arandı.
+
+   ÖLÇÜT: sabit ayarda kaydırma hızı kare kare SIÇRAMAZ. Göz, konumdaki
+   değil HIZDAKİ ani değişimi görür — bir karede tam hızdan sıfıra düşen
+   metin, "duraklama" değil "takılma" gibi okunur.
+
+   ÖLÇÜLEN ÜÇ KUSUR:
+   ① Duraklama işaretleri (`/`, `//`, `(2)`) ve nefes molası akışı TEK KAREDE
+      durduruyordu: hız tam değerden sıfıra, sonra yine tek karede tam değere.
+      İki sert sıçrama, her paragraf sonunda. En görünür pürüz buydu.
+   ② Masaüstünde hız rampası HİÇ YOKTU: telefonda WPM değişince ~200 ms
+      yumuşak geçiş var, Mac'te aynı anda sıçrıyordu (canlı hız çubuğu
+      tam da bunu yapıyor — sürükledikçe metin zıplıyordu).
+   ③ Masaüstünde metin sonundaki yumuşak duruş da yoktu: son satır tam
+      hızda gelip aniden kesiliyordu.
+
+   ①'in çözümü ZARF: duraklama süresi boyunca hız 1 → 0 → 1 yolunu
+   yumuşak geçişle (smoothstep) izliyor. Hızda basamak kalmıyor.
+
+   ⚠️ ÖLÜ SÜRE KORUNUYOR: iniş ve çıkış sırasında metin bir miktar
+   ilerliyor, yani zarf olmadan durulan süre kadar durulmuş SAYILMIYOR.
+   Bu yüzden istenen süreye iniş kadar ekleniyor (`duraklamaSuresi`);
+   smoothstep'in bir birim penceredeki integrali tam olarak yarım
+   olduğundan iniş+çıkış birlikte tam bir `GECIS` kadar ilerleme üretiyor
+   ve ölü süre istenene eşitleniyor.
+
+   BU KORUMANIN SEBEBİ ÜRÜNDE: `cekirdek/tempo.js` süre tahminini bu
+   duraklamaları TOPLAYARAK yapıyor. Zarf ölü süreyi kısaltsaydı, tahmin
+   ile gerçek çekim her nefes işaretinde biraz daha ayrışırdı — telefonda
+   düzeltilmiş, ölçülmüş bir kusurun geri gelmesi olurdu. */
+
+/* Geçiş penceresi (ms). 160 seçildi: 60 Hz'de ~10 kare — göz basamağı
+   ayırt edemiyor ama duraklamanın kendisi hâlâ "durdu" diye okunuyor.
+   Daha uzunu (300+) duraklamayı "yavaşlama" gibi gösteriyor. */
+const AKIS_GECIS = 160;
+
+/* Smoothstep: 0'da ve 1'de TÜREVİ SIFIR. Doğrusal geçiş kullansaydım
+   basamak konumdan hıza taşınırdı — pürüz yer değiştirir, kaybolmaz. */
+function yumusakAdim(x){
+  const u = x<0 ? 0 : (x>1 ? 1 : x);
+  return u*u*(3-2*u);
+}
+
+/* Duraklamanın gerçek süresi: istenen ölü süre + bir geçiş penceresi.
+   Kısa duraklamalarda (ör. 120 ms) pencere süreye sığmaz; o zaman
+   pencere süreyle birlikte küçülür ve duraklama yine de yumuşak kalır. */
+function duraklamaSuresi(istenenMs){
+  const m = Math.max(0, +istenenMs || 0);
+  return m + Math.min(AKIS_GECIS, m);
+}
+
+/* Duraklama zarfı: 0 = tam durdu, 1 = tam hız.
+   `t0` duraklamanın başladığı an, `sure` = duraklamaSuresi() sonucu. */
+function duraklamaCarpani(gecenMs, sureMs){
+  const sure = Math.max(0, +sureMs || 0);
+  if(sure<=0) return 1;
+  const g = Math.max(0, +gecenMs || 0);
+  if(g>=sure) return 1;
+  const pencere = Math.min(AKIS_GECIS, sure/2);
+  if(pencere<=0) return 0;
+  if(g < pencere) return 1-yumusakAdim(g/pencere);          // yavaşla
+  const kalan = sure-g;
+  if(kalan < pencere) return 1-yumusakAdim(kalan/pencere);  // yeniden hızlan
+  return 0;
+}
+
+/* Hız rampası — kare hızından BAĞIMSIZ.
+   Eski telefon kodu `dt/0.2` doğrusal yaklaşımını kullanıyordu; 0.1 s'ye
+   dayanan bir kare (sekme arka plandan dönünce oluyor) katsayıyı 0.5'e
+   çıkarıp rampayı yarı yolda bitiriyordu. Üstel biçim her kare süresinde
+   AYNI zaman sabitini veriyor. */
+function hizRampasi(suanki, hedef, dtSn, tauSn){
+  const tau = (tauSn===undefined ? 0.2 : tauSn);
+  if(!(tau>0)) return hedef;
+  const k = 1-Math.exp(-Math.max(0,dtSn)/tau);
+  return suanki + (hedef-suanki)*k;
+}
+
+/* Metin sonunda yumuşak duruş: son `mesafe` pikselde hız oransal düşer.
+   Sıfıra inmiyor — inseydi son satır hiç gelmezdi (asimptot). */
+function frenCarpani(kalanPx, mesafePx){
+  const d = mesafePx>0 ? mesafePx : 60;
+  if(!(kalanPx<d)) return 1;
+  return Math.max(0.18, Math.max(0,kalanPx)/d);
+}
+/* ==/CEKIRDEK:akis.js== */
 /* ============ KAYDIRMA MOTORU ============ */
 let tempoWords=0;
-let running=false, raf=null, pos=0, activeIdx=-1, lastT=0, holdUntil=0, lastParaIdx=-1, startedAt=0, elapsed=0, lastHud=0;
+let running=false, raf=null, pos=0, activeIdx=-1, lastT=0, holdT0=-1e9, holdSure=0, lastParaIdx=-1, startedAt=0, elapsed=0, lastHud=0;
+/* Duraklamayı ZARFLA başlat: hız tek karede sıfıra düşmesin (cekirdek/akis.js).
+   İstenen ölü süre korunuyor — süre tahmini duraklamaları topluyor. */
+function durakla(now,ms){ holdSure=duraklamaSuresi(ms); holdT0=now; }
 function pxPerSec(){ return (st.wpm/60)*pxPerWord; }
 let curPPS=0;
 function setPos(p){
@@ -3918,6 +4015,7 @@ function setPos(p){
   if(pos < onceki-2){
     const y0=pos+eyeOff();
     holdPoints.forEach(h=>{ if(h.y>y0) h.used=false; });
+    holdT0=-1e9; holdSure=0;   // süren duraklama da iptal: geri sarıp beklemek anlamsız
     lastParaIdx=-1;
     tempoWords=0; elapsed=0;   // geri sardın: ölçüm baştan, yoksa tempo yanlış çıkar
   }
@@ -3931,22 +4029,31 @@ function tick(now){
   const dt=Math.min(0.1,(now-lastT)/1000); lastT=now;
   elapsed+= dt;
   // 1.4 HIZ RAMPASI: hız değişince anında sıçramak okumayı bozuyordu (~200 ms yumuşak geçiş)
-  curPPS += (pxPerSec()-curPPS)*Math.min(1, dt/0.2);
-  if(now>=holdUntil){
+  curPPS = hizRampasi(curPPS, pxPerSec(), dt);
+  /* DURAKLAMA ZARFI: nefes molası ve / // (2) işaretleri eskiden akışı TEK
+     KAREDE durdurup TEK KAREDE geri başlatıyordu. Konum doğruydu ama hızda
+     iki sert basamak vardı ve göz bunu "duraklama" değil "takılma" diye
+     okuyordu. Zarf hızı yumuşak indirip yumuşak kaldırıyor. */
+  const zarf = duraklamaCarpani(now-holdT0, holdSure);
+  {
     // 1.2 YUMUŞAK DURUŞ: metin sonunda sert kesiliyordu; son 60 px'te yavaşla
-    const near=maxPos-pos;
-    const brake = near<60 ? Math.max(0.18, near/60) : 1;
-    const next=pos+curPPS*brake*dt;
-    if(st.breathe){
-      for(let i=0;i<paraEnds.length;i++){
-        const y=paraEnds[i]-eyeOff();
-        if(pos<y && next>=y && i!==lastParaIdx){ lastParaIdx=i; holdUntil=now+420; break; }
+    const brake = frenCarpani(maxPos-pos, 60);
+    const next=pos+curPPS*brake*zarf*dt;
+    /* Yeni duraklama YALNIZ tam hızdayken kurulur: zarfın inişi sırasında
+       ikinci bir işareti yakalamak zarfı baştan başlatır ve duraklama
+       kendini uzatır. */
+    if(zarf>=1){
+      if(st.breathe){
+        for(let i=0;i<paraEnds.length;i++){
+          const y=paraEnds[i]-eyeOff();
+          if(pos<y && next>=y && i!==lastParaIdx){ lastParaIdx=i; durakla(now,420); break; }
+        }
       }
-    }
-    // metindeki duraklama işaretleri (/, //, (2)) — her biri bir kez
-    for(const h of holdPoints){
-      const y=h.y-eyeOff();
-      if(!h.used && pos<y && next>=y){ h.used=true; holdUntil=now+h.ms; break; }
+      // metindeki duraklama işaretleri (/, //, (2)) — her biri bir kez
+      for(const h of holdPoints){
+        const y=h.y-eyeOff();
+        if(!h.used && pos<y && next>=y){ h.used=true; durakla(now,h.ms); break; }
+      }
     }
     // Bölüm bölüm çekim: TÜM bölüm sonlarını tara, sınırı hareket etmeden önce yakala.
     // curSec üzerinden gitmek kırılgandı: sectionAt'in ±2 px toleransı curSec'i sınırdan
@@ -3971,6 +4078,7 @@ function tick(now){
   if(pos>=maxPos+H()*0.15){ stop(); toast(m('end')); return; }
   raf=requestAnimationFrame(tick);
 }
+
 /* Okuma çizgisine EN YAKIN satırı seç.
    ESKİDEN: merkezi çizginin üstünde kalan SON kelime seçiliyordu. Bir satırdaki
    tüm kelimeler aynı merkezi paylaştığı için bu, hep BİR SATIR YUKARISINI
@@ -4009,7 +4117,7 @@ function highlight(y){
 }
 function start(){
   if(running) return;
-  running=true; lastT=performance.now(); holdUntil=0; curPPS=pxPerSec();   // rampa baştan sıfırlamasın
+  running=true; lastT=performance.now(); holdT0=-1e9; holdSure=0; curPPS=pxPerSec();   // rampa baştan sıfırlamasın
   if(!startedAt) startedAt=performance.now();
   $('#playBtn').textContent='⏸'; $('#playBtn').classList.add('playing');
   $('#tapnote').style.opacity='0';
@@ -10912,6 +11020,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.41':{tr:'🪶 <b>Kaydırma pürüzsüzleşti.</b> Nefes molalarında ve metindeki duraklama işaretlerinde (/, //, (2)) akış eskiden tek karede durup tek karede geri başlıyordu; göz bunu duraklama değil TAKILMA diye görür. Artık hız yumuşak inip yumuşak kalkıyor ve <b>duraklamanın süresi birebir korunuyor</b>, yani süre tahmini de doğru kalıyor. <b>Masaüstünde iki eksik kapandı:</b> hızı değiştirince metin zıplıyordu ve metin sonunda akış sert kesiliyordu — ikisi de artık telefondaki gibi yumuşak. Kaydırma eğrisi tek kaynaktan geliyor.',en:'🪶 <b>Scrolling got smoother.</b> At breath pauses and at pause marks in the text (/, //, (2)) the scroll used to stop in a single frame and restart in a single frame; the eye reads that as a STUTTER, not a pause. Speed now eases down and back up, and <b>the length of the pause is preserved exactly</b>, so the duration estimate stays correct. <b>Two desktop gaps closed:</b> changing speed made the text jump, and the text ended with a hard cut — both are smooth now, just like on the phone. The scroll curve comes from a single source.'},
  '9.40':{tr:'🧾 <b>Çekim güvenilirliği matrisi yazıldı.</b> İzin reddi, kamera başka uygulamada, ses ya da görüntünün ortada kesilmesi, depo dolması ve uzun çekim — her senaryo için uygulamanın ne yaptığı, sana ne söylediği ve hangi testin kilitlediği kayıtlı. Gerçek cihaz gerektiren beş satır da <b>açık</b> yazıyor; ölçülmemiş bir şeye çalışıyor demiyoruz.',en:'🧾 <b>A recording reliability matrix is now written down.</b> Permission denied, camera busy, audio or video dying mid-take, storage filling up and long recordings — for each scenario the matrix records what the app does, what it tells you and which test locks it. Five rows that need a real device are marked <b>open</b>; we do not claim anything we have not measured.'},'9.39':{tr:'🌍 <b>Arayüz metinlerinin taşınması bitti: 172den 4e.</b> Kalan dört tanesi metin değil, sisteme verilen dil kodu (tr-TR gibi). Artık uygulamadaki her cümle tek kaynaktan geliyor: <b>dili değiştirdiğinde ekranların tamamı anında değişiyor</b> ve bir dilde olup diğerinde olmayan bilgi kalmıyor. Üçüncü bir arayüz dili eklemenin önü tamamen açıldı.',en:'🌍 <b>The text migration is complete: from 172 down to 4.</b> The remaining four are not text at all but locale codes handed to the system (like tr-TR). Every sentence in the app now comes from a single source: <b>switching language updates every screen instantly</b> and neither language is missing something the other has. Adding a third interface language is now unblocked.'},'9.38':{tr:'🌍 <b>Sözlüğü atlayan metin 50den 30a indi.</b> Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü ve senaryo adı yedekleri de tek kaynağa geçti. <b>Yol boyunca bir çökme hatası da yakalandı:</b> izin tarifini yazan fonksiyonda yerel bir değişken sözlük fonksiyonunu gölgeliyordu — o satır çalışma anında hata verecekti.',en:'🌍 <b>Texts bypassing the dictionary went from 50 down to 30.</b> The clicker diagnostic, camera permission directions, voice-follow badge, pace measurement and script name fallbacks now read from a single source. <b>A crash was caught on the way:</b> in the permission-path function a local variable shadowed the translation helper, so that line would have thrown at runtime.'},'9.37':{tr:'🌍 <b>Arayüz metinlerinin çoğu tek kaynağa taşındı.</b> Sesle takip öz-testi, ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi ve kamera notları artık sözlükten okunuyor. Senin için görünen fark: <b>dili değiştirdiğinde bu ekranlar da anında değişiyor</b> ve iki dil arasında eksik bilgi kalmıyor. Perde arkasında üçüncü bir arayüz dilinin önü açılıyor: sözlüğü atlayan metin sayısı 172den 50ye indi.',en:'🌍 <b>Most interface texts now come from a single source.</b> The voice self-test, audio verdict, speakability summary, voice-follow strip and camera notes all read from the dictionary. What you notice: <b>switching language now updates these screens instantly</b> and neither language is missing information the other has. Behind the scenes this clears the way for a third interface language: texts bypassing the dictionary went from 172 down to 50.'},'9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},
  '9.32':{tr:'<b>iPhone\'da cam/şeffaf yüzeyler hiç görünmüyordu.</b> Kamera üzerindeki ayar paneli, kumanda çubuğu ve rozetler bulanık cam olarak tasarlanmıştı ama iOS Safari\'nin istediği önek 18 kuralın 14\'ünde eksikti: iPhone kuralı sessizce atıyor, panel düz opak kalıyordu. Masaüstü tarayıcıda doğru göründüğü için aylardır fark edilmedi. Hepsi düzeltildi ve bir daha eksik kalmasını engelleyen bir denetim eklendi.<br><b>Kompozit açıkken sesin kaydedilmediğini söyleyen uyarı, arayüzde bulunmayan bir denetimi tarif ediyordu.</b> "Kompoziti kapat" diye bir anahtar yok; anahtarın adı "Kompoziti aç" ve Kamera sekmesindeki "Kompozit ve yeşil ekran" kartının içinde. Uyarı artık tam yolu veriyor. Bu kusuru tek tek düzeltmek yerine <b>bütün arayüz metinlerini tarayan bir denetim</b> yazıldı: uygulamanın kendi ekranlarını tarif eden her yol (Ayarlar → … → …) gerçekten var mı diye ölçülüyor, yoksa yayına çıkamıyor.',en:'<b>Glass / translucent surfaces never appeared on iPhone.</b> The settings panel over the camera, the control bar and the badges were designed as frosted glass, but the prefix iOS Safari requires was missing from 14 of 18 rules: iPhone silently drops the rule and the panel stayed flat and opaque. It looked correct in desktop browsers, so it went unnoticed for months. All of them are fixed and a check now blocks the release if a prefix is ever missing again.<br><b>The warning about audio not being recorded while the composite is on named a control that does not exist.</b> There is no "turn Composite off" switch; the switch is called "Enable composite" and lives inside the "Composite and green screen" card on the Camera tab. The warning now gives the full path. Instead of fixing this one string, <b>a check that scans every interface text</b> was added: any path describing our own screens (Settings → … → …) must point at something that really exists, or the release is blocked.'},

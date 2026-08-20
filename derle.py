@@ -120,6 +120,11 @@ PLAN = [
     # (ön koşulu olan ayar = sessiz ölü özellik). Telefonda vardı, Mac'te hiç
     # yoktu; kopyalamak yerine karar tek kaynağa alındı.
     ('kamera.js', ['index.html', 'mac/Teleprompter Pro.html']),
+    # Kaydırma pürüzsüzlüğü (2026-08-20). "Altın kaydırma" aylarca ölçütü
+    # tanımsız bir eksik olarak durdu; ölçüt yazılınca üç kusur çıktı ve
+    # üçü de EĞRİ meselesi. Eğri iki dosyada ayrı yaşarsa aynı metin iki
+    # ekranda farklı akar — kullanıcı hangisine göre prova yapacağını bilemez.
+    ('akis.js', ['index.html', 'mac/Teleprompter Pro.html']),
     # Güzellik gölgelendiricisi (2026-08-19). v9.33'te yalnız telefondaydı;
     # ölçüm masaüstünde de GL boru hattının koştuğunu gösterdi (kırpma açıkken).
     # Eşik ve yarıçap iki dosyada ayrı yaşarsa aynı çekim iki ekranda farklı

@@ -136,6 +136,18 @@ function sayi(re){ const m=r.match(re); return m?+m[1].replace(/\./g,''):null; }
      cümlesini bozmak testi kırmıyordu). Erdal raporun BAŞINDAKİ duruma
      bakıp karar veriyor; ölçülmesi gereken de orası. */
   const bas=r.split('\n').slice(0,40).join('\n');
+  /* YAYIN DURUMU TEK YERDE — `**DURUM —` satırı (2026-08-20).
+     Bu iddia bir kasıtlı bozmanın ölmesinden doğdu: bozma kaydı raporun O
+     GÜNKÜ başlığına kilitliydi ve bir sonraki sürümde hedefini bulamayınca
+     nöbetçi sessizce silahsız kaldı. Durumun SABİT bir çapası olmalı ki
+     hem bozma hem okuyan insan aynı satıra baksın. Ayrıca TEK olmalı:
+     durum iki yerde yazınca birini bozmak diğerini ayakta bırakıyor ve
+     bozma turu "yakalanmadı" diyor (bu depoda iki kez oldu). */
+  const durumlar=r.split('\n').filter(x=>x.startsWith('**DURUM —'));
+  ok('yayın durumu SABİT çapada yazılı (**DURUM —)', durumlar.length===1);
+  ok('durum satırı raporun başında', bas.includes('**DURUM —'));
+  ok('durum satırı şu anki sürümü adlandırıyor ('+ver+')',
+     durumlar.length===1 && durumlar[0].includes(ver));
   if(yayinlandi){
     /* Yayınlanmış durumda da iddia sürüm adıyla: "YAYINLANDI" kelimesi eski
        turlarda da geçiyor, ayırt etmiyor. */

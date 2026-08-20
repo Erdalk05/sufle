@@ -2,6 +2,47 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
+**DURUM — v9.41: kapı yeşil, YAYIN BEKLİYOR.**
+<!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
+     turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
+     doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## 🪶 20 Ağustos gecesi — v9.41 KAPI YEŞİL, YAYIN BEKLİYOR — ALTIN KAYDIRMA ÖLÇÜLEBİLİR OLDU
+
+`EKSIKLER` listesinde **"altın kaydırma pürüzleri — ölçütü tanımsız"** diye
+duran madde kapandı. Tanımsız bir eksiği kapatmaya çalışmak, olmayan bir hatayı
+onarmaktır; bu yüzden önce **ölçüt** yazıldı:
+
+> Göz, konumdaki değil **hızdaki** ani değişimi görür. Sabit ayarda akış hızı
+> kare kare sıçramamalı.
+
+Ölçüt yazılınca **üç gerçek kusur** çıktı:
+
+| # | kusur | nerede |
+|---|---|---|
+| ① | Nefes molası ve `/` `//` `(2)` işaretleri akışı **tek karede** durdurup **tek karede** geri başlatıyordu — göz bunu duraklama değil TAKILMA diye görür | iki kabuk |
+| ② | Hız rampası **hiç yoktu**: canlı hız çubuğu sürüklendikçe metin zıplıyordu | masaüstü |
+| ③ | Metin sonunda **yumuşak duruş yoktu**, son satır tam hızda kesiliyordu | masaüstü |
+
+Çözüm `cekirdek/akis.js` — kaydırma eğrisi artık **tek kaynak, iki kabuk**.
+Duraklama artık *smoothstep* zarfıyla iniyor ve kalkıyor.
+
+**Ölü süre birebir korunuyor** — bu bilerek: `cekirdek/tempo.js` süre tahminini
+duraklamaları toplayarak yapıyor; zarf ölü süreyi kısaltsaydı tahmin ile gerçek
+çekim her nefes işaretinde biraz daha ayrışırdı. Ölçüldü: istenen 420 ms →
+gerçekleşen **420 ms**, istenen 800 ms → **800 ms**.
+
+**`tests/200`** motorun kendisini kaynaktan çıkarıp sahte saatle koşturuyor
+(başsız tarayıcıda rAF donuk, ama motor saf bir zaman fonksiyonu). Ölçülenler:
+kare-kare hız sıçraması **%16 ≤ %25**, ölü süre korunumu, dalgalı kare hızında
+konum sapması **%0,24 < %1**, 2,5 sn donmadan sonra sıçrama ≤ 0,1 sn.
+**6 kasıtlı bozma** altısı da yakalandı.
+
+**Yol boyunca çıkan iki şey:** ① `tests/199`un bir bozması sürüm dizesine
+(`sürüm 9.40`) kilitliymiş — **her yayında ölecekti**; sürümden bağımsız hâle
+getirildi. ② Mac'te geri sarma duraklamayı iptal ediyordu, telefonda etmiyordu;
+ikisi de artık iptal ediyor.
+
 ## 🟢 20 Ağustos gecesi — v9.40 YAYINLANDI ve canlıdan doğrulandı (`sufle-v112`) — MASAÜSTÜ METİNLERİ + MAĞAZA
 
 **Canlı doğrulama:** md5 birebir (`e9ff09cd…` / `5e5e49eb…`) · `canli.py` üç
@@ -2440,7 +2481,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7540 test** (gece başında 732) · yeni test dosyası: 39–199
+- **7646 test** (gece başında 732) · yeni test dosyası: 39–200
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,

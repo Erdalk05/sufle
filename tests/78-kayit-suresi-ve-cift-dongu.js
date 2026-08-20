@@ -1,5 +1,8 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,cekirdekOku}=require('./kaynak');
+/* Kaydırma eğrisi cekirdek/akis.jse taşındı (2026-08-20): tezgâh onu da
+   yüklemezse çıkarılan tick tanımsız fonksiyon çağırır. */
+const AKIS=cekirdekOku('akis.js','SUFLE_AKIS');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -33,7 +36,8 @@ const sTick = parca(/function tick\(now\)\{[\s\S]*?\n\}/,'tick');
 const sEase = parca(/function easeLoop\(ts\)\{[\s\S]*?\n\}/,'easeLoop');
 const sPos  = parca(/function setPos\(p\)\{[\s\S]*?\n\}/,'setPos');
 const sPps  = parca(/function pxPerSec\(\)\{[^\n]*\}/,'pxPerSec');
-if(!sEl || !sTick || !sEase || !sPos || !sPps) return;
+const sDur  = parca(/function durakla\(now,ms\)\{[^\n]*\}/,'durakla');
+if(!sEl || !sTick || !sEase || !sPos || !sPps || !sDur) return;
 
 /* ---------- H8: SÜRE ARİTMETİĞİ ----------
    DUR: muhasebe satırlarını KOPYALAMA, kaynaktan ÇIKAR. İlk yazışımda
@@ -107,9 +111,9 @@ function saatKur(saat){
 
 /* ---------- ASIL BULGU: İKİ DÖNGÜ ÇAKIŞMASI ---------- */
 function akis({wpm, zamanliAcik, voiceOn=true, kare=600}){
-  return new Function('__w','__on','__v','__k', `
+  return new Function('__w','__on','__v','__k', AKIS+`
     const st={wpm:__w,breathe:false,stopAtSection:false};
-    let pxPerWord=60,maxPos=100000,pos=0,curPPS=0,running=__on,lastT=0,elapsed=0,holdUntil=0;
+    let pxPerWord=60,maxPos=100000,pos=0,curPPS=0,running=__on,lastT=0,elapsed=0,holdT0=-1e9,holdSure=0;
     let lastParaIdx=-1,tempoWords=0,activeIdx=-1,lastHud=-1e9,recT=null,curSec=null;
     let paraEnds=[],holdPoints=[],sections=[];
     let voiceOn=__v,voicePaused=false,vTarget=600,vLast=0,vRaf=0;
@@ -120,6 +124,7 @@ function akis({wpm, zamanliAcik, voiceOn=true, kare=600}){
     const toast=()=>{},updateHud=()=>{},showRecTime=()=>{},m=x=>x;
     let raf=0; const requestAnimationFrame=()=>0;
     ${sPps}
+    ${sDur}
     ${sPos}
     ${sTick}
     ${sEase}

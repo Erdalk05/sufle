@@ -69,7 +69,13 @@ ok('altyazı satırı okunabilir uzunlukta (25-50 karakter)', capCh>=25 && capCh
 ok('altyazı süresi 1.5-5 sn arası', capSec>=1.5 && capSec<=5);
 
 // ---------- YUMUŞAK DURUŞ / RAMPA ----------
-const fren = sayi(/near<60 \? Math\.max\((0\.\d+), near\/60\) : 1/, 'duruş freni');
+/* Duruş freni 2026-08-20de cekirdek/akis.jse taşındı (Mac de aynı eğriyi
+   izlesin diye). Sayı orada yaşıyor; burada da OKUNMAYA devam ediyor —
+   sıfıra inerse metnin sonu pratikte hiç gelmez. */
+const AKIS=require('./kaynak').cekirdekOku('akis.js','SUFLE_AKIS');
+const frenM=AKIS.match(/Math\.max\((0\.\d+), Math\.max\(0,kalanPx\)\/d\)/);
+if(!frenM) throw new Error('sabit bulunamadı: duruş freni');
+const fren = parseFloat(frenM[1]);
 ok('duruş freni asla sıfır değil (kilitlenme yok)', fren>0 && fren<0.5);
 
 // ---------- ÇAĞRI GERÇEKTEN YAPILIYOR MU (varlık değil, ÇAĞRI) ----------

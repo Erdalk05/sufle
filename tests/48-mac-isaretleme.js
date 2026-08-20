@@ -64,11 +64,18 @@ ok('aşırı uzun bekleme sınırlanıyor', /data-ms="10000"/.test(isaretle('(60
 /* ---------- DURAKLAMA GERÇEKTEN BEKLETİYOR MU ----------
    İşareti ekranda göstermek yetmez: akış orada durmalı, yoksa özellik ölü. */
 const tick=cikar(mac,/function tick\(ts\)\{[\s\S]*?\n  \}/,'Mac tick');
-ok('akış duraklama süresince bekliyor', /if\(ts < holdUntil\)\{ raf=requestAnimationFrame\(tick\); return; \}/.test(tick));
-ok('duraklama noktası geçilince süre kuruluyor', /holdUntil=ts\+h\.ms/.test(tick));
+/* 2026-08-20: duruş artık SERT değil, zarfla (cekirdek/akis.js). Tek karede
+   tam hızdan sıfıra düşen akış "duraklama" değil TAKILMA diye okunuyordu.
+   İddia aynı kaldı — akış duraklamada gerçekten bekliyor mu — ama ölçüm
+   davranışa taşındı: zarfın kendisi tests/200de sayıyla ölçülüyor. */
+ok('akış duraklama süresince bekliyor (zarf çarpanıyla)',
+   /const zarf = duraklamaCarpani\(ts-holdT0, holdSure\);/.test(tick) &&
+   /curPPS\*brake\*zarf\*dt/.test(tick));
+ok('duraklama noktası geçilince süre kuruluyor', /durakla\(ts,h\.ms\)/.test(tick));
 ok('her işaret yalnız BİR KEZ kullanılıyor', /!h\.used && pos<y && next>=y/.test(tick) && /h\.used=true/.test(tick));
 ok('konum, duraklama kontrolünden SONRA ilerliyor',
-   tick.indexOf('holdUntil=ts+h.ms') < tick.indexOf('pos = next;'));
+   tick.indexOf('durakla(ts,h.ms)') > 0 &&
+   tick.indexOf('durakla(ts,h.ms)') < tick.indexOf('pos = next;'));
 
 const measure=cikar(mac,/function measure\(\)\{[\s\S]*?\n  \}/,'Mac measure');
 ok('duraklama noktaları ölçümde toplanıyor', /querySelectorAll\('\.hold'\)/.test(measure));
@@ -79,7 +86,7 @@ ok('ölçüm her işaretin süresini okuyor', /\+h\.dataset\.ms\|\|300/.test(mea
 const setPos=cikar(mac,/function setPos\(p\)\{[\s\S]*?\n  \}/,'Mac setPos');
 ok('geri sarınca ilerideki duraklamalar yeniden kuruluyor',
    /holdPoints\.forEach\(h=>\{ if\(h\.y>y0\) h\.used=false; \}\)/.test(setPos));
-ok('geri sarınca bekleme de iptal ediliyor', /holdUntil=0;/.test(setPos));
+ok('geri sarınca bekleme de iptal ediliyor', /holdT0=-1e9; holdSure=0;/.test(setPos));
 
 /* ---------- BAĞLI MI ---------- */
 ok('buildWords işaretleme motorunu kullanıyor',

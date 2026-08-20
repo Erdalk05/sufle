@@ -1,5 +1,9 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,cekirdekOku}=require('./kaynak');
+/* Kaydırma eğrisi 2026-08-20de cekirdek/akis.jse taşındı (Mac de aynı
+   ritmi izlesin diye). Tezgâh çekirdeği de yüklüyor, yoksa çıkarılan
+   tick tanımsız fonksiyon çağırır ve test KENDİ eksiğini bildirir. */
+const AKIS=cekirdekOku('akis.js','SUFLE_AKIS');
 const tel=oku(telefonYolu());
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
@@ -29,16 +33,17 @@ const parca = (re,ad) => { const m=kod.match(re); ok('çıkarılabildi: '+ad, !!
 const sTick   = parca(/function tick\(now\)\{[\s\S]*?\n\}/,'tick');
 const sSetPos = parca(/function setPos\(p\)\{[\s\S]*?\n\}/,'setPos');
 const sPps    = parca(/function pxPerSec\(\)\{[^\n]*\}/,'pxPerSec');
-if(!sTick || !sSetPos || !sPps) return;
+const sDurakla= parca(/function durakla\(now,ms\)\{[^\n]*\}/,'durakla');
+if(!sTick || !sSetPos || !sPps || !sDurakla) return;
 
 /* Tezgâh: DOM yerine sayaçlar. Ölçülen tek şey pos — yani metnin gerçekten
    kaç piksel aktığı. Gerçek fonksiyonlar koşuyor, kopya yok. */
 function motor({fps, sure, wpm=140, pxPerWord=60, maxPos=100000,
                 breathe=false, paraEnds=[], holdPoints=[], baslangic=0, takilma=null}){
-  return new Function('__o', `
+  return new Function('__o', AKIS+`
     const st={wpm:__o.wpm, breathe:__o.breathe, stopAtSection:false};
     let pxPerWord=__o.pxPerWord, maxPos=__o.maxPos;
-    let pos=__o.baslangic, curPPS=0, running=true, lastT=0, elapsed=0, holdUntil=0;
+    let pos=__o.baslangic, curPPS=0, running=true, lastT=0, elapsed=0, holdT0=-1e9, holdSure=0;
     let lastParaIdx=-1, tempoWords=0, activeIdx=-1, lastHud=-1e9, recT=null, curSec=null;
     let paraEnds=__o.paraEnds.slice();
     let holdPoints=__o.holdPoints.map(h=>({y:h.y, ms:h.ms, used:false}));
@@ -55,6 +60,7 @@ function motor({fps, sure, wpm=140, pxPerWord=60, maxPos=100000,
     /* tick kendini yeniden zamanlıyor; tezgâhta kareleri BİZ süreceğiz. */
     let raf=0; const requestAnimationFrame=()=>0;
     ${sPps}
+    ${sDurakla}
     ${sSetPos}
     ${sTick}
     const adim=1000/__o.fps;
@@ -136,7 +142,7 @@ function motor({fps, sure, wpm=140, pxPerWord=60, maxPos=100000,
   ok('durma eşiğini geçmiş ama kaçmamış', r.pos>=maxPos+H*0.15 && r.pos<maxPos+H*0.25);
   /* Fren TABANI olmalı: 0,18 alt sınırı yoksa son 60 pikselde sürünerek
      yaklaşır ve metnin sonu pratikte hiç gelmez. */
-  ok('fren tabanı kaynakta duruyor', /Math\.max\(0\.18, near\/60\)/.test(kod));
+  ok('fren tabanı ortak eğride duruyor', /Math\.max\(0\.18, Math\.max\(0,kalanPx\)\/d\)/.test(AKIS));
   /* Fren gerçekten yavaşlatıyor mu: son 60 pikselde geçen süre, aynı mesafeyi
      frensiz almaktan uzun olmalı. */
   const hizli=motor({fps:60, sure:20, maxPos:100000, baslangic:540});
@@ -179,7 +185,10 @@ function motor({fps, sure, wpm=140, pxPerWord=60, maxPos=100000,
 /* ---------- KAYNAK: SÖZLEŞMENİN DAYANDIĞI SATIRLAR ----------
    Bunlar değişirse yukarıdaki sayılar da değişir; sessizce olmasın. */
 ok('kare farkı 0,1 saniyeye kıstırılıyor', /Math\.min\(0\.1,\(now-lastT\)\/1000\)/.test(kod));
-ok('hız rampası 200 ms', /Math\.min\(1, dt\/0\.2\)/.test(kod));
-ok('yumuşak duruş son 60 pikselde', /near<60 \?/.test(kod));
+/* Rampa ve fren artık ORTAK eğriden (cekirdek/akis.js) geliyor: iki kabuk
+   aynı ritmi izlesin diye. Biçim yerine ÇAĞRININ VARLIĞI kilitleniyor;
+   eğrinin kendi sözleşmesi tests/200de ölçülüyor. */
+ok('hız rampası ortak eğriden geliyor', /curPPS = hizRampasi\(curPPS, pxPerSec\(\), dt\)/.test(kod));
+ok('yumuşak duruş son 60 pikselde', /frenCarpani\(maxPos-pos, 60\)/.test(kod));
 ok('hız kelime/dakikadan türüyor', /return \(st\.wpm\/60\)\*pxPerWord/.test(kod));
 ok('konum metnin sonuyla sınırlanıyor', /Math\.min\(maxPos\+H\(\)\*0\.2, p\)/.test(kod));
