@@ -73,8 +73,26 @@ const cikarKod = (re, ad) => { const m = kodTel.match(re);
   const intro = introHam.replace(/<!--[\s\S]*?-->/g, '');
   ok('intro bölümü bulunabildi', intro.length > 100);
   const dugmeler = [...intro.matchAll(/<button\b[^>]*>/g)];
-  ok('ilk açılışta en fazla 6 düğme (ölçülen 5 + pay 1) — şimdi: ' + dugmeler.length,
-     dugmeler.length > 0 && dugmeler.length <= 6);
+  /* KURAL YENİDEN İFADE EDİLDİ (v9.47) — GEVŞETİLMEDİ.
+     Eski hâli "toplam en fazla 6 düğme" diyordu ve gerekçesi şuydu: giriş
+     ekranı TEK KARAR sorsun. 20 Ağustos'ta Erdal ölçtürdü ki v9.34 ile
+     v9.46'nın giriş ekranı piksel piksel aynıydı; ekran sade değil, BOŞTU.
+     Senaryo listesi eklendi ve toplam sayı 7'ye çıktı.
+
+     Sayıyı 7'ye yükseltmek kuralı anlamsızlaştırırdı (bir dahaki sefere 8).
+     Ölçülen şey artık RAKİP EYLEM sayısı: dil seçici bir eylem değil (aynı
+     ekranın iki dili), liste satırları eylem değil (hangi metni okuyacağını
+     SEÇİYORSUN), alttaki metin bağlantıları da eylem değil. Karar hâlâ tek:
+     kamerayla mı, kamerasız mı.
+
+     İkinci sınır de kondu: ekran sınırsız büyüyemesin diye TOPLAM denetim
+     tavanı. Liste satırları JS ile üretildiği için ayrıca `tests/207`de
+     sayıyla kilitli (en çok 4 senaryo + 3 çekim). */
+  const rakipEylem = dugmeler.filter(d => /class="[^"]*\b(big|ghostbig)\b/.test(d[0]));
+  ok('giriş ekranı TEK KARAR soruyor (asıl eylem sayısı ' + rakipEylem.length + ' ≤ 2)',
+     rakipEylem.length >= 1 && rakipEylem.length <= 2);
+  ok('giriş ekranı sınırsız büyümüyor (toplam denetim ' + dugmeler.length + ' ≤ 8)',
+     dugmeler.length > 0 && dugmeler.length <= 8);
 }
 
 /* ---------- 4. MAC SAĞ PANELİ ÜÇ SEKME (B.3) ---------- */

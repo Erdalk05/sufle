@@ -177,7 +177,13 @@ const SADECE_TELEFON = new Set([
   /* 'hizli': hızlı erişim paneli TELEFONA ÖZGÜ. Masaüstünde sahnenin
      üstünde duran bir panel yok — pencere geniş, ayarlar sağ panelde açık
      duruyor ve kadrajı örtmüyor. Kavram karşı platformda YOK; eksiklik değil. */
-  'hizli','persist','quota','mics','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb']);
+  /* 'introCekim': GİRİŞ EKRANINDAKİ SON ÇEKİMLER ŞERİDİ TELEFONA ÖZGÜ (v9.47).
+     Masaüstünde ayrı bir giriş ekranı YOK — senaryolar sol panelde, çekimler
+     "Çekimlerim" düğmesinde ve ikisi de uygulama açılır açılmaz görünüyor.
+     `hizli` ile aynı sınıf: kavram karşı platformda yok, eksiklik değil.
+     TABAN BİLEREK YÜKSELTİLDİ (tel 16→17) — ratchetin işi büyümeyi
+     imkânsız kılmak değil, GÖRÜNÜR ve gerekçeli kılmak. */
+  'hizli','persist','quota','mics','softBg','voiceTest','measure','audmon','meter','bg','autoSave','mapIn','dbGuncelle','camLock','poz','wb','introCekim']);
 /* camLock: ODAK/POZLAMA KİLİDİ TELEFONA ÖZGÜ. Kilit MediaStreamTrack
    yeteneklerine dayanıyor (focusMode/exposureMode) ve bunları yalnız mobil
    kameralar sunuyor; Mac'te getCapabilities/zoom/torch da HİÇ YOK — ölçüldü,

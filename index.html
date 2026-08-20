@@ -595,6 +595,35 @@
     max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #introSenaryo .olcu{font-size:var(--tx-sm);font-weight:600;color:var(--r-action-t);
     font-variant-numeric:tabular-nums}
+  /* GİRİŞ LİSTESİ (v9.47) — senaryolar ve son çekimler doğrudan burada. */
+  #introListe,#introCekim{display:flex;flex-direction:column;align-items:stretch;
+    gap:var(--sp-2);width:min(100%,330px)}
+  #introListe .etiket,#introCekim .etiket{font-size:var(--tx-xs);font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--t-low);text-align:left;
+    padding-left:2px}
+  /* Satırlar TONAL — dolu marka yeşili ekranda TEK olmalı ve o, asıl eylem
+     düğmesi. Liste bir seçim yüzeyi, rakip bir eylem değil. */
+  .introSat{display:flex;align-items:center;gap:var(--sp-3);width:100%;
+    min-height:var(--tap);text-align:left;background:var(--s-raised);
+    border:1px solid var(--s-line);border-radius:var(--rad-lg);
+    padding:11px 14px;color:var(--t-hi);font:inherit;cursor:pointer}
+  .introSat:active{background:var(--s-raised2,var(--s-raised));transform:scale(.99)}
+  .introSat .ad{flex:1 1 auto;min-width:0;font-size:var(--tx-md);font-weight:700;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .introSat .olcu{flex:0 0 auto;font-size:var(--tx-sm);font-weight:600;
+    color:var(--t-mid);font-variant-numeric:tabular-nums}
+  .introSat .yildiz{flex:0 0 auto;font-size:var(--tx-sm)}
+  .introSat.introAc{justify-content:center;color:var(--r-action-t);font-weight:700;
+    font-size:var(--tx-sm);background:none;border-style:dashed}
+  #introDigerler{display:flex;flex-direction:column;gap:var(--sp-2)}
+  #introCekimSerit{display:flex;gap:var(--sp-2);overflow-x:auto;padding-bottom:2px}
+  .introCek{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;
+    gap:2px;background:var(--s-raised);border:1px solid var(--s-line);
+    border-radius:var(--rad-lg);padding:9px 13px;min-height:var(--tap);
+    color:var(--t-hi);font:inherit;cursor:pointer}
+  .introCek .ne{font-size:var(--tx-sm);font-weight:700;white-space:nowrap}
+  .introCek .sure{font-size:var(--tx-xs);font-weight:600;color:var(--t-mid);
+    font-variant-numeric:tabular-nums}
   #introEylem{display:flex;flex-direction:column;align-items:stretch;gap:var(--sp-3);width:min(100%,330px)}
   #introEylem .big{justify-content:center}
   /* Üç rozet: ürünün gerçek vaatleri. Süs değil — üçü de koddan doğrulanabilir
@@ -1209,10 +1238,29 @@
        bu kart eklenmeden önce de giriş ekranında yoktu, yani kaybedilen bir
        şey yok. Kuralı taban büyüterek susturmak yerine tasarım değişti.
        Metin yoksa hiç görünmüyor; bilinmeyen şeyi yazmıyoruz. -->
-  <div id="introSenaryo" class="hidden">
-    <span class="et" data-i18n="introSenEt">Okuyacağın metin</span>
-    <span class="ad" id="introSenAd"></span>
-    <span class="olcu" id="introSenOlcu"></span>
+  <!-- SENARYO LİSTESİ GİRİŞ EKRANINDA (v9.47). Erdal 20 Ağustos sabahı
+       ölçtürdü: v9.34 ile v9.46'nın giriş ekranı PİKSEL PİKSEL AYNIYDI
+       (272.388 / 272.380 bayt). On iki sürüm çıkmış ama uygulamayı her
+       açtığında gördüğü ekran hiç değişmemişti — ölçülebilir kusurları
+       kovalarken HİSSEDİLİR ürünü es geçmişim.
+       Giriş ekranı artık bir tanıtım sayfası değil, ÇALIŞMA ekranı:
+       senaryoların burada, hangisini okuyacağını buradan seçiyorsun ve
+       son çekimlerin bir dokunuş uzakta. Aktif senaryo kutusu (aşağıdaki
+       #introSenaryo) listenin İLK SATIRI oldu; ayrı bir kart olarak
+       durduğu hâlde aynı bilgiyi iki kez yazmak olurdu. -->
+  <div id="introListe" class="hidden">
+    <span class="etiket" data-i18n="introListeEt">Senaryolarım</span>
+    <div id="introSenaryo" class="hidden">
+      <span class="et" data-i18n="introSenEt">Okuyacağın metin</span>
+      <span class="ad" id="introSenAd"></span>
+      <span class="olcu" id="introSenOlcu"></span>
+    </div>
+    <div id="introDigerler"></div>
+    <button class="introSat introAc" id="introSenAc" data-i18n="introSenAc">Senaryoları aç</button>
+  </div>
+  <div id="introCekim" class="hidden">
+    <span class="etiket" data-i18n="introCekimEt">Son çekimler</span>
+    <div id="introCekimSerit"></div>
   </div>
   <div id="introEylem">
     <button class="big" id="startCam"><span data-i18n="startCam">Kayıt için kamerayı aç</span></button>
@@ -2255,7 +2303,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.46';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.47';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2275,7 +2323,7 @@ const cam=$('#cam'), scroller=$('#scroller'), VER='9.46';
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
+  introListeEt:'Senaryolarım',introCekimEt:'Son çekimler',introSenAc:'Senaryoları aç',zSimdi:'az önce',zDk:'{n} dk önce',zSa:'{n} sa önce',zGun:'{n} gün önce',introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -2606,7 +2654,7 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
+  introListeEt:'My scripts',introCekimEt:'Recent takes',introSenAc:'Open scripts',zSimdi:'just now',zDk:'{n} min ago',zSa:'{n} h ago',zGun:'{n} d ago',introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
@@ -2912,7 +2960,9 @@ const I18N={
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{muzikFxKapali:'Ses Stüdyosu kapalıyken müzik karıştırılamaz — ses zinciri hiç kurulmuyor. Ses Stüdyosundan bir hazır ayar seç.',muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
+ tr:{
+ introSecildi:'Senaryo seçildi — okuyacağın metin bu',
+ muzikFxKapali:'Ses Stüdyosu kapalıyken müzik karıştırılamaz — ses zinciri hiç kurulmuyor. Ses Stüdyosundan bir hazır ayar seç.',muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
   muzikBuyuk:'Müzik dosyası çok büyük — 20 MB altında bir dosya seç',
   muzikSet:'Müzik eklendi: {a}',muzikCleared:'Müzik kaldırıldı',
   muzikIos:'iPhone ve iPadde müzik karıştırılamıyor: kayıt sırasında ses işleme MediaRecorderın sesini kesiyor ve çekim SESSİZ çıkıyor. Bu yüzden kapalı tutuluyor.',
@@ -2999,7 +3049,9 @@ const MSG={
   pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir',
   pozNo:'Bu kamera elle pozlamayı kabul etmedi — ayar kaldırıldı, otomatik pozlama sürüyor',
   wbNo:'Bu kamera elle beyaz ayarını kabul etmedi — ayar kaldırıldı, otomatik sürüyor'},
- en:{muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
+ en:{
+ introSecildi:'Script selected — this is what you will read',
+ muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
   muzikBuyuk:'The music file is too large — pick one under 20 MB',
   muzikSet:'Music added: {a}',muzikCleared:'Music removed',
   muzikIos:'Mixing music is not possible on iPhone or iPad: audio processing during a recording stops MediaRecorder from writing sound, so the take comes out SILENT. That is why it stays off.',
@@ -3918,6 +3970,9 @@ function statLine(n){ return n+t('stKelime')+clock(n/st.wpm*60); }
 function updateStats(){
   const el=$('#stats'); if(el) el.textContent=statLine(countWords($('#text').value||active().text||''));
   introSenaryoYaz();
+  /* Liste de tazelensin: senaryo adı değişince giriş ekranındaki satır eski
+     adı göstermeye devam ederdi — "bağlı ama YANLIŞ SAYI gösteren yüzey". */
+  introListeYaz();
 }
 /* GİRİŞ EKRANINDAKİ "OKUYACAĞIN METİN" KARTI.
    BİLİNMEYEN YAZILMAZ: senaryo yoksa ya da metni boşsa kart HİÇ görünmüyor —
@@ -3937,6 +3992,77 @@ function introSenaryoYaz(){
   $('#introSenAd').textContent = ad || t('scBasliksiz');
   $('#introSenOlcu').textContent = statLine(n);
   k.classList.remove('hidden');
+}
+
+/* GİRİŞ EKRANINDAKİ SENARYO LİSTESİ (v9.47).
+   Sıra senaryolar sayfasıyla AYNI kuralı izliyor: favoriler üstte, sonra
+   son kullanılan. İki yerde iki farklı sıra göstermek, kullanıcıya "hangisi
+   doğru" sorusunu sordurur — bu deponun "yanlış sayı gösteren yüzey" sınıfı.
+   Aktif senaryo listenin ilk satırı (yukarıdaki kart); burada YALNIZ
+   diğerleri çiziliyor, yoksa aynı senaryo iki kez görünürdü. */
+const INTRO_LISTE_TAVAN=3;      // aktif + 3 = ekranda en çok 4 senaryo
+function introListeYaz(){
+  const kap=$('#introListe'), dig=$('#introDigerler');
+  if(!kap || !dig) return;
+  const hepsi=(st.scripts||[]).filter(x=>((x.text||'').trim()));
+  kap.classList.toggle('hidden', hepsi.length===0);
+  const digerleri=hepsi.filter(x=>x.id!==st.activeId)
+    .sort((a,b)=>((b.fav?1:0)-(a.fav?1:0)) || ((b.up||0)-(a.up||0)))
+    .slice(0,INTRO_LISTE_TAVAN);
+  dig.innerHTML='';
+  for(const x of digerleri){
+    const b=document.createElement('button');
+    b.className='introSat'; b.dataset.sid=x.id;
+    const ad=(x.title||'').trim() || t('scBasliksiz');
+    /* Ad ve ölçü ayrı düğümlerde: `textContent` ile yazılıyor, yani
+       kullanıcının senaryo adı HTML olarak yorumlanmıyor. */
+    const y=document.createElement('span'); y.className='yildiz';
+    y.textContent = x.fav ? '⭐' : '';
+    const a=document.createElement('span'); a.className='ad'; a.textContent=ad;
+    const o=document.createElement('span'); o.className='olcu';
+    o.textContent=statLine(countWords(x.text||''));
+    b.append(y,a,o);
+    b.setAttribute('aria-label', ad+' — '+o.textContent);
+    dig.appendChild(b);
+  }
+}
+
+/* SON ÇEKİMLER ŞERİDİ (v9.47). Arşiv zaten vardı ama giriş ekranından
+   görünmüyordu; kullanıcı dün ne çektiğini görmek için iki ekran
+   ötesine gidiyordu. Hiç çekim yoksa şerit HİÇ çizilmiyor — boş bir
+   kutu göstermek, olmayan bir şeyi varmış gibi sunmaktır. */
+async function introCekimYaz(){
+  const kap=$('#introCekim'), ser=$('#introCekimSerit');
+  if(!kap || !ser) return;
+  let liste=[];
+  try{ liste=sortTakes(await dbListe()); }catch(e){ logErr('introCekim',e); }
+  liste=liste.slice(0,3);
+  kap.classList.toggle('hidden', liste.length===0);
+  ser.innerHTML='';
+  for(const it of liste){
+    const b=document.createElement('button');
+    b.className='introCek'; b.dataset.tid=it.id;
+    const ne=document.createElement('span'); ne.className='ne';
+    ne.textContent=(it.fav?'⭐ ':'')+bagilZaman(it.created);
+    const su=document.createElement('span'); su.className='sure';
+    su.textContent=clock(it.dur||0);
+    b.append(ne,su);
+    b.setAttribute('aria-label',(it.title||'')+' '+ne.textContent+' '+su.textContent);
+    ser.appendChild(b);
+  }
+}
+
+/* "2 dk önce" — tam tarih yerine BAĞIL zaman: giriş ekranında sorulan soru
+   "ne zaman çektim" değil, "en son ne çektim". Tam tarih arşivde duruyor. */
+function bagilZaman(ms){
+  const fark=Math.max(0, Date.now()-(+ms||0));
+  const dk=Math.floor(fark/60000);
+  if(dk<1)  return t('zSimdi');
+  if(dk<60) return srY(t('zDk'), {n:dk});
+  const sa=Math.floor(dk/60);
+  if(sa<24) return srY(t('zSa'), {n:sa});
+  const g=Math.floor(sa/24);
+  return srY(t('zGun'), {n:g});
 }
 
 /* ==CEKIRDEK:akis.js== */
@@ -11074,6 +11200,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.47':{tr:'🏠 <b>Giriş ekranı artık bir tanıtım sayfası değil, çalışma ekranı.</b> Senaryoların doğrudan orada: favoriler üstte, sonra son kullandıkların; her satırda kelime sayısı ve tahmini süre yazıyor. Bir satıra dokunduğunda o metin seçiliyor — Senaryolar sayfasını açmana gerek yok. Altında <b>son çekimlerin</b> duruyor ("2 dk önce · 00:38"); dokununca arşiv açılıyor. Hiç çekimin yoksa o şerit hiç çizilmiyor.<br><b>Neden şimdi:</b> v9.34 ile v9.46 arasında giriş ekranı piksel piksel aynıydı. On iki sürüm çıkardım ama her açtığında gördüğün ekran hiç değişmedi — ölçebildiğim kusurları kovalarken hissedeceğin ürünü atlamışım. Bu onun düzeltmesi.',en:'🏠 <b>The start screen is no longer a landing page — it is a work screen.</b> Your scripts are right there: favourites first, then the ones you used last, each with its word count and estimated duration. Tap a row and that script is selected; no need to open the Scripts page. Below it are your <b>recent takes</b> ("2 min ago · 00:38"); tap one to open the archive. With no takes at all the strip is not drawn.<br><b>Why now:</b> the start screen was pixel-identical between v9.34 and v9.46. Twelve releases shipped and the screen you see every time never changed — chasing measurable defects, I skipped the product you would actually feel. This is the correction.'},
  '9.46':{tr:'🎯 <b>Sessizce hiçbir şey yapmayan bir anahtar bulundu ve konuştu.</b> "Platform arayüz alanlarını göster" anahtarı açılıyordu ama ekranda hiçbir şey değişmiyordu: alanları yalnız dikey formatlar (Reels, Story, Shorts) tanımlıyor, varsayılan Serbest formatta gösterilecek bir alan yok. Artık anahtar sönük görünüyor ve <b>altında sebebi yazıyor</b>: hangi formata geçersen alanların çizileceğini adıyla söylüyor. Anahtar gizlenmedi — format bir dokunuş ötede ve özelliğin var olduğunu bilmelisin.',en:'🎯 <b>A switch that silently did nothing was found — and now it explains itself.</b> The "show platform interface areas" switch turned on but nothing changed on screen: only vertical formats (Reels, Story, Shorts) define those areas, and the default Free format has none to show. The switch now appears dimmed with <b>the reason written underneath</b>, naming the formats that draw them. We did not hide it — the format is one tap away and you should know the feature exists.'},
  '9.45':{tr:'📱 <b>Çok dar ekranda ayar kartlarının değeri kesiliyordu.</b> Kart kapalıyken sağda o anki değeri yazar ("1080p · Dengeli", "6/8 açık") — kartın kapalıyken tek işi budur. 320 piksel genişlikte (eski iPhone SE, bölünmüş ekran, yakınlaştırılmış tarayıcı) o yazıya 51 pikselin yalnız 22si kalıyor ve üç noktaya gidiyordu. Artık değer kendi satırına iniyor: başlık da değer de tam okunuyor. 360 piksel ve üstünde görünüm hiç değişmedi.',en:'📱 <b>On very narrow screens the value on settings cards was cut off.</b> A collapsed card shows its current value on the right ("1080p · Balanced", "6/8 on") — that is the only job a collapsed card has. At 320 pixels wide (older iPhone SE, split view, zoomed browser) only 22 of the 51 pixels were left for it and it ended in an ellipsis. The value now drops onto its own line: both the title and the value are fully readable. At 360 pixels and above nothing changed.'},
  '9.44':{tr:'🧭 <b>Masaüstünde üst çubuk düğmeleri pencerenin dışına düşüyordu, düzeltildi.</b> Bu tur telefona dokunmadı. Masaüstünde 900 piksel genişlikte <b>Çekimlerim</b> düğmesi bile ekranın dışında kalıyordu ve arşive ulaşmanın başka yolu yoktu.',en:'🧭 <b>On the desktop, toolbar buttons were falling outside the window and are now fixed.</b> This round did not touch the phone. On the desktop at 900 pixels even <b>My Takes</b> was off screen, and there was no other way into the archive.'},
@@ -11345,6 +11472,23 @@ $('#voiceBtn').onclick=e=>{ e.stopPropagation(); voiceOn?stopVoice():startVoice(
 $('#settingsBtn').onclick=e=>{ e.stopPropagation(); openSheet('#sheet');
   if($('#tab-cam').classList.contains('on')){ startMeter(); startLight(); } };
 $('#scriptsBtn').onclick=e=>{ e.stopPropagation(); rememberPos(); fillEditor(); renderScripts(); openSheet('#scriptsSheet'); cekimSayilariniTazele(); };
+/* GİRİŞ EKRANI LİSTESİNİN DOKUNUŞLARI (v9.47).
+   Olay DELEGASYONLA bağlanıyor: satırlar her tazelemede yeniden üretiliyor
+   ve tek tek dinleyici bağlamak, silinen satırların dinleyicilerini geride
+   bırakırdı (uzun oturumda sessiz sızıntı). */
+$('#introDigerler').onclick=e=>{
+  const b=e.target.closest('.introSat'); if(!b || !b.dataset.sid) return;
+  const yeni=(st.scripts||[]).find(x=>x.id===b.dataset.sid);
+  if(!yeni) return;
+  st.activeId=yeni.id; yeni.up=Date.now(); save();
+  fillEditor(); buildContent(); introSenaryoYaz(); introListeYaz();
+  toast(m('introSecildi'));
+};
+$('#introSenAc').onclick=()=>{ fillEditor(); renderScripts(); openSheet('#scriptsSheet'); cekimSayilariniTazele(); };
+$('#introCekimSerit').onclick=e=>{
+  const b=e.target.closest('.introCek'); if(!b) return;
+  renderTakes(); openSheet('#takesSheet');
+};
 /* uygulama arka plana atılırsa/kapatılırsa da konumu yaz */
 /* KAPANIŞTA GECİKTİRİLMİŞ YAZIM ÇALIŞMAZ.
    rememberPos() içindeki save() 120 ms'lik bir zamanlayıcı kuruyordu; pagehide
@@ -12438,6 +12582,13 @@ if(st.ilkAkis && $('#tapnote')) $('#tapnote').style.display='none';
 kartlariDuzenle();
 fromShare(); applyLang(); apply(); applyMode(st.mode,false); fillEditor(); renderScripts(); buildContent(); fromShortcut();
 setTimeout(measure,300);
+/* GİRİŞ EKRANI LİSTESİ (v9.47) açılışta doldurulur. Çekim şeridi IndexedDB
+   okuduğu için ASENKRON: beklemek açılışı geciktirirdi, bu yüzden şerit
+   hazır olunca kendi kendine çiziliyor. Hata olursa şerit hiç çizilmiyor ve
+   hata günlüğüne yazılıyor — açılışı bir arşiv hatası yüzünden durdurmak,
+   uygulamayı hiç açmamak demek olurdu. */
+introListeYaz();
+introCekimYaz();
 firstRun();
 
 /* ARŞİV KALICILIĞI: tarayıcılar (özellikle iOS Safari) uzun süre açılmayan sitenin

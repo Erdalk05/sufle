@@ -7,7 +7,9 @@
    KULLANDIĞINI gömsün. */
 
 const MSG={
- tr:{muzikFxKapali:'Ses Stüdyosu kapalıyken müzik karıştırılamaz — ses zinciri hiç kurulmuyor. Ses Stüdyosundan bir hazır ayar seç.',muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
+ tr:{
+ introSecildi:'Senaryo seçildi — okuyacağın metin bu',
+ muzikFxKapali:'Ses Stüdyosu kapalıyken müzik karıştırılamaz — ses zinciri hiç kurulmuyor. Ses Stüdyosundan bir hazır ayar seç.',muzikTur:'Bu dosya bir ses dosyası değil — MP3, M4A ya da WAV seç',
   muzikBuyuk:'Müzik dosyası çok büyük — 20 MB altında bir dosya seç',
   muzikSet:'Müzik eklendi: {a}',muzikCleared:'Müzik kaldırıldı',
   muzikIos:'iPhone ve iPadde müzik karıştırılamıyor: kayıt sırasında ses işleme MediaRecorderın sesini kesiyor ve çekim SESSİZ çıkıyor. Bu yüzden kapalı tutuluyor.',
@@ -94,7 +96,9 @@ const MSG={
   pdfSifreli:'PDF şifreli — aç, metni kopyala, Yapıştır ile getir',
   pozNo:'Bu kamera elle pozlamayı kabul etmedi — ayar kaldırıldı, otomatik pozlama sürüyor',
   wbNo:'Bu kamera elle beyaz ayarını kabul etmedi — ayar kaldırıldı, otomatik sürüyor'},
- en:{muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
+ en:{
+ introSecildi:'Script selected — this is what you will read',
+ muzikFxKapali:'Music cannot be mixed while the Audio Studio is off — the audio chain is never built. Pick a preset in the Audio Studio.',muzikTur:'That file is not audio — pick an MP3, M4A or WAV',
   muzikBuyuk:'The music file is too large — pick one under 20 MB',
   muzikSet:'Music added: {a}',muzikCleared:'Music removed',
   muzikIos:'Mixing music is not possible on iPhone or iPad: audio processing during a recording stops MediaRecorder from writing sound, so the take comes out SILENT. That is why it stays off.',

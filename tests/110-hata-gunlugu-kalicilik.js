@@ -55,7 +55,9 @@ const etiketler=s=>[...new Set([...s.matchAll(/logErr\(\s*['"]([A-Za-z0-9_]+)['"
      duruyor ve kadrajı örtmüyor. Yani eksiklik değil, kavramın karşı
      platformda bulunmaması. */
   const MUAF=new Set(['hizli','persist','quota','mics','softBg','voiceTest','measure',
-                      'audmon','meter','bg','autoSave','mapIn','camLock','poz','wb']);
+                      'audmon','meter','bg','autoSave','mapIn','camLock','poz','wb',
+                      /* introCekim: giriş şeridi telefona özgü — bkz. tests/15 */
+                      'introCekim']);
   const beklenmeyen=eksik.filter(x=>!MUAF.has(x));
   ok('Macte eksik her etiket gerekçeli'+(beklenmeyen.length?' — beklenmeyen: '+beklenmeyen.join(', '):'')+
      ' ('+eksik.length+' muaf)', beklenmeyen.length===0);

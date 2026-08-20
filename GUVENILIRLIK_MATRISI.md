@@ -8,7 +8,7 @@ söyleniyor ve hangi test kilitliyor. "Muhtemelen çalışır" diye satır yok;
 kanıtı olmayan senaryo **açık** yazıyor. `tests/199` bu dosyanın kendisini
 denetliyor: adı geçen her test dosyası ve her mesaj anahtarı gerçekten var mı.
 
-Son ölçüm: 2026-08-20 · sürüm 9.46
+Son ölçüm: 2026-08-20 · sürüm 9.47
 
 ## A · Kamera ve izin
 

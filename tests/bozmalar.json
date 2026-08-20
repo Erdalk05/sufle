@@ -5472,5 +5472,54 @@
   "kaynak": "telefon",
   "bul": "  shorts:{n:{tr:'YouTube Shorts',en:'YouTube Shorts'}, asp:'9:16', wpm:170, fs:44, limit:180,\n          safe:{top:8,bottom:18,right:15}},",
   "koy": "  shorts:{n:{tr:'YouTube Shorts',en:'YouTube Shorts'}, asp:'9:16', wpm:170, fs:44, limit:180, safe:null},"
+ },
+ {
+  "ad": "v9.47 giriş listesi aktif senaryoyu ikinci kez gösteriyor",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "  const digerleri=hepsi.filter(x=>x.id!==st.activeId)",
+  "koy": "  const digerleri=hepsi.filter(x=>!!x.id)"
+ },
+ {
+  "ad": "v9.47 giriş listesi tavansız (giriş ekranı ikinci bir senaryolar sayfasına döner)",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "    .slice(0,INTRO_LISTE_TAVAN);",
+  "koy": "    ;"
+ },
+ {
+  "ad": "v9.47 senaryo adı HTML olarak yazılıyor (adında etiket olan senaryo kod çalıştırır)",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "    const a=document.createElement('span'); a.className='ad'; a.textContent=ad;",
+  "koy": "    const a=document.createElement('span'); a.className='ad'; a.innerHTML=ad;"
+ },
+ {
+  "ad": "v9.47 giriş listesi sırası senaryolar sayfasından ayrışıyor (favori üstte değil)",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "    .sort((a,b)=>((b.fav?1:0)-(a.fav?1:0)) || ((b.up||0)-(a.up||0)))",
+  "koy": "    .sort((a,b)=>((b.up||0)-(a.up||0)))"
+ },
+ {
+  "ad": "v9.47 çekim yokken boş şerit çiziliyor",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "  kap.classList.toggle('hidden', liste.length===0);\n  ser.innerHTML='';",
+  "koy": "  kap.classList.remove('hidden');\n  ser.innerHTML='';"
+ },
+ {
+  "ad": "v9.47 arşiv hatası açılışı durduruyor",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "  try{ liste=sortTakes(await dbListe()); }catch(e){ logErr('introCekim',e); }",
+  "koy": "  liste=sortTakes(await dbListe());"
+ },
+ {
+  "ad": "v9.47 giriş listesi açılışta hiç çizilmiyor (ancak bir ayar değişince görünür)",
+  "test": "207-giris-senaryo-listesi.js",
+  "kaynak": "telefon",
+  "bul": "introListeYaz();\nintroCekimYaz();",
+  "koy": "/* introListeYaz(); introCekimYaz(); */"
  }
 ]

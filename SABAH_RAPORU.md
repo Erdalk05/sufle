@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.46 YAYINLANDI ve canlıdan doğrulandı (`sufle-v118`); md5 birebir.**
+**DURUM — v9.47: kapı yeşil, YAYIN BEKLİYOR.** (v9.46 yayınlandı ve canlıdan doğrulandı: `sufle-v118`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
@@ -60,6 +60,48 @@ sürerken ayar değiştirme de ölçüldü: kayıt düşmüyor, hata günlüğü
 | B1–B6 | Yalnız **gerçek cihazda** ölçülebilenler — 5 ve 15 dakikalık gerçek iPhone çekimi dahil |
 
 ---
+
+## 🏠 20 Ağustos — v9.47 — GİRİŞ EKRANI ÇALIŞMA EKRANI OLDU (Erdal'ın itirazı)
+
+**Erdal sabah şunu söyledi:** *"v9.33'ten v9.46'ya yaptığın hiçbir değişikliği
+görmedim, ne ekranda ne içerikte."* Savunmaya geçmeden ölçtüm — **haklıydı.**
+
+v9.34 ile v9.46'nın giriş ekranını aynı tarayıcıda, aynı ölçüde yan yana
+çektim: **piksel piksel aynı** (272.388 / 272.380 bayt). Telefonunda `v9.46`
+yazdığını da doğruladı, yani önbellek sorunu yoktu — ekran gerçekten
+değişmemişti.
+
+Dürüst döküm: 9.35 (favori · "Filtre ve güzellik" adı · **Hızlı** etiketi) ve
+9.36 (**Temel/Gelişmiş** ayar düzeyi) telefonda görünür. 9.37–9.40 dil
+değiştirmezsen fark etmez, 9.41 yalnız duraklamalarda hissedilir, 9.43 ve 9.44
+**yalnız masaüstü**, 9.45 yalnız 320 pikselde, 9.46 kapalı bir anahtarın
+altındaki yazı. Yani **9.37'den sonra telefonda neredeyse hiçbir şey yapmadım.**
+
+Sebep öncelik hatası: ölçebildiğim ve kanıtlayabildiğim kusurları kovaladım,
+kullanıcının HİSSEDECEĞİ ürünü değil.
+
+**v9.47 bunun düzeltmesi.** Giriş ekranı artık tanıtım sayfası değil, çalışma
+ekranı: senaryolar doğrudan orada (favoriler üstte, sonra son kullanılanlar,
+her satırda kelime sayısı ve süre), bir satıra dokununca o metin seçiliyor,
+altında son çekimler şeridi duruyor ("2 dk önce · 00:38"). Hiç çekim yoksa
+şerit hiç çizilmiyor.
+
+**Kural gizlice atlanmadı, yeniden ifade edildi.** `tests/123` "ilk açılışta en
+fazla 6 düğme" diyordu; liste eklenince 7 oldu. Sayıyı 7'ye yükseltmek kuralı
+anlamsızlaştırırdı. Artık ölçülen şey **rakip eylem** sayısı (≤2 — kamerayla mı
+kamerasız mı) ve ayrı bir **toplam denetim tavanı** (≤8) var; liste satırları
+JS ile üretildiği için `tests/207` onları da sayıyla kilitliyor (en çok 4
+senaryo + 3 çekim).
+
+**Yol boyunca kendi aracımın kusuru çıktı:** dün gece yazdığım `esnek()`
+dosyanın TAMAMINI normalleştiriyordu ve **HTML metnindeki** virgüllerden sonraki
+boşlukları da siliyordu — kullanıcıya görünen "PDF için: dosyayı aç, metni
+kopyala…" cümlesi testlerde bozuluyor ve `tests/128` haksız yere kırılıyordu.
+Dönüşümün tanımı zaten "yalnız `<script>` bölgeleri" idi; araç tanımdan sapmıştı.
+
+`tests/207` (41 iddia) + 7 kasıtlı bozma. Parite muafiyeti **bilerek** 16→17
+yükseltildi (giriş şeridi telefona özgü) — ratchetin işi büyümeyi imkânsız
+kılmak değil, görünür ve gerekçeli kılmak.
 
 ## 🎯 20 Ağustos gecesi — v9.46 — SESSİZCE HİÇBİR ŞEY YAPMAYAN ANAHTAR
 
@@ -2753,9 +2795,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7758 test** (gece başında 732) · yeni test dosyası: 39–206
+- **7800 test** (gece başında 732) · yeni test dosyası: 39–207
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **782 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **789 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

@@ -1283,7 +1283,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 const I18N={
  tr:{lookHere:'kameraya bak',tapNote:'▶︎ başlatmak için ekrana dokun · yukarı-aşağı sürükle = konum · − + ile hız (sağ kenardan da sürükleyebilirsin)',
   lockedPill:'kilitli — iki kez dokun',introP:'Telefonun önünde okurken doğrudan kaydet. Yazı kameranın hemen altında akar; göz teması bozulmaz.',
-  introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
+  introListeEt:'Senaryolarım',introCekimEt:'Son çekimler',introSenAc:'Senaryoları aç',zSimdi:'az önce',zDk:'{n} dk önce',zSa:'{n} sa önce',zGun:'{n} gün önce',introSenEt:'Okuyacağın metin',startCam:'Kayıt için kamerayı aç',startNoCam:'Kamerasız prova yap',help:'Nasıl kullanılır?',install:'Ana ekrana ekle',settings:'Ayarlar',liveSettings:'Canlı önizleme',
   tabRead:'Okuma',tabLook:'Görünüm',tabCam:'Kamera',tabMore:'Diğer',speedWpm:'Hız — WPM (dakikada kelime)',
   /* Ayar bölümlerinin ALL-CAPS başlıkları. Kısa olmak ZORUNDA: iki satıra
      taşan bölüm adı, altındaki kart yığınının ritmini kart başlığından
@@ -1614,7 +1614,7 @@ const I18N={
   wbHint:'Işık rengi değişse bile ten rengin aynı kalır. Düşük değer sıcak (sarı), yüksek değer soğuk (mavi) ışığa göre ayar demektir. Otomatiğe dönmek için sürgüye çift dokun.'},
  en:{lookHere:'look at the camera',tapNote:'▶︎ tap to start · drag up/down = position · − + for speed (or drag the right edge)',
   lockedPill:'locked — double tap',introP:'Record straight from your phone while you read. Text scrolls right under the lens so eye contact holds.',
-  introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
+  introListeEt:'My scripts',introCekimEt:'Recent takes',introSenAc:'Open scripts',zSimdi:'just now',zDk:'{n} min ago',zSa:'{n} h ago',zGun:'{n} d ago',introSenEt:'What you will read',startCam:'Open camera to record',startNoCam:'Rehearse without camera',help:'How to use',install:'Add to home screen',settings:'Settings',liveSettings:'Live preview',
   tabRead:'Reading',tabLook:'Look',tabCam:'Camera',tabMore:'More',speedWpm:'Speed — WPM (words per minute)',
   bCekim:'Shot and pace',bMetin:'While reading',bGorunum:'How the text looks',
   bGoruntu:'Video',bSes:'Audio',bAltyazi:'Captions and voice follow',
@@ -2335,7 +2335,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.46';   // telefon sürümüyle aynı numaralama
+  const VER='9.47';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -5533,6 +5533,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.47':{tr:'🏠 Bu tur telefona özgü: giriş ekranı çalışma ekranına dönüştü (senaryo listesi ve son çekimler doğrudan orada). Masaüstünde zaten sol panelde duruyorlar.',en:'🏠 This round is phone-only: the start screen became a work screen (script list and recent takes right there). On the desktop they already live in the left panel.'},
    '9.46':{tr:'🎯 Bu tur telefona özgü: hiçbir şey yapmayan bir anahtar (platform arayüz alanları) artık sebebini söylüyor. Masaüstünde davranış değişmedi.',en:'🎯 This round is phone-only: a switch that did nothing (platform interface areas) now explains why. Desktop behaviour is unchanged.'},
    '9.45':{tr:'📱 Bu tur telefona özgü: çok dar ekranda ayar kartlarının değeri kesiliyordu, artık kendi satırına iniyor. Masaüstünde davranış değişmedi.',en:'📱 This round is phone-only: on very narrow screens the value on settings cards was cut off and now drops onto its own line. Desktop behaviour is unchanged.'},
    '9.44':{tr:'🧭 <b>Üst çubuktaki düğmeler pencerenin dışına düşüyordu — artık hepsi ulaşılabilir.</b> Çubuk satır kıramıyordu ve yüksekliği sabitti; pencere küçüldükçe sağdaki düğmeler ekranın dışına taşıyor, sayfa yatay da kaymadığı için onlara hiçbir yolla ulaşılamıyordu. Ölçüldü: 1440 pikselde Tam Ekran ve Sade, 1000 pikselde Senaryolar, 900 pikselde <b>Çekimlerim</b> — yani arşive ulaşmanın tek yolu — dışarıda kalıyordu. Artık çubuk gerektiğinde ikinci satıra sarıyor; her şey sığdığında görünüm aynı.',en:'🧭 <b>Toolbar buttons were falling outside the window — all of them are reachable now.</b> The bar could not wrap and its height was fixed, so as the window got smaller the buttons on the right ran off screen, and since the page does not scroll sideways there was no way to reach them. Measured: at 1440 pixels Full Screen and Clean, at 1000 pixels Scripts, and at 900 pixels <b>My Takes</b> — the only way into the archive — were off screen. The bar now wraps to a second row when needed; when everything fits it looks the same.'},

@@ -286,6 +286,24 @@ function dizeSil(kod){
    iddialar (bu depoda meşru olan tek biçim kilidi) aynen çalışmaya devam
    ediyor. Maskeleme `dizeSil` ile aynı tarayıcıyı kullanıyor. */
 function esnek(src){
+  /* ⚠️ YALNIZ <script> BÖLGELERİ (2026-08-20'de ısırdı).
+     İlk yazımda dosyanın TAMAMI normalleştiriliyordu ve HTML METNİNDEKİ
+     virgüllerden sonraki boşluklar da siliniyordu: kullanıcıya görünen
+     "PDF için: dosyayı aç, metni kopyala, Yapıştır ile getir" cümlesi
+     testlerde "…aç,metni kopyala,Yapıştır…" hâline geliyor ve o cümleyi
+     arayan iddia HAKSIZ YERE kırılıyordu (tests/128). Daha kötüsü: aynı
+     bozulma bir iddiayı sessizce YANLIŞ metne bakar hâle de getirebilirdi.
+     Dönüşümün tanımı zaten "kabuğun <script> bölgeleri" idi (bicim.py böyle
+     yapıyor); araç o tanımdan sapmıştı. */
+  const bolge=/<script[^>]*>[\s\S]*?<\/script>/g;
+  if(!bolge.test(src)) return _esnekParca(src);   // saf JS dosyası (çekirdek modülü)
+  bolge.lastIndex=0;
+  return src.replace(bolge, m=>{
+    const bas=m.indexOf('>')+1, son=m.lastIndexOf('</script>');
+    return m.slice(0,bas)+_esnekParca(m.slice(bas,son))+m.slice(son);
+  });
+}
+function _esnekParca(src){
   const maske=dizeSil(src);
   let out='';
   for(let i=0;i<src.length;i++){
