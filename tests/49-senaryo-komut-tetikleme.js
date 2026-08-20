@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
+const {telefonYolu,oku,cikar,esnek}=require('./kaynak');
 const {cekirdekOku}=require('./kaynak');
-const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+const kod=esnek(esnek(oku(telefonYolu()))).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* SENARYONUN KENDİSİ SESLİ KOMUT TETİKLİYOR
    Komut kalıbı "tetik kelimesi + komut". 🎤 açıkken bu ikiliyi OKUMAK komutu

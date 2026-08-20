@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
-const tel=oku(telefonYolu());
+const {telefonYolu,oku,cikar,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* DEPO DOLUNCA SENARYO KAYDEDİLEMİYOR — VE VERİLEN ÖĞÜT YANLIŞTI

@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu, oku, cozJeton}=require('./kaynak.js');
+const {telefonYolu, oku, cozJeton,esnek}=require('./kaynak.js');
 
 /* B — KUMANDA ÇUBUĞU HER TELEFONA SIĞMALI.
 
@@ -26,7 +26,7 @@ const {telefonYolu, oku, cozJeton}=require('./kaynak.js');
 
 /* Çubuğun aritmetiği gerçek piksellerle yapılır; jetonlar çözülerek okunur
    (B.1'de gap `var(--sp-1)`e bağlandı ve hesap NaN'a düşmüştü). */
-const s = cozJeton(oku(telefonYolu()));
+const s = cozJeton(esnek(oku(telefonYolu())));
 
 /* ---------- ÇUBUĞUN İÇİNDEKİ DÜĞMELER ---------- */
 const barHtml = (s.match(/<div id="bar"[\s\S]*?\n<\/div>/) || [''])[0];
@@ -123,7 +123,7 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
    Kilitlenen kural: öge KENDİ İÇİNDE kırılmaz, çubuk ÖGELER ARASINDA kırılır. */
 {
   const { macYolu } = require('./kaynak.js');
-  const mac = oku(macYolu());
+  const mac = esnek(oku(macYolu()));
   const sb = (mac.match(/#statusbar\{[^}]*\}/) || [''])[0];
   ok('masaüstü durum çubuğu bulundu', !!sb);
   ok('çubuk ögeler arasında satır kırabiliyor', /flex-wrap:\s*wrap/.test(sb));
@@ -152,7 +152,7 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
      noktasıdır. İlk yazımda oraya bağladım ve noktayı düğmenin altına
      ittim — çekim ekranının en tanınır ögesi bozuldu. */
 {
-  const src2 = oku(telefonYolu());
+  const src2 = esnek(oku(telefonYolu()));
   const kod2 = src2.replace(/\/\*[\s\S]*?\*\//g, '');
   const dugmeler = ['settingsBtn', 'scriptsBtn', 'readyBtn', 'voiceBtn', 'playBtn'];
   for (const id of dugmeler) {
@@ -254,7 +254,7 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
    Kural: iç kenar ile yükseklik AYNI jetondan okunur, ikisi ayrışamaz.
    Ölçüm sonrası 430/390/360 px'te çakışan çift 0. */
 {
-  const src3 = oku(telefonYolu());
+  const src3 = esnek(oku(telefonYolu()));
   ok('çubuğun alt iç kenarı jetondan geliyor',
      /--barAlt:calc\(\d+px \+ env\(safe-area-inset-bottom\)\)/.test(src3));
   /* Desen `[^)]*` ile yazılmıştı ve ifadenin içindeki `calc(...)`in kendi
@@ -280,7 +280,7 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
    onu suflenin üstüne bindirmek olurdu.
    Ölçüldü: 844×390, 932×430, 390×844, 430×932 → çakışan çift 0. */
 {
-  const src4 = oku(telefonYolu());
+  const src4 = esnek(oku(telefonYolu()));
   ok('talimat yazısı yığın yüksekliğine göre konumlanıyor',
      /\.tapnote\{position:absolute;bottom:calc\(var\(--barH\) \+ \d+px\)/.test(src4));
   ok('yüzdeye dayalı eski konum geri gelmedi',

@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
-const tel=oku(telefonYolu());
+const {telefonYolu,oku,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* I7 — capTimes KELİME ATLAMADA BOŞLUK BIRAKIYOR MU: BIRAKMIYOR (çürüdü).

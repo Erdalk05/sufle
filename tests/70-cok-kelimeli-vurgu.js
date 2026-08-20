@@ -1,7 +1,7 @@
 const ok2=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku,blokKes}=require('./kaynak');
-const tel=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
-const mac=oku(macYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+const {telefonYolu,macYolu,oku,blokKes,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu()))).replace(/\/\*[\s\S]*?\*\//g,'');
+const mac=esnek(esnek(oku(macYolu()))).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* B1 — ÇOK KELİMELİ VURGU HİÇ ÇALIŞMIYORDU.
    İşaretleme belirteç bazlı çalışıyor. `*çok önemli*` boşluktan iki belirtece

@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku, macMetni}=require('./kaynak');
-const tel=oku(telefonYolu());
-const mac=macMetni();
+const {telefonYolu,macYolu,oku, macMetni,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
+const mac=esnek(esnek(macMetni()));
 const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 
 /* L1 — MACE YAYIN PAKETİ TAŞINSIN MI (KARAR + MALİYET):

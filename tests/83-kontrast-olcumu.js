@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cozJeton}=require('./kaynak');
-const tel=oku(telefonYolu());
+const {telefonYolu,oku,cozJeton,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
 
 /* K4 — YÜKSEK KONTRAST TEMASINDA KONTRAST ORANI WCAG AA MI: ÖLÇÜLDÜ.
 

@@ -5297,5 +5297,33 @@
   "kaynak": "kontrast",
   "bul": "ölçek dışı yazı boyu ARTTI",
   "koy": "ölçek dışı yazı boyu değişti"
+ },
+ {
+  "ad": "v9.42 biçim tarayıcısı iki sınıfı birleştiriyor (doğru disiplin cezalanır)",
+  "test": "202-bicim-kilidi.js",
+  "kaynak": "bicim",
+  "bul": "İDDİA BİÇİME KİLİTLİ",
+  "koy": "BICIME KILITLI"
+ },
+ {
+  "ad": "v9.42 biçim tarayıcısının 'hiçbir şey değiştirmedi' nöbetçisi kaldırılıyor",
+  "test": "202-bicim-kilidi.js",
+  "kaynak": "bicim",
+  "bul": "dönüşüm HİÇBİR ŞEY değiştirmedi",
+  "koy": "dönüşüm uygulandı"
+ },
+ {
+  "ad": "v9.42 biçim kilidi ratchetı sessizce kaldırılıyor",
+  "test": "202-bicim-kilidi.js",
+  "kaynak": "bicim",
+  "bul": "biçime kilitli test ARTTI",
+  "koy": "biçime kilitli test sayısı"
+ },
+ {
+  "ad": "v9.42 kapı biçim kilidi adımını koşturmuyor (ölü nöbetçi)",
+  "test": "202-bicim-kilidi.js",
+  "kaynak": "kapi",
+  "bul": "python3 bicim.py || KOD=1",
+  "koy": "true # python3 bicim.py"
  }
 ]

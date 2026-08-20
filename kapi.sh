@@ -1,6 +1,7 @@
 #!/bin/bash
 # Sufle yeşil kapı — yayından ÖNCE koşturulur. Hepsi geçmeden yayınlanmaz.
-# 8 adım: derleme · denetim · sözdizimi · testler · sürüm · aynalar · kapsam · bozma turu
+# 11 adım: derleme · denetim · sözdizimi · testler · sürüm · aynalar · kapsam ·
+#          bozma turu · kontrast · çekim akışı · BİÇİM KİLİDİ
 # ⚠️ .son-yayin dosyasını YAYINDAN SONRA yaz. Önce yazarsan kapı yeni sürümü
 #    "zaten yayınlanmış" sanıp kendini bloke eder (bir kez başıma geldi).
 #   ./kapi.sh                  # yeni uygulama sürümü, yayın öncesi
@@ -15,14 +16,14 @@ export SUFLE_YAYIN_SONRASI="$YAYIN_SONRASI"
 KOD=0
 say(){ printf '\n\033[1m== %s ==\033[0m\n' "$1"; }
 
-say "1/10 Derleme tazeliği"
+say "1/11 Derleme tazeliği"
 # EN BAŞTA, çünkü çıktı bayatsa sonraki YEDİ ADIM DA yanlış dosyayı ölçer:
 # denetim bayat kabuğu denetler, testler bayat kabuğu sınar, kapı yeşil der ve
 # yayınlanan kod kaynaktan farklı olur. Erdal'ın diğer depolarında bu sınıf
 # ("bayat dist") iki kez pahalıya patladı.
 python3 derle.py --denetle || KOD=1
 
-say "2/10 Statik denetim (telefon + Mac)"
+say "2/11 Statik denetim (telefon + Mac)"
 # DEPO ÖNCE. Ters sıra 2026-08-13'te yanılttı: depodaki dosya düzenlendi,
 # masaüstü kopyası eski kaldı, kapı eski dosyayı denetleyip yeşil dedi.
 MACF="mac/Teleprompter Pro.html"
@@ -34,7 +35,7 @@ else
   echo "  (Mac dosyası bulunamadı, atlandı)"
 fi
 
-say "3/10 JS sözdizimi"
+say "3/11 JS sözdizimi"
 TMP=$(mktemp -d)
 python3 - "$TMP" <<'PY' || KOD=1
 import re, sys, os
@@ -57,10 +58,10 @@ else
   echo "  Mac dosyası yok, atlandı"
 fi
 
-say "4/10 Regresyon testleri"
+say "4/11 Regresyon testleri"
 node tests/kos.js || KOD=1
 
-say "5/10 Sürüm tutarlılığı"
+say "5/11 Sürüm tutarlılığı"
 python3 - <<'PY' || KOD=1
 import os, re, sys
 ver = re.search(r"VER='([\d.]+)'", open('index.html', encoding='utf-8').read()).group(1)
@@ -83,7 +84,7 @@ if prev and int(cache) <= int(prev[1]):
 print("  ✓ sürüm ve cache ileri gitmiş")
 PY
 
-say "6/10 Platformlar arası tutarlılık"
+say "6/11 Platformlar arası tutarlılık"
 python3 - "$MACF" <<'PY2' || KOD=1
 import re, sys, hashlib, os
 mac = sys.argv[1]
@@ -142,20 +143,20 @@ for ad, kanon, ayna in AYNALAR:
 sys.exit(0 if ok else 1)
 PY2
 
-say "7/10 Fonksiyon kapsamı"
+say "7/11 Fonksiyon kapsamı"
 # TESTİN HİÇ ANMADIĞI FONKSİYON SAYISI DÜŞMELİ, ARTMAMALI.
 # Ölçüt bilerek "kapsanmayan sayısı": yüzde ile ölçseydik testsiz bir
 # fonksiyonu SİLMEK kapsamı iyileştirmiş gibi görünürdü. Gerekçenin
 # tamamı kapsam.py başında.
 python3 kapsam.py index.html "$MACF" || KOD=1
 
-say "8/10 Kasıtlı bozma turu"
+say "8/11 Kasıtlı bozma turu"
 # HER TESTİN AYIRT ETTİĞİ TEKRARLANABİLİR OLARAK KANITLANIYOR.
 # Eskiden bozmalar geçici betiklerdi: kanıt yalnız commit mesajında
 # kalıyordu ve testi sonradan gevşeten kimse yakalanmıyordu.
 python3 bozma.py || KOD=1
 
-say "9/10 Kontrast denetimi (çizilmiş arayüz)"
+say "9/11 Kontrast denetimi (çizilmiş arayüz)"
 # B.8'in kalan kalemi. tests/121 jeton ÇİFTLERİNİ hesaplıyor ama bir jetonun
 # hangi zeminin üstünde kullanıldığını kaynaktan bilmek mümkün değil; gerçek
 # soru "bu metin ardındaki zeminin üstünde okunuyor mu" ve buna ancak tarayıcı
@@ -167,7 +168,7 @@ else
   echo "  ATLANDI: Chrome yok — kontrast denetimi koşturulamadı"
 fi
 
-say "10/10 Çekim akışı (uçtan uca, sahte kamerayla)"
+say "10/11 Çekim akışı (uçtan uca, sahte kamerayla)"
 # KAPININ İLK DOKUZ ADIMI KAYNAĞI ÖLÇÜYOR. Kullanıcının yaptığı şey ise tek
 # bir zincir: kamerayı aç → kaydet → durdur → sonucu gör → altyazıyı al.
 # Zincirin bir halkası koptuğunda diğer testler yeşil kalabilir, çünkü her
@@ -178,6 +179,17 @@ if [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
 else
   echo "  ATLANDI: Chrome yok — çekim akışı koşturulamadı"
 fi
+
+say "11/11 Biçim kilidi (davranış değişmeden kırılan test)"
+# EN PAHALI TEST KUSURU SINIFININ SİSTEMATİK TARAMASI (2026-08-20).
+# Kabuğun `,` ve `;` işaretlerinden sonra bir boşluk eklemek davranışı hiç
+# değiştirmez; bu değişiklikte kırılan bir test, kodun DAVRANIŞINA değil
+# YAZIM BİÇİMİNE bakıyordur. Ölçüldü: 201 dosyanın 65'i. Tek tek düzeltmek
+# işe yaramıyordu, her tur yenisi çıkıyordu — artık sayı yalnız AŞAĞI iner.
+# Yalnız "iddia" sınıfı ratchetleniyor; gerçek fonksiyonu kaynaktan çıkarıp
+# KOŞTURAN testlerin adres kırılganlığı bilgi olarak basılıyor (o disiplinin
+# bedeli, kusuru değil). Süre ~55 sn.
+python3 bicim.py || KOD=1
 
 rm -rf "$TMP"
 echo

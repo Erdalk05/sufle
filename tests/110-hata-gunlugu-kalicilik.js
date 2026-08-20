@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
-const tel=oku(telefonYolu());
-const mac=oku(macYolu());
+const {telefonYolu,macYolu,oku,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
+const mac=esnek(esnek(oku(macYolu())));
 const telKod=tel.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'');
 
@@ -160,7 +160,7 @@ ok('telefonda kullanıcı bir kez uyarılıyor (boğulmasın)', /if\(n-errShown>
    listesine yazılıyordu. Kullanıcı için anlamı: her çekimde bir hata görmek. */
 {
   const {telefonYolu,oku,blokKes}=require('./kaynak');
-  const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+  const kod=esnek(esnek(oku(telefonYolu()))).replace(/\/\*[\s\S]*?\*\//g,'');
   const govde=blokKes(kod,'async function sesKanali(') || kod;
   ok('ses çözümlemesi kaynakta bulundu', /decodeAudioData/.test(govde));
   /* İDDİA: dönen söz de yakalanıyor. Yalnız geri çağrı bağlamak yetmiyor. */

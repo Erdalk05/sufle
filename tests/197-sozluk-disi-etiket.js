@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu,macYolu,oku}=require('./kaynak');
+const {telefonYolu,macYolu,oku,esnek}=require('./kaynak');
 
 /* SÖZLÜĞÜ ATLAYAN KULLANICI METNİ — CIRCIR KAPISI (2026-08-19).
 
@@ -31,7 +31,7 @@ const CIFT=/L==='tr'\s*\?\s*'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'/g;
 
 function say(src){ return (src.match(CIFT)||[]).length; }
 
-const tel=oku(telefonYolu()), mac=oku(macYolu());
+const tel=esnek(esnek(oku(telefonYolu()))), mac=esnek(esnek(oku(macYolu())));
 const sayi={tel:say(tel), mac:say(mac)};
 
 ok('telefon kabuğu okunabildi (ölçmeyen kapı olmasın)', tel.length>10000);

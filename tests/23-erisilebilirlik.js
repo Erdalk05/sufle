@@ -1,7 +1,7 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
-const tel=oku(telefonYolu());
-const mac=oku(macYolu());
+const {telefonYolu,macYolu,oku,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu())));
+const mac=esnek(esnek(oku(macYolu())));
 
 /* ERİŞİLEBİLİRLİK KAPISI
    2026-08-13 denetimi: Mac'te aria-* sayısı 0, tabindex 0, odak halkası yok.

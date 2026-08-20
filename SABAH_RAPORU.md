@@ -2,10 +2,51 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.42 YAYINLANDI ve canlıdan doğrulandı (`sufle-v114`); md5 birebir.**
+**DURUM — v9.42 YAYINLANDI ve canlıdan doğrulandı (`sufle-v114`); md5 birebir. Sonrasındaki iş yalnız kapı/araç tarafında, uygulama sürümü değişmedi.**
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## 🧰 20 Ağustos gecesi — BİÇİM KİLİDİ ARTIK ÖLÇÜLÜYOR (`EKSIKLER` F2 kapandı)
+
+Bu **ürün değil, ürünü koruyan kapı** işi — ama gecenin en pahalı kusur
+sınıfını kapatıyor.
+
+`CLAUDE.md` 2026-08-14'ten beri bir tablo tutuyor: davranış hiç değişmediği
+hâlde kırılan testler. Bu gece **beş tane daha** çıktı (17, 48, 74, 78, 148).
+Her seferinde tek tek bulunuyordu; `EKSIKLER` F2 maddesi *"sistematik tarama
+hâlâ yok"* diyordu.
+
+**Artık var: `bicim.py`.** Kabuğun `<script>` bölgelerinde, dize ve yorum
+DIŞINDA kalan her `,` ve `;` işaretinden sonra bir boşluk ekliyor — JavaScript
+için anlamı **hiç değiştirmeyen** bir yeniden biçimlendirme — ve bütün testleri
+o kopyaya karşı koşturuyor. Kırılan her test, davranış değişmediği hâlde
+kırılmıştır.
+
+**Ölçüldü: 201 dosyanın 65'i.** Örnek: `setAttribute('tabindex','0')` arayan
+bir erişilebilirlik iddiası, aynı çağrı `('tabindex', '0')` yazıldığında
+düşüyor — iddia doğru, deseni kırılgan.
+
+**İki sınıf ayrıldı, çünkü sayı yoksa anlamsız olurdu.** Gerçek fonksiyonu
+kaynaktan çıkarıp KOŞTURAN bir testin adres kırılganlığı, "kopya test yazma"
+disiplininin **bedeli** — kusuru değil. Ratchet yalnız **iddia** sınıfına
+uygulanıyor (65); çıkarım sınıfı (23) bilgi olarak basılıyor.
+
+**Çözüm tek tek düzeltmek değil, kaynağı ölçmeden önce normalleştirmek:**
+`tests/kaynak.js` içindeki yeni **`esnek()`**. Dizelerin içine **dokunmuyor**,
+yani kullanıcının gördüğü metni ölçen iddialar (bu depodaki tek meşru biçim
+kilidi) aynen çalışıyor. **20 dosya otomatik göçtü** ve her biri iki yönde
+doğrulandı: hem gerçek kaynakta hem yeniden biçimlendirilmiş kopyada geçmek
+zorundaydı; geçmeyen geri alındı. Taban **65 → 45**.
+
+`bicim.py` kapının **11. adımı** (~55 sn) ve `tests/202` aracın kendisini
+ölçüyor: dönüşüm hiçbir şey değiştirmezse duruyor mu, iki sınıfı ayırıyor mu,
+`esnek()` dizeye dokunuyor mu, kapı adımı gerçekten koşuyor mu. 4 kasıtlı bozma.
+
+**Envanterin kendisi de bayattı:** `EKSIKLER`in 1. maddesi ("masaüstünde elle
+kamera denetimleri yok") **v9.34'te kapanmıştı** ve dosya bir gün boyunca onu
+açık gösterdi. Ölçüldü ve düzeltildi — dosyanın kendi uyarısı bu kez kendisine
+çarptı.
 
 ## 🔤 20 Ağustos gecesi — v9.42 — TİPOGRAFİK RİTİM ÖLÇÜLEBİLİR OLDU
 
@@ -2523,9 +2564,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7677 test** (gece başında 732) · yeni test dosyası: 39–201
+- **7697 test** (gece başında 732) · yeni test dosyası: 39–202
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **761 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

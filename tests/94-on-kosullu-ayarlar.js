@@ -1,10 +1,10 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku}=require('./kaynak');
+const {telefonYolu,oku,esnek}=require('./kaynak');
 /* v9.34: ön koşul sebepleri sözlüğe taşındı; tezgâh GERÇEK sözlüğü
    yüklüyor. Yorumda ters tırnak yok — aşağıdaki şablon dizesine giriyor. */
 const {cekirdekOku}=require('./kaynak');
 const SOZ=cekirdekOku('sozluk.js','SUFLE_SOZLUK').replace(/\/\*[\s\S]*?\*\//g,'');
-const tel=oku(telefonYolu());
+const tel=esnek(esnek(oku(telefonYolu())));
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* K2 — ÖN KOŞULU OLAN AYARLAR: HEPSİ KAPSANIYOR MU?

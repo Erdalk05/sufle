@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,oku,cikar}=require('./kaynak');
-const kod=oku(telefonYolu()).replace(/\/\*[\s\S]*?\*\//g,'');
+const {telefonYolu,oku,cikar,esnek}=require('./kaynak');
+const kod=esnek(esnek(oku(telefonYolu()))).replace(/\/\*[\s\S]*?\*\//g,'');
 
 /* YAZI BOYUTU / SATIR ARALIĞI / KENAR BOŞLUĞU DEĞİŞİNCE KONUM KAYIYORDU
    Planın sorusu "maxPos güncelleniyor mu" idi. **Güncelleniyordu** — üç
@@ -47,7 +47,7 @@ ok('göz hattı reçetesinde kelime korunuyor',
 ok('okuma bandı hâlâ yalnız ölçüyor',
    /#bandSeg button[\s\S]{0,120}?requestAnimationFrame\(measure\)/.test(kod));
 ok('bandın yalnız görsel olduğu doğrulanıyor (maske değişkenleri)',
-   /--bandIn/.test(oku(telefonYolu())) && /mask-image/.test(oku(telefonYolu())));
+   /--bandIn/.test(esnek(esnek(oku(telefonYolu())))) && /mask-image/.test(esnek(esnek(oku(telefonYolu())))));
 
 /* ---------- MAXPOS ZATEN GÜNCELLENİYORDU (çürüyen hipotez, kilitlendi) ---------- */
 const ms=cikar(kod,/function measure\(\)\{[\s\S]*?\n\}/,'measure');

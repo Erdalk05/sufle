@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓':'✗ HATA')+' '+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
-const src=oku(telefonYolu());
+const {telefonYolu,macYolu,oku,esnek}=require('./kaynak');
+const src=esnek(esnek(oku(telefonYolu())));
 
 // --- shader kaynağı tutarlı mı (GLSL derlenemeden önce yapısal kontrol) ---
 /* v9.35: gölgelendiricinin güzellik bölümü ORTAK kaynağa taşındı

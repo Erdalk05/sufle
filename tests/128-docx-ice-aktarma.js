@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
+const {telefonYolu, macYolu, oku, cikar, REPO, repoOku,esnek}=require('./kaynak.js');
 
 /* D.1 — .docx İÇE AKTARMA, SIFIR BAĞIMLILIKLA.
 
@@ -17,8 +17,8 @@ const {telefonYolu, macYolu, oku, cikar, REPO, repoOku}=require('./kaynak.js');
    eşlemeleri ve sıkıştırılmış akışlar yüzünden binlerce satır ve yine de
    çoğu dosyada yanlış sonuç verir. Kullanıcıya dürüst yol SÖYLENİYOR. */
 
-const tel = oku(telefonYolu());
-const mac = oku(macYolu());
+const tel = esnek(oku(telefonYolu()));
+const mac = esnek(oku(macYolu()));
 const kodTel = (tel.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
 const kodMac = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
 /* Bozma turu çekirdeği geçici kopyada bozup yolu SUFLE_DOCX ile veriyor.

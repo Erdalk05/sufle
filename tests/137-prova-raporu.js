@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
 const fs=require('fs'), path=require('path');
-const {telefonYolu, oku, cikar, macMetni, REPO}=require('./kaynak.js');
+const {telefonYolu, oku, cikar, macMetni, REPO,esnek}=require('./kaynak.js');
 
 /* E.4 — PROVA RAPORU (çekimden sonra "nasıl okudum").
 
@@ -18,8 +18,8 @@ const {telefonYolu, oku, cikar, macMetni, REPO}=require('./kaynak.js');
 
    Kod KOPYALANMIYOR, kaynaktan çıkarılıp koşturuluyor. */
 
-const src = oku(telefonYolu());
-const mac = macMetni();
+const src = esnek(oku(telefonYolu()));
+const mac = esnek(macMetni());
 
 /* AÇIKÇA VERİLEN YOL YANLIŞSA SESSİZCE DEPOYA DÜŞME. Bozma turu geçici bir
    kopya yazıp SUFLE_PROVA ile gösteriyor; test depo dosyasını okusaydı bozma

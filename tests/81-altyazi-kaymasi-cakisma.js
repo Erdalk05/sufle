@@ -1,6 +1,6 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {telefonYolu,macYolu,oku}=require('./kaynak');
-const tel=oku(telefonYolu()), mac=oku(macYolu());
+const {telefonYolu,macYolu,oku,esnek}=require('./kaynak');
+const tel=esnek(esnek(oku(telefonYolu()))), mac=esnek(esnek(oku(macYolu())));
 const kod=tel.replace(/\/\*[\s\S]*?\*\//g,'');
 const macKod=mac.replace(/\/\*[\s\S]*?\*\//g,'');
 

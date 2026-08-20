@@ -1,5 +1,5 @@
 const ok=(n,c)=>{ console.log((c?'✓ ':'✗ HATA ')+n); if(!c) process.exitCode=1; };
-const {macYolu, oku, cikar, macMetni}=require('./kaynak.js');
+const {macYolu, oku, cikar, macMetni,esnek}=require('./kaynak.js');
 
 /* D.5 — YAYIN (OBS) KİPİ.
 
@@ -21,7 +21,7 @@ const {macYolu, oku, cikar, macMetni}=require('./kaynak.js');
    uygulandı, zemin şeffaf (rgba(0,0,0,0)), üst çubuk + iki panel + durum
    çubuğu gizli, metin görünür ve gölgeli. */
 
-const mac = macMetni();
+const mac = esnek(macMetni());
 const kod = (mac.match(/<script>([\s\S]*)<\/script>/) || ['',''])[1];
 
 /* ---------- KİP GERÇEKTEN AÇILIYOR MU ---------- */

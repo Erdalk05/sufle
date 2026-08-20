@@ -266,6 +266,41 @@ function dizeSil(kod){
   return out.join('');
 }
 
+/* NOKTALAMA ARALIĞINA DUYARSIZ KAYNAK — `esnek()`.
+
+   ÖLÇÜLDÜ (2026-08-20, `bicim.py`): kabuktaki `,` ve `;` işaretlerinden
+   sonra BİR BOŞLUK eklemek — davranışı hiç değiştirmeyen bir yeniden
+   biçimlendirme — **201 test dosyasının 65'inde iddiaları düşürüyordu**.
+   Yani o testler kodun davranışına değil YAZIM BİÇİMİNE bakıyor.
+
+   Bu, deponun tablo hâlinde yazdığı en pahalı test kusuru sınıfı
+   (`CLAUDE.md`, 2026-08-14 gecesi beş vaka; 19/20 Ağustos gecesi beş vaka
+   daha). Tek tek düzeltmek işe yaramıyor: her tur yenisi çıkıyor.
+
+   `esnek(src)` kaynağı ölçmeden ÖNCE normalleştiriyor: dize, yorum ve
+   düzenli ifade DIŞINDA kalan `,` ve `;` işaretlerinden sonraki boşluklar
+   siliniyor. Böylece `setAttribute('tabindex','0')` arayan bir desen,
+   kaynakta `setAttribute('tabindex', '0')` yazsa da eşleşiyor.
+
+   ⚠️ DİZELERİN İÇİ ASLA DEĞİŞMİYOR: kullanıcının gördüğü metni ölçen
+   iddialar (bu depoda meşru olan tek biçim kilidi) aynen çalışmaya devam
+   ediyor. Maskeleme `dizeSil` ile aynı tarayıcıyı kullanıyor. */
+function esnek(src){
+  const maske=dizeSil(src);
+  let out='';
+  for(let i=0;i<src.length;i++){
+    out+=src[i];
+    if(maske[i]===','||maske[i]===';'){
+      /* Yalnız AYNI SATIRDAKİ boşluklar siliniyor: satır sonunu silmek
+         satır yorumlarını bir sonraki satıra taşır ve kodu bozar. */
+      let j=i+1;
+      while(j<src.length && (src[j]===' '||src[j]==='\t')) j++;
+      i=j-1;
+    }
+  }
+  return out;
+}
+
 /* Mac yerel sunucusunun yolu — ortam değişkenine saygılı.
    ÖLÇÜLDÜ (2026-08-16): dört test bu dosyayı DOĞRUDAN okuyordu ve dosya
    `bozma.py` KAYNAK tablosunda hiç yoktu; yani kumanda sunucusunun tamamı
@@ -289,6 +324,6 @@ function repoOku(goreli, envAd){
   return fs.readFileSync(v || path.join(REPO, goreli), 'utf8');
 }
 
-module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, repoOku,
+module.exports = { telefonYolu, macYolu, oku, cikar, REPO, macCoz, macMetni, repoOku, esnek,
                    cozJeton, metinCekirdegi, blokKes, cekirdekOku, dizeSil, sunucuYolu };
 

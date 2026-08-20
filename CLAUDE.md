@@ -29,10 +29,11 @@ Kapının 5. adımı dördünü de md5 ile karşılaştırır; bayat ayna = KIRM
 ## Her değişiklikten sonra
 
 ```bash
-./kapi.sh          # 10 adım: derleme tazeliği · denetim.py · node --check · testler ·
+./kapi.sh          # 11 adım: derleme tazeliği · denetim.py · node --check · testler ·
                    # sürüm · aynalar · fonksiyon kapsamı · kasıtlı bozma turu ·
                    # kontrast (çizilmiş arayüz) · ÇEKİM AKIŞI uçtan uca
-                   # (gerçek tarayıcı + sahte kamera; Chrome yoksa ATLANDI der)
+                   # (gerçek tarayıcı + sahte kamera; Chrome yoksa ATLANDI der) ·
+                   # BİÇİM KİLİDİ (bicim.py, ~55 sn)
 ./kapi.sh --yayin-sonrasi  # uygulama sürümü değişmeden yalnız test/araç/belge
                            # geliştirildiyse; canlı VER ve cache birebir aynı olmalı
 ```
@@ -89,6 +90,16 @@ Ayırt edici soru: **desen bozulunca kullanıcı için ne değişir?** Cevap "hi
 desen yanlış yere bakıyor. Kullanıcının GÖRDÜĞÜ metni kilitlemek meşru
 (`'SES '+clock(sesOldu)+' SANİYEDE KESİLDİ'`); iç çağrıların birleştirme biçimini
 kilitlemek değil.
+
+**Biçim kilidi artık ÖLÇÜLÜYOR — tek tek aramayı bırak.** `python3 bicim.py`
+kabuğun `,` ve `;` işaretlerinden sonra bir boşluk ekliyor (davranış hiç
+değişmez) ve bu değişiklikte kırılan testleri listeliyor. 2026-08-20'de ölçüldü:
+**201 dosyanın 65'i**. `tests/kaynak.js` içindeki **`esnek()`** kaynağı ölçmeden
+önce normalleştiriyor — desen `f(a,b)` yazsa da kaynak `f(a, b)` olabilir;
+dizelerin içine DOKUNMUYOR, yani kullanıcının gördüğü metni ölçen iddialar
+(bu depodaki tek meşru biçim kilidi) aynen çalışıyor. Yeni test yazarken
+kaynağı `esnek(oku(telefonYolu()))` ile oku. Taban `tests/bicim-taban.json`,
+yalnız aşağı iner.
 
 **Kabul edilmiş kusuru teste yazma.** tests/34 "bilinen sınır" diye kusurlu davranışı
 kilitlemişti; sınır kalkınca test düzeltmeyi engelledi.
