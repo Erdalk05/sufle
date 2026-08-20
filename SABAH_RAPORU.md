@@ -2,12 +2,12 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.41: kapı yeşil, YAYIN BEKLİYOR.**
+**DURUM — v9.41 YAYINLANDI ve canlıdan doğrulandı (`sufle-v113`); md5 birebir.**
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
 
-## 🪶 20 Ağustos gecesi — v9.41 KAPI YEŞİL, YAYIN BEKLİYOR — ALTIN KAYDIRMA ÖLÇÜLEBİLİR OLDU
+## 🪶 20 Ağustos gecesi — v9.41 — ALTIN KAYDIRMA ÖLÇÜLEBİLİR OLDU
 
 `EKSIKLER` listesinde **"altın kaydırma pürüzleri — ölçütü tanımsız"** diye
 duran madde kapandı. Tanımsız bir eksiği kapatmaya çalışmak, olmayan bir hatayı
