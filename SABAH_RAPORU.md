@@ -36,6 +36,16 @@ borcundaki F2 (biçim kilitleyen testler) sistematik taramaya kavuştu.
 genişlikten çıktı (masaüstü 1152 px, telefon 320 px, masaüstü 900 px) ve
 üçünde de sebep aynıydı: *ölçülmeyen genişlik, denetlenmemiş genişliktir.*
 
+### 🔬 Son sonda: ölü ayar taraması (sonucu temiz)
+
+31 anahtarın hepsi tek tek çevrilip ekranda gözle görülür bir şey değişiyor mu
+diye ölçüldü. **Yalnız biri gerçekten ölüydü** (v9.46'da konuştu). Geri
+kalanlar için sebep tek tek doğrulandı: `torch` ve `camLock` yetenek yoksa
+**hiç çizilmiyor**, `maskPrev` kompozit kutusu kapalıyken gizli, `capKaraoke`
+· `rawAudio` · `safeAudio` · `breathe` · `count` · `stopAtSection` ise
+davranışsal — ekranda değil kayıtta/dışa aktarımda karşılığı var. Kayıt
+sürerken ayar değiştirme de ölçüldü: kayıt düşmüyor, hata günlüğü boş.
+
 ### 🔵 Senden bekleyenler (kod tarafında iş yok)
 
 | # | konu |
