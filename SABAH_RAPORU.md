@@ -2,10 +2,44 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.43 YAYINLANDI ve canlıdan doğrulandı (`sufle-v115`); md5 birebir.**
+**DURUM — v9.44: kapı yeşil, YAYIN BEKLİYOR.** (v9.43 yayınlandı ve canlıdan doğrulandı: `sufle-v115`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## 🧭 20 Ağustos gecesi — v9.44 — MASAÜSTÜNDE ULAŞILAMAYAN DÜĞMELER
+
+Gecenin en ağır bulgusu. Aynı yöntemin devamı: **kaynağı okumak değil,
+çizilmiş ekranı dar pencerede gezmek.**
+
+Masaüstünün üst çubuğu `flex-wrap` **taşımıyordu** ve ızgara satırı sabit
+56 px idi. Pencere küçüldükçe sağdaki düğmeler ekranın dışına taşıyor, sayfa
+yatay da kaymadığı için onlara **hiçbir yolla ulaşılamıyordu**:
+
+| pencere | ekranın dışında kalanlar |
+|---|---|
+| 1440 px | Otomatik yedekten dön · Tam Ekran · ⇔ Sade |
+| 1152 px | aynısı |
+| 1000 px | ⬆︎ Senaryolar da |
+| **900 px** | **ÇEKİMLERİM** de — *arşive ulaşmanın tek yolu* |
+
+820 pikselin **altında** `flex-wrap` zaten vardı. Yani kör nokta tam da
+sıradan bir MacBook penceresiydi.
+
+**Neden bir gün boyunca görünmedi:** kapı masaüstünü **yalnız 1440 pikselde**
+ölçüyordu. Ölçülmeyen genişlik, denetlenmemiş genişliktir — bu deponun kendi
+hata sınıfı, bu kez çözünürlükte. `kontrast.py` artık **1152 px** bir
+masaüstü yüzeyi de geziyor.
+
+**Yeni nöbetçi: ulaşılamayan çubuk düğmesi.** Ekranın dışına düşen bir düğme,
+olmayan bir düğmedir; mutlak kural (tabana bağlı değil). Kapsam bilerek dar —
+yalnız çubuklar — çünkü yan paneller kapalıyken kasıtlı olarak dışarı
+ötelenir ve geniş tarama dedektörü yalancı yapardı.
+
+Bedel ölçüldü: çubuk iki satıra çıkınca sahne yüksekliği 744 → 704 px. Bir
+düğmeye hiç ulaşamamakla kıyaslanmaz. `tests/204` + 6 kasıtlı bozma; bunlardan
+biri "sığmayan düğmeyi gizle" çözümünü de kapatıyor — o, kapıyı yeşile boyar
+ama kullanıcı yine ulaşamazdı.
 
 ## ✂️ 20 Ağustos gecesi — v9.43 — MASAÜSTÜNDE KESİLEN YETENEK SATIRI
 
@@ -2605,9 +2639,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7714 test** (gece başında 732) · yeni test dosyası: 39–203
+- **7731 test** (gece başında 732) · yeni test dosyası: 39–204
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **767 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **773 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

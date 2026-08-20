@@ -96,6 +96,14 @@ DURUMLAR = [
     ('mac-ana',          MAC,    1440, 900, 2,
      "(document.querySelector('#newsX')||{click(){}}).click();"
      "(document.querySelector('#bilgiKapat')||{click(){}}).click();"),
+    # DAR MASAÜSTÜ PENCERESİ (2026-08-20). Mac YALNIZ 1440 pxte ölçülüyordu
+    # ve tam bu yüzden bir kusur bir gün boyunca görünmedi: üst çubuk
+    # sarmıyordu, düğmeler pencerenin sağ DIŞINA düşüyor ve ulaşılamıyordu.
+    # 1440'ta hepsi sığdığı için kapı yeşildi. 1152 px sıradan bir MacBook
+    # penceresi; ölçülmeyen genişlik, denetlenmemiş genişliktir.
+    ('mac-dar',          MAC,    1152, 760, 2,
+     "(document.querySelector('#newsX')||{click(){}}).click();"
+     "(document.querySelector('#bilgiKapat')||{click(){}}).click();"),
     # ÇEKİM SONRASI SONUÇ EKRANI — T49'a kadar HİÇ ölçülmemişti. Kullanıcının
     # her çekimden sonra gördüğü yüzey burası (prova raporu, budama, paylaş)
     # ve kontrastı da çevirisi de denetim dışındaydı: kapının kör noktası.
@@ -449,7 +457,39 @@ OLC = r"""
     }
   }
 
-  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik, ritim, kesik });
+  /* EKRANIN DIŞINA DÜŞEN ÇUBUK ÖGESİ — ULAŞILAMAYAN DÜĞME (2026-08-20).
+
+     ÖLÇÜLDÜ: masaüstü üst çubuğu `flex-wrap` taşımıyordu ve satırı sabit
+     56 px idi; düğmeler pencerenin SAĞ DIŞINA düşüyor, sayfa yatay da
+     kaymadığı için onlara HİÇBİR YOLLA ulaşılamıyordu.
+       1440 px  "Senaryolar · Otomatik yedekten dön · Tam Ekran · Sade" dışarıda
+       1000 px  aynısı
+        900 px  ÇEKİMLERİM de dışarıda — arşive ulaşmanın tek yolu
+     820 pxin altında `flex-wrap` zaten vardı; kör nokta tam da sıradan bir
+     MacBook penceresiydi (821–1900 px).
+
+     ⚠️ KAPSAM BİLEREK DAR: yalnız ÇUBUKLAR taranıyor. Ekranın dışında
+     duran her öge kusur değil — yan paneller kapalıyken kasıtlı olarak
+     dışarı ötelenir (`translateX`). Çubuklarda ise dışarıda kalan bir
+     düğme her zaman ulaşılamaz demektir. Geniş tarama yapmak dedektörü
+     yalancı yapardı; dar tarama gerçek kusuru kaçırmıyor. */
+  const CUBUK = '#topbar,#statusbar,#bar,#hud,#speedCtl';
+  const ulasilmaz = [];
+  for (const kap of document.querySelectorAll(CUBUK)) {
+    const ks = getComputedStyle(kap);
+    if (ks.display === 'none' || ks.visibility === 'hidden') continue;
+    for (const el of kap.querySelectorAll('button,a[href],[role="button"],input,select')) {
+      const s = getComputedStyle(el);
+      if (s.display === 'none' || s.visibility === 'hidden') continue;
+      const b = el.getBoundingClientRect();
+      if (b.width < 1 || b.height < 1) continue;
+      if (b.left > innerWidth - 1 || b.right < 1 || b.top > innerHeight - 1 || b.bottom < 1)
+        ulasilmaz.push({ yol: yol(el), metin: (el.textContent || '').trim().slice(0, 24),
+                         kutu: Math.round(b.left) + '..' + Math.round(b.right) + '/' + innerWidth });
+    }
+  }
+
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik, ritim, kesik, ulasilmaz });
 })()
 """
 
@@ -603,6 +643,15 @@ def main():
             print('   ⛔ üç noktayla kesilen %d kart özeti (değer okunmuyor):' % len(kirpik))
             for x in kirpik[:8]:
                 print('      ✂ %s' % x)
+            kirmizi = True
+        # ULAŞILAMAYAN ÇUBUK DÜĞMESİ — MUTLAK KURAL. Ekranın dışına düşen
+        # bir düğme, olmayan bir düğmedir; "arttı mı" diye sormak anlamsız.
+        ulasilmaz = r.get('ulasilmaz', [])
+        yeni[ad + '~ulasilmaz'] = len(ulasilmaz)
+        if ulasilmaz:
+            print('   ⛔ ekranın dışına düşen %d çubuk düğmesi (ulaşılamaz):' % len(ulasilmaz))
+            for x in ulasilmaz[:8]:
+                print('      ⇥ %-22s %s  "%s"' % (x['yol'], x['kutu'], x['metin']))
             kirmizi = True
         # KESİLEN METİN — MUTLAK KURAL, tabana göre değil. Kırpılan kart
         # özetiyle aynı gerekçe: bir metnin varlık sebebi okunmasıdır ve

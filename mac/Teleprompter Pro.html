@@ -144,10 +144,21 @@
   ::-webkit-scrollbar-track{background:transparent}
 
   /* ===== GENEL DÜZEN ===== */
-  #app{display:grid;grid-template-columns:300px 1fr 280px;grid-template-rows:56px 1fr;height:100%}
+  /* ÜST ÇUBUK SATIRI SABİT 56 PX DEĞİL, İÇERİĞE GÖRE (2026-08-20).
+     Sabit satır + sarmayan çubuk, düğmelerin pencerenin SAĞ DIŞINA
+     düşmesi demekti; sayfa yatay da kaymadığı için o düğmelere hiçbir
+     yolla ulaşılamıyordu. Ölçüldü (çizilmiş ekran, gerçek tarayıcı):
+       1440 px  hepsi görünür
+       1280 px  "⇔ Sade" dışarıda
+       1000 px  Senaryolar · Otomatik yedekten dön · Tam Ekran · Sade dışarıda
+        900 px  ÇEKİMLERİM de dışarıda — arşive ulaşmanın tek yolu
+     820 pxin altında zaten `flex-wrap` vardı; asıl kör nokta 821–1345 px
+     aralığıydı, yani sıradan bir MacBook penceresi. */
+  #app{display:grid;grid-template-columns:300px 1fr 280px;grid-template-rows:auto 1fr;height:100%}
   #app.full{grid-template-columns:0 1fr 0}
-  #topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;
-    padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);z-index:20}
+  #topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    min-height:56px;padding:var(--sp-1) 16px;background:var(--panel);
+    border-bottom:1px solid var(--line);z-index:20}
   #left{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column}
   #right{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto}
   #left,#right{transition:opacity .2s}
@@ -2324,7 +2335,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.43';   // telefon sürümüyle aynı numaralama
+  const VER='9.44';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -5522,6 +5533,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.44':{tr:'🧭 <b>Üst çubuktaki düğmeler pencerenin dışına düşüyordu — artık hepsi ulaşılabilir.</b> Çubuk satır kıramıyordu ve yüksekliği sabitti; pencere küçüldükçe sağdaki düğmeler ekranın dışına taşıyor, sayfa yatay da kaymadığı için onlara hiçbir yolla ulaşılamıyordu. Ölçüldü: 1440 pikselde Tam Ekran ve Sade, 1000 pikselde Senaryolar, 900 pikselde <b>Çekimlerim</b> — yani arşive ulaşmanın tek yolu — dışarıda kalıyordu. Artık çubuk gerektiğinde ikinci satıra sarıyor; her şey sığdığında görünüm aynı.',en:'🧭 <b>Toolbar buttons were falling outside the window — all of them are reachable now.</b> The bar could not wrap and its height was fixed, so as the window got smaller the buttons on the right ran off screen, and since the page does not scroll sideways there was no way to reach them. Measured: at 1440 pixels Full Screen and Clean, at 1000 pixels Scripts, and at 900 pixels <b>My Takes</b> — the only way into the archive — were off screen. The bar now wraps to a second row when needed; when everything fits it looks the same.'},
    '9.43':{tr:'📋 <b>Durum çubuğundaki yetenek satırı artık tam okunuyor.</b> "macOS · Chrome · MP4 ✓ · Kırpma ✓ · Sesle takip ✓ · Paylaşım ✓" satırı üç noktayla kesiliyordu: 1440 pikselde 395 pikselin 377si, 1100 pikselde yalnız 244ü çiziliyordu. Yani <b>bu tarayıcıda sesle takip var mı, paylaşım var mı</b> sorusunun cevabı hiç görünmüyordu — satırın bütün varlık sebebi oydu. Artık kesilmiyor, gerekirse ikinci satıra sarıyor.',en:'📋 <b>The capability line in the status bar is now fully readable.</b> The line "macOS · Chrome · MP4 ✓ · Crop ✓ · Voice follow ✓ · Share ✓" was cut off with an ellipsis: at 1440 pixels only 377 of 395 were drawn, at 1100 pixels only 244. So the answer to <b>does voice follow work in this browser, is sharing available</b> was never visible — which was the whole point of that line. It now wraps to a second line instead of being cut.'},
    '9.42':{tr:'🔤 <b>Masaüstündeki yazı boyları tek ölçeğe oturdu.</b> Ölçüldü: 41 metin 12 pikselde, 10 metin 14 pikselde yazılıyordu — ürünün ölçeği ise 11/13/15/19/26/30. Telefonda uygulanmış olan ölçek buraya hiç uygulanmamıştı; artık çizilen her metin ölçekteki bir adımda ve iki ekran aynı elden çıkmış gibi duruyor.',en:'🔤 <b>Desktop text sizes now follow a single scale.</b> Measured: 41 texts were set at 12 pixels and 10 more at 14, while the product scale is 11/13/15/19/26/30. The scale had been applied on the phone but never here; every drawn text is now a step on it and both screens finally look like they came from the same hand.'},
    '9.41':{tr:'🪶 <b>Kaydırma pürüzsüzleşti — masaüstünde üç eksik birden kapandı.</b> Hızı değiştirince metin zıplıyordu (artık ~200 ms yumuşak geçiş), metin sonunda akış sert kesiliyordu (artık son 60 pikselde yavaşlıyor) ve duraklama işaretleri akışı tek karede durduruyordu (artık yumuşak zarfla). Duraklamanın süresi birebir korunuyor. Eğri telefonla AYNI kaynaktan geliyor, yani iki ekran aynı metni aynı ritimde akıtıyor.',en:'🪶 <b>Scrolling got smoother — three desktop gaps closed at once.</b> Changing speed made the text jump (now a ~200 ms ease), the text ended with a hard cut (now it slows over the last 60 pixels) and pause marks stopped the scroll in a single frame (now a smooth envelope). Pause length is preserved exactly. The curve comes from the SAME source as the phone, so both screens run the same text at the same rhythm.'},

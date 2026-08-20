@@ -5367,5 +5367,47 @@
   "kaynak": "ekran",
   "bul": "verilen yol yok",
   "koy": "yol atlandi"
+ },
+ {
+  "ad": "v9.44 üst çubuk yine sarmıyor (düğmeler pencerenin dışına düşer)",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "mac",
+  "bul": "gap:10px;flex-wrap:wrap;",
+  "koy": "gap:10px;"
+ },
+ {
+  "ad": "v9.44 üst çubuk satırı yine sabit 56 px (ikinci satır kırpılır)",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "mac",
+  "bul": "grid-template-rows:auto 1fr;height:100%}",
+  "koy": "grid-template-rows:56px 1fr;height:100%}"
+ },
+ {
+  "ad": "v9.44 sığmayan düğme gizleniyor (kapı yeşil, kullanıcı yine ulaşamaz)",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "mac",
+  "bul": "id=\"takesBtn\"",
+  "koy": "id=\"takesGizli\""
+ },
+ {
+  "ad": "v9.44 ulaşılamayan düğme nöbetçisi kaldırılıyor",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "kontrast",
+  "bul": "ulasilmaz.push(",
+  "koy": "[].push("
+ },
+ {
+  "ad": "v9.44 tarama çubuk dışına açılıyor (dedektör yalancı olur)",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "kontrast",
+  "bul": "const CUBUK = '#topbar,#statusbar",
+  "koy": "const CUBUK = 'body,#topbar,#statusbar"
+ },
+ {
+  "ad": "v9.44 dar masaüstü genişliği ölçülmüyor (nöbetçi ölü kalır)",
+  "test": "204-ulasilmaz-dugme.js",
+  "kaynak": "kontrast",
+  "bul": "('mac-dar',          MAC,    1152, 760, 2,",
+  "koy": "('mac-dar',          MAC,    1440, 760, 2,"
  }
 ]
