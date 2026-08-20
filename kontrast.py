@@ -400,7 +400,56 @@ OLC = r"""
       ritim.push({ yol: yol(el), px, metin: kendiMetin.slice(0, 28) });
   }
 
-  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik, ritim });
+  /* KESİLEN METİN — GENEL TARAMA (2026-08-20).
+     Yukarıdaki `kirpik` yalnız telefonun ayar kartı özetine bakıyordu.
+     Aynı sınıf masaüstünde de vardı ve hiçbir kapı görmüyordu: durum
+     çubuğundaki cihaz/yetenek satırı (MP4 ✓ · Kırpma ✓ · Sesle takip ✓)
+     1440 pxte 395 pikselin 377si kadar çiziliyor, sonu üç noktaya
+     gidiyordu — yani satırın SEBEBİ olan son yetenekler hiç okunmuyordu.
+     Ölçüt: içeriği kutusuna sığmayan VE taşmayı gizleyen her metin ögesi. */
+  const kesik = [];
+  for (const el of document.querySelectorAll('*')) {
+    const kendiMetin = [...el.childNodes]
+      .filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => n.textContent.trim()).join(' ');
+    if (!kendiMetin) continue;
+    const s = getComputedStyle(el);
+    if (s.display === 'none' || s.visibility === 'hidden') continue;
+    if (parseFloat(s.opacity) < 0.05) continue;
+    const b = el.getBoundingClientRect();
+    if (b.width < 1 || b.height < 1) continue;
+    /* KULLANICININ KENDİ METNİ MEŞRU OLARAK KISALIR: senaryo başlığı,
+       sufle satırı ve düzenleyici. Kullanıcı adını kendi koyuyor ve
+       listede kısalması beklenen davranış. Muafiyet DAR tutuluyor. */
+    if (el.closest('#scroller,#editor,#text,#prompt,.scriptItem,#scriptList,#senList')) continue;
+    const gizli = /hidden|clip/.test(s.overflowX + ' ' + s.overflow) || s.textOverflow === 'ellipsis';
+    /* ① KESİK — taşma gizli ve içerik YATAYDA sığmıyor: metnin sonu hiç
+       okunmuyor. Yalnız yatay ölçülüyor; dikeyde satır yüksekliği
+       yuvarlamaları bir-iki piksel gürültü üretiyor ve dedektörü yalancı
+       yapıyor (ölçüldü). */
+    if (gizli && el.scrollWidth > el.clientWidth + 1) {
+      kesik.push({ yol: yol(el), metin: kendiMetin.slice(0, 34), tur: 'kesik',
+                   olcu: Math.round(el.clientWidth) + '/' + Math.round(el.scrollWidth) });
+      continue;
+    }
+    /* ② TAŞAN — metin KENDİ KUTUSUNUN dışına boyanıyor. Bunu `scrollWidth`
+       ile ölçmek çalışmıyor (taşma görünürken tarayıcı kutuyu büyütmüyor);
+       METNİN KENDİ çizim dikdörtgeni ölçülüyor.
+       NEDEN VAR: 2026-08-20'de cihaz satırının kırpmasını kaldırdım ama
+       `white-space:normal` kuralı ÖZGÜLLÜK yüzünden kaybetti; satır sarmak
+       yerine kutusunun dışına taşıp komşusuna bindi. Yalnız ① arayan bir
+       dedektör o düzeltmeyi "başarılı" diye onaylıyordu — aracın kendi
+       kör noktası. */
+    if (!gizli && s.display !== 'inline') {
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      const t = r.getBoundingClientRect();
+      if (t.width > 0 && (t.right > b.right + 1 || t.left < b.left - 1))
+        kesik.push({ yol: yol(el), metin: kendiMetin.slice(0, 34), tur: 'taşan',
+                     olcu: Math.round(b.width) + '/' + Math.round(t.width) });
+    }
+  }
+
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik, ritim, kesik });
 })()
 """
 
@@ -554,6 +603,18 @@ def main():
             print('   ⛔ üç noktayla kesilen %d kart özeti (değer okunmuyor):' % len(kirpik))
             for x in kirpik[:8]:
                 print('      ✂ %s' % x)
+            kirmizi = True
+        # KESİLEN METİN — MUTLAK KURAL, tabana göre değil. Kırpılan kart
+        # özetiyle aynı gerekçe: bir metnin varlık sebebi okunmasıdır ve
+        # ölçüldüğünde sayı 0'a indirildi. Taban kullanmak, birinin tabanı
+        # yükseltip kusuru kalıcılaştırmasına izin verirdi.
+        kesik = r.get('kesik', [])
+        yeni[ad + '~kesik'] = len(kesik)
+        if kesik:
+            print('   ⛔ kutusuna sığmayan %d metin (kesik = sonu okunmuyor · taşan = komşuya biniyor):'
+                  % len(kesik))
+            for x in kesik[:8]:
+                print('      ✂ %-6s %-24s %s  "%s"' % (x.get('tur','?'), x['yol'], x['olcu'], x['metin']))
             kirmizi = True
         # TİPOGRAFİK RİTİM — taban ratchetı (mutlak 0 DEĞİL): ölçek dışı
         # kalan tek tük yüzey olabilir ve onları zorla taşımak düzeni

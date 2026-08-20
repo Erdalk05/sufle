@@ -109,6 +109,10 @@ KAYNAK = {
     # nöbetçisi. Bir dürüstlük guardını sessizce silmek, aracın hiçbir şey
     # ölçmeden yeşil demesi demek olurdu.
     'bicim': (os.path.join(REPO, 'bicim.py'), 'SUFLE_BICIM'),
+    # Çizilmiş ekran tezgâhı: ölçülecek kabuğun adresi burada çözülüyor.
+    # Ortam değişkeni desteği kalkarsa drawn-UI dedektörlerinin ayırt
+    # ettiği bir daha KANITLANAMAZ (deponun kendi dosyasını bozmak gerekir).
+    'ekran': (os.path.join(REPO, 'ekran.py'), 'SUFLE_EKRAN'),
     'manifest': (os.path.join(REPO, 'manifest.json'), 'SUFLE_MANIFEST'),
     # Mağaza kabuğu: Apple hesabı gelene kadar tek koruma bu üç dosya.
     'kabuk_plist': (os.path.join(REPO, 'ios-kabuk', 'Kabuk-Info.plist'), 'SUFLE_KABUK_PLIST'),

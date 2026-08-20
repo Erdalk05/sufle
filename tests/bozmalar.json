@@ -2870,11 +2870,11 @@
   "koy": "    gap:6px 14px;max-width:min(96%,940px);"
  },
  {
-  "ad": "cihaz özeti kısalmıyor (altı satıra iniyor)",
+  "ad": "cihaz özetinin genişlik tavanı kalktı (çubuğu tek başına doldurur)",
   "test": "134-kumanda-cubugu-sigiyor.js",
   "kaynak": "mac",
-  "bul": "  #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}",
-  "koy": "  #sbDev{max-width:min(46ch,52%)}"
+  "bul": "#statusbar>#sbDev{max-width:min(46ch,52%);white-space:normal}",
+  "koy": "#statusbar>#sbDev{white-space:normal}"
  },
  {
   "ad": "depo kapalıyken de 'yer aç' deniyor (çıkışsız yol)",
@@ -5325,5 +5325,47 @@
   "kaynak": "kapi",
   "bul": "python3 bicim.py || KOD=1",
   "koy": "true # python3 bicim.py"
+ },
+ {
+  "ad": "v9.43 yetenek satırı yine üç noktayla kesiliyor",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "mac",
+  "bul": "  #statusbar>#sbDev{max-width:min(46ch,52%);white-space:normal}",
+  "koy": "  #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}"
+ },
+ {
+  "ad": "v9.43 özgüllük tuzağı geri geliyor (kural sessizce kaybeder, satır taşar)",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "mac",
+  "bul": "  #statusbar>#sbDev{max-width",
+  "koy": "  #sbDev{max-width"
+ },
+ {
+  "ad": "v9.43 çizilmiş ekran TAŞAN metni ölçmeyi bırakıyor (aracın kör noktası)",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "kontrast",
+  "bul": "tur: 'taşan'",
+  "koy": "tur: 'gorunur'"
+ },
+ {
+  "ad": "v9.43 kesik ölçümü dikeye de açılıyor (dedektör yalancı olur)",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "kontrast",
+  "bul": "el.scrollWidth > el.clientWidth + 1",
+  "koy": "el.scrollHeight > el.clientHeight"
+ },
+ {
+  "ad": "v9.43 çizilmiş ekran aracı ortam değişkenini yok sayıyor (bozma kanıtlanamaz)",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "ekran",
+  "bul": "_kabuk('SUFLE_MAC', 'mac', 'Teleprompter Pro.html')",
+  "koy": "'file://' + os.path.join(REPO, 'mac', 'Teleprompter Pro.html').replace(' ', '%20')"
+ },
+ {
+  "ad": "v9.43 verilen yol yoksa sessizce depoya düşülüyor",
+  "test": "203-kesilen-metin.js",
+  "kaynak": "ekran",
+  "bul": "verilen yol yok",
+  "koy": "yol atlandi"
  }
 ]

@@ -133,9 +133,27 @@ ok('çubuk son çare olarak satır kırabiliyor (nowrap değil)',
   /* Asıl kusur buydu: etiketin kendi içinde kırılması. */
   ok('çubuk ögeleri kendi içinde kırılmıyor',
      /#statusbar>span,#statusbar>button\{white-space:nowrap\}/.test(mac));
-  /* Cihaz özeti en uzun parça; taşarsa altı satır yerine üç nokta. */
-  ok('cihaz özeti taşarsa kısalıyor (altı satıra inmiyor)',
-     /#sbDev\{[^}]*text-overflow:ellipsis/.test(mac));
+  /* ÜÇ NOKTA ÇÖZÜM DEĞİLDİ — 2026-08-20'de yeniden ölçüldü.
+     Bu satır eskiden "cihaz özeti taşarsa ÜÇ NOKTAYLA kısalsın" diyordu.
+     O, 151 pikselik bloğa karşı alınmış bir önlemdi; ama bedeli, satırın
+     kendi bilgisinin okunmaması oldu: 1440 pikselde 395 pikselin 377'si,
+     1100 pikselde yalnız 244'ü çiziliyordu — yani "bu tarayıcıda sesle
+     takip var mı" sorusunun cevabı hiç görünmüyordu.
+
+     Sarmanın gerçek bedeli ÖLÇÜLDÜ (aynı tarayıcı, çubuk yüksekliği):
+       1152 px  90 → 106     1280 px  68 → 70
+       1440 px  68 →  70     1680 px  68 →  70
+     Yani korkulan 151 pikselden çok uzak. Bilgiyi göstermek 2 piksele
+     mal oluyor; saklamak ise satırın varlık sebebini yok ediyordu.
+
+     Kilitlenen kural DEĞİŞMEDİ: çubuk kendi içinde patlamamalı. Onu
+     `flex-wrap`, `max-content` ve öge-içi `nowrap` kuralları tutuyor;
+     cihaz özetinin GENİŞLİK TAVANI da burada, çünkü tavansız bir satır
+     çubuğun tamamını tek başına doldururdu. */
+  ok('cihaz özetinin genişlik tavanı var (çubuğu tek başına doldurmuyor)',
+     /#sbDev\{[^}]*max-width:min\(46ch,52%\)/.test(mac));
+  ok('cihaz özeti üç noktayla kesilmiyor (bilgi okunabiliyor)',
+     !/#sbDev\{[^}]*text-overflow:ellipsis/.test(mac));
 }
 
 /* ---------- ÇUBUK DÜĞMELERİNİN ADI VAR MI (2026-08-17) ----------

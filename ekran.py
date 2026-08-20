@@ -49,8 +49,29 @@ REPO = os.path.dirname(os.path.abspath(__file__))
 CIKTI = os.path.join(REPO, 'magaza', 'ekranlar')
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
-TELEFON = 'file://' + os.path.join(REPO, 'index.html')
-MAC = 'file://' + os.path.join(REPO, 'mac', 'Teleprompter Pro.html').replace(' ', '%20')
+def _kabuk(env_ad, *parcalar):
+    """Ölçülecek kabuğun adresi — ORTAM DEĞİŞKENİNE saygılı.
+
+    NEDEN (2026-08-20'de ısırdı): çizilmiş arayüzü ölçen araçlar
+    (`kontrast.py`, `kayit.py`) yollarını buradan alıyor ve yol SABİTTİ.
+    Yani bir dedektörün gerçekten ayırt ettiğini kanıtlamak için deponun
+    KENDİ dosyasını bozmak gerekiyordu — kasıtlı bozma turunun tam da
+    kaçındığı şey. Yol verilmiş ama dosya yoksa sessizce depoya DÜŞMEK
+    yerine hata veriliyor: sessiz düşüş, bozmayı hiç uygulamadan
+    "geçti" demek olurdu (bu depoda dört kez yaşandı).
+    """
+    v = os.environ.get(env_ad)
+    if v:
+        if not os.path.exists(v):
+            raise SystemExit('⛔ verilen yol yok: %s (%s)' % (v, env_ad))
+        yol = os.path.abspath(v)
+    else:
+        yol = os.path.join(REPO, *parcalar)
+    return 'file://' + yol.replace(' ', '%20')
+
+
+TELEFON = _kabuk('SUFLE_TELEFON', 'index.html')
+MAC = _kabuk('SUFLE_MAC', 'mac', 'Teleprompter Pro.html')
 
 # App Store 6.7" = 1290x2796 -> 430x932 @3x · Mac vitrini 1440x900 @2x
 TEL = dict(w=430, h=932, dsf=3, mobil=True)

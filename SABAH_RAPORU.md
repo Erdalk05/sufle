@@ -2,10 +2,51 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.42 YAYINLANDI ve canlıdan doğrulandı (`sufle-v114`); md5 birebir. Sonrasındaki iş yalnız kapı/araç tarafında, uygulama sürümü değişmedi.**
+**DURUM — v9.43: kapı yeşil, YAYIN BEKLİYOR.** (v9.42 yayınlandı ve canlıdan doğrulandı: `sufle-v114`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## ✂️ 20 Ağustos gecesi — v9.43 — MASAÜSTÜNDE KESİLEN YETENEK SATIRI
+
+Tipografi turunda masaüstü yazıları 12 → 13 px oldu; **kendi değişikliğimi
+çizilmiş ekranda ölçtüm** ve gerçek bir kusur çıktı — ama kusur benim
+eklediğim değildi, daha eskiydi ve hiçbir kapı görmüyordu.
+
+Durum çubuğundaki cihaz/yetenek satırı —
+`macOS · Chrome · MP4 ✓ · Kırpma ✓ · Sesle takip ✓ · Paylaşım ✓` —
+**üç noktayla kesiliyordu**: 1440 pikselde 395 pikselin 377'si, 1100 pikselde
+yalnız 244'ü çiziliyordu. Yani *"bu tarayıcıda sesle takip var mı, paylaşım
+var mı"* sorusunun cevabı hiç görünmüyordu — satırın bütün varlık sebebi oydu.
+
+**Üç nokta kaza değildi, eski bir çözümdü.** `tests/134` onu bilerek koymuştu:
+çubuk daralınca her etiket kendi içinde kırılıyor ve 151 pikselik okunmaz bir
+blok oluyordu. Ama o çözümün bedeli hiç ölçülmemişti. Bugün ölçüldü:
+
+| genişlik | kesik (eski) | saran (yeni) |
+|---|---|---|
+| 1152 px | 90 px | 106 px |
+| 1280 px | 68 px | 70 px |
+| 1440 px | 68 px | **70 px** |
+
+Bilgiyi göstermek **2 piksele** mal oluyor; saklamak ise satırı anlamsız
+kılıyordu. `tests/134` artık çözümü değil **kuralı** kilitliyor.
+
+**Kendi düzeltmem de ilk seferde işe yaramadı ve bunu ölçüm söyledi.**
+`#statusbar>span` seçicisi `#sbDev`ten daha özgül olduğu için
+`white-space:normal` sessizce kaybetti: kırpma kalktı ama satır **sarmak
+yerine kutusunun dışına taşıp komşusuna bindi**. Kusur görünmez oldu,
+kaybolmadı — ve o anki dedektörüm bunu "başarılı" diye onaylıyordu.
+
+Bu yüzden `kontrast.py` artık **iki sınıfı** ölçüyor: **kesik** (taşma gizli,
+sonu okunmuyor) ve **taşan** (metin kendi kutusunun dışına boyanıyor, komşuya
+biniyor). İkincisi `scrollWidth` ile ölçülemiyor — metnin **kendi çizim
+dikdörtgeni** ölçülüyor. 12 yüzeyin 12'sinde ikisi de **0**.
+
+**`ekran.py` artık `SUFLE_TELEFON`/`SUFLE_MAC` ortam değişkenlerine saygılı.**
+Öncesinde çizilmiş ekran dedektörlerinin ayırt ettiğini kanıtlamak için
+deponun **kendi dosyasını** bozmak gerekiyordu — kasıtlı bozma turunun tam
+kaçındığı şey. İki bozuk kopyayla ikisi de kanıtlandı; `tests/203` + 6 bozma.
 
 ## 🧰 20 Ağustos gecesi — BİÇİM KİLİDİ ARTIK ÖLÇÜLÜYOR (`EKSIKLER` F2 kapandı)
 
@@ -2564,9 +2605,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7697 test** (gece başında 732) · yeni test dosyası: 39–202
+- **7714 test** (gece başında 732) · yeni test dosyası: 39–203
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **761 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **767 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
