@@ -51,6 +51,14 @@
   --r-warn-t:#FFB020;      /* 9,27 */
 
   /* --- tipografi: 5 adım. Bugün 11/12/13/14/15px karışık kullanılıyor. --- */
+  /* MİKRO ETİKET — İKON DÜĞMESİNİN ALTI. Ölçek dışı bir kaçamak DEĞİL,
+     ÖLÇÜLMÜŞ bir adım: alt çubuğun beş düğmesinin altındaki adlar 360 px
+     genişlikte 11 px ile YAN YANA ÇAKIŞIYOR ("Senaryo" ile "Hazır mıyım"
+     birbirine giriyor), 10 px ile çakışmıyor. Ölçüm gerçek tarayıcıda,
+     düğme adımı ile metin genişliği karşılaştırılarak yapıldı.
+     KULLANIM ALANI DAR: yalnız bir ikonun altındaki ad ve ekran üstü
+     rehber etiketi. Gövde metni burada YAZILMAZ — 10 px okuma boyu değil. */
+  --tx-2xs:10px;
   --tx-xs:11px;            /* ALL CAPS etiket */
   --tx-sm:13px;            /* yardımcı metin */
   --tx-md:15px;            /* gövde, düğme */

@@ -5255,5 +5255,47 @@
   "kaynak": "mac",
   "bul": "const dt=Math.min(0.1,(ts-lastTs)/1000); lastTs=ts;",
   "koy": "const dt=(ts-lastTs)/1000; lastTs=ts;"
+ },
+ {
+  "ad": "v9.42 mikro etiket adımı ölçekten siliniyor (düğme altı adları çakışır)",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "jeton",
+  "bul": "--tx-2xs:10px;",
+  "koy": "--tx-mikro:10px;"
+ },
+ {
+  "ad": "v9.42 ölçeğe gerekçesiz iki adım daha ekleniyor (ölçek = ölçek olmaktan çıkar)",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "jeton",
+  "bul": "  --tx-xs:11px;",
+  "koy": "  --tx-a:12px; --tx-b:14px; --tx-xs:11px;"
+ },
+ {
+  "ad": "v9.42 mikro adımın ÖLÇÜM gerekçesi siliniyor",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "jeton",
+  "bul": "11 px ile YAN YANA ÇAKIŞIYOR",
+  "koy": "11 px ile daha iyi durmuyor"
+ },
+ {
+  "ad": "v9.42 telefonda ölçek dışı sabit yazı boyu geri geliyor",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "telefon",
+  "bul": "small{font-size:var(--tx-2xs)}",
+  "koy": "small{font-size:9px}"
+ },
+ {
+  "ad": "v9.42 masaüstünde ölçek dışı 12 px geri geliyor",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "mac",
+  "bul": ".ctrl label{font-size:var(--tx-sm);color:var(--txt)}",
+  "koy": ".ctrl label{font-size:12px;color:var(--txt)}"
+ },
+ {
+  "ad": "v9.42 çizilmiş ekranın ölçek nöbetçisi sessizce kaldırılıyor",
+  "test": "201-tipografik-ritim.js",
+  "kaynak": "kontrast",
+  "bul": "ölçek dışı yazı boyu ARTTI",
+  "koy": "ölçek dışı yazı boyu değişti"
  }
 ]

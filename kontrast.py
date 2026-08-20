@@ -36,6 +36,19 @@ from ekran import Tarayici, TELEFON, MAC, KAPAT_ONB          # noqa: E402
 
 TABAN = os.path.join(REPO, 'tests', 'kontrast-taban.json')
 
+
+def olcek():
+    """Tipografi ölçeğinin adımları — TEK KAYNAK `cekirdek/jetonlar.css`.
+
+    Burada ikinci bir liste tutmak, ölçek değişince nöbetçinin sessizce
+    ESKİ ölçeği savunması demek olurdu; bu depoda kopyanın bedeli ölçüldü."""
+    import re as _re
+    css = open(os.path.join(REPO, 'cekirdek', 'jetonlar.css'), encoding='utf-8').read()
+    adim = sorted({int(m) for m in _re.findall(r'--tx-[a-z0-9]+\s*:\s*(\d+)px', css)})
+    if len(adim) < 5:
+        raise RuntimeError('tipografi ölçeği okunamadı (%d adım) — ölçmeyen denetim' % len(adim))
+    return adim
+
 # Ölçülecek durumlar: kabuk + o kabukta açılacak yüzey.
 # Yalnız ilk ekranı ölçmek, ayar sayfalarındaki yüzlerce etiketi kaçırırdı.
 DURUMLAR = [
@@ -357,7 +370,37 @@ OLC = r"""
     }
   }
 
-  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik });
+  /* TİPOGRAFİK RİTİM — ÇİZİLMİŞ boy ölçekte mi (2026-08-20).
+     `tests/201` KAYNAKTAKİ sabitleri kovalıyor; burada ölçülen SONUÇ:
+     bir yerde satır içi `style` ya da JS ile ölçek dışı bir boy geri
+     gelirse kaynak temiz görünürken ekran bozulur. İki nöbetçi birlikte
+     ölçüt: biri yazılanı, diğeri çizileni tutuyor.
+     Ölçek Python tarafından `cekirdek/jetonlar.css`ten okunup gömülüyor —
+     burada ikinci bir kopya tutmak, ölçeği değiştirince nöbetçinin sessizce
+     eski ölçeği savunması demek olurdu. */
+  const OLCEK = __OLCEK__;
+  const KULLANICI = new Set(['div.ln','span.w','div.t','#editor','#text','#title','#introSenAd']);
+  const ritim = [];
+  for (const el of document.querySelectorAll('*')) {
+    const kendiMetin = [...el.childNodes]
+      .filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => n.textContent.trim()).join(' ');
+    if (!kendiMetin) continue;
+    const s = getComputedStyle(el);
+    if (s.display === 'none' || s.visibility === 'hidden') continue;
+    if (parseFloat(s.opacity) < 0.05) continue;
+    const b = el.getBoundingClientRect();
+    if (b.width < 1 || b.height < 1) continue;
+    /* KULLANICININ KENDİ METNİ ÖLÇEK DIŞIDIR — sufle boyunu kullanıcı
+       kendi ayarlıyor, düzenleyici kutusu iOS zum kuralına bağlı. */
+    const ad = el.id ? '#' + el.id
+      : el.tagName.toLowerCase() + '.' + String(el.className).split(' ')[0];
+    if (KULLANICI.has(ad) || el.closest('#scroller,#editor,#text,#count')) continue;
+    const px = Math.round(parseFloat(s.fontSize) * 10) / 10;
+    if (!OLCEK.includes(px))
+      ritim.push({ yol: yol(el), px, metin: kendiMetin.slice(0, 28) });
+  }
+
+  return JSON.stringify({ olculen, ihlal, atlanan, eylem, adsiz, kirpik, ritim });
 })()
 """
 
@@ -452,7 +495,7 @@ def olc(ad, url, w, h, dsf, kur):
                 else:
                     raise RuntimeError('%s: hedef duruma varılmadı (%s)' % (ad, hedef[:60]))
             time.sleep(1.0)
-        sonuc = json.loads(t.js(OLC))
+        sonuc = json.loads(t.js(OLC.replace('__OLCEK__', json.dumps(olcek()))))
         # DİL DENETİMİ: aynı yüzeyi TR ve EN çizip karşılaştır. Bu, kaynak
         # düzeyi kapsam sayısının GÖREMEDİĞİ şeyi görür — çalışma zamanında
         # yazılan etiketler (Tur 41-42'de altı gerçek kusur buradan çıktı:
@@ -512,6 +555,17 @@ def main():
             for x in kirpik[:8]:
                 print('      ✂ %s' % x)
             kirmizi = True
+        # TİPOGRAFİK RİTİM — taban ratchetı (mutlak 0 DEĞİL): ölçek dışı
+        # kalan tek tük yüzey olabilir ve onları zorla taşımak düzeni
+        # bozabilir. Ölçüt yön: her sürümde DAHA AZ, asla daha çok.
+        ritim = r.get('ritim', [])
+        yeni[ad + '~ritim'] = len(ritim)
+        eskiR = taban.get(ad + '~ritim')
+        if eskiR is not None and len(ritim) > eskiR:
+            print('   ⛔ ölçek dışı yazı boyu ARTTI: %d → %d' % (eskiR, len(ritim)))
+            kirmizi = True
+        for x in ritim[:6]:
+            print('   ↕ %-28s %spx  "%s"' % (x['yol'], x['px'], x['metin']))
         for k, v in r['dil'][:8]:
             print('   ⚠ %-26s "%s"' % (k, v))
         yeni[ad + '~dil'] = d

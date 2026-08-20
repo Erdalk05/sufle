@@ -69,6 +69,14 @@
   --r-warn-t:#FFB020;      /* 9,27 */
 
   /* --- tipografi: 5 adım. Bugün 11/12/13/14/15px karışık kullanılıyor. --- */
+  /* MİKRO ETİKET — İKON DÜĞMESİNİN ALTI. Ölçek dışı bir kaçamak DEĞİL,
+     ÖLÇÜLMÜŞ bir adım: alt çubuğun beş düğmesinin altındaki adlar 360 px
+     genişlikte 11 px ile YAN YANA ÇAKIŞIYOR ("Senaryo" ile "Hazır mıyım"
+     birbirine giriyor), 10 px ile çakışmıyor. Ölçüm gerçek tarayıcıda,
+     düğme adımı ile metin genişliği karşılaştırılarak yapıldı.
+     KULLANIM ALANI DAR: yalnız bir ikonun altındaki ad ve ekran üstü
+     rehber etiketi. Gövde metni burada YAZILMAZ — 10 px okuma boyu değil. */
+  --tx-2xs:10px;
   --tx-xs:11px;            /* ALL CAPS etiket */
   --tx-sm:13px;            /* yardımcı metin */
   --tx-md:15px;            /* gövde, düğme */
@@ -129,7 +137,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--txt);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    overflow:hidden;font-size:14px}
+    overflow:hidden;font-size:var(--tx-md)}
   button{font-family:inherit;cursor:pointer}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#33333d;border-radius:6px}
@@ -160,7 +168,7 @@
      yakalandı. Jetonlardan besleniyor. */
   .seg{display:inline-flex;gap:2px;background:var(--panel2);border:1px solid var(--line);
     border-radius:9px;padding:2px}
-  .seg button{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;
+  .seg button{background:none;border:0;color:var(--muted);font:inherit;font-size:var(--tx-sm);
     font-weight:700;padding:var(--sp-1) 10px;border-radius:7px;cursor:pointer}
   /* B.1 — SEÇİLİ ≠ EYLEM. `jetonlar.css` kendi kuralını yazıyor:
      "--r-action ... asıl eylem, ekranda TEK olmalı". Ölçtüm, kural çiğneniyordu:
@@ -180,7 +188,7 @@
   #rtabs{display:flex;gap:var(--sp-1);margin-bottom:12px;position:sticky;top:0;z-index:5;
     background:var(--panel);padding:var(--sp-1) 0}
   #rtabs button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
-    font:inherit;font-size:12px;font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
+    font:inherit;font-size:var(--tx-sm);font-weight:700;padding:7px 0;border-radius:9px;cursor:pointer}
   /* Sağ panel sekmeleri de seçili DURUM, eylem değil — .seg ile aynı kural. */
   #rtabs button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:700}
   #right .ctrl.sekmeDisi{display:none}
@@ -232,10 +240,14 @@
      ikon o renk; emoji ise her platformda başka çiziliyordu. */
   .ic{width:18px;height:18px;display:inline-block;vertical-align:-3px;flex:none}
   .iconbtn .ic{width:20px;height:20px;vertical-align:-4px}
-  .pill button{background:none;border:none;color:var(--muted);padding:var(--sp-2) 11px;font-size:12px;font-weight:600}
+  .pill button{background:none;border:none;color:var(--muted);padding:var(--sp-2) 11px;font-size:var(--tx-sm);font-weight:600}
   /* Biçim seçici de SEÇİLİ DURUM — .seg ve #rtabs ile aynı kural (B.1). */
   .pill button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);font-weight:700}
-  .clock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:14px;min-width:54px;text-align:center}
+  /* <small> tarayici varsayilani 0.8em: boy kapsayicidan TURUYOR ve
+     ayni etiket iki ekranda iki farkli boyda cikiyor. Olcege baglandi
+     (telefonda da ayni kural, olculdu: sonuc ekraninda 9,2 px). */
+  small{font-size:var(--tx-2xs)}
+  .clock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:var(--tx-md);min-width:54px;text-align:center}
 
   /* ===== SOL PANEL — SENARYOLAR + METİN ===== */
   .sec{padding:14px 14px 0}
@@ -246,7 +258,7 @@
   .scriptItem.on{border-color:var(--accent);background:rgba(0,200,83,.08)}
   .scriptItem .nm{flex:1;font-size:var(--tx-sm);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .scriptItem .meta{font-size:var(--tx-xs);color:var(--muted)}
-  .scriptItem .x{color:var(--muted);font-size:16px;background:none;border:none;padding:0 2px}
+  .scriptItem .x{color:var(--muted);font-size:var(--tx-md);background:none;border:none;padding:0 2px}
   .scriptItem .x:hover{color:#ff6b6b}
   #editorWrap{flex:1;display:flex;flex-direction:column;padding:6px 14px 14px;min-height:220px}
   #title{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:var(--tx-sm);font-weight:600;margin-bottom:8px}
@@ -259,8 +271,8 @@
   .ctrl{padding:13px 16px;border-bottom:1px solid var(--line)}
   .ctrl .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
   .ctrl .row:last-child{margin-bottom:0}
-  .ctrl label{font-size:12px;color:var(--txt)}
-  .ctrl .v{font-size:12px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+  .ctrl label{font-size:var(--tx-sm);color:var(--txt)}
+  .ctrl .v{font-size:var(--tx-sm);color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
   input[type=range]{width:100%;accent-color:var(--accent);height:22px}
   /* ===== SAĞ PANEL KART'LARI (2026-08-17) =====
      Telefonda ayarlar kartlara bölününce ekran sakinleşti; masaüstünde de
@@ -274,7 +286,7 @@
     border-radius:12px;margin:10px 0;overflow:hidden}
   .grup>summary{display:flex;align-items:center;gap:8px;min-height:40px;
     padding:8px 12px;cursor:pointer;list-style:none;
-    font-size:13px;font-weight:700;color:var(--txt)}
+    font-size:var(--tx-sm);font-weight:700;color:var(--txt)}
   .grup>summary::-webkit-details-marker{display:none}
   .grup>summary::after{content:"";width:7px;height:7px;flex:none;margin-left:auto;
     border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
@@ -285,17 +297,17 @@
   .field{margin-bottom:11px}
   .field:last-child{margin-bottom:0}
   .field .top{display:flex;justify-content:space-between;margin-bottom:3px}
-  .field .top label{font-size:12px;color:var(--muted)}
+  .field .top label{font-size:var(--tx-sm);color:var(--muted)}
   .swatches{display:flex;gap:var(--sp-2);flex-wrap:wrap}
   .sw{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative}
   .sw.on{border-color:#fff}
-  .scriptItem .fav{background:none;border:none;color:var(--t-low);cursor:pointer;font-size:14px;padding:0 4px}
+  .scriptItem .fav{background:none;border:none;color:var(--t-low);cursor:pointer;font-size:var(--tx-md);padding:0 4px}
   .scriptItem .fav[aria-pressed="true"]{color:var(--accent)}
   .selectish{display:flex;gap:6px;flex-wrap:wrap}
-  .selectish button{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:var(--sp-2) 6px;font-size:12px;font-weight:600}
+  .selectish button{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:var(--sp-2) 6px;font-size:var(--tx-sm);font-weight:600}
   .selectish button.on{background:var(--accent);color:#04210f;border-color:transparent}
   .toggle{display:flex;align-items:center;justify-content:space-between;padding:var(--sp-2) 0}
-  .toggle span{font-size:12px}
+  .toggle span{font-size:var(--tx-sm)}
   /* G.3 — önizleme kartları (telefonla aynı kural: ayarın ADI değil SONUCU). */
   /* G.6 — klip önerileri (telefonla aynı kural). */
   .klipler{display:flex;flex-direction:column;gap:8px;margin:10px 0}
@@ -378,7 +390,7 @@
   #frame.safeOn #safe{display:block}
   #safe div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.16) 0 8px,transparent 8px 16px);
     border:1px dashed rgba(255,59,48,.5)}
-  #safe div b{position:absolute;left:6px;top:4px;font-size:10px;font-weight:800;color:rgba(255,180,175,.95)}
+  #safe div b{position:absolute;left:6px;top:4px;font-size:var(--tx-2xs);font-weight:800;color:rgba(255,180,175,.95)}
   #scroller .ln{display:block;min-height:.2em}
   #scroller .h{color:var(--accent);font-size:.72em;letter-spacing:.08em;text-transform:uppercase;opacity:.9;padding:.5em 0 .1em}
   #scroller .note{opacity:.45;font-style:italic;font-weight:500;font-size:.7em}
@@ -426,7 +438,7 @@
   #statusbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
     display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
     gap:6px 14px;width:max-content;max-width:min(96%,940px);
-    background:rgba(10,10,12,.8);border:1px solid var(--line);border-radius:12px;padding:7px 14px;font-size:12px;color:var(--muted);z-index:7;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+    background:rgba(10,10,12,.8);border:1px solid var(--line);border-radius:12px;padding:7px 14px;font-size:var(--tx-sm);color:var(--muted);z-index:7;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   #statusbar>span,#statusbar>button{white-space:nowrap}
   #sbDev{overflow:hidden;text-overflow:ellipsis;max-width:min(46ch,52%)}
   #statusbar b{color:var(--txt)}
@@ -442,7 +454,7 @@
     #app.full{grid-template-columns:1fr}
     #topbar{height:auto;flex-wrap:wrap;padding:var(--sp-2) 10px;gap:7px}
     .brand{font-size:var(--tx-sm);margin-right:0}
-    .btn{padding:var(--sp-2) 11px;font-size:12px}
+    .btn{padding:var(--sp-2) 11px;font-size:var(--tx-sm)}
     #statusbar{display:none}
     #left,#right{position:fixed;top:0;bottom:0;width:88%;max-width:340px;z-index:40;opacity:1 !important;
       pointer-events:auto !important;overflow-y:auto !important;transition:transform .25s ease}
@@ -478,11 +490,11 @@
   #recResult.open{display:flex}
   .rr-box{background:#141418;border:1px solid var(--line);border-radius:18px;padding:18px;
     width:min(720px,92vw);max-height:90vh;display:flex;flex-direction:column;gap:14px}
-  .rr-head{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
-  .rr-head #rrSize{font-size:12px;font-weight:600;color:var(--muted)}
+  .rr-head{font-size:var(--tx-lg);font-weight:700;display:flex;align-items:center;gap:10px}
+  .rr-head #rrSize{font-size:var(--tx-sm);font-weight:600;color:var(--muted)}
   #rrVideo{width:100%;max-height:62vh;background:#000;border-radius:12px}
   .rr-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-  .rr-note{font-size:12px;color:var(--muted);text-align:center}
+  .rr-note{font-size:var(--tx-sm);color:var(--muted);text-align:center}
   .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
     background:var(--accent);color:#04210f;font-weight:700;font-size:var(--tx-sm);padding:11px 18px;border-radius:11px;
     opacity:0;pointer-events:none;transition:.25s;z-index:50}
@@ -1083,7 +1095,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
       </div>
       <div class="field" style="margin-top:11px">
         <div class="colorRow">
-          <label style="flex:1;font-size:12px;color:var(--muted)" data-i18n="mCustomFg">Özel: Yazı / Zemin</label>
+          <label style="flex:1;font-size:var(--tx-sm);color:var(--muted)" data-i18n="mCustomFg">Özel: Yazı / Zemin</label>
           <input type="color" id="cText" value="#ffffff">
           <input type="color" id="cBg" value="#000000">
         </div>
@@ -1171,7 +1183,7 @@ Hızı ↑ ↓ tuşlarıyla çekim sırasında bile ayarlayabilirsiniz. İyi çe
 <div id="recResult">
   <div class="rr-box">
     <div class="rr-head"><span data-i18n="mRrHead">Çekim hazır</span> <span id="rrSize"></span></div>
-    <div id="audInfo" style="font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
+    <div id="audInfo" style="font-size:var(--tx-sm);font-weight:700;color:var(--muted);margin:2px 0 6px"></div>
     <video id="rrVideo" controls playsinline></video>
     <div id="provaBox" class="hidden"></div>
     <!-- D.6 BUDAMA. Telefonda tam çalışıyordu, Mac'te HİÇ YOKTU — üstelik
@@ -2298,7 +2310,7 @@ const MMSG={
   const playBtn=$('#playBtn'), recBtn=$('#recBtn'), camBtn=$('#camBtn');
 
   const LS='teleprompter_pro_v1';
-  const VER='9.41';   // telefon sürümüyle aynı numaralama
+  const VER='9.42';   // telefon sürümüyle aynı numaralama
 
   /* ============ HATA GÜNLÜĞÜ (telefon sürümüyle aynı desen) ============
      Bu üründe en pahalı hata sınıfı "sessizce kırılmak": bir istisna olay işleyicisini
@@ -5496,6 +5508,7 @@ function provaRapor(kaynak, sesle){
      Mac kullanıcısı bugüne kadar neyin değiştiğini hiç öğrenmiyordu;
      durum çubuğunda yalnız numara yazıyordu. */
   const NEWS={
+   '9.42':{tr:'🔤 <b>Masaüstündeki yazı boyları tek ölçeğe oturdu.</b> Ölçüldü: 41 metin 12 pikselde, 10 metin 14 pikselde yazılıyordu — ürünün ölçeği ise 11/13/15/19/26/30. Telefonda uygulanmış olan ölçek buraya hiç uygulanmamıştı; artık çizilen her metin ölçekteki bir adımda ve iki ekran aynı elden çıkmış gibi duruyor.',en:'🔤 <b>Desktop text sizes now follow a single scale.</b> Measured: 41 texts were set at 12 pixels and 10 more at 14, while the product scale is 11/13/15/19/26/30. The scale had been applied on the phone but never here; every drawn text is now a step on it and both screens finally look like they came from the same hand.'},
    '9.41':{tr:'🪶 <b>Kaydırma pürüzsüzleşti — masaüstünde üç eksik birden kapandı.</b> Hızı değiştirince metin zıplıyordu (artık ~200 ms yumuşak geçiş), metin sonunda akış sert kesiliyordu (artık son 60 pikselde yavaşlıyor) ve duraklama işaretleri akışı tek karede durduruyordu (artık yumuşak zarfla). Duraklamanın süresi birebir korunuyor. Eğri telefonla AYNI kaynaktan geliyor, yani iki ekran aynı metni aynı ritimde akıtıyor.',en:'🪶 <b>Scrolling got smoother — three desktop gaps closed at once.</b> Changing speed made the text jump (now a ~200 ms ease), the text ended with a hard cut (now it slows over the last 60 pixels) and pause marks stopped the scroll in a single frame (now a smooth envelope). Pause length is preserved exactly. The curve comes from the SAME source as the phone, so both screens run the same text at the same rhythm.'},
    '9.40':{tr:'🌍 <b>Masaüstünde de arayüz metinleri tek kaynağa geçti.</b> Budama birimi, hedef süre ve müzik durumu artık sözlükten okunuyor — dili değiştirdiğinde bunlar da anında değişiyor.',en:'🌍 <b>Desktop interface texts now come from a single source too.</b> Trim units, target duration and music status read from the dictionary, so switching language updates them instantly.'},'9.39':{tr:'🌍 Arayüz metinlerinin tek kaynağa taşınması tamamlandı; masaüstünde bu turda davranış değişmedi.',en:'🌍 The move of interface texts to a single source is complete; desktop behaviour is unchanged this round.'},'9.38':{tr:'🌍 Arayüz metinleri tek kaynağa taşınmaya devam ediyor; masaüstünde bu turda davranış değişmedi.',en:'🌍 Interface texts keep moving to a single source; desktop behaviour is unchanged this round.'},'9.37':{tr:'🌍 Arayüz metinleri tek kaynağa taşınmaya devam ediyor; masaüstünde bu turda davranış değişmedi.',en:'🌍 Interface texts keep moving to a single source; desktop behaviour is unchanged this round.'},'9.36':{tr:'🎚 Bu tur telefona özgü: ayarlar Temel/Gelişmiş olarak katmanlandı. Masaüstü paneli zaten sekmeli olduğu için davranışı değişmedi.',en:'🎚 This round is phone-only: the settings panel gained Basic/Advanced levels. The desktop panel is already tabbed, so its behaviour is unchanged.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Yıldıza tıkla, o senaryo listenin başında kalsın. Telefonla aynı kural.<br>✨ <b>Güzellik (yüz yumuşatma) masaüstüne geldi.</b> Ayarlar → Kamera bölümünde sürgü var; yeşil ekran gerekmiyor, tek koşul <b>kırparak kaydetmek</b> (varsayılan açık). Serbest oranda görüntü kameradan doğrudan alındığı için çalışmaz ve bunu söyler. Gölgelendirici telefonla AYNI kaynaktan geliyor, yani iki ekran aynı çekimi aynı ölçüde yumuşatıyor.',en:'⭐ <b>Favourite scripts.</b> Click the star and that script stays at the top of the list. Same rule as the phone.<br>This round is phone-only: the v9.33 beauty and quick-access features could not be found (one sat under the wrong card and looked disabled, the other had no label). Desktop behaviour is unchanged.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne geldi.</b> Kameran destekliyorsa Ayarlarda pozlama (parlaklık), beyaz ayarı, odak-pozlama kilidi ve fener çıkıyor. <b>Desteklemiyorsa hiç görünmüyor</b> — hiçbir şey yapmayan bir sürgü göstermektense hiç göstermemeyi seçtik. Kurallar telefonla tek kaynaktan geliyor, yani iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryo etiketleri masaüstünde de.</b> Başlığın altındaki kutuya virgülle yaz; listenin üstündeki jetonlardan birine tıklayınca yalnız o etiketin senaryoları kalır. Etiket katlaması telefonla birebir aynı — yedeği telefonda alıp burada açtığında "İş" ile "iş" aynı etikette kalıyor.',en:'🎛 <b>Manual camera controls on the desktop.</b> If your camera supports them, Settings now shows exposure (brightness), white balance, focus/exposure lock and torch. <b>If it does not, nothing is shown</b> — a slider that does nothing is worse than no slider. The rules come from the same single source as the phone, so both screens show the same controls for the same camera.<br><b>Script tags on the desktop too.</b> Type them comma-separated under the title; click a chip above the list and only that tag\'s scripts remain. Tag folding is identical to the phone, so a backup taken on the phone and opened here keeps "İş" and "iş" in the same tag.'},
    '9.33':{tr:'<b>Telefon sürümüne güzellik (yüz yumuşatma) ve sağ üstte hızlı erişim paneli geldi.</b> Masaüstünde kompozit görüntü boru hattı bulunmadığı için bu tur telefona özgü; masaüstü davranışı değişmedi.',en:'<b>The phone version gained beauty (skin smoothing) and a quick-access panel in the top right.</b> The desktop build has no composite image pipeline, so this round is phone-only; desktop behaviour is unchanged.'},

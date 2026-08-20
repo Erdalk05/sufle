@@ -105,6 +105,10 @@ KAYNAK = {
     'deneme': (os.path.join(REPO, 'DENEME.md'), 'SUFLE_DENEME'),
     'canli': (os.path.join(REPO, 'canli.py'), 'SUFLE_CANLI'),
     'kapi': (os.path.join(REPO, 'kapi.sh'), 'SUFLE_KAPI'),
+    # Çizilmiş arayüzü ölçen araç: kontrast, erişilebilir ad, çevrilmemiş
+    # metin ve tipografik ritim onun içinde yaşıyor. Bir pası sessizce
+    # silmek kapıyı yeşil bırakır — ölçmeyen kapı, kapı değildir.
+    'kontrast': (os.path.join(REPO, 'kontrast.py'), 'SUFLE_KONTRAST'),
     'manifest': (os.path.join(REPO, 'manifest.json'), 'SUFLE_MANIFEST'),
     # Mağaza kabuğu: Apple hesabı gelene kadar tek koruma bu üç dosya.
     'kabuk_plist': (os.path.join(REPO, 'ios-kabuk', 'Kabuk-Info.plist'), 'SUFLE_KABUK_PLIST'),

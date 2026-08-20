@@ -119,6 +119,14 @@
   --r-warn-t:#FFB020;      /* 9,27 */
 
   /* --- tipografi: 5 adım. Bugün 11/12/13/14/15px karışık kullanılıyor. --- */
+  /* MİKRO ETİKET — İKON DÜĞMESİNİN ALTI. Ölçek dışı bir kaçamak DEĞİL,
+     ÖLÇÜLMÜŞ bir adım: alt çubuğun beş düğmesinin altındaki adlar 360 px
+     genişlikte 11 px ile YAN YANA ÇAKIŞIYOR ("Senaryo" ile "Hazır mıyım"
+     birbirine giriyor), 10 px ile çakışmıyor. Ölçüm gerçek tarayıcıda,
+     düğme adımı ile metin genişliği karşılaştırılarak yapıldı.
+     KULLANIM ALANI DAR: yalnız bir ikonun altındaki ad ve ekran üstü
+     rehber etiketi. Gövde metni burada YAZILMAZ — 10 px okuma boyu değil. */
+  --tx-2xs:10px;
   --tx-xs:11px;            /* ALL CAPS etiket */
   --tx-sm:13px;            /* yardımcı metin */
   --tx-md:15px;            /* gövde, düğme */
@@ -327,7 +335,7 @@
   body.safeOn #safeWrap{display:block}
   #safeWrap div{position:absolute;background:repeating-linear-gradient(45deg,rgba(255,59,48,.10) 0 10px,transparent 10px 20px);
     border:1px dashed rgba(255,59,48,.35)}
-  #safeWrap div b{position:absolute;left:6px;top:4px;font-size:9px;font-weight:800;color:rgba(255,180,175,.95);letter-spacing:.03em}
+  #safeWrap div b{position:absolute;left:6px;top:4px;font-size:var(--tx-2xs);font-weight:800;color:rgba(255,180,175,.95);letter-spacing:.03em}
   #grid{position:absolute;inset:0;display:none;
     background-image:linear-gradient(to right,rgba(255,255,255,.16) 1px,transparent 1px),
                      linear-gradient(to right,rgba(255,255,255,.16) 1px,transparent 1px),
@@ -416,7 +424,13 @@
   #speedCtl button:active{background:rgba(255,255,255,.18)}
   #spVal{min-width:96px;text-align:center;font-size:var(--tx-md);font-weight:800;color:var(--accent);
     padding:0 4px;letter-spacing:.02em}
-  #spVal small{display:block;font-size:10px;font-weight:700;color:#9aa0a6;letter-spacing:.06em}
+  /* <small> TARAYICI VARSAYILANI 0.8em — yani ölçekten TÜREYEN bir boy.
+     Ölçüldü (2026-08-20, çizilmiş ekran): sonuç ekranındaki ses özeti
+     9,2 px çiziliyordu; ölçekteki en küçük adım 10 px. Etiket ölçeğe
+     bağlanmazsa boy kapsayıcısıyla birlikte sürükleniyor ve aynı etiket
+     iki ekranda iki farklı boyda görünüyor. */
+  small{font-size:var(--tx-2xs)}
+  #spVal small{display:block;font-size:var(--tx-xs);font-weight:700;color:#9aa0a6;letter-spacing:.06em}
   body.hideUI #speedCtl{opacity:0;pointer-events:none}
   /* sağ kenarın hız şeridi olduğunu belli eden ince iz */
   #railHint{position:absolute;right:0;top:34%;bottom:34%;width:3px;z-index:5;border-radius:3px;
@@ -496,7 +510,7 @@
      `::after`ta duruyor, etiket boştaki sözde-ögeye bağlandı. */
   .cbtn::after,#recBtn::before{content:attr(data-etiket);position:absolute;
     top:calc(100% + 3px);left:50%;transform:translateX(-50%);
-    font-size:10px;font-weight:650;letter-spacing:.01em;line-height:1;
+    font-size:var(--tx-2xs);font-weight:650;letter-spacing:.01em;line-height:1;
     color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
     text-shadow:0 1px 3px rgba(0,0,0,.8)}
   .cbtn.on::after{color:var(--r-action-t)}
@@ -510,7 +524,7 @@
      kaynak; odak kipinde o da susuyor. */
   #hizliBtn::after{content:attr(data-etiket);position:absolute;
     top:calc(100% + 3px);left:50%;transform:translateX(-50%);
-    font-size:10px;font-weight:650;letter-spacing:.01em;line-height:1;
+    font-size:var(--tx-2xs);font-weight:650;letter-spacing:.01em;line-height:1;
     color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;
     text-shadow:0 1px 3px rgba(0,0,0,.8)}
   body.hideUI #hizliBtn::after{content:''}
@@ -872,7 +886,7 @@
   .eyeline{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:4}
   .eyeline i{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.55)}
   .eyeline u{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.22)}
-  .eyeline b{position:absolute;top:33.3%;left:6px;transform:translateY(-140%);font-size:10px;
+  .eyeline b{position:absolute;top:33.3%;left:6px;transform:translateY(-140%);font-size:var(--tx-xs);
     color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.3px}
   @keyframes keyhit{0%{transform:scale(1.5);color:#3ddc84}100%{transform:scale(1)}}
   /* B.1 TİPOGRAFİ ÖLÇEĞİ — ölçülerek bağlandı (Tur 43).
@@ -2221,7 +2235,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.41';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.42';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -11020,6 +11034,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.42':{tr:'🔤 <b>Yazı boyları tek ölçeğe oturdu — en çok masaüstünde.</b> Ölçüldü: masaüstündeki 41 metin 12 pikselde, 10 metin 14 pikselde yazılıyordu; oysa ürünün tipografi ölçeği 11/13/15/19/26/30. Artık çizilen her metin ölçekteki bir adımda. <b>Küçük ama her ekranda görülen fark:</b> yan yana duran iki yüzey aynı elden çıkmış gibi duruyor. Ölçeğe ÖLÇEREK bir adım eklendi (10 piksel): alt çubuktaki düğme adları 360 piksel genişlikte 11 pikselle yan yana çakışıyor, 10 pikselle çakışmıyor.',en:'🔤 <b>Text sizes now follow a single scale — most of all on the desktop.</b> Measured: 41 texts on the desktop were set at 12 pixels and 10 more at 14, while the product type scale is 11/13/15/19/26/30. Every drawn text is now a step on that scale. <b>Small, but visible on every screen:</b> two surfaces side by side finally look like they came from the same hand. One step was added BY MEASUREMENT (10 pixels): the bottom bar button labels collide at 11 pixels on a 360 pixel wide screen and do not collide at 10.'},
  '9.41':{tr:'🪶 <b>Kaydırma pürüzsüzleşti.</b> Nefes molalarında ve metindeki duraklama işaretlerinde (/, //, (2)) akış eskiden tek karede durup tek karede geri başlıyordu; göz bunu duraklama değil TAKILMA diye görür. Artık hız yumuşak inip yumuşak kalkıyor ve <b>duraklamanın süresi birebir korunuyor</b>, yani süre tahmini de doğru kalıyor. <b>Masaüstünde iki eksik kapandı:</b> hızı değiştirince metin zıplıyordu ve metin sonunda akış sert kesiliyordu — ikisi de artık telefondaki gibi yumuşak. Kaydırma eğrisi tek kaynaktan geliyor.',en:'🪶 <b>Scrolling got smoother.</b> At breath pauses and at pause marks in the text (/, //, (2)) the scroll used to stop in a single frame and restart in a single frame; the eye reads that as a STUTTER, not a pause. Speed now eases down and back up, and <b>the length of the pause is preserved exactly</b>, so the duration estimate stays correct. <b>Two desktop gaps closed:</b> changing speed made the text jump, and the text ended with a hard cut — both are smooth now, just like on the phone. The scroll curve comes from a single source.'},
  '9.40':{tr:'🧾 <b>Çekim güvenilirliği matrisi yazıldı.</b> İzin reddi, kamera başka uygulamada, ses ya da görüntünün ortada kesilmesi, depo dolması ve uzun çekim — her senaryo için uygulamanın ne yaptığı, sana ne söylediği ve hangi testin kilitlediği kayıtlı. Gerçek cihaz gerektiren beş satır da <b>açık</b> yazıyor; ölçülmemiş bir şeye çalışıyor demiyoruz.',en:'🧾 <b>A recording reliability matrix is now written down.</b> Permission denied, camera busy, audio or video dying mid-take, storage filling up and long recordings — for each scenario the matrix records what the app does, what it tells you and which test locks it. Five rows that need a real device are marked <b>open</b>; we do not claim anything we have not measured.'},'9.39':{tr:'🌍 <b>Arayüz metinlerinin taşınması bitti: 172den 4e.</b> Kalan dört tanesi metin değil, sisteme verilen dil kodu (tr-TR gibi). Artık uygulamadaki her cümle tek kaynaktan geliyor: <b>dili değiştirdiğinde ekranların tamamı anında değişiyor</b> ve bir dilde olup diğerinde olmayan bilgi kalmıyor. Üçüncü bir arayüz dili eklemenin önü tamamen açıldı.',en:'🌍 <b>The text migration is complete: from 172 down to 4.</b> The remaining four are not text at all but locale codes handed to the system (like tr-TR). Every sentence in the app now comes from a single source: <b>switching language updates every screen instantly</b> and neither language is missing something the other has. Adding a third interface language is now unblocked.'},'9.38':{tr:'🌍 <b>Sözlüğü atlayan metin 50den 30a indi.</b> Kumanda tanı paneli, kamera izin tarifi, sesle takip rozeti, tempo ölçümü ve senaryo adı yedekleri de tek kaynağa geçti. <b>Yol boyunca bir çökme hatası da yakalandı:</b> izin tarifini yazan fonksiyonda yerel bir değişken sözlük fonksiyonunu gölgeliyordu — o satır çalışma anında hata verecekti.',en:'🌍 <b>Texts bypassing the dictionary went from 50 down to 30.</b> The clicker diagnostic, camera permission directions, voice-follow badge, pace measurement and script name fallbacks now read from a single source. <b>A crash was caught on the way:</b> in the permission-path function a local variable shadowed the translation helper, so that line would have thrown at runtime.'},'9.37':{tr:'🌍 <b>Arayüz metinlerinin çoğu tek kaynağa taşındı.</b> Sesle takip öz-testi, ses değerlendirmesi, konuşulabilirlik özeti, sesle takip şeridi ve kamera notları artık sözlükten okunuyor. Senin için görünen fark: <b>dili değiştirdiğinde bu ekranlar da anında değişiyor</b> ve iki dil arasında eksik bilgi kalmıyor. Perde arkasında üçüncü bir arayüz dilinin önü açılıyor: sözlüğü atlayan metin sayısı 172den 50ye indi.',en:'🌍 <b>Most interface texts now come from a single source.</b> The voice self-test, audio verdict, speakability summary, voice-follow strip and camera notes all read from the dictionary. What you notice: <b>switching language now updates these screens instantly</b> and neither language is missing information the other has. Behind the scenes this clears the way for a third interface language: texts bypassing the dictionary went from 172 down to 50.'},'9.36':{tr:'🎚 <b>Ayarlar artık iki düzeyde: Temel ve Gelişmiş.</b> Temel akışta 14 uzman kartı gizleniyor — hiçbir ayar kaybolmuyor, düzey seçicisi ayar sayfasının en üstünde ve kaç kartın gizlendiği rakamla yazıyor. <b>Arama her iki düzeyde de hepsini buluyor</b>, yani bir ayarı adıyla arayınca gizli kartın içinde de olsa çıkıyor. Seçimin kalıcı.',en:'🎚 <b>Settings now come in two levels: Basic and Advanced.</b> Basic hides 14 expert cards — nothing is lost; the level switch sits at the very top and the number of hidden cards is spelled out. <b>Search finds everything at either level</b>, so looking a setting up by name still works even when its card is hidden. Your choice is remembered.'},'9.35':{tr:'⭐ <b>Senaryolara favori.</b> Listede yıldıza dokun, o senaryo hep en üstte kalsın — seçtiğin sıralama (son kullanılan, ada göre, uzunluğa göre) aynen sürüyor, favoriler onun ÜSTÜNE biniyor. Ayrı bir favoriler sekmesi açmadık: liste ikiye bölünürse aradığın senaryonun hangi yarıda olduğunu bilemezsin. Masaüstünde de var.<br><b>v9.33 ile gelen iki yenilik görünmüyordu — üçü de bulunabilirlik kusuruydu.</b> ① <b>Güzellik</b> ayarlar listesinde "Görüntü filtresi" başlığının altında saklıydı ve kompozit kapalıyken soluk görünüp "kompozit açık olmalı" diyordu — oysa güzellik gerekeni kendisi açıyor. Kart artık <b>Filtre ve güzellik</b> adını taşıyor ve güzellik sürgüsü hiç soluklaşmıyor. ② Sağ üstteki <b>hızlı erişim</b> düğmesi ekrandaki tek adsız düğmeydi ve ikonu üç noktaydı; artık altında <b>Hızlı</b> yazıyor, tıpkı alt çubuktaki düğmeler gibi.',en:'⭐ <b>Favourite scripts.</b> Tap the star and that script stays at the top — your chosen sort order (last used, by name, by length) still applies underneath. We did not add a separate favourites tab: splitting the list means you never know which half your script is in. On the desktop too.<br><b>Two v9.33 features were invisible — all three causes were findability, not code.</b> ① <b>Beauty</b> was hidden under a card called "Video filter" and looked disabled with a "needs the composite pipeline" note — yet beauty switches that pipeline on by itself. The card is now called <b>Filter and beauty</b> and the slider is never dimmed. ② The <b>quick access</b> button in the top right was the only unlabeled button on screen and its icon was three dots; it now reads <b>Quick</b> underneath, like every button in the bottom bar.'},'9.34':{tr:'🎛 <b>Elle kamera denetimleri masaüstüne de geldi.</b> Telefondaki pozlama, beyaz ayarı, odak kilidi ve fener kuralları artık tek kaynaktan geliyor; iki ekran aynı kamerada aynı denetimi gösteriyor.<br><b>Senaryolara etiket verebiliyorsun.</b> Başlığın altındaki kutuya virgülle yaz — "reels, müşteri A, ders". Listenin üstünde etiket jetonları beliriyor; birine dokununca yalnız o etiketin senaryoları kalıyor. <b>Klasör yerine etiket olmasının sebebi:</b> klasör tek üyeliktir, aynı senaryo hem "Reels" hem "Müşteri A" olamaz — ya birini seçer ya da kopya tutardın; kopya tutmak da metnin iki yerde ayrışması demek. Etiket ikisine birden izin veriyor ve tek etiket seçtiğinde ekranda klasörün yaptığı işi aynen yapıyor. Hiç etiketin yoksa jeton çubuğu hiç çizilmiyor. Masaüstünde de var, aynı kuralla.',en:'🎛 <b>Manual camera controls reached the desktop.</b> The exposure, white balance, focus lock and torch rules now come from a single source, so both screens show the same controls for the same camera.<br><b>Scripts can carry tags.</b> Type them comma-separated in the box under the title — "reels, client A, lesson". Tag chips appear above the list; tap one and only that tag\'s scripts remain. <b>Why tags and not folders:</b> a folder allows one membership, so the same script cannot be both "Reels" and "Client A" — you would either pick one or keep a copy, and copies drift apart. A tag allows both, and selecting a single tag does exactly what a folder would. With no tags at all the chip bar is not drawn. The desktop build has it too, with the same rules.'},
  '9.33':{tr:'✨ <b>Güzellik (yüz yumuşatma) eklendi.</b> Diğer telepromterlarda olan ama bizde olmayan tek görüntü işi buydu. Düz bulanıklık değil: ten gibi düz alanlar yumuşuyor, göz, kaş, saç ve dudak sınırı olduğu gibi kalıyor. Renk filtresi \'Kapalı\' olsa bile çalışır ve gerekli boru hattını kendisi açar. Sıcaklık, parlaklık ve netlik ayarları zaten vardı — hepsi Ayarlar → Kamera → Görüntü filtresi altında.<br>⚡ <b>Sağ üstte hızlı erişim düğmesi.</b> Çekim sürerken en çok gereken altı şey artık tek dokunuş uzakta: kamera çevir, ışık, güzellik, yazı küçült/büyüt, odak. Cam panel sahnenin üstünde duruyor, yani kadrajı görmeye devam ediyorsun. Ayarları açmak gerekmiyor.',en:'✨ <b>Beauty (skin smoothing) added.</b> This was the one image feature other teleprompters had and we did not. It is not a plain blur: flat areas such as skin soften while eyes, brows, hair and lip edges stay intact. It works even when the colour filter is set to Off and switches on the pipeline it needs by itself. Warmth, brightness and sharpness were already there — all under Settings → Camera → Video filter.<br>⚡ <b>Quick access button, top right.</b> The six things you reach for while shooting are now one tap away: flip camera, light, beauty, smaller/bigger text, focus. The glass panel sits over the scene so you keep seeing your framing. No need to open Settings.'},

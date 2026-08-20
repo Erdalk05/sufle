@@ -2,10 +2,52 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.41 YAYINLANDI ve canlıdan doğrulandı (`sufle-v113`); md5 birebir.**
+**DURUM — v9.42: kapı yeşil, YAYIN BEKLİYOR.** (v9.41 yayınlandı ve canlıdan doğrulandı: `sufle-v113`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## 🔤 20 Ağustos gecesi — v9.42 — TİPOGRAFİK RİTİM ÖLÇÜLEBİLİR OLDU
+
+`EKSIKLER`'in ikinci **"ölçütü tanımsız"** maddesi de kapandı. Ölçüt:
+
+> **Çizilen her metnin boyu, tipografi ölçeğindeki bir adım olmalı.**
+
+Ölçüldü (gerçek tarayıcı, çizilmiş ekran) ve **ölçek masaüstünde hiç
+uygulanmamıştı**:
+
+| ekran | çizilen boylar |
+|---|---|
+| telefon giriş | 11/13/15/19/30 — ölçek içinde |
+| telefon ayarlar | bir öge 10 px, ölçek dışı |
+| **masaüstü ana** | 11/**12**/13/**14**/**16** — **41 öge 12 px, 10 öge 14 px** |
+
+`jetonlar.css` dosyasının kendi yorumu *"Bugün 11/12/13/14/15px karışık
+kullanılıyor"* diyordu; yani sorun **biliniyordu ama kimse ölçmüyordu.**
+
+Bugün: **her iki kabukta da çizilen her metin ölçekte.** 12 → 13, 14 → 15,
+16 → 15/19, 10 ve 9 → mikro adım.
+
+**Ölçeğe bir adım ÖLÇEREK eklendi.** Alt çubuktaki düğme adları 360 px
+genişlikte 11 px ile yan yana **çakışıyor** ("Senaryo" ile "Hazır mıyım"),
+10 px ile çakışmıyor — gerçek tarayıcıda düğme adımı ile metin genişliği
+karşılaştırılarak ölçüldü. Kaçamak değil, **kararı ölçüme dayanan** bir adım;
+gerekçe `--tx-2xs`in yanında yazılı ve `tests/201` gerekçenin durduğunu ölçüyor.
+
+**Çizilmiş ekranda bir kusur daha çıktı:** sonuç ekranındaki ses özeti
+**9,2 px** çiziliyordu — `<small>` etiketinin tarayıcı varsayılanı `0.8em`,
+yani boy kapsayıcıdan TÜRÜYORDU. Aynı etiket iki ekranda iki farklı boyda
+görünüyordu; ikisi de ölçeğe bağlandı.
+
+**Ölçüt iki nöbetçiyle tutuluyor:** `tests/201` kaynağı (ölçek dışı sabit
+kalmasın), `kontrast.py` çizileni (satır içi `style` ya da JS ile geri
+gelmesin). 12 yüzeyin 12'sinde ölçek dışı boy **0**. 6 kasıtlı bozma,
+altısı da yakalandı.
+
+**Bozma turu kendi boşluğunu gösterdi:** bir adımı yeniden ADLANDIRMAK testi
+kırmıyordu — oysa CSS tanımsız değişkende hata vermez, sessizce tarayıcı
+varsayılanına düşer. Artık kabuklarda kullanılan her adımın tanımlı olduğu
+ayrıca ölçülüyor.
 
 ## 🪶 20 Ağustos gecesi — v9.41 — ALTIN KAYDIRMA ÖLÇÜLEBİLİR OLDU
 
@@ -2481,7 +2523,7 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7646 test** (gece başında 732) · yeni test dosyası: 39–200
+- **7677 test** (gece başında 732) · yeni test dosyası: 39–201
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
 - Kapı: 10 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **549 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
