@@ -5409,5 +5409,33 @@
   "kaynak": "kontrast",
   "bul": "('mac-dar',          MAC,    1152, 760, 2,",
   "koy": "('mac-dar',          MAC,    1440, 760, 2,"
+ },
+ {
+  "ad": "v9.45 çok dar ekran kuralı kaldırılıyor (kart değeri yine kesilir)",
+  "test": "205-dar-ekran-degeri.js",
+  "kaynak": "telefon",
+  "bul": "  @media (max-width:340px){",
+  "koy": "  @media (max-width:1px){"
+ },
+ {
+  "ad": "v9.45 özet en sona alınmıyor (ok işareti üçüncü satıra düşer)",
+  "test": "205-dar-ekran-degeri.js",
+  "kaynak": "telefon",
+  "bul": "    .grup>summary .ozet{order:1;flex-basis:100%",
+  "koy": "    .grup>summary .ozet{order:0;flex-basis:100%"
+ },
+ {
+  "ad": "v9.45 geniş ekranda özet satırın yarısını aşıyor (başlığı ezer)",
+  "test": "205-dar-ekran-degeri.js",
+  "kaynak": "telefon",
+  "bul": "flex:0 1 auto;min-width:0;max-width:46%}",
+  "koy": "flex:0 1 auto;min-width:0}"
+ },
+ {
+  "ad": "v9.45 en dar telefon genişliği ölçülmüyor (nöbetçi ölü kalır)",
+  "test": "205-dar-ekran-degeri.js",
+  "kaynak": "kontrast",
+  "bul": "('telefon-dar-ayarlar', TELEFON, 320, 568, 3,",
+  "koy": "('telefon-dar-ayarlar', TELEFON, 430, 568, 3,"
  }
 ]

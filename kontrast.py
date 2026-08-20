@@ -56,6 +56,14 @@ DURUMLAR = [
     ('telefon-ayarlar',  TELEFON, 430, 932, 3,
      KAPAT_ONB + "document.querySelector('#startNoCam').click();"
                  "document.querySelector('#settingsBtn').click();"),
+    # EN DAR GERÇEKÇİ TELEFON (2026-08-20). Kapı 430 ve 360 pxi ölçüyordu;
+    # 320 px (iPhone SE 1. nesil, bölünmüş ekran, yakınlaştırılmış tarayıcı)
+    # hiç ölçülmüyordu ve orada kart özeti kesiliyordu — kartın kapalıyken
+    # TEK işi o değeri göstermek. Ölçülmeyen genişlik, denetlenmemiş
+    # genişliktir; aynı ders masaüstünde 1152 pxte alınmıştı.
+    ('telefon-dar-ayarlar', TELEFON, 320, 568, 3,
+     KAPAT_ONB + "document.querySelector('#startNoCam').click();"
+                 "document.querySelector('#settingsBtn').click();"),
     # v9.29 CANLI AYAR YÜZEYİ: kamerasız Ayarlar ölçümü cam paneli hiç
     # çalıştırmaz. Gerçek kamera akışı açılır, ardından panelin çizilmiş
     # metin/denetim kontrastı ayrıca ölçülür. Kamera karesi değişken olduğu

@@ -2,10 +2,39 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.44 YAYINLANDI ve canlıdan doğrulandı (`sufle-v116`); md5 birebir.**
+**DURUM — v9.45: kapı yeşil, YAYIN BEKLİYOR.** (v9.44 yayınlandı ve canlıdan doğrulandı: `sufle-v116`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+## 📱 20 Ağustos gecesi — v9.45 — ÇOK DAR EKRANDA KAYBOLAN KART DEĞERİ
+
+Aynı yöntemin telefon tarafı: **çizilmiş ekranı en dar gerçekçi ölçüde gezmek.**
+
+Bir ayar kartı kapalıyken sağda o anki değeri yazar — `1080p · Dengeli`,
+`6/8 açık`. Kartın kapalıyken **tek işi** budur ve depo bunun için mutlak bir
+kural tutuyor (kesilen kart özeti = 0). Ama kural yalnız **430 ve 360**
+pikselde ölçülüyordu.
+
+**320 pikselde** (eski iPhone SE, bölünmüş ekran, yakınlaştırılmış tarayıcı)
+ölçüldü: "Okuma yardımcıları" başlığı 142 px alıyor, özete 51 pikselin yalnız
+**22'si** kalıyor ve `6/8 açık` üç noktaya gidiyordu — kart kapalıyken hiçbir
+şey söylemiyordu.
+
+**Bu, gecenin üçüncü "ölçülmeyen genişlik" vakası.** Masaüstünde 1152 px,
+telefonda 320 px; ikisi de aynı cümleyi söylüyor: *ölçülmeyen genişlik,
+denetlenmemiş genişliktir.* `kontrast.py` artık **320 px** bir telefon yüzeyi
+de geziyor.
+
+Çözüm **kısaltmak değil, ikinci satır**: 340 pikselin altında değer kendi
+satırına iniyor, başlık da değer de tam okunuyor. 360 px ve üstünde görünüm
+**hiç değişmedi** — geniş ekrandaki "başlık kırılmaz, özet kısalır" kuralı
+(ölçülerek verilmiş bir karardı) olduğu gibi duruyor ve `tests/205` onu da
+kilitliyor.
+
+Taramanın geri kalanı **temiz** çıktı: 320×568 giriş/sahne/ayarlar/senaryolar,
+375×500 kısa ekran, masaüstü 820 ve 760 px — hiçbirinde kesilen, taşan,
+ölçek dışı ya da ulaşılamayan öge yok.
 
 ## 🧭 20 Ağustos gecesi — v9.44 — MASAÜSTÜNDE ULAŞILAMAYAN DÜĞMELER
 
@@ -2639,9 +2668,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7731 test** (gece başında 732) · yeni test dosyası: 39–204
+- **7741 test** (gece başında 732) · yeni test dosyası: 39–205
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **773 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **777 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:
