@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.45 YAYINLANDI ve canlıdan doğrulandı (`sufle-v117`); md5 birebir.**
+**DURUM — v9.46: kapı yeşil, YAYIN BEKLİYOR.** (v9.45 yayınlandı ve canlıdan doğrulandı: `sufle-v117`, md5 birebir.)
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
@@ -11,7 +11,7 @@
 
 ## ☕ ÖNCE BUNU OKU — 19/20 Ağustos gecesinin özeti
 
-**On bir sürüm yayınlandı ve on biri de canlıdan md5 ile doğrulandı: v9.35 → v9.45.**
+**On iki sürüm yayınlandı ve on ikisi de canlıdan md5 ile doğrulandı: v9.35 → v9.46.**
 Kapı her yayında yeşildi; hiçbir yayın doğrulanmadan `.son-yayin`e yazılmadı.
 
 | ne yapıldı | sürüm |
@@ -25,6 +25,7 @@ Kapı her yayında yeşildi; hiçbir yayın doğrulanmadan `.son-yayin`e yazılm
 | Masaüstünde **kesilen yetenek satırı** (MP4/kırpma/sesle takip göstergeleri) | 9.43 |
 | Masaüstünde **ulaşılamayan üst çubuk düğmeleri** (900 pxte Çekimlerim dahil) | 9.44 |
 | Çok dar ekranda **kaybolan kart değeri** | 9.45 |
+| **Hiçbir şey yapmayan bir anahtar** sebebini söylüyor (ölü ayar) | 9.46 |
 
 **Rakip yol haritasında açık P0/P1 kalmadı.** `EKSIKLER`'in iki "ölçütü tanımsız"
 maddesi (altın kaydırma, tipografik ritim) ölçüt yazılarak kapandı; süreç
@@ -49,6 +50,37 @@ genişlikten çıktı (masaüstü 1152 px, telefon 320 px, masaüstü 900 px) ve
 | B1–B6 | Yalnız **gerçek cihazda** ölçülebilenler — 5 ve 15 dakikalık gerçek iPhone çekimi dahil |
 
 ---
+
+## 🎯 20 Ağustos gecesi — v9.46 — SESSİZCE HİÇBİR ŞEY YAPMAYAN ANAHTAR
+
+Yeni damar: **kayıt sürerken kip geçişleri ve ölü ayar sondası.**
+
+Önce kayıt sırasında ayar değiştirmeyi ölçtüm (gerçek Chrome, sahte kamera):
+sekiz anahtar çevrildi, WPM 140 → 180 yapıldı, ayar paneli kayıt sürerken
+açıldı — **kayıt hiç düşmedi, akış kesilmedi, hata günlüğü boş kaldı, sonuç
+ekranı videoyla açıldı.** Burada kusur yok.
+
+Sonra 31 anahtarın hepsi tek tek çevrilip *"ekranda gözle görülür bir şey
+değişiyor mu"* diye ölçüldü. Kamerasız 20, kameralıyken 10 anahtar hiçbir şey
+değiştirmedi; onların çoğu davranışsal (nefes molası, sayaç, ses ayarları) ya
+da yetenek kapılı — **`torch` ve `camLock` sahte kamerada hiç ÇİZİLMİYORDU,
+yani "yetenek yoksa denetim görünmesin" kuralı çalışıyor.**
+
+**Ama biri gerçekten ölüydü:** *"Platform arayüz alanlarını göster"*.
+Anahtar açılıyor (`sw on` geliyor, ayar kaydediliyor) ama `#safeWrap`
+`display:none` ve **içi boş** kalıyordu. Sebep: alanları yalnız dikey
+formatlar tanımlıyor (Reels · Story · Shorts) ve varsayılan format Serbest.
+
+Deponun 3 numaralı hata sınıfı: *ön koşulu olan ayar, ölü ayardır — ya koşulu
+kendin sağla ya anahtarı geri al ve sebebini söyle.* Seçilen yol: anahtar
+duruyor, **sönüyor** ve altında sebebi yazıyor; hangi formatlarda çizildiğini
+**adıyla** söylüyor. Liste elle yazılmıyor, `MODES`tan türetiliyor — yeni bir
+dikey format eklenince cümle kendiliğinden doğru kalır.
+
+Gizlemek yanlış olurdu (format bir dokunuş ötede, kullanıcı özelliğin var
+olduğunu bilmeli); `disabled` yapmak da yanlış olurdu (dokunuşu sessizce
+yutardı). Reels'e geçince ölçüldü: alanlar **çiziliyor** (3 kutu, 430×764) ve
+anahtar sönüklüğünü bırakıyor. `tests/206` + 5 kasıtlı bozma.
 
 ## 📱 20 Ağustos gecesi — v9.45 — ÇOK DAR EKRANDA KAYBOLAN KART DEĞERİ
 
@@ -2711,9 +2743,9 @@ ihlal sayıyordu, örnekler parçalı yazılarak ayrıldı.
   `.son-yayin` ancak doğrulamadan SONRA yazıldı.
   **v9.17 CANLIDA** (17 Ağustos, Erdal onayıyla; md5 birebir, canlı duman testi
   temiz). Depoda **1 commit** daha var: v9.18 giriş ekranı — yayın kararı Erdal'da.
-- **7741 test** (gece başında 732) · yeni test dosyası: 39–205
+- **7758 test** (gece başında 732) · yeni test dosyası: 39–206
 - Gece planı: 139 görevden **87'si** işlendi (bütün P0'lar + 79 P1 + F9)
-- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **777 kanıtlı bozma**
+- Kapı: 11 adım yeşil · 4 ayna birebir · `denetim.py` temiz · **782 kanıtlı bozma**
   (yayından sonra 5. adım "VER artmamış" der — CLAUDE.md'ye göre **doğru** durum,
   sonraki sürüm artışında yeşile döner)
 - **FAZ G açıldı** — BIGVU + teleprompter.com ölçüldü, 16 maddelik TODO:

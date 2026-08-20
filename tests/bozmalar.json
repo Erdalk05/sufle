@@ -5437,5 +5437,40 @@
   "kaynak": "kontrast",
   "bul": "('telefon-dar-ayarlar', TELEFON, 320, 568, 3,",
   "koy": "('telefon-dar-ayarlar', TELEFON, 430, 568, 3,"
+ },
+ {
+  "ad": "v9.46 ölü ayar sessizce geri geliyor (ipucu yazılmıyor)",
+  "test": "206-olu-ayar-guvenli-alan.js",
+  "kaynak": "telefon",
+  "bul": "      ip.textContent = varMi ? '' : srY(t('safeYok')",
+  "koy": "      ip.textContent = varMi ? '' : ('' && srY(t('safeYok')"
+ },
+ {
+  "ad": "v9.46 sönük anahtar yerine gizleniyor (özellik görünmez olur)",
+  "test": "206-olu-ayar-guvenli-alan.js",
+  "kaynak": "telefon",
+  "bul": "  .sw.etkisiz{opacity:.45}",
+  "koy": "  .sw.etkisiz{display:none}"
+ },
+ {
+  "ad": "v9.46 çalışan format listesi elle yazılıyor (yeni format eklenince cümle yalan söyler)",
+  "test": "206-olu-ayar-guvenli-alan.js",
+  "kaynak": "telefon",
+  "bul": "      const adlar=Object.keys(MODES).filter(k=>MODES[k].safe)",
+  "koy": "      const adlar=['Reels'].filter(k=>k)"
+ },
+ {
+  "ad": "v9.46 sebep cümlesinin yer tutucusu iki dilde ayrışıyor",
+  "test": "206-olu-ayar-guvenli-alan.js",
+  "kaynak": "sozluk",
+  "bul": "safeYok:'This format ({format}) has no interface areas",
+  "koy": "safeYok:'This format ({bicim}) has no interface areas"
+ },
+ {
+  "ad": "v9.46 dikey formatlardan biri güvenli alanını kaybediyor",
+  "test": "206-olu-ayar-guvenli-alan.js",
+  "kaynak": "telefon",
+  "bul": "  shorts:{n:{tr:'YouTube Shorts',en:'YouTube Shorts'}, asp:'9:16', wpm:170, fs:44, limit:180,\n          safe:{top:8,bottom:18,right:15}},",
+  "koy": "  shorts:{n:{tr:'YouTube Shorts',en:'YouTube Shorts'}, asp:'9:16', wpm:170, fs:44, limit:180, safe:null},"
  }
 ]

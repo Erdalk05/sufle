@@ -962,6 +962,10 @@
      tanınırlığı bozardı, hiyerarşiyi düzeltmezdi. */
   .seg button.on{background:rgba(0,212,126,.16);color:var(--r-action-t);border-color:rgba(0,212,126,.45);font-weight:750}
   .tog{display:flex;align-items:center;justify-content:space-between;padding:13px 0;min-height:44px;border-top:1px solid var(--line);gap:var(--sp-3);cursor:pointer}
+  /* ÖN KOŞULU SAĞLANMAYAN ANAHTAR: söndürülür ama KAPATILMAZ. Devre dışı
+     bırakmak dokunuşu sessizce yutardı; sönük görünüp altında sebebini
+     yazmak, kullanıcıya hem durumu hem çıkış yolunu söylüyor. */
+  .sw.etkisiz{opacity:.45}
   .tog span{font-size:var(--tx-md)}
   .sw{width:48px;height:29px;border-radius:20px;background:#2C313D;position:relative;flex:none;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5);transition:background var(--hiz-hizli) var(--egri)}
@@ -1281,6 +1285,7 @@
     </div>
     <div class="hint" id="modeHint"></div>
     <div class="tog"><span data-i18n="tgSafe">Platform arayüz alanlarını göster</span><div class="sw" data-t="safe"></div></div>
+    <div class="hint" id="safeHint"></div>
 
     </div></details>
     <details class="grup"><summary><span data-i18n="gTempo"></span><span class="ozet"></span></summary><div class="icerik">
@@ -2250,7 +2255,7 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const root=document.documentElement, body=document.body;
-const cam=$('#cam'), scroller=$('#scroller'), VER='9.45';
+const cam=$('#cam'), scroller=$('#scroller'), VER='9.46';
 
 /* ============ i18n ============ */
 /* ==CEKIRDEK:sozluk.js== */
@@ -2387,7 +2392,7 @@ const I18N={
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
   mTReset:'Başa sar (R)',mTFmt:'Çekim formatı',mTVoice:'Konuştukça kayan sufle',mTReady:'Çekime hazır mıyım?',mTUndoDel:'Son silinen senaryoyu geri getir',mTPip:'Zoom/Teams görüşmesinde ya da başka uygulama üstünde okumak için',mTTakes:'Arşivdeki çekimler',mTExport:'Senaryoları dosyaya aktar (telefona taşımak için)',mTFs:'Tam ekran (F)',mTHide:'Panelleri gizle (H)',mTNew:'Yeni senaryo',mTNews:'🆕 Ne değişti? — sürüm notları',mANews:'Ne değişti? Sürüm notları',mTErrDetail:'Ayrıntı için tıkla',mThClassic:'Klasik',mThWhite:'Beyaz',mThGreen:'Yeşil',mThBlue:'Mavi',mThAmber:'Amber',mPhTitle:'Senaryo başlığı',mPhEditor:'Okuyacağınız metni buraya yazın veya yapıştırın...',
   /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
-  mSwCrop:'⧉ Seçilen orana kırparak kaydet',mSwChroma:'Yeşil ekran (chroma key)',mSwBurn:'Altyazıyı videoya göm',mSwVad:'Konuşmayı kesince sufle dursun',mSwSafe:'Platform arayüz alanları',mSwBionic:'Biyonik okuma (kelime başları kalın)',mSwMirror:'Ayna (yatay çevir)',mSwFlip:'Ters (dikey çevir)',mSwEye:'Göz çizgisi',mSwDim:'Odak karartma',mSwHl:'Kelime vurgusu',mSwCount:'⏱ 3-2-1 sayaç',mSbPlay:'<kbd>Boşluk</kbd> başlat',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> hız',mSbReset:'<kbd>R</kbd> başa',mSbLine:'<kbd>←</kbd><kbd>→</kbd> satır',mSbRec:'<kbd>K</kbd> kayıt',mSbFs:'<kbd>F</kbd> tam ekran',mSbHide:'<kbd>H</kbd> sade',
+  mSwCrop:'⧉ Seçilen orana kırparak kaydet',mSwChroma:'Yeşil ekran (chroma key)',mSwBurn:'Altyazıyı videoya göm',mSwVad:'Konuşmayı kesince sufle dursun',mSwSafe:'Platform arayüz alanları',safeYok:'Bu format ({format}) için gösterilecek arayüz alanı yok — dikey platformlar kendi düğmelerini videonun üstüne koyuyor. Formatı {liste} yaparsan alanlar çizilir.',mSwBionic:'Biyonik okuma (kelime başları kalın)',mSwMirror:'Ayna (yatay çevir)',mSwFlip:'Ters (dikey çevir)',mSwEye:'Göz çizgisi',mSwDim:'Odak karartma',mSwHl:'Kelime vurgusu',mSwCount:'⏱ 3-2-1 sayaç',mSbPlay:'<kbd>Boşluk</kbd> başlat',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> hız',mSbReset:'<kbd>R</kbd> başa',mSbLine:'<kbd>←</kbd><kbd>→</kbd> satır',mSbRec:'<kbd>K</kbd> kayıt',mSbFs:'<kbd>F</kbd> tam ekran',mSbHide:'<kbd>H</kbd> sade',
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Senaryolar',mNoteAudio:'Uğultu kesme + 50 Hz şebeke çentiği + gürültü kapısı + seviye dengeleme. Dahili mikrofonla çekimde en çok işe yarayan ayar.',mNoteChroma:'Yeşil ekran olmadan arka plan değiştirilemez. Düz renkli, kırışıksız ve eşit aydınlatılmış bir perde yeter. Kırparak kayıt açık olmalı.',mNoteCase:'Metni değiştirmez — altyazı ve senaryo olduğu gibi kalır.',mNoteBionic:'Gözün kelimeyi baştan yakalamasını kolaylaştırır. Yalnız görünümü değiştirir; altyazı ve .srt etkilenmez.',mNoteCap:'Altyazı senaryodan üretilir, yazım her zaman doğrudur. Erken/geç çıkıyorsa buradan kaydır.',mNoteCapW:'Telefondaki ayarın aynısı. Küçük değer sosyal video için daha okunur, büyük değer daha az satır demek.',mNoteQr:'Telefonla QR’ı okutun ya da şu adrese girin:',mRemoteOff:'<b>Kumanda kapalı.</b> HTML dosyasına çift tıklayarak açtıysan kumanda <b>hiç çalışmaz</b> — tarayıcı file:// modunda sunucuya bağlanamaz.<br>Aynı klasördeki <b>“Teleprompter Sunucu.command”</b> dosyasına çift tıkla; pencere kendiliğinden yeniden açılır ve QR burada belirir.',mRrNote:'Önbellekte tutuluyor — beğenmezsen sil, diske kaydolmaz. İndir\'e basınca kaydedilir. <b>Arşive al</b> dersen tarayıcı deposunda kalır, sonra da açabilirsin.',mRrHead:'Çekim hazır',
   /* Dil düğmesi (A.2d) */
@@ -2715,7 +2720,7 @@ const I18N={
   /* Mac öznitelik metinleri (A.2c): title / placeholder / aria-label */
   mTReset:'Rewind (R)',mTFmt:'Shooting format',mTVoice:'Prompter that follows your voice',mTReady:'Am I ready to shoot?',mTUndoDel:'Restore the last deleted script',mTPip:'For reading over a Zoom/Teams call or any other app',mTTakes:'Takes in the archive',mTExport:'Export scripts to a file (to move them to your phone)',mTFs:'Full screen (F)',mTHide:'Hide the panels (H)',mTNew:'New script',mTNews:'🆕 What changed? — release notes',mANews:'What changed? Release notes',mTErrDetail:'Click for details',mThClassic:'Classic',mThWhite:'White',mThGreen:'Green',mThBlue:'Blue',mThAmber:'Amber',mPhTitle:'Script title',mPhEditor:'Type or paste the text you will read here...',
   /* Mac anahtar etiketleri + durum çubuğu (A.2d) */
-  mSwCrop:'⧉ Record cropped to the chosen ratio',mSwChroma:'Green screen (chroma key)',mSwBurn:'Burn subtitles into the video',mSwVad:'Pause the prompter when you stop speaking',mSwSafe:'Platform interface areas',mSwBionic:'Bionic reading (bold word beginnings)',mSwMirror:'Mirror (flip horizontally)',mSwFlip:'Invert (flip vertically)',mSwEye:'Eye line',mSwDim:'Focus dimming',mSwHl:'Word highlight',mSwCount:'⏱ 3-2-1 countdown',mSbPlay:'<kbd>Space</kbd> start',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> speed',mSbReset:'<kbd>R</kbd> rewind',mSbLine:'<kbd>←</kbd><kbd>→</kbd> line',mSbRec:'<kbd>K</kbd> record',mSbFs:'<kbd>F</kbd> full screen',mSbHide:'<kbd>H</kbd> minimal',
+  mSwCrop:'⧉ Record cropped to the chosen ratio',mSwChroma:'Green screen (chroma key)',mSwBurn:'Burn subtitles into the video',mSwVad:'Pause the prompter when you stop speaking',mSwSafe:'Platform interface areas',safeYok:'This format ({format}) has no interface areas to show — vertical platforms are the ones that put their own buttons over the video. Switch the format to {liste} and the areas are drawn.',mSwBionic:'Bionic reading (bold word beginnings)',mSwMirror:'Mirror (flip horizontally)',mSwFlip:'Invert (flip vertically)',mSwEye:'Eye line',mSwDim:'Focus dimming',mSwHl:'Word highlight',mSwCount:'⏱ 3-2-1 countdown',mSbPlay:'<kbd>Space</kbd> start',mSbSpeed:'<kbd>↑</kbd><kbd>↓</kbd> speed',mSbReset:'<kbd>R</kbd> rewind',mSbLine:'<kbd>←</kbd><kbd>→</kbd> line',mSbRec:'<kbd>K</kbd> record',mSbFs:'<kbd>F</kbd> full screen',mSbHide:'<kbd>H</kbd> minimal',
   /* Mac ipucu ve panel metinleri (A.2d) */
   mHScripts:'Scripts',mNoteAudio:'Hum removal + 50 Hz mains notch + noise gate + level balancing. Recommended with the built-in microphone.',mNoteChroma:'The background cannot be replaced without a green screen. A plain, wrinkle-free and evenly lit surface works best.',mNoteCase:'Does not change the text — subtitles and the script stay exactly as written.',mNoteBionic:'Helps the eye catch each word from its beginning. Display only; subtitles and the script are untouched.',mNoteCap:'Subtitles are generated from the script, so the spelling is always right. If they run early or late, shift them here.',mNoteCapW:'Same setting as on the phone. A smaller value reads better for social video, a larger one shows more at once.',mNoteQr:'Scan the QR with your phone, or open this address:',mRemoteOff:'<b>Remote is off.</b> If you opened the HTML file by double-clicking it, the remote <b>will not work at all</b> — in file:// mode the browser cannot reach the server. Double-click <b>“Teleprompter Sunucu.command”</b> in the same folder; the window reopens by itself and the QR appears here.',mRrNote:'Held in the cache — delete it if you do not like it, nothing is written to disk. It is saved when you press Download. Choose <b>Keep in archive</b> and it stays in the browser store, so you can open it later.',mRrHead:'Take ready',
   /* Dil düğmesi (A.2d) */
@@ -5050,6 +5055,26 @@ function drawEyeLine(w,h){
 function drawSafe(){
   body.classList.toggle('safeOn', !!st.safe && !!curMode().safe);
   const S=curMode().safe; const wrap=$('#safeWrap');
+  /* ÖN KOŞULU OLAN AYAR = ÖLÜ AYAR (2026-08-20, çizilmiş ekranda ölçüldü).
+     Bu anahtar AÇILIYOR (`sw on` sınıfı geliyor) ama `curMode().safe` yoksa
+     hiçbir şey çizilmiyordu: kutu `display:none`, içi boş. Kullanıcı için
+     bu, "açtım ama olmuyor" demek — deponun 3 numaralı hata sınıfı.
+     Güvenli alanları YALNIZ dikey platform formatları tanımlıyor (Reels,
+     Story, Shorts); Serbest, Gönderi ve YouTube Video'da gösterilecek bir
+     arayüz alanı yok. Anahtarı gizlemek yerine SEBEBİNİ söylüyoruz —
+     format bir dokunuş ötede ve kullanıcı özelliğin var olduğunu bilmeli. */
+  {
+    const ip=$('#safeHint');
+    if(ip){
+      const varMi=!!S;
+      const adlar=Object.keys(MODES).filter(k=>MODES[k].safe)
+        .map(k=>MODES[k].n[L]||MODES[k].n.tr).join(' · ');
+      ip.textContent = varMi ? '' : srY(t('safeYok'), {liste:adlar, format:(curMode().n[L]||curMode().n.tr)});
+      ip.style.display = varMi ? 'none' : '';
+      const sw=$('[data-t="safe"]');
+      if(sw) sw.classList.toggle('etkisiz', !varMi);
+    }
+  }
   if(!S || !st.safe){
     wrap.innerHTML='';
     // göz hattı, güvenli alandan BAĞIMSIZ çalışmalı — yoksa yalnız belli modlarda görünürdü
@@ -11049,6 +11074,7 @@ $('#newsX').onclick=closeSheets;
 /* 11.8 Sürüm notları: bir şey değişince kullanıcı ne olduğunu bilmiyordu.
    Yalnız SÜRÜM ATLAYINCA bir kez açılıyor — her açılışta rahatsız etmiyor. */
 const NEWS={
+ '9.46':{tr:'🎯 <b>Sessizce hiçbir şey yapmayan bir anahtar bulundu ve konuştu.</b> "Platform arayüz alanlarını göster" anahtarı açılıyordu ama ekranda hiçbir şey değişmiyordu: alanları yalnız dikey formatlar (Reels, Story, Shorts) tanımlıyor, varsayılan Serbest formatta gösterilecek bir alan yok. Artık anahtar sönük görünüyor ve <b>altında sebebi yazıyor</b>: hangi formata geçersen alanların çizileceğini adıyla söylüyor. Anahtar gizlenmedi — format bir dokunuş ötede ve özelliğin var olduğunu bilmelisin.',en:'🎯 <b>A switch that silently did nothing was found — and now it explains itself.</b> The "show platform interface areas" switch turned on but nothing changed on screen: only vertical formats (Reels, Story, Shorts) define those areas, and the default Free format has none to show. The switch now appears dimmed with <b>the reason written underneath</b>, naming the formats that draw them. We did not hide it — the format is one tap away and you should know the feature exists.'},
  '9.45':{tr:'📱 <b>Çok dar ekranda ayar kartlarının değeri kesiliyordu.</b> Kart kapalıyken sağda o anki değeri yazar ("1080p · Dengeli", "6/8 açık") — kartın kapalıyken tek işi budur. 320 piksel genişlikte (eski iPhone SE, bölünmüş ekran, yakınlaştırılmış tarayıcı) o yazıya 51 pikselin yalnız 22si kalıyor ve üç noktaya gidiyordu. Artık değer kendi satırına iniyor: başlık da değer de tam okunuyor. 360 piksel ve üstünde görünüm hiç değişmedi.',en:'📱 <b>On very narrow screens the value on settings cards was cut off.</b> A collapsed card shows its current value on the right ("1080p · Balanced", "6/8 on") — that is the only job a collapsed card has. At 320 pixels wide (older iPhone SE, split view, zoomed browser) only 22 of the 51 pixels were left for it and it ended in an ellipsis. The value now drops onto its own line: both the title and the value are fully readable. At 360 pixels and above nothing changed.'},
  '9.44':{tr:'🧭 <b>Masaüstünde üst çubuk düğmeleri pencerenin dışına düşüyordu, düzeltildi.</b> Bu tur telefona dokunmadı. Masaüstünde 900 piksel genişlikte <b>Çekimlerim</b> düğmesi bile ekranın dışında kalıyordu ve arşive ulaşmanın başka yolu yoktu.',en:'🧭 <b>On the desktop, toolbar buttons were falling outside the window and are now fixed.</b> This round did not touch the phone. On the desktop at 900 pixels even <b>My Takes</b> was off screen, and there was no other way into the archive.'},
  '9.43':{tr:'📋 <b>Masaüstünde durum çubuğundaki yetenek satırı kesiliyordu, düzeltildi.</b> Bu tur telefona dokunmadı; masaüstünde MP4, kırpma, sesle takip ve paylaşım göstergelerinin sonu üç noktaya gidiyordu.',en:'📋 <b>On the desktop, the capability line in the status bar was cut off and is now fixed.</b> This round did not touch the phone; on the desktop the MP4, crop, voice follow and share indicators were ending in an ellipsis.'},
