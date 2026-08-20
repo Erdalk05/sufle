@@ -1,4 +1,4 @@
-# Sabah raporu — 14 Ağustos 2026 gecesi
+# Sabah raporu — Sufle gece turları (son tur: **19/20 Ağustos 2026**)
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
@@ -6,6 +6,49 @@
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
+
+---
+
+## ☕ ÖNCE BUNU OKU — 19/20 Ağustos gecesinin özeti
+
+**On bir sürüm yayınlandı ve on biri de canlıdan md5 ile doğrulandı: v9.35 → v9.45.**
+Kapı her yayında yeşildi; hiçbir yayın doğrulanmadan `.son-yayin`e yazılmadı.
+
+| ne yapıldı | sürüm |
+|---|---|
+| Senaryo favorisi · güzellik masaüstüne · v9.33'ün bulunamayan iki özelliği | 9.35 |
+| **Katmanlı ayarlar** (Temel/Gelişmiş) — yol haritasının son açık P1'i | 9.36 |
+| Arayüz metinlerinin tek kaynağa taşınması: **telefon 172 → 4, Mac 17 → 1** | 9.37–9.40 |
+| **Çekim güvenilirliği matrisi** — yol haritasının son açık P0'ı | 9.40 |
+| **Altın kaydırma ölçülebilir oldu** — duraklamalar tek karede duruyordu | 9.41 |
+| **Tipografik ritim ölçülebilir oldu** — ölçek masaüstünde hiç uygulanmamış | 9.42 |
+| Masaüstünde **kesilen yetenek satırı** (MP4/kırpma/sesle takip göstergeleri) | 9.43 |
+| Masaüstünde **ulaşılamayan üst çubuk düğmeleri** (900 pxte Çekimlerim dahil) | 9.44 |
+| Çok dar ekranda **kaybolan kart değeri** | 9.45 |
+
+**Rakip yol haritasında açık P0/P1 kalmadı.** `EKSIKLER`'in iki "ölçütü tanımsız"
+maddesi (altın kaydırma, tipografik ritim) ölçüt yazılarak kapandı; süreç
+borcundaki F2 (biçim kilitleyen testler) sistematik taramaya kavuştu.
+
+**Gecenin dersi tek cümlede:** en verimli damar kaynağı okumak değil,
+**çizilmiş ekranı denenmemiş ölçülerde gezmek** oldu. Üç ayrı kusur, üç ayrı
+genişlikten çıktı (masaüstü 1152 px, telefon 320 px, masaüstü 900 px) ve
+üçünde de sebep aynıydı: *ölçülmeyen genişlik, denetlenmemiş genişliktir.*
+
+### 🔵 Senden bekleyenler (kod tarafında iş yok)
+
+| # | konu |
+|---|---|
+| A1 | **Sunucu işletilecek mi?** Bulut senkron, AI senaryo, ekip, tek tıkla yayın — rakip rubriğinin %18'i buna kilitli |
+| A2 · A3 | Apple Developer hesabı · Play Console hesabı + `assetlinks.json` |
+| A4 | Mac kumanda `/cmd` köken denetimi |
+| A5 · A6 | Kenarlık kontrastı (1,29:1 → 3:1) · dokunma hedefi 44 px — ikisi de tüm görünümü değiştirir |
+| F5 · F6 | Rubriğin 11 satırı hâlâ tahmin · mağaza görsellerinin 3'ü taslak (**senin gerçek çekimini bekliyor**) |
+| — | **Üçüncü arayüz dili**: önündeki engel tümüyle kalktı (712 anahtar hazır). Tek dilimde bitip doğrulanamayacağı için başlatmadım — yarım çevrilmiş arayüz en kötü sonuç. **Karar senin.** |
+| — | **Çoklu klip zaman çizelgesi**: ayrı bir ürün kararı (video düzenleyici olmak) |
+| B1–B6 | Yalnız **gerçek cihazda** ölçülebilenler — 5 ve 15 dakikalık gerçek iPhone çekimi dahil |
+
+---
 
 ## 📱 20 Ağustos gecesi — v9.45 — ÇOK DAR EKRANDA KAYBOLAN KART DEĞERİ
 
