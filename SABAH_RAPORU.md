@@ -2,7 +2,7 @@
 
 **Bu dosya gece boyunca güncellendi; ne zaman uyandıysan güncel hâli budur.**
 
-**DURUM — v9.43: kapı yeşil, YAYIN BEKLİYOR.** (v9.42 yayınlandı ve canlıdan doğrulandı: `sufle-v114`, md5 birebir.)
+**DURUM — v9.43 YAYINLANDI ve canlıdan doğrulandı (`sufle-v115`); md5 birebir.**
 <!-- Yayın durumu TEK yerde: bu satır. Başlıklara da yazınca kasıtlı bozma
      turu ayırt edemez oluyor (iki kez yaşandı) ve rapor kendi kendini
      doğrular hâle geliyor. tests/116 bu satırı arıyor. -->
